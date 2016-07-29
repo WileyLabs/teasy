@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
+
+    <import resource="classpath*:/spring/settings.xml"/>
+
+    <bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">
+        <property name="scopes">
+            <map>
+                <entry key="thread">
+                    <bean class="org.springframework.context.support.SimpleThreadScope"/>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="postponeFailureEvent" class="com.wiley.autotest.event.postpone.failure.PostponedFailureEvent"
+          scope="thread">
+        <aop:scoped-proxy/>
+    </bean>
+
+    <bean id="beforeAfterGroupFailureEvent"
+          class="com.wiley.autotest.event.postpone.failure.BeforeAfterGroupFailureEvent"
+          scope="thread">
+        <aop:scoped-proxy/>
+    </bean>
+
+    <bean id="parameterProvider" class="com.wiley.autotest.selenium.ParamsProvider" scope="thread">
+        <aop:scoped-proxy/>
+    </bean>
+
+    <bean id="parameterProviderForGroup" class="com.wiley.autotest.selenium.ParamsProvider" scope="thread">
+        <aop:scoped-proxy/>
+    </bean>
+
+    <bean id="registry" class="com.wiley.autotest.selenium.SpringBasedHelperRegistry"/>
+
+    <util:list id="validatorPhrases" value-type="java.lang.String">
+        <!-- <value>Exception</value>
+       <value>exception</value> -->
+        <value>Service Unavailable</value>
+        <value>Internal Server Error</value>
+        <value>Bad Request</value>
+        <value>Bad Gateway</value>
+        <value>An unexpected error has occurred</value>
+
+        <!-- Below taken from checkPageFrames -->
+        <value>400 Bad Request</value>
+        <value>401 Unauthorized</value>
+        <value>403 Forbidden</value>
+        <value>404 Not Found</value>
+        <value>502 Bad Gateway</value>
+        <value>503 Service Unavailable</value>
+        <value>500 Internal Server Error</value>
+        <value>420 Enhance Your Calm:</value>
+
+        <value>HTTP Status 404</value>
+        <value>HTTP Status 500</value>
+    </util:list>
+
+    <bean id="validator" class="com.wiley.autotest.selenium.context.WordsBasedPageLoadingValidator">
+        <property name="words" ref="validatorPhrases"/>
+    </bean>
+
+    <context:component-scan base-package="com.wiley.e4.pages"
+                            scope-resolver="com.wiley.autotest.selenium.HardCodedPrototypeScopeResolver"/>
+
+    <context:component-scan base-package="com.wiley.e4.components"
+                            scope-resolver="com.wiley.autotest.selenium.HardCodedPrototypeScopeResolver"/>
+
+    <context:component-scan base-package="com.wiley.e4.preconditions"
+                            scope-resolver="com.wiley.autotest.selenium.HardCodedPrototypeScopeResolver"/>
+
+    <context:component-scan base-package="com.wiley.e4.base"
+                            scope-resolver="com.wiley.autotest.selenium.HardCodedPrototypeScopeResolver"/>
+
+</beans>
