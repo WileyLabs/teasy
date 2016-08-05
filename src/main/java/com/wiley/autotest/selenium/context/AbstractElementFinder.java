@@ -69,12 +69,20 @@ public class AbstractElementFinder {
         return getElementNew(Link.class, locator, generateErrorMessage());
     }
 
+    protected Link link(SearchContext searchContext, By locator) {
+        return getElementNew(Link.class, searchContext, locator, generateErrorMessage());
+    }
+
     protected List<Link> links(By locator) {
         return getElementListNew(Link.class, locator, generateErrorMessage());
     }
 
     protected CheckBox checkBox(By locator) {
         return getElementNew(CheckBox.class, locator, generateErrorMessage());
+    }
+
+    protected CheckBox checkBox(SearchContext searchContext, By locator) {
+        return getElementNew(CheckBox.class, searchContext, locator, generateErrorMessage());
     }
 
     protected List<CheckBox> checkBoxes(By locator) {
@@ -85,12 +93,20 @@ public class AbstractElementFinder {
         return getElementNew(RadioButton.class, locator, generateErrorMessage());
     }
 
+    protected RadioButton radioButton(SearchContext searchContext, By locator) {
+        return getElementNew(RadioButton.class, searchContext, locator, generateErrorMessage());
+    }
+
     protected List<RadioButton> radioButtons(By locator) {
         return getElementListNew(RadioButton.class, locator, generateErrorMessage());
     }
 
     protected Select select(By locator) {
         return getElementNew(Select.class, locator, generateErrorMessage());
+    }
+
+    protected Select select(SearchContext searchContext, By locator) {
+        return getElementNew(Select.class, searchContext, locator, generateErrorMessage());
     }
 
     protected List<Select> selects(By locator) {
@@ -902,3 +918,4 @@ public class AbstractElementFinder {
         }
     }
 }
+
