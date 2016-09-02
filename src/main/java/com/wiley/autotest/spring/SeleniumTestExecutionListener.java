@@ -491,7 +491,6 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setCapability("deviceName", "Android");
         capabilities.setCapability("platformName", "Android");
-        capabilities.setCapability("app", "Chrome");
         capabilities.setCapability("newCommandTimeout", "900");
         capabilities.setPlatform(Platform.ANDROID);
         capabilities.setCapability(CapabilityType.BROWSER_NAME, CHROME);
