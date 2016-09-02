@@ -10,6 +10,7 @@ import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
 import com.wiley.autotest.selenium.driver.events.listeners.PageValidatorEventListener;
 import com.wiley.autotest.utils.TestUtils;
 import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.android.AndroidDriver;
 import net.lightbody.bmp.proxy.ProxyServer;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
@@ -411,7 +412,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
                     desiredCapabilities = getAndroidChromeDesiredCapabilities();
                     SeleniumHolder.setDriverName(CHROME);
                     SeleniumHolder.setPlatform(ANDROID);
-                    AppiumDriver remoteWebDriver = new AppiumDriver(new URL(settings.getGridHubUrl()), desiredCapabilities);
+                    AppiumDriver remoteWebDriver = new AndroidDriver(new URL(settings.getGridHubUrl()), desiredCapabilities);
                     remoteWebDriver.setFileDetector(new LocalFileDetector());
                     return remoteWebDriver;
                 } else {
@@ -722,7 +723,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
 
     /**
      * https://code.google.com/p/selenium/issues/detail?id=7506
-     * <p/>
+     * <p>
      * Special methods to kill plugin-container for FF only.
      * This error appears when test has flash and browser window was closed.
      */
