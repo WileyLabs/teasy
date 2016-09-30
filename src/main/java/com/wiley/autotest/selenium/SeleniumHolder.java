@@ -34,6 +34,7 @@ public final class SeleniumHolder {
     private static final ThreadLocal<ProxyServer> proxyServer = new ThreadLocal<ProxyServer>();
     private static final ThreadLocal<Proxy> proxy = new ThreadLocal<Proxy>();
     private static final ThreadLocal<String> platform = new ThreadLocal<String>();
+    private static final ThreadLocal<String> mainWindowHandle = new ThreadLocal<String>();
     private static final ThreadLocal<String> nodeIp = new ThreadLocal<String>() {
         @Override
         protected String initialValue() {
@@ -121,5 +122,13 @@ public final class SeleniumHolder {
 
     public static void setNodeIp(String nodeIp) {
         SeleniumHolder.nodeIp.set(nodeIp);
+    }
+
+    public static void setMainWindowHandle(String windowHandle) {
+        mainWindowHandle.set(windowHandle);
+    }
+
+    public static String getMainWindowHandle() {
+        return mainWindowHandle.get();
     }
 }
