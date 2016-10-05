@@ -19,6 +19,7 @@ public class Settings extends Properties {
     private static final String GRID_HUB_URL_PROP_KEY = "grid.hub.url";
     private static final String APPLICATION_PLATFORM_PROP_KEY = "application.platform";
     private static final String INVOCATION_COUNT_PROP_KEY = "invocation.count";
+    private static final String RESTART_DRIVER_COUNT_PROP_KEY = "restart.driver.count";
 
     public boolean getAsBoolean(String name) {
         return Boolean.valueOf(getProperty(name));
@@ -90,5 +91,9 @@ public class Settings extends Properties {
 
     public void setDriverName(String driverName) {
         setProperty(APPLICATION_SELENIUM_DRIVER_PROP_KEY, driverName);
+    }
+
+    public Integer getRestartDriverCount() {
+        return getAsInteger(RESTART_DRIVER_COUNT_PROP_KEY);
     }
 }

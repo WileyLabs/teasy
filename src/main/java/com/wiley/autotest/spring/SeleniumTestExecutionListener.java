@@ -130,12 +130,15 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
 
         boolean isFFDriver = settings.getDriverName().equals(FIREFOX);
         boolean isRunWithGrid = settings.isRunTestsWithGrid();
+        Integer restartDriverCount = settings.getRestartDriverCount() != null ? settings.getRestartDriverCount() : 0;
 
-        if (count.get() > (settings.getPlatform().equals(ANDROID) ? ANDROID_WEB_DRIVER_NUMBER_OF_TESTS_LIMIT :
-                settings.getDriverName().equals(SAFARI) ? SAFARI_WEB_DRIVER_NUMBER_OF_TESTS_LIMIT :
-                        (settings.getDriverName().equals(IE) || settings.getDriverName().equals(IE9) || settings.getDriverName().equals(IE10)) ? IE_WEB_DRIVER_NUMBER_OF_TESTS_LIMIT :
-                                WEB_DRIVER_NUMBER_OF_TESTS_LIMIT)) {
-            quitWebDriver();
+        if (restartDriverCount > 0) {
+            if (count.get() > (settings.getPlatform().equals(ANDROID) ? ANDROID_WEB_DRIVER_NUMBER_OF_TESTS_LIMIT :
+                    settings.getDriverName().equals(SAFARI) ? SAFARI_WEB_DRIVER_NUMBER_OF_TESTS_LIMIT :
+                            (settings.getDriverName().equals(IE) || settings.getDriverName().equals(IE9) || settings.getDriverName().equals(IE10)) ? IE_WEB_DRIVER_NUMBER_OF_TESTS_LIMIT :
+                                    restartDriverCount)) {
+                quitWebDriver();
+            }
         }
 
         //for set browser from xml parameters
