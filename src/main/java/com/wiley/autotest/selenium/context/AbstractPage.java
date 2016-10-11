@@ -71,20 +71,27 @@ public abstract class AbstractPage<P extends AbstractPage> extends AbstractPageE
         return redirectTo(target);
     }
 
-    public void setBrowserDimensions(int width, int height) {
+    @Step
+    @Report
+    public <P extends AbstractPage> P setBrowserDimensions(int width, int height) {
         Dimension dimension = new Dimension(width, height);
         getDriver().manage().window().setSize(dimension);
+        return (P) this;
     }
 
     public static By getLinkByXpath(String linkText) {
         return By.xpath("//a[text()='" + linkText + "']");
     }
 
+    @Step
+    @Report
     public P waitForDate(DateTimeZone dateTimeZone, DateTime dueDate) {
         waitForAssignmentDate(dateTimeZone, dueDate);
         return (P) this;
     }
 
+    @Step
+    @Report
     public <T extends AbstractPage> T waitForDate(DateTimeZone dateTimeZone, DateTime dueDate, Class<T> target) {
         waitForAssignmentDate(dateTimeZone, dueDate);
         return redirectTo(target);
