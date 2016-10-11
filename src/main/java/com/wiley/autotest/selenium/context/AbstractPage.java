@@ -73,7 +73,7 @@ public abstract class AbstractPage<P extends AbstractPage> extends AbstractPageE
 
     @Step
     @Report
-    public <P extends AbstractPage> P setBrowserDimensions(int width, int height) {
+    public P setBrowserDimensions(int width, int height) {
         Dimension dimension = new Dimension(width, height);
         getDriver().manage().window().setSize(dimension);
         return (P) this;
