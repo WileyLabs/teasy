@@ -1,4 +1,4 @@
-package com.wiley.autotest.selenium.annotations;
+package com.wiley.autotest.annotations;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -7,9 +7,9 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Will wait for element to be present
+ * Will wait for element to become visible
  */
 @Retention(RUNTIME)
 @Target(FIELD)
-public @interface Wait {
+public @interface WaitForVisibility {
 }

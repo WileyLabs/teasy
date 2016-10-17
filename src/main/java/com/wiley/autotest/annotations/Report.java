@@ -1,4 +1,4 @@
-package com.wiley.autotest.selenium.annotations;
+package com.wiley.autotest.annotations;
 
 /**
  * User: abekman

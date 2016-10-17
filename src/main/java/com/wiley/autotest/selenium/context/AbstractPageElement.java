@@ -6,7 +6,7 @@ import com.wiley.autotest.event.postpone.failure.PostponedFailureEvent;
 import com.wiley.autotest.event.postpone.failure.ScreenshotOnPostponeFailureSubscriber;
 import com.wiley.autotest.selenium.ParamsProvider;
 import com.wiley.autotest.selenium.ReportAnnotationsWrapperCreator;
-import com.wiley.autotest.selenium.annotations.Report;
+import com.wiley.autotest.annotations.Report;
 import com.wiley.autotest.selenium.elements.CheckBox;
 import com.wiley.autotest.selenium.extensions.ExtendedFieldDecorator;
 import com.wiley.autotest.selenium.extensions.internal.DefaultElementFactory;
