@@ -128,6 +128,14 @@ public abstract class AbstractSeleniumTest extends AbstractTestNGSpringContextTe
     }
 
     @BeforeMethod(alwaysRun = true)
+    public void setBugId(final Method test) {
+        Bug bugAnnotation = test.getAnnotation(Bug.class);
+        if (bugAnnotation != null){
+            SeleniumHolder.setBugId(bugAnnotation.id());
+        }
+    }
+
+    @BeforeMethod(alwaysRun = true)
     public void doBeforeMethods(final Method test, final ITestContext context) {
         mainWindowHandle.set(getWebDriver().getWindowHandle());
         methodsInvoker.invokeMethodsByAnnotation(this, OurBeforeMethod.class);
@@ -149,6 +157,7 @@ public abstract class AbstractSeleniumTest extends AbstractTestNGSpringContextTe
     public void afterMethod() {
         parameterProvider.clear();
         postponeFailureEvent.unsubscribeAll();
+        SeleniumHolder.setBugId(null);
     }
 
     @AfterMethod(alwaysRun = true)

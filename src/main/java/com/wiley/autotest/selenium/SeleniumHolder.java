@@ -60,6 +60,8 @@ public final class SeleniumHolder {
         driverName.set(value);
     }
 
+    private static final ThreadLocal<String> bugParameter = new ThreadLocal<>();
+
     public static ProxyServer getProxyServer() {
         return proxyServer.get();
     }
@@ -130,5 +132,13 @@ public final class SeleniumHolder {
 
     public static String getMainWindowHandle() {
         return mainWindowHandle.get();
+    }
+
+    public static void setBugId(String bugId) {
+        bugParameter.set(bugId);
+    }
+
+    public static String getBugId() {
+        return bugParameter.get();
     }
 }

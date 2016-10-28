@@ -3,6 +3,7 @@ package com.wiley.autotest.selenium.context;
 import com.wiley.autotest.screenshots.*;
 import com.wiley.autotest.screenshots.imagecomparison.*;
 import com.wiley.autotest.annotations.Report;
+import com.wiley.autotest.selenium.SeleniumHolder;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.openqa.selenium.By;
@@ -119,6 +120,16 @@ public abstract class AbstractPage<P extends AbstractPage> extends AbstractPageE
     @Report
     public P bugInNextStepReportAlert(String bugId) {
         reportWithStep("The next step will fail because of bug with id '" + bugId + "'!");
+        return (P) this;
+    }
+
+    @Step
+    @Report
+    public P bugInNextStepReportAlert() {
+        String bugId = SeleniumHolder.getBugId();
+        if (bugId != null) {
+            reportWithStep("The next step will fail because of bug with id '" + bugId + "'!");
+        }
         return (P) this;
     }
 
