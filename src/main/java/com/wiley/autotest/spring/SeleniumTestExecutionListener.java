@@ -540,7 +540,6 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
     }
 
     private DesiredCapabilities getIEDesiredCapabilities() {
-        InternetExplorerDriverManager.getInstance().setup();
         DesiredCapabilities capabilities = DesiredCapabilities.internetExplorer();
         capabilities.setCapability(InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS, true);
         capabilities.setCapability(InternetExplorerDriver.IE_SWITCHES, "-private");
@@ -562,7 +561,6 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
     }
 
     private DesiredCapabilities getEdgeDesiredCapabilities() {
-        EdgeDriverManager.getInstance().setup();
         DesiredCapabilities capabilities = DesiredCapabilities.edge();
         capabilities.setPlatform(Platform.WINDOWS);
         setAlertBehaviorCapabilities(capabilities);
@@ -571,7 +569,6 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
     }
 
     private DesiredCapabilities getChromeDesiredCapabilities() {
-        ChromeDriverManager.getInstance().setup();
         DesiredCapabilities capabilities = DesiredCapabilities.chrome();
         //Added to avoid yellow warning in chrome 35
         ChromeOptions options = new ChromeOptions();
@@ -665,18 +662,22 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
     }
 
     private WebDriver chrome() {
+        ChromeDriverManager.getInstance().setup();
         return new ChromeDriver(getChromeDesiredCapabilities());
     }
 
     private WebDriver explorer() {
+        InternetExplorerDriverManager.getInstance().setup();
         return new InternetExplorerDriver(getIEDesiredCapabilities());
     }
 
     private WebDriver explorer(String version) {
+        InternetExplorerDriverManager.getInstance().setup();
         return new InternetExplorerDriver(getIEDesiredCapabilities(version));
     }
 
     private WebDriver edge() {
+        EdgeDriverManager.getInstance().setup();
         return new EdgeDriver(getEdgeDesiredCapabilities());
     }
 
