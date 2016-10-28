@@ -18,11 +18,11 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
     private final Function<WebElement, WebElement> toFrameAwareWebElements;
 
     //VE Do we really need a ThreadLocal here? Seems that this is an extra one
-    private ThreadLocal<String> mainWindowHandle = new ThreadLocal<String>();
+    private ThreadLocal<String> mainWindowHandle = new ThreadLocal<>();
 
     public FramesTransparentWebDriver(final WebDriver driver) {
         super(driver);
-        currentFramesPath = new Stack<WebElement>();
+        currentFramesPath = new Stack<>();
         toFrameAwareWebElements = new FrameAwareWebElementTransformer(driver, currentFramesPath);
         mainWindowHandle.set(driver.getWindowHandle());
     }
@@ -37,9 +37,15 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
     public List<WebElement> findElements(final By by) {
         List<WebElement> found = driverFindElements(by);
         if (found.isEmpty()) {
-            switchToDefaultContext();
             currentFramesPath.clear();
-            found = findElementsInFrames(by);
+            List<WebElement> currentFrames = driverFindElements(By.tagName("iframe"));
+            currentFrames.addAll(driverFindElements(By.tagName("frame")));
+            for (final WebElement frame : currentFrames) {
+                switchToDefaultContext();
+                if (switchToFrame(frame)) {
+                    found.addAll(findElementsInFrames(by));
+                }
+            }
         }
 
         return newArrayList(transform(found, toFrameAwareWebElements));
@@ -119,14 +125,14 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
                 switchToMainWindow();
                 return getDriver().findElements(by);
             } catch (Exception e1) {
-                return new ArrayList<WebElement>();
+                return new ArrayList<>();
             }
         } catch (WebDriverException e) {
             //this exception can be thrown if current frame is already detached.
-            return new ArrayList<WebElement>();
+            return new ArrayList<>();
         } catch (Exception e) {
             //In some cases IE driver can throw InvalidSelectorException or NullPointerException
-            return new ArrayList<WebElement>();
+            return new ArrayList<>();
         }
     }
 
