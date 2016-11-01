@@ -276,6 +276,16 @@ public class WebDriverAwareElementFinder implements ElementFinder {
         return waitFor(attributeNotContainsValue(element, attributeName, attributeValue));
     }
 
+    @Override
+    public Boolean waitForElementContainsAttribute(final WebElement element, final String attributeName) {
+        return waitFor(elementHasAttribute(element, attributeName));
+    }
+
+    @Override
+    public Boolean waitForElementNotContainsAttribute(final WebElement element, final String attributeName) {
+        return waitFor(elementDoesNotHaveAttribute(element, attributeName));
+    }
+
     private <T> T waitFor(final ExpectedCondition<T> condition) {
         return wait.until(condition);
     }

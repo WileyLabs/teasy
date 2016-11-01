@@ -54,9 +54,9 @@ public final class ExpectedConditions2 {
      * We don't know the actual window title without switching to one.
      * This method was always used to make sure that the window appeared. After it we switched to appeared window.
      * Switching between windows is rather time consuming operation
-     * <p/>
+     * <p>
      * To avoid the double switching to the window we are switching to window in this method
-     * <p/>
+     * <p>
      * The same approach is applies to all ExpectedConditions for windows
      *
      * @param title - title of window
@@ -293,6 +293,24 @@ public final class ExpectedConditions2 {
             @Override
             public Boolean apply(final WebDriver driver) {
                 return !element.getAttribute(attributeName).contains(attributeValue);
+            }
+        };
+    }
+
+    public static ExpectedCondition<Boolean> elementHasAttribute(final WebElement element, final String attributeName) {
+        return new ExpectedCondition<Boolean>() {
+            @Override
+            public Boolean apply(final WebDriver driver) {
+                return element.getAttribute(attributeName) != null;
+            }
+        };
+    }
+
+    public static ExpectedCondition<Boolean> elementDoesNotHaveAttribute(final WebElement element, final String attributeName) {
+        return new ExpectedCondition<Boolean>() {
+            @Override
+            public Boolean apply(final WebDriver driver) {
+                return element.getAttribute(attributeName) == null;
             }
         };
     }

@@ -815,6 +815,14 @@ public class AbstractElementFinder {
         elementFinder.waitForElementNotContainsAttributeValue(element, attributeName, attributeValue);
     }
 
+    protected final void waitForElementContainsAttribute(final WebElement element, final String attributeName) {
+        elementFinder.waitForElementContainsAttribute(element, attributeName);
+    }
+
+    protected final void waitForElementNotContainsAttribute(final WebElement element, final String attributeName) {
+        elementFinder.waitForElementNotContainsAttribute(element, attributeName);
+    }
+
     /**
      * We catch such exception because actually the browser is shown.
      *

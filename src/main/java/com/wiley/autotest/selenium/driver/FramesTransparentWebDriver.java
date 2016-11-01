@@ -37,23 +37,12 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
     public List<WebElement> findElements(final By by) {
         List<WebElement> found = driverFindElements(by);
         if (found.isEmpty()) {
-            List<WebElement> currentFrames = driverFindElements(By.tagName("iframe"));
-            currentFrames.addAll(driverFindElements(By.tagName("frame")));
-            for (final WebElement frame : currentFrames) {
-                switchToDefaultContext();
-                if (switchToFrame(frame)) {
-                    List<WebElement> elementsInFrames = findElementsInFrames(by);
-                    if (currentFramesPath.isEmpty()) {
-                        currentFramesPath.push(frame);
-                    }
-                    found.addAll(newArrayList(transform(elementsInFrames, toFrameAwareWebElements)));
-                    currentFramesPath.clear();
-                }
-            }
             switchToDefaultContext();
+            currentFramesPath.clear();
+            found = findElementsInFrames(by);
         }
 
-        return found;
+        return newArrayList(transform(found, toFrameAwareWebElements));
     }
 
     @Override
