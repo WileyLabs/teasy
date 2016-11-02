@@ -819,8 +819,16 @@ public class AbstractElementFinder {
         elementFinder.waitForElementContainsAttribute(element, attributeName);
     }
 
+    protected final void waitForElementContainsAttribute(final WebElement element, final String attributeName, long timeout) {
+        elementFinder.waitForElementContainsAttribute(element, attributeName, timeout);
+    }
+
     protected final void waitForElementNotContainsAttribute(final WebElement element, final String attributeName) {
         elementFinder.waitForElementNotContainsAttribute(element, attributeName);
+    }
+
+    protected final void waitForElementNotContainsAttribute(final WebElement element, final String attributeName, long timeout) {
+        elementFinder.waitForElementNotContainsAttribute(element, attributeName, timeout);
     }
 
     /**
