@@ -6,6 +6,7 @@
 
     <groupId>com.wiley</groupId>
     <artifactId>wiley-selenium-base</artifactId>
+    <name>WAT_CORE</name>
     <packaging>jar</packaging>
     <version>2.0.15</version>
 
