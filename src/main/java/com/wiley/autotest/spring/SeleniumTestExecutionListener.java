@@ -196,6 +196,11 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
 
             addShutdownHook(driver, isFFDriver, isRunWithGrid, SeleniumHolder.getNodeIp());
             SeleniumHolder.setWebDriver(driver);
+            Object timeOut = settings.get("click.timeout");
+            if (timeOut != null) {
+                int clickTimeOut = Integer.parseInt(timeOut.toString());
+                SeleniumHolder.setClickTimeOut(clickTimeOut);
+            }
             if (false) {
                 driver.register(new PageValidatorEventListener(getValidator(context)));
             }

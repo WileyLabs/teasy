@@ -102,6 +102,10 @@ public class OurWebElementImpl implements OurWebElement, Locatable {
 
     @Override
     public void click() {
+        Integer clickTimeOut = SeleniumHolder.getClickTimeOut();
+        if (clickTimeOut != null && clickTimeOut > 0){
+            TestUtils.waitForSomeTime(clickTimeOut * 1000);
+        }
         try {
             try {
                 if (isIE()) {

@@ -43,6 +43,8 @@ public final class SeleniumHolder {
     };
     private static final ThreadLocal<SessionId> sessionId = new ThreadLocal<SessionId>();
 
+    private static Integer clickTimeOut = 0;
+
     public static WebDriver getWebDriver() {
         return driverHolder.get();
     }
@@ -140,5 +142,13 @@ public final class SeleniumHolder {
 
     public static String getBugId() {
         return bugParameter.get();
+    }
+
+    public static void setClickTimeOut(int clickTimeOut){
+        SeleniumHolder.clickTimeOut = clickTimeOut;
+    }
+
+    public static Integer getClickTimeOut(){
+        return clickTimeOut;
     }
 }
