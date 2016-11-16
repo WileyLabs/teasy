@@ -113,7 +113,6 @@ public class MethodsInvoker {
                         //default body is empty, for @LoginAs and @LoginTo only (E4 projects)
                         testInstance.updateLoginData(method);
                         invokeMethod(testInstance, method, context, isBeforeAfterGroup);
-                        cookiesService.deleteAllCookies();
                     }
                 }
             }
@@ -271,7 +270,6 @@ public class MethodsInvoker {
             }
         } finally {
             if (isFFDriver.get() && SeleniumHolder.getDriverName().equals(FIREFOX)) {
-                SeleniumHolder.getWebDriver().manage().deleteAllCookies();
                 SeleniumHolder.getWebDriver().quit();
             }
             SeleniumHolder.setDriverName(mainDriverName);
