@@ -104,7 +104,7 @@ public class OurWebElementImpl implements OurWebElement, Locatable {
     public void click() {
         Integer clickTimeOut = SeleniumHolder.getClickTimeOut();
         if (clickTimeOut != null && clickTimeOut > 0){
-            TestUtils.waitForSomeTime(clickTimeOut * 1000);
+            TestUtils.waitForSomeTime(clickTimeOut);
         }
         try {
             try {
