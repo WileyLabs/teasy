@@ -7,10 +7,14 @@ import com.wiley.autotest.selenium.driver.events.listeners.ScreenshotWebDriverEv
  */
 
 public interface ScreenshotHelper {
+
     int MAX_FOLDER_NAME_LENGTH = 224;
 
     ScreenshotWebDriverEventListener getScreenshotWebDriverEventListener();
+
     String getScreenshotPath();
+
     String getComparativePath();
+
     int nextPass();
 }

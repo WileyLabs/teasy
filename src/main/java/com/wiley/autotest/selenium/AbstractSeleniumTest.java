@@ -1,16 +1,21 @@
 package com.wiley.autotest.selenium;
 
+import com.wiley.autotest.annotations.*;
 import com.wiley.autotest.event.postpone.failure.BeforeAfterGroupFailureEvent;
 import com.wiley.autotest.event.postpone.failure.PostponedFailureEvent;
 import com.wiley.autotest.event.postpone.failure.ScreenshotOnPostponeFailureSubscriber;
 import com.wiley.autotest.event.postpone.failure.StorePostponeFailureSubscriber;
+import com.wiley.autotest.listeners.ProcessPostponedFailureListener;
+import com.wiley.autotest.listeners.SkipTestsListener;
 import com.wiley.autotest.screenshots.Screenshoter;
 import com.wiley.autotest.selenium.context.HelperRegistry;
 import com.wiley.autotest.selenium.context.IPage;
 import com.wiley.autotest.selenium.context.ScreenshotHelper;
 import com.wiley.autotest.selenium.driver.events.listeners.ScreenshotWebDriverEventListener;
-import com.wiley.autotest.spring.Settings;
+import com.wiley.autotest.services.CookiesService;
+import com.wiley.autotest.services.MethodsInvoker;
 import com.wiley.autotest.spring.SeleniumTestExecutionListener;
+import com.wiley.autotest.spring.Settings;
 import com.wiley.autotest.utils.JavaUtils;
 import com.wiley.autotest.utils.TestUtils;
 import net.lightbody.bmp.proxy.ProxyServer;
@@ -40,9 +45,16 @@ import static org.testng.Reporter.log;
 
 @TestExecutionListeners(SeleniumTestExecutionListener.class)
 @ContextConfiguration(locations = {
-        "classpath*:/META-INF/spring/context-selenium.xml"
+        "classpath*:/META-INF/spring/context-selenium.xml",
+        "classpath*:/META-INF/spring/component-scan.xml"
+})
+@Listeners({
+        ProcessPostponedFailureListener.class,
+        SkipTestsListener.class
 })
 public abstract class AbstractSeleniumTest extends AbstractTestNGSpringContextTests implements ITest, ScreenshotHelper {
+
+    public static final Logger LOGGER = LoggerFactory.getLogger(AbstractSeleniumTest.class);
 
     @Autowired
     private HelperRegistry registry;
@@ -62,15 +74,16 @@ public abstract class AbstractSeleniumTest extends AbstractTestNGSpringContextTe
     @Autowired
     private BeforeAfterGroupFailureEvent beforeAfterGroupFailureEvent;
 
+    @Autowired
+    protected CookiesService cookiesService;
+
+    protected MethodsInvoker methodsInvoker;
+
     private ScreenshotWebDriverEventListener screenshotWebDriverEventListener;
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(AbstractSeleniumTest.class);
+    private ThreadLocal<Throwable> stopTextExecutionThrowableHolder = new ThreadLocal<>();
 
-    private ThreadLocal<Throwable> stopTextExecutionThrowableHolder = new ThreadLocal<Throwable>();
-
-    public ParamsProvider getParameterProviderForGroup() {
-        return parameterProviderForGroup;
-    }
+    public ThreadLocal<String> mainWindowHandle = new ThreadLocal<>();
 
     private String testName = "";
 
@@ -81,46 +94,119 @@ public abstract class AbstractSeleniumTest extends AbstractTestNGSpringContextTe
         return testName;
     }
 
+    @Autowired
+    public void setMethodsInvoker(MethodsInvoker methodsInvokerValue) {
+        this.methodsInvoker = methodsInvokerValue;
+    }
+
+    @BeforeSuite(alwaysRun = true)
+    public void beforeSuite(final ITestContext context) {
+        if (methodsInvoker == null) {
+            new MethodsInvoker().invokeSuiteMethodsByAnnotation(OurBeforeSuite.class, context, this.getClass());
+        } else {
+            methodsInvoker.invokeSuiteMethodsByAnnotation(OurBeforeSuite.class, context, this.getClass());
+        }
+    }
+
     @BeforeClass(alwaysRun = true)
     public void initScreenshotWebDriverEventListener() {
         screenshotWebDriverEventListener = new ScreenshotWebDriverEventListener();
         ((EventFiringWebDriver) getWebDriver()).register(screenshotWebDriverEventListener);
     }
 
+    @BeforeClass(alwaysRun = true)
+    public void doBeforeClassMethods() {
+        methodsInvoker.invokeMethodsByAnnotation(this, OurBeforeClass.class);
+    }
+
     @BeforeMethod(alwaysRun = true)
-    public final void beforeMethod(final Method test, final Object[] params, final ITestContext context) {
+    public void beforeMethod(final Method test, final Object[] params, final ITestContext context) {
         testName = TestUtils.getTestName(test);
         postponeFailureEvent.subscribe(new ScreenshotOnPostponeFailureSubscriber(testName));
         postponeFailureEvent.subscribe(new StorePostponeFailureSubscriber(context, testName));
         passCounter = 0;
     }
 
-    @AfterMethod(alwaysRun = true)
-    public final void afterMethod() {
-        parameterProvider.clear();
-        postponeFailureEvent.unsubscribeAll();
+    @BeforeMethod(alwaysRun = true)
+    public void setBugId(final Method test) {
+        Bug bugAnnotation = test.getAnnotation(Bug.class);
+        if (bugAnnotation != null){
+            SeleniumHolder.setBugId(bugAnnotation.id());
+        }
     }
 
-//    @BeforeMethod(alwaysRun = true)
-//    public final void setTestLinkInfo(final ITestContext context) {
-//        context.setAttribute("testLinkInfo", testLinkInfo);
-//    }
-
-    public void addSubscribersForBeforeAfterGroupFailureEvents(ITestContext context) {
-        beforeAfterGroupFailureEvent.subscribe(new ScreenshotOnPostponeFailureSubscriber("E4BeforeGroups"));
-        beforeAfterGroupFailureEvent.subscribe(new StorePostponeFailureSubscriber(context, "E4BeforeGroups"));
+    @BeforeMethod(alwaysRun = true)
+    public void doBeforeMethods(final Method test, final ITestContext context) {
+        mainWindowHandle.set(getWebDriver().getWindowHandle());
+        methodsInvoker.invokeMethodsByAnnotation(this, OurBeforeMethod.class);
     }
 
     @BeforeTest(alwaysRun = true)
     @Parameters("browser")
-    public final void setBrowserForGrid(@Optional("browser") String browser) {
+    public void setBrowserForGrid(@Optional("browser") String browser) {
         SeleniumHolder.setParameterBrowserName(browser);
     }
 
     @BeforeTest(alwaysRun = true)
     @Parameters("platform")
-    public final void setPlatformForGrid(@Optional("platform") String platform) {
+    public void setPlatformForGrid(@Optional("platform") String platform) {
         SeleniumHolder.setParameterPlatformName(platform);
+    }
+
+    @AfterMethod(alwaysRun = true)
+    public void afterMethod() {
+        parameterProvider.clear();
+        postponeFailureEvent.unsubscribeAll();
+        SeleniumHolder.setBugId(null);
+    }
+
+    @AfterMethod(alwaysRun = true)
+    public void doAfterMethods() {
+        cookiesService.deleteAllCookies();
+        methodsInvoker.invokeMethodsByAnnotation(this, OurAfterMethod.class);
+    }
+
+    @AfterClass(alwaysRun = true)
+    public void doAfterClassMethods() {
+        methodsInvoker.invokeMethodsByAnnotation(this, OurAfterClass.class);
+    }
+
+    @AfterSuite(alwaysRun = true)
+    public void afterSuite(final ITestContext context) {
+        if (methodsInvoker == null) {
+            new MethodsInvoker().invokeSuiteMethodsByAnnotation(OurAfterSuite.class, context, this.getClass());
+        } else {
+            methodsInvoker.invokeSuiteMethodsByAnnotation(OurAfterSuite.class, context, this.getClass());
+        }
+    }
+
+    @BeforeGroups
+    public void doBeforeGroups(final ITestContext context) {
+        if (methodsInvoker == null) {
+            new MethodsInvoker().invokeGroupMethodsByAnnotation(OurBeforeGroups.class, context, this.getClass());
+        } else {
+            methodsInvoker.invokeGroupMethodsByAnnotation(OurBeforeGroups.class, context, this.getClass());
+        }
+    }
+
+    @AfterGroups
+    public void doAfterGroups(final ITestContext context) {
+        if (methodsInvoker == null) {
+            new MethodsInvoker().invokeGroupMethodsByAnnotation(OurAfterGroups.class, context, this.getClass());
+        } else {
+            methodsInvoker.invokeGroupMethodsByAnnotation(OurAfterGroups.class, context, this.getClass());
+        }
+        if (getParameterProviderForGroup() != null) {
+            getParameterProviderForGroup().clear();
+        }
+    }
+
+    public void updateLoginData(final Method test) {
+    }
+
+    public void addSubscribersForBeforeAfterGroupFailureEvents(ITestContext context) {
+        beforeAfterGroupFailureEvent.subscribe(new ScreenshotOnPostponeFailureSubscriber("OurBeforeGroups"));
+        beforeAfterGroupFailureEvent.subscribe(new StorePostponeFailureSubscriber(context, "OurBeforeGroups"));
     }
 
     public <E extends IPage> E getPage(final Class<E> helperClass) {
@@ -145,6 +231,10 @@ public abstract class AbstractSeleniumTest extends AbstractTestNGSpringContextTe
 
     protected final Object getParameterForGroup(final String key) {
         return parameterProviderForGroup.get(TestUtils.modifyKeyForCurrentThread(key));
+    }
+
+    public ParamsProvider getParameterProviderForGroup() {
+        return parameterProviderForGroup;
     }
 
     protected void setParameter(final String key, final Object value) {
@@ -254,5 +344,15 @@ public abstract class AbstractSeleniumTest extends AbstractTestNGSpringContextTe
     @Override
     public ScreenshotWebDriverEventListener getScreenshotWebDriverEventListener() {
         return screenshotWebDriverEventListener;
+    }
+
+    public Method getTestMethod() {
+        Method[] methods = this.getClass().getDeclaredMethods();
+        for (Method method : methods) {
+            if (method.getAnnotation(Test.class) != null) {
+                return method;
+            }
+        }
+        return null;
     }
 }

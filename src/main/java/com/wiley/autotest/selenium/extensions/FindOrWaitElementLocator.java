@@ -1,8 +1,8 @@
 package com.wiley.autotest.selenium.extensions;
 
 import com.google.common.base.Function;
-import com.wiley.autotest.selenium.annotations.ErrorMessage;
-import com.wiley.autotest.selenium.annotations.WaitForVisibility;
+import com.wiley.autotest.annotations.ErrorMessage;
+import com.wiley.autotest.annotations.WaitForVisibility;
 import com.wiley.autotest.selenium.elements.upgrade.OurWebElementImpl;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.pagefactory.Annotations;
@@ -79,7 +79,7 @@ public class FindOrWaitElementLocator implements ElementLocator {
     }
 
     private void initConditionForWaitAnnotations(final Field field) {
-        if (field.isAnnotationPresent(com.wiley.autotest.selenium.annotations.Wait.class)) {
+        if (field.isAnnotationPresent(com.wiley.autotest.annotations.Wait.class)) {
             condition = new Function<SearchContext, List<WebElement>>() {
                 @Override
                 public List<WebElement> apply(SearchContext context) {

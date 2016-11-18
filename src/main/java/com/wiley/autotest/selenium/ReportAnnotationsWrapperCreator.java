@@ -5,7 +5,7 @@
  */
 package com.wiley.autotest.selenium;
 
-import com.wiley.autotest.selenium.annotations.Report;
+import com.wiley.autotest.annotations.Report;
 import com.wiley.autotest.selenium.context.AbstractPageElement;
 import com.wiley.autotest.utils.StringUtils;
 import net.sf.cglib.proxy.Enhancer;

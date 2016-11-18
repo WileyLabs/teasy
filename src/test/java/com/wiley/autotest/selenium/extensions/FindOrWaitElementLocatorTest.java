@@ -1,6 +1,6 @@
 package com.wiley.autotest.selenium.extensions;
 
-import com.wiley.autotest.selenium.annotations.Wait;
+import com.wiley.autotest.annotations.Wait;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.openqa.selenium.By;

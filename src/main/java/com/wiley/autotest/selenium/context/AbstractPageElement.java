@@ -6,7 +6,7 @@ import com.wiley.autotest.event.postpone.failure.PostponedFailureEvent;
 import com.wiley.autotest.event.postpone.failure.ScreenshotOnPostponeFailureSubscriber;
 import com.wiley.autotest.selenium.ParamsProvider;
 import com.wiley.autotest.selenium.ReportAnnotationsWrapperCreator;
-import com.wiley.autotest.selenium.annotations.Report;
+import com.wiley.autotest.annotations.Report;
 import com.wiley.autotest.selenium.elements.CheckBox;
 import com.wiley.autotest.selenium.extensions.ExtendedFieldDecorator;
 import com.wiley.autotest.selenium.extensions.internal.DefaultElementFactory;
@@ -41,7 +41,8 @@ import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementImpl.wra
  */
 public abstract class AbstractPageElement<P extends AbstractPageElement> extends AbstractElementFinder implements IPageElement, ErrorSender {
 
-    public static final int TIMEOUT_TO_WAIT_FOR_ABSENCE_OF_ELEMENT = 2;
+    public static final int TIMEOUT_TO_WAIT_FOR_WINDOW = 2;
+    public static final int TIMEOUT_TO_WAIT_FOR_ABSENCE_OF_ELEMENT = 2000;
     //VE added this to avoid No buffer space available exception. To be replaced with default value of 500 if does not work.
     private static final long SLEEP_IN_MILLISECONDS = 1000;
     private static final String DIGITS_WITHIN_PARENTHESIS = "\\(\\d+";
@@ -382,7 +383,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
 
     protected boolean isWindowDisplayedByPartialUrl(String partialUrl) {
         try {
-            waitForWindowToBeAppearedByPartialUrlAndSwitchToIt(partialUrl, TIMEOUT_TO_WAIT_FOR_ABSENCE_OF_ELEMENT);
+            waitForWindowToBeAppearedByPartialUrlAndSwitchToIt(partialUrl, TIMEOUT_TO_WAIT_FOR_WINDOW);
             return true;
         } catch (WebDriverException e) {
             return false;

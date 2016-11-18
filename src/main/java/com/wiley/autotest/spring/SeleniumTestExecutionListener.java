@@ -10,9 +10,12 @@ import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
 import com.wiley.autotest.selenium.driver.events.listeners.PageValidatorEventListener;
 import com.wiley.autotest.utils.TestUtils;
 import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.android.AndroidDriver;
+import io.github.bonigarcia.wdm.ChromeDriverManager;
+import io.github.bonigarcia.wdm.EdgeDriverManager;
+import io.github.bonigarcia.wdm.InternetExplorerDriverManager;
 import net.lightbody.bmp.proxy.ProxyServer;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.SystemUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -28,6 +31,7 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.firefox.internal.ProfilesIni;
@@ -42,7 +46,6 @@ import org.springframework.test.context.TestContext;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
@@ -52,10 +55,10 @@ import java.util.Arrays;
 import static com.wiley.autotest.selenium.SeleniumHolder.*;
 
 public class SeleniumTestExecutionListener extends AbstractTestExecutionListener {
+
     private static final String EXTENSIONS_FIREBUG_XPI_PATH = "/extensions/firebug.xpi";
     private static final String EXTENSIONS_NET_EXPORT_XPI_PATH = "/extensions/netExport.xpi";
     private static final String EXTENSIONS_FIRE_STARTER_XPI_PATH = "/extensions/fireStarter.xpi";
-    private static final int WEB_DRIVER_NUMBER_OF_TESTS_LIMIT = 3;
     private static final int ANDROID_WEB_DRIVER_NUMBER_OF_TESTS_LIMIT = 5;
     private static final int IE_WEB_DRIVER_NUMBER_OF_TESTS_LIMIT = 5;
     private static final int SAFARI_WEB_DRIVER_NUMBER_OF_TESTS_LIMIT = 1;
@@ -63,6 +66,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
     private static final String CHROME = "chrome";
     private static final String SAFARI = "safari";
     private static final String IE = "ie";
+    private static final String EDGE = "edge";
     private static final String IE11 = "ie11";
     private static final String IE10 = "ie10";
     private static final String IE9 = "ie9";
@@ -75,7 +79,6 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
     private static ProxyServer proxyServer;
     private static final Object SYNC_OBJECT = new Object();
 
-    private static ThreadLocal<Integer> socketTimeoutHolder = new ThreadLocal<Integer>();
     private static ThreadLocal<Integer> count = new ThreadLocal<Integer>() {
         @Override
         protected Integer initialValue() {
@@ -129,12 +132,15 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
 
         boolean isFFDriver = settings.getDriverName().equals(FIREFOX);
         boolean isRunWithGrid = settings.isRunTestsWithGrid();
+        Integer restartDriverCount = settings.getRestartDriverCount() != null ? settings.getRestartDriverCount() : 0;
 
-        if (count.get() > (settings.getPlatform().equals(ANDROID) ? ANDROID_WEB_DRIVER_NUMBER_OF_TESTS_LIMIT :
-                settings.getDriverName().equals(SAFARI) ? SAFARI_WEB_DRIVER_NUMBER_OF_TESTS_LIMIT :
-                        (settings.getDriverName().equals(IE) || settings.getDriverName().equals(IE9) || settings.getDriverName().equals(IE10)) ? IE_WEB_DRIVER_NUMBER_OF_TESTS_LIMIT :
-                                WEB_DRIVER_NUMBER_OF_TESTS_LIMIT)) {
-            quitWebDriver();
+        if (restartDriverCount > 0) {
+            if (count.get() > (settings.getPlatform().equals(ANDROID) ? ANDROID_WEB_DRIVER_NUMBER_OF_TESTS_LIMIT :
+                    settings.getDriverName().equals(SAFARI) ? SAFARI_WEB_DRIVER_NUMBER_OF_TESTS_LIMIT :
+                            (settings.getDriverName().equals(IE) || settings.getDriverName().equals(IE9) || settings.getDriverName().equals(IE10)) ? IE_WEB_DRIVER_NUMBER_OF_TESTS_LIMIT :
+                                    restartDriverCount)) {
+                quitWebDriver();
+            }
         }
 
         //for set browser from xml parameters
@@ -282,11 +288,6 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         }
     }
 
-
-    public static int getSocketTimeout() {
-        return socketTimeoutHolder.get();
-    }
-
     private boolean isPortAvailable(int port) {
         try {
             ServerSocket srv = new ServerSocket(port);
@@ -399,6 +400,10 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
                     desiredCapabilities = getIEDesiredCapabilities("9");
                     SeleniumHolder.setDriverName(IE9);
                     SeleniumHolder.setPlatform(WINDOWS);
+                } else if (StringUtils.equalsIgnoreCase(browserName, EDGE)) {
+                    desiredCapabilities = getEdgeDesiredCapabilities();
+                    SeleniumHolder.setDriverName(EDGE);
+                    SeleniumHolder.setPlatform(WINDOWS);
                 } else if (StringUtils.equalsIgnoreCase(browserName, FIREFOX)) {
                     desiredCapabilities = getFireFoxDesiredCapabilities(settings);
                     SeleniumHolder.setDriverName(FIREFOX);
@@ -411,7 +416,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
                     desiredCapabilities = getAndroidChromeDesiredCapabilities();
                     SeleniumHolder.setDriverName(CHROME);
                     SeleniumHolder.setPlatform(ANDROID);
-                    AppiumDriver remoteWebDriver = new AppiumDriver(new URL(settings.getGridHubUrl()), desiredCapabilities);
+                    AppiumDriver remoteWebDriver = new AndroidDriver(new URL(settings.getGridHubUrl()), desiredCapabilities);
                     remoteWebDriver.setFileDetector(new LocalFileDetector());
                     return remoteWebDriver;
                 } else {
@@ -469,6 +474,10 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
                 SeleniumHolder.setDriverName(IE);
                 SeleniumHolder.setPlatform(WINDOWS);
                 return explorer();
+            } else if (StringUtils.equalsIgnoreCase(browserName, EDGE)) {
+                SeleniumHolder.setDriverName(EDGE);
+                SeleniumHolder.setPlatform(WINDOWS);
+                return edge();
             } else if (StringUtils.equalsIgnoreCase(browserName, IE10)) {
                 SeleniumHolder.setDriverName(IE10);
                 SeleniumHolder.setPlatform(WINDOWS);
@@ -491,7 +500,6 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setCapability("deviceName", "Android");
         capabilities.setCapability("platformName", "Android");
-        capabilities.setCapability("app", "Chrome");
         capabilities.setCapability("newCommandTimeout", "900");
         capabilities.setPlatform(Platform.ANDROID);
         capabilities.setCapability(CapabilityType.BROWSER_NAME, CHROME);
@@ -552,6 +560,14 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         return capabilities;
     }
 
+    private DesiredCapabilities getEdgeDesiredCapabilities() {
+        DesiredCapabilities capabilities = DesiredCapabilities.edge();
+        capabilities.setPlatform(Platform.WINDOWS);
+        setAlertBehaviorCapabilities(capabilities);
+        setProxy(capabilities);
+        return capabilities;
+    }
+
     private DesiredCapabilities getChromeDesiredCapabilities() {
         DesiredCapabilities capabilities = DesiredCapabilities.chrome();
         //Added to avoid yellow warning in chrome 35
@@ -559,7 +575,6 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
 //        options.addArguments("test-type");
         //For view pdf in chrome
         options.setExperimentalOption("excludeSwitches", Arrays.asList("test-type", "ignore-certificate-errors"));
-        capabilities.setCapability("chrome.binary", "/drivers/chromedriver.exe");
         capabilities.setCapability(ChromeOptions.CAPABILITY, options);
         capabilities.setPlatform(Platform.WINDOWS);
         setAlertBehaviorCapabilities(capabilities);
@@ -647,51 +662,23 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
     }
 
     private WebDriver chrome() {
-        if (SystemUtils.IS_OS_WINDOWS) {
-            URL chromeDriverResource = getClass().getResource("/drivers/chromedriver.exe");
-            if (chromeDriverResource != null && new File(chromeDriverResource.getFile()).exists()) {
-                System.setProperty("webdriver.chrome.driver", chromeDriverResource.getFile());
-            } else {
-                System.setProperty("webdriver.chrome.driver", "D:\\Selenium\\chromedriver.exe");
-            }
-        } else if (SystemUtils.IS_OS_MAC) {
-            URL chromeDriverResource = getClass().getResource("/drivers/chromedriver_mac");
-            File chromeDriver = new File(chromeDriverResource.getPath().replace("%20", " "));
-            if (!chromeDriver.canExecute()) {
-                chromeDriver.setExecutable(true);
-            }
-            System.setProperty("webdriver.chrome.driver", chromeDriver.getAbsolutePath());
-        } else if (SystemUtils.IS_OS_LINUX) {
-            URL chromeDriverResource;
-            if (System.getProperty("os.arch").contains("64")) {
-                chromeDriverResource = getClass().getResource("/drivers/chromedriver_linux_64");
-                System.setProperty("webdriver.chrome.driver", chromeDriverResource.getFile());
-            } else {
-                chromeDriverResource = getClass().getResource("/drivers/chromedriver_linux_32");
-            }
-            System.setProperty("webdriver.chrome.driver", chromeDriverResource.getFile());
-        }
+        ChromeDriverManager.getInstance().setup();
         return new ChromeDriver(getChromeDesiredCapabilities());
     }
 
     private WebDriver explorer() {
-        URL ieDriverResource = getClass().getResource("/drivers/IEDriverServer.exe");
-        if (ieDriverResource != null && new File(ieDriverResource.getFile()).exists()) {
-            System.setProperty("webdriver.ie.driver", ieDriverResource.getFile());
-        } else {
-            System.setProperty("webdriver.ie.driver", "D:\\Selenium\\IEDriverServer.exe");
-        }
+        InternetExplorerDriverManager.getInstance().setup();
         return new InternetExplorerDriver(getIEDesiredCapabilities());
     }
 
     private WebDriver explorer(String version) {
-        URL ieDriverResource = getClass().getResource("/drivers/IEDriverServer.exe");
-        if (ieDriverResource != null && new File(ieDriverResource.getFile()).exists()) {
-            System.setProperty("webdriver.ie.driver", ieDriverResource.getFile());
-        } else {
-            System.setProperty("webdriver.ie.driver", "D:\\Selenium\\IEDriverServer.exe");
-        }
+        InternetExplorerDriverManager.getInstance().setup();
         return new InternetExplorerDriver(getIEDesiredCapabilities(version));
+    }
+
+    private WebDriver edge() {
+        EdgeDriverManager.getInstance().setup();
+        return new EdgeDriver(getEdgeDesiredCapabilities());
     }
 
     private WebDriver safari() {
@@ -723,7 +710,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
 
     /**
      * https://code.google.com/p/selenium/issues/detail?id=7506
-     * <p/>
+     * <p>
      * Special methods to kill plugin-container for FF only.
      * This error appears when test has flash and browser window was closed.
      */
