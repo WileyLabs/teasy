@@ -499,7 +499,11 @@ public class OurWebElement implements IOurWebElement, Locatable {
         } catch (UndeclaredThrowableException e) {
             //This checks for findElementByNoThrow, otherwise we call againLocate
             if (((InvocationTargetException) e.getUndeclaredThrowable()).getTargetException() instanceof NoSuchElementException) {
-                return wrappedElement.findElement(by);
+                try {
+                    return wrappedElement.findElement(by);
+                } catch (UndeclaredThrowableException noSuchElementException) {
+                    throw new NoSuchElementException("Unable to locate element " + by.toString() + ", Exception - " + ((InvocationTargetException) e.getUndeclaredThrowable()).getTargetException().getMessage());
+                }
             }
             againLocate();
             return find(by);
