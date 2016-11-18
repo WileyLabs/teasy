@@ -1,6 +1,6 @@
 package com.wiley.autotest.selenium.driver;
 
-import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
+import com.wiley.autotest.selenium.elements.upgrade.IOurWebElement;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.HasInputDevices;
 import org.openqa.selenium.interactions.Keyboard;
@@ -36,8 +36,8 @@ public abstract class WebDriverDecorator implements WebDriver, JavascriptExecuto
 
     private void castToOurWebElement(Object[] args) {
         for (int i = 0; i < args.length; i++) {
-            if (args[i] instanceof OurWebElement) {
-                args[i] = ((OurWebElement) args[i]).getWrappedWebElement();
+            if (args[i] instanceof IOurWebElement) {
+                args[i] = ((IOurWebElement) args[i]).getWrappedWebElement();
             }
         }
     }

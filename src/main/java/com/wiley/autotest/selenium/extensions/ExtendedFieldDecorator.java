@@ -4,7 +4,7 @@ import com.wiley.autotest.selenium.context.ErrorSender;
 import com.wiley.autotest.selenium.elements.DoNotSearch;
 import com.wiley.autotest.selenium.elements.Element;
 import com.wiley.autotest.selenium.elements.WebContainer;
-import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
+import com.wiley.autotest.selenium.elements.upgrade.IOurWebElement;
 import com.wiley.autotest.selenium.extensions.internal.ExtendedLocatingElementHandler;
 import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebElement;
@@ -123,7 +123,7 @@ public class ExtendedFieldDecorator extends DefaultFieldDecorator {
         InvocationHandler handler = new LocatingElementHandler(locator);
 
         WebElement proxy;
-        proxy = (WebElement) Proxy.newProxyInstance(loader, new Class[]{OurWebElement.class, WrapsElement.class, Locatable.class}, handler);
+        proxy = (WebElement) Proxy.newProxyInstance(loader, new Class[]{IOurWebElement.class, WrapsElement.class, Locatable.class}, handler);
         return proxy;
     }
 }

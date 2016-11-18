@@ -178,10 +178,10 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
                 //TODO VE remove this sleep when the issue become clear
                 if (driverRestartCount.get() < 5) {
                     TestUtils.waitForSomeTime(5000);
-                    LOGGER.error("*****Try to create driver, count - " + driverRestartCount.get() + " *****");
+                    LOGGER.error("*****Try to wrap driver, count - " + driverRestartCount.get() + " *****");
                     prepareTestInstance(context);
                 } else {
-                    throw new WebDriverException("*****Unable to create driver after " + driverRestartCount.get() + " attempts!***** " + t.getMessage(), t);
+                    throw new WebDriverException("*****Unable to wrap driver after " + driverRestartCount.get() + " attempts!***** " + t.getMessage(), t);
                 }
             }
 
@@ -196,11 +196,14 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
 
             addShutdownHook(driver, isFFDriver, isRunWithGrid, SeleniumHolder.getNodeIp());
             SeleniumHolder.setWebDriver(driver);
-            Object timeOut = settings.get("click.timeout");
-            if (timeOut != null) {
-                int clickTimeOut = Integer.parseInt(timeOut.toString());
-                SeleniumHolder.setClickTimeOut(clickTimeOut);
+
+            String classFromSettings = settings.getProperty("our.webelement.class");
+            if (classFromSettings != null && !classFromSettings.isEmpty()) {
+                SeleniumHolder.setOurWebElementClass(classFromSettings);
+            } else {
+                SeleniumHolder.setOurWebElementClass("com.wiley.autotest.selenium.elements.upgrade.OurWebElement");
             }
+
             if (false) {
                 driver.register(new PageValidatorEventListener(getValidator(context)));
             }

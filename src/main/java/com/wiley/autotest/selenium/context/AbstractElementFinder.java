@@ -17,7 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementImpl.wrap;
+import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrap;
+import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrapList;
 
 /**
  * Created by IntelliJ IDEA.
@@ -552,7 +553,7 @@ public class AbstractElementFinder {
      * then deprecated annotation will be removed
      */
     protected final List<WebElement> findElementsBy(final By locator) {
-        return wrap(elementFinder.findElementsBy(locator), locator);
+        return wrapList(elementFinder.findElementsBy(locator), locator);
     }
 
     protected final void waitForWindowToBeAppearedAndSwitchToIt(final String title) {
@@ -653,13 +654,13 @@ public class AbstractElementFinder {
 
     @Deprecated
     protected List<WebElement> waitForPresenceOfAllElementsLocatedBy(final By locator) {
-        return wrap(elementFinder.waitForPresenceOfAllElementsLocatedBy(locator), locator);
+        return wrapList(elementFinder.waitForPresenceOfAllElementsLocatedBy(locator), locator);
     }
 
     @Deprecated
     protected final List<WebElement> waitForPresenceOfAllElementsLocatedBy(final By locator, long timeoutInSec) {
         try {
-            return wrap(elementFinder.waitForPresenceOfAllElementsLocatedBy(locator, timeoutInSec), locator);
+            return wrapList(elementFinder.waitForPresenceOfAllElementsLocatedBy(locator, timeoutInSec), locator);
         } catch (TimeoutException ignored) {
             return new ArrayList<WebElement>();
         }
@@ -704,7 +705,7 @@ public class AbstractElementFinder {
     }
 
     private List<WebElement> waitForVisibilityOfAllElementsLocatedBy(final By locator) {
-        return wrap(elementFinder.waitForVisibilityOfAllElementsLocatedBy(locator), locator);
+        return wrapList(elementFinder.waitForVisibilityOfAllElementsLocatedBy(locator), locator);
     }
 
     @Deprecated

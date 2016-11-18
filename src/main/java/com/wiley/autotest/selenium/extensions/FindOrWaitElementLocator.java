@@ -3,7 +3,6 @@ package com.wiley.autotest.selenium.extensions;
 import com.google.common.base.Function;
 import com.wiley.autotest.annotations.ErrorMessage;
 import com.wiley.autotest.annotations.WaitForVisibility;
-import com.wiley.autotest.selenium.elements.upgrade.OurWebElementImpl;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.pagefactory.Annotations;
 import org.openqa.selenium.support.pagefactory.ElementLocator;
@@ -15,6 +14,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrapList;
 import static java.util.Collections.emptyList;
 import static org.apache.commons.collections.CollectionUtils.isEmpty;
 import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
@@ -68,7 +68,7 @@ public class FindOrWaitElementLocator implements ElementLocator {
     @Override
     public List<WebElement> findElements() {
         try {
-            return OurWebElementImpl.wrap(wait.until(condition), by);
+            return wrapList(wait.until(condition), by);
         } catch (TimeoutException e) {
             return emptyList();
         }

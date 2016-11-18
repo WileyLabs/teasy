@@ -17,8 +17,8 @@ public final class SeleniumHolder {
     }
 
     private static String browser;
-    private static final ThreadLocal<WebDriver> driverHolder = new ThreadLocal<WebDriver>();
-    private static final ThreadLocal<String> driverName = new ThreadLocal<String>();
+    private static final ThreadLocal<WebDriver> driverHolder = new ThreadLocal<>();
+    private static final ThreadLocal<String> driverName = new ThreadLocal<>();
     private static final ThreadLocal<String> parameterBrowserName = new ThreadLocal<String>() {
         @Override
         protected String initialValue() {
@@ -31,19 +31,19 @@ public final class SeleniumHolder {
             return "platform";
         }
     };
-    private static final ThreadLocal<ProxyServer> proxyServer = new ThreadLocal<ProxyServer>();
-    private static final ThreadLocal<Proxy> proxy = new ThreadLocal<Proxy>();
-    private static final ThreadLocal<String> platform = new ThreadLocal<String>();
-    private static final ThreadLocal<String> mainWindowHandle = new ThreadLocal<String>();
+    private static final ThreadLocal<ProxyServer> proxyServer = new ThreadLocal<>();
+    private static final ThreadLocal<Proxy> proxy = new ThreadLocal<>();
+    private static final ThreadLocal<String> platform = new ThreadLocal<>();
+    private static final ThreadLocal<String> mainWindowHandle = new ThreadLocal<>();
     private static final ThreadLocal<String> nodeIp = new ThreadLocal<String>() {
         @Override
         protected String initialValue() {
             return "localhost";
         }
     };
-    private static final ThreadLocal<SessionId> sessionId = new ThreadLocal<SessionId>();
+    private static final ThreadLocal<SessionId> sessionId = new ThreadLocal<>();
 
-    private static Integer clickTimeOut = 0;
+    private static String ourWebElementClass;
 
     public static WebDriver getWebDriver() {
         return driverHolder.get();
@@ -144,11 +144,11 @@ public final class SeleniumHolder {
         return bugParameter.get();
     }
 
-    public static void setClickTimeOut(int clickTimeOut){
-        SeleniumHolder.clickTimeOut = clickTimeOut;
+    public static String getOurWebElementClass() {
+        return ourWebElementClass;
     }
 
-    public static Integer getClickTimeOut(){
-        return clickTimeOut;
+    public static void setOurWebElementClass(String ourWebElementClass) {
+        SeleniumHolder.ourWebElementClass = ourWebElementClass;
     }
 }
