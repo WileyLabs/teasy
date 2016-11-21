@@ -11,7 +11,6 @@ import org.openqa.selenium.interactions.internal.Coordinates;
 import org.openqa.selenium.internal.Locatable;
 import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.remote.SessionNotFoundException;
 import org.openqa.selenium.remote.UnreachableBrowserException;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
@@ -65,24 +64,15 @@ public class OurWebElement implements IOurWebElement, Locatable {
             this.locator = new FindParentElementLocator(getDriver(), ourWebElement.getLocator().getByLocator());
         }
 
-        create(element);
+        init(element);
     }
 
-    public void create(WebElement element) {
+    public void init(WebElement element) {
         this.wrappedElement = element instanceof IOurWebElement ? ((IOurWebElement) element).getWrappedWebElement() : element;
         this.repeatLocateElementCounter = 0;
         if (elementFinder == null) {
-            init(getDriver(), WAIT_TIME_OUT_IN_SECONDS);
+            elementFinder = new WebDriverAwareElementFinder(getDriver(), new WebDriverWait(getDriver(), WAIT_TIME_OUT_IN_SECONDS, SLEEP_IN_MILLISECONDS));
         }
-    }
-
-    public void init(final WebDriver driver, Long timeout) {
-        elementFinder = new WebDriverAwareElementFinder(driver, new WebDriverWait(driver, timeout, SLEEP_IN_MILLISECONDS));
-    }
-
-    @Override
-    public WebElement getWrappedWebElement() {
-        return wrappedElement;
     }
 
     @Override
@@ -112,13 +102,8 @@ public class OurWebElement implements IOurWebElement, Locatable {
                 scrollIntoView(wrappedElement);
                 scrollToElementLocation(wrappedElement);
                 click();
-            } catch (TimeoutException ignored) {
-                //hangs in chrome after create system announcements, refresh page should be resolved it.
-                LOGGER.error("*****ERROR*****TimeoutException***** during click!-----Locator=" + locator.getByLocator());
-                getDriver().navigate().refresh();
             } catch (WebDriverException ignoredOrNeedToScroll) {
                 LOGGER.error("*****ERROR*****WebDriverException***** during click!-----Locator=" + locator.getByLocator());
-                closeAnnouncementsPopUpWindow();
                 increment();
                 //For Android error text is different and does not have any information related to clickable issue
                 String ignoredOrNeedToScrollMessage = ignoredOrNeedToScroll.getMessage();
@@ -127,12 +112,6 @@ public class OurWebElement implements IOurWebElement, Locatable {
                     if (isAndroid()) {
                         //set size of page to 80%
                         executeScript("document.body.style.transform='scale(0.8)'");
-                    }
-
-                    //Fix 'Walk Me' button override element
-                    if (ignoredOrNeedToScrollMessage.contains("Other element would receive the click") &&
-                            ignoredOrNeedToScrollMessage.contains("walkme-title walkme-override walkme-css-reset")) {
-                        executeScript("scroll(0,0);");
                     }
 
                     //This was added to fix cases when scrolling does not affect (in chrome when element is half hidden)
@@ -148,27 +127,9 @@ public class OurWebElement implements IOurWebElement, Locatable {
 
                     scrollIntoView(wrappedElement);
                     scrollToElementLocation(wrappedElement);
-
-                    //In ORION sometimes hangs in chrome, need place after scrollIntoView;
-                    if (ignoredOrNeedToScrollMessage.contains("Other element would receive the click")) {
-                        executeScript("scroll(0,0);");
-                    }
-
                 }
                 if (ignoredOrNeedToScrollMessage.contains("Error: element is not attached to the page document")) {
                     againLocate();
-                }
-                List<WebElement> tipCloseButtonList = elementFinder.findElementsBy(By.xpath("//*[@class='customTipCloseLink']"));
-                for (WebElement closeBtn : tipCloseButtonList) {
-                    if (closeBtn.isDisplayed()) {
-                        closeBtn.click();
-                    }
-                }
-                //TODO NT: If we get 'cannot press more then one button' error uncomment this.
-                //TODO: In some case we can get 'Cannot interact properly with element', for example in clickWithReload.
-                if (ignoredOrNeedToScrollMessage.toLowerCase().contains("cannot press more then one button or an already pressed button")) {
-                    LOGGER.error("*****ERROR*****Cannot press more then one button or an already pressed button. ---Locator=" + locator.getByLocator());
-//                    executeScript("arguments[0].click();", wrappedElement);
                 }
                 if (ignoredOrNeedToScrollMessage.contains("unknown error: no element reference returned by script")) {
                     againLocate();
@@ -187,17 +148,6 @@ public class OurWebElement implements IOurWebElement, Locatable {
             }
         } catch (Exception e) {
             LOGGER.error("*****FATAL ERROR*****Exception***** DURING CLICK LOGIC. SHOULD BE REFACTORED!!!! -----Locator=" + locator.getByLocator(), e);
-            // not completely clear but what if after element click we had WebDriverException
-            // but click was performed and there element became stale..
-        }
-        if (isAndroid()) {
-            try {
-                //set size of page to 100% after click
-                executeScript("document.body.style.transform='scale(1)'");
-            } catch (UnhandledAlertException ignored) {
-            } catch (NoSuchWindowException ignored) {
-            } catch (SessionNotFoundException ignored) {
-            }
         }
     }
 
@@ -331,6 +281,37 @@ public class OurWebElement implements IOurWebElement, Locatable {
         return ((Locatable) getWrappedWebElement()).getCoordinates();
     }
 
+    @Override
+    public Locator getLocator() {
+        return locator;
+    }
+
+    @Override
+    public <X> X getScreenshotAs(OutputType<X> target) throws WebDriverException {
+        if (getDriver().getClass() == RemoteWebDriver.class) {
+            WebDriver augmentedDriver = new Augmenter().augment(getDriver());
+            return ((TakesScreenshot) augmentedDriver).getScreenshotAs(target);
+        } else {
+            return ((TakesScreenshot) getDriver()).getScreenshotAs(target);
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return this == o || o != null && wrappedElement != null && wrappedElement.equals(o) ||
+                this == o || o != null && wrappedElement != null && (o instanceof IOurWebElement) && wrappedElement.equals(((IOurWebElement) o).getWrappedWebElement());
+    }
+
+    @Override
+    public int hashCode() {
+        return wrappedElement != null ? wrappedElement.hashCode() : 0;
+    }
+
+    @Override
+    public WebElement getWrappedWebElement() {
+        return wrappedElement;
+    }
+
     public void againLocate() {
         if (isSafari()) {
             TestUtils.waitForSafari();
@@ -348,41 +329,26 @@ public class OurWebElement implements IOurWebElement, Locatable {
         }
     }
 
-    public static WebDriver getDriver() {
+    public WebDriver getDriver() {
         return SeleniumHolder.getWebDriver();
     }
 
-    public void scrollIntoView(WebElement element) {
-        executeScript("arguments[0].scrollIntoView(true);", element);
-    }
-
-    public void scrollToElementLocation(WebElement element) {
-        executeScript("scroll(" + (element.getLocation().getX() + element.getSize().getWidth()) + "," + element.getLocation().getY() + ");");
-    }
-
-    public void maximizeWindow() {
+    public void clickInSafari() {
+        int iterationCount = 0;
+        TestUtils.waitForSomeTime(1000);
+        wrappedElement.click();
         try {
-            getDriver().manage().window().maximize();
-        } catch (WebDriverException ignored) {
-            //If a frame is selected and then browser window is maximized, exception is thrown
-            //Selenium bug: Issue 3758: Exception upon maximizing browser window with frame selected
-        }
-    }
-
-
-    public Object executeScript(String script, Object... args) {
-        return ((JavascriptExecutor) getDriver()).executeScript(script, args);
-    }
-
-    //The method checks the checkbox is selected after click and click one more time if not.
-    public void checkElementIsSelected(boolean wasElementSelectedByDefault, WebElement element) {
-        try {
-            if (wasElementSelectedByDefault == element.isSelected()) {
-                element.click();
-                elementFinder.waitForPageToLoad();
+            if (!isInputOrSelectOrCheckboxElement(wrappedElement) && !isClickWithReload()) {
+                while (iterationCount < 5) {
+                    try {
+                        elementFinder.waitForStalenessOf(wrappedElement, 1);
+                        return;
+                    } catch (TimeoutException ignored) {
+                    }
+                    iterationCount++;
+                }
             }
-        } catch (StaleElementReferenceException ignored) {
-            //If the element changed its state after click it's an expected behavior
+        } catch (NoSuchWindowException ignored) {
         }
     }
 
@@ -412,34 +378,36 @@ public class OurWebElement implements IOurWebElement, Locatable {
         TestUtils.waitForSomeTime(500);
     }
 
-    public boolean isDivWithParentA(WebElement element) {
-        return isDivTag(element) && getParentElement(element).getTagName().equals("a");
+    public void scrollIntoView(WebElement element) {
+        executeScript("arguments[0].scrollIntoView(true);", element);
     }
 
-    public static WebElement getParentElement(WebElement element) {
-        if (isSafari()) {
-            return element.findElement(By.xpath("./.."));
-        } else {
-            return (WebElement) ((JavascriptExecutor) getDriver()).executeScript("return arguments[0].parentNode", element);
+    public void scrollToElementLocation(WebElement element) {
+        executeScript("scroll(" + (element.getLocation().getX() + element.getSize().getWidth()) + "," + element.getLocation().getY() + ");");
+    }
+
+    public void maximizeWindow() {
+        try {
+            getDriver().manage().window().maximize();
+        } catch (WebDriverException ignored) {
+            //If a frame is selected and then browser window is maximized, exception is thrown
+            //Selenium bug: Issue 3758: Exception upon maximizing browser window with frame selected
         }
     }
 
-    public void clickInSafari() {
-        int iterationCount = 0;
-        TestUtils.waitForSomeTime(1000);
-        wrappedElement.click();
+    public Object executeScript(String script, Object... args) {
+        return ((JavascriptExecutor) getDriver()).executeScript(script, args);
+    }
+
+    //The method checks the checkbox is selected after click and click one more time if not.
+    public void checkElementIsSelected(boolean wasElementSelectedByDefault, WebElement element) {
         try {
-            if (!isInputOrSelectOrCheckboxElement(wrappedElement) && !isClickWithReload()) {
-                while (iterationCount < 5) {
-                    try {
-                        elementFinder.waitForStalenessOf(wrappedElement, 1);
-                        return;
-                    } catch (TimeoutException ignored) {
-                    }
-                    iterationCount++;
-                }
+            if (wasElementSelectedByDefault == element.isSelected()) {
+                element.click();
+                elementFinder.waitForPageToLoad();
             }
-        } catch (NoSuchWindowException ignored) {
+        } catch (StaleElementReferenceException ignored) {
+            //If the element changed its state after click it's an expected behavior
         }
     }
 
@@ -454,22 +422,6 @@ public class OurWebElement implements IOurWebElement, Locatable {
         return false;
     }
 
-    @Override
-    public Locator getLocator() {
-        return locator;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return this == o || o != null && wrappedElement != null && wrappedElement.equals(o) ||
-                this == o || o != null && wrappedElement != null && (o instanceof IOurWebElement) && wrappedElement.equals(((IOurWebElement) o).getWrappedWebElement());
-    }
-
-    @Override
-    public int hashCode() {
-        return wrappedElement != null ? wrappedElement.hashCode() : 0;
-    }
-
     public List<WebElement> finds(By by) {
         try {
             //for catch stale element
@@ -481,7 +433,11 @@ public class OurWebElement implements IOurWebElement, Locatable {
         } catch (UndeclaredThrowableException e) {
             //This checks for findElementByNoThrow, otherwise we call againLocate
             if (((InvocationTargetException) e.getUndeclaredThrowable()).getTargetException() instanceof NoSuchElementException) {
-                return wrappedElement.findElements(by);
+                try {
+                    return wrappedElement.findElements(by);
+                } catch (UndeclaredThrowableException noSuchElementException) {
+                    throw new NoSuchElementException("Unable to locate elements " + by.toString() + ", Exception - " + ((InvocationTargetException) noSuchElementException.getUndeclaredThrowable()).getTargetException().getMessage());
+                }
             }
             againLocate();
             return finds(by);
@@ -502,7 +458,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
                 try {
                     return wrappedElement.findElement(by);
                 } catch (UndeclaredThrowableException noSuchElementException) {
-                    throw new NoSuchElementException("Unable to locate element " + by.toString() + ", Exception - " + ((InvocationTargetException) e.getUndeclaredThrowable()).getTargetException().getMessage());
+                    throw new NoSuchElementException("Unable to locate element " + by.toString() + ", Exception - " + ((InvocationTargetException) noSuchElementException.getUndeclaredThrowable()).getTargetException().getMessage());
                 }
             }
             againLocate();
@@ -512,52 +468,6 @@ public class OurWebElement implements IOurWebElement, Locatable {
         } catch (WebDriverException e) {
             againLocate();
             return find(by);
-        }
-    }
-
-    public void closeAnnouncementsPopUpWindow() {
-        //it was added because sometimes pop up appears with delay in chrome
-        if (isChrome() || isIE()) {
-            TestUtils.waitForSomeTime(2000);
-        }
-        try {
-            List<WebElement> homeTabElementList = elementFinder.findElementsBy(By.id("home-tab"));
-            if (!homeTabElementList.isEmpty()) {
-                List<WebElement> popUps = elementFinder.findElementsBy(homeTabElementList.get(0), By.id("highPriorityAnnouncementWindow"));
-                if (!popUps.isEmpty()) {
-                    List<WebElement> loaderElementList = elementFinder.findElementsBy(By.cssSelector(".announcement-loader-high-priority"));
-                    if (!loaderElementList.isEmpty()) {
-                        elementFinder.waitForInvisibilityOfElementLocatedBy(By.cssSelector(".announcement-loader-high-priority"));
-                    }
-                    List<WebElement> closeButtons = elementFinder.findElementsBy(popUps.get(0), By.id("heightPriorityCancel"));
-                    if (!closeButtons.isEmpty()) {
-                        if (closeButtons.get(0).isDisplayed()) {
-                            //http://code.google.com/p/chromedriver/issues/detail?id=1158 occurs here for Welcome Pop up
-                            try {
-                                closeButtons.get(0).click();
-                            } catch (WebDriverException e) {
-                                executeScript("arguments[0].click();", closeButtons.get(0));
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (WebDriverException ignoredOrNeedToScroll) {
-            if (ignoredOrNeedToScroll.getMessage().contains("unknown error: no element reference returned by script")) {
-                increment();
-                againLocate();
-                closeAnnouncementsPopUpWindow();
-            }
-        }
-    }
-
-    @Override
-    public <X> X getScreenshotAs(OutputType<X> target) throws WebDriverException {
-        if (getDriver().getClass() == RemoteWebDriver.class) {
-            WebDriver augmentedDriver = new Augmenter().augment(getDriver());
-            return ((TakesScreenshot) augmentedDriver).getScreenshotAs(target);
-        } else {
-            return ((TakesScreenshot) getDriver()).getScreenshotAs(target);
         }
     }
 }
