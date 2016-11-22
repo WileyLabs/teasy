@@ -79,16 +79,9 @@ public class OurWebElement implements IOurWebElement, Locatable {
     public void click() {
         try {
             try {
-                if (isIE()) {
-                    clickInIE();
-                } else if (isSafari()) {
-                    clickInSafari();
-                } else {
-                    wrappedElement.click();
-                }
+                clickByBrowser();
             } catch (StaleElementReferenceException e) {
-                againLocate();
-                click();
+                clickForStaleElement();
             } catch (UnhandledAlertException ignored) {
                 LOGGER.error("*****ERROR*****UnhandledAlertException***** during click! Doing nothing just trying to continue the test. ---Locator=" + locator.getByLocator());
             } catch (UnreachableBrowserException ignored) {
@@ -97,57 +90,80 @@ public class OurWebElement implements IOurWebElement, Locatable {
                 //it will fail on the next method after click if some real error happened
                 LOGGER.error("*****ERROR*****UnreachableBrowserException***** during click! Doing nothing just trying to continue the test. ---Locator=" + locator.getByLocator());
             } catch (ElementNotVisibleException needToScroll) {
-                LOGGER.error("*****ERROR*****ElementNotVisibleException***** during click! Scrolling to element and trying again ---Locator=" + locator.getByLocator());
-                increment();
-                scrollIntoView(wrappedElement);
-                scrollToElementLocation(wrappedElement);
-                click();
+                clickForNeedToScroll();
             } catch (WebDriverException ignoredOrNeedToScroll) {
-                LOGGER.error("*****ERROR*****WebDriverException***** during click!-----Locator=" + locator.getByLocator());
-                increment();
-                //For Android error text is different and does not have any information related to clickable issue
-                String ignoredOrNeedToScrollMessage = ignoredOrNeedToScroll.getMessage();
-                if (isAndroid() || ignoredOrNeedToScrollMessage.contains("Element is not clickable at point")) {
-                    LOGGER.error("*****ERROR*****Element is not clickable at point***** during click! Scrolling to element and trying again. ---Locator=" + locator.getByLocator());
-                    if (isAndroid()) {
-                        //set size of page to 80%
-                        executeScript("document.body.style.transform='scale(0.8)'");
-                    }
-
-                    //This was added to fix cases when scrolling does not affect (in chrome when element is half hidden)
-                    //There is a chance that maximising will solve the case
-                    if (repeatLocateElementCounter == 10) {
-                        maximizeWindow();
-                        if (isChrome()) {
-                            //Some pages (e.g. in Administration Workspace) are reloaded after maximize window in Chrome
-                            TestUtils.waitForSomeTime(3000);
-                            againLocate();
-                        }
-                    }
-
-                    scrollIntoView(wrappedElement);
-                    scrollToElementLocation(wrappedElement);
-                }
-                if (ignoredOrNeedToScrollMessage.contains("Error: element is not attached to the page document")) {
-                    againLocate();
-                }
-                if (ignoredOrNeedToScrollMessage.contains("unknown error: no element reference returned by script")) {
-                    againLocate();
-                    executeScript("arguments[0].click();", wrappedElement);
-                } else if (ignoredOrNeedToScrollMessage.contains("Other element would receive the click")) {
-                    //TODO NT: workaround for 2.49.1
-                    //If dropdown option element have bigger size then dropdown we get error 'Element is not clickable at point... Other element would receive the click...'
-                    Actions actions = new Actions(getDriver());
-                    actions
-                            .moveToElement(wrappedElement, 0, 0)
-                            .click()
-                            .perform();
-                } else {
-                    click();
-                }
+                clickForIgnoredScroll(ignoredOrNeedToScroll);
             }
         } catch (Exception e) {
             LOGGER.error("*****FATAL ERROR*****Exception***** DURING CLICK LOGIC. SHOULD BE REFACTORED!!!! -----Locator=" + locator.getByLocator(), e);
+        }
+    }
+
+    public void clickForStaleElement() {
+        againLocate();
+        click();
+    }
+
+    public void clickByBrowser() {
+        if (isIE()) {
+            clickInIE();
+        } else if (isSafari()) {
+            clickInSafari();
+        } else {
+            wrappedElement.click();
+        }
+    }
+
+    public void clickForNeedToScroll() {
+        LOGGER.error("*****ERROR*****ElementNotVisibleException***** during click! Scrolling to element and trying again ---Locator=" + locator.getByLocator());
+        increment();
+        scrollIntoView(wrappedElement);
+        scrollToElementLocation(wrappedElement);
+        click();
+    }
+
+    public void clickForIgnoredScroll(WebDriverException ignoredOrNeedToScroll) {
+        LOGGER.error("*****ERROR*****WebDriverException***** during click!-----Locator=" + locator.getByLocator());
+        increment();
+        //For Android error text is different and does not have any information related to clickable issue
+        String ignoredOrNeedToScrollMessage = ignoredOrNeedToScroll.getMessage();
+        if (isAndroid() || ignoredOrNeedToScrollMessage.contains("Element is not clickable at point")) {
+            LOGGER.error("*****ERROR*****Element is not clickable at point***** during click! Scrolling to element and trying again. ---Locator=" + locator.getByLocator());
+            if (isAndroid()) {
+                //set size of page to 80%
+                executeScript("document.body.style.transform='scale(0.8)'");
+            }
+
+            //This was added to fix cases when scrolling does not affect (in chrome when element is half hidden)
+            //There is a chance that maximising will solve the case
+            if (repeatLocateElementCounter == 10) {
+                maximizeWindow();
+                if (isChrome()) {
+                    //Some pages (e.g. in Administration Workspace) are reloaded after maximize window in Chrome
+                    TestUtils.waitForSomeTime(3000);
+                    againLocate();
+                }
+            }
+
+            scrollIntoView(wrappedElement);
+            scrollToElementLocation(wrappedElement);
+        }
+        if (ignoredOrNeedToScrollMessage.contains("Error: element is not attached to the page document")) {
+            againLocate();
+        }
+        if (ignoredOrNeedToScrollMessage.contains("unknown error: no element reference returned by script")) {
+            againLocate();
+            executeScript("arguments[0].click();", wrappedElement);
+        } else if (ignoredOrNeedToScrollMessage.contains("Other element would receive the click")) {
+            //TODO NT: workaround for 2.49.1
+            //If dropdown option element have bigger size then dropdown we get error 'Element is not clickable at point... Other element would receive the click...'
+            Actions actions = new Actions(getDriver());
+            actions
+                    .moveToElement(wrappedElement, 0, 0)
+                    .click()
+                    .perform();
+        } else {
+            click();
         }
     }
 
