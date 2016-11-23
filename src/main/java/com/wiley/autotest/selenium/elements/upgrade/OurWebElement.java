@@ -61,6 +61,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
             this.locator = locator;
         } else {
             IOurWebElement ourWebElement = (IOurWebElement) element;
+            element = getParentElement(ourWebElement.getWrappedWebElement());
             this.locator = new FindParentElementLocator(getDriver(), ourWebElement.getLocator().getByLocator());
         }
 
@@ -484,6 +485,14 @@ public class OurWebElement implements IOurWebElement, Locatable {
         } catch (WebDriverException e) {
             againLocate();
             return find(by);
+        }
+    }
+
+    public WebElement getParentElement(WebElement element) {
+        if (isSafari()) {
+            return element.findElement(By.xpath("./.."));
+        } else {
+            return (WebElement) ((JavascriptExecutor) getDriver()).executeScript("return arguments[0].parentNode", element);
         }
     }
 }
