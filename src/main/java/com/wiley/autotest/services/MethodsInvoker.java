@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestContextManager;
 import org.testng.ITestContext;
+import org.testng.ITestNGMethod;
 import org.testng.TestRunner;
 import org.testng.annotations.Test;
 
@@ -26,7 +27,9 @@ import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static java.lang.String.format;
 import static org.apache.commons.lang.ArrayUtils.contains;
@@ -151,7 +154,19 @@ public class MethodsInvoker {
             }
         }
 
-        return isEmpty(context.getExcludedGroups()) && isEmpty(context.getIncludedGroups());
+        List<String> groupsFromMethods = new ArrayList<>();
+        for (ITestNGMethod testNGMethod : context.getTestContext().getAllTestMethods()) {
+            groupsFromMethods.addAll(Arrays.asList(testNGMethod.getGroups()));
+        }
+
+        boolean isContainsGroup = false;
+        for (String group : groups) {
+            if (groupsFromMethods.contains(group)) {
+                isContainsGroup = true;
+            }
+        }
+
+        return isEmpty(context.getExcludedGroups()) && isEmpty(context.getIncludedGroups()) && isContainsGroup;
     }
 
     private String[] getGroupsFromAnnotation(final Annotation methodAnnotation) {
