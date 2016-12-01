@@ -144,10 +144,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
 
     protected final <E extends IPage> E navigateTo(final Class<E> target, final String url) {
         getDriver().get(url);
-        String serverIdCookie = String.valueOf(getDriver().manage().getCookieNamed("ServerID"));
-        reportWithStep("ServerID cookie - " + serverIdCookie);
-        System.out.println("ServerID cookie - " + serverIdCookie);
-        LOGGER.info("ServerID cookie - " + serverIdCookie);
+        getDriver().manage().getCookies().forEach(cookie -> reportWithStep(cookie.toString()));
         return redirectTo(target);
     }
 

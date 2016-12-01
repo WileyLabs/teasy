@@ -120,7 +120,12 @@ public class MethodsInvoker {
                 }
             }
         } catch (StopTestExecutionException e) {
-            LOGGER.error("*****StopTestExecutionException*****" + context.getTestClass() + " " + e.getCause());
+            if (e.getCause() instanceof InvocationTargetException) {
+                Throwable targetException = ((InvocationTargetException) e.getCause()).getTargetException();
+                LOGGER.error("*****StopTestExecutionException*****" + context.getTestClass() + " " + targetException.getCause());
+            } else {
+                LOGGER.error("*****StopTestExecutionException*****" + context.getTestClass() + " " + e.getCause());
+            }
             try {
                 context.getTestInstance().setStopTextExecutionThrowable(e);
             } catch (NullPointerException npe) {
@@ -163,6 +168,7 @@ public class MethodsInvoker {
         for (String group : groups) {
             if (groupsFromMethods.contains(group)) {
                 isContainsGroup = true;
+                break;
             }
         }
 

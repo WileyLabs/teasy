@@ -1,7 +1,9 @@
 package com.wiley.autotest.selenium.driver;
 
 import com.google.common.base.Function;
+import com.wiley.autotest.utils.TestUtils;
 import org.openqa.selenium.*;
+import org.openqa.selenium.remote.UnreachableBrowserException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,11 +11,10 @@ import java.util.Stack;
 
 import static com.google.common.collect.Collections2.transform;
 import static java.lang.String.format;
-import static java.util.Collections.emptyList;
-import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 import static org.testng.collections.Lists.newArrayList;
 
 public class FramesTransparentWebDriver extends WebDriverDecorator {
+
     private final Stack<WebElement> currentFramesPath;
     private final Function<WebElement, WebElement> toFrameAwareWebElements;
 
@@ -35,14 +36,9 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
 
     @Override
     public List<WebElement> findElements(final By by) {
-        List<WebElement> found = driverFindElements(by);
-        if (found.isEmpty()) {
-            switchToDefaultContext();
-            currentFramesPath.clear();
-            found = findElementsInFrames(by);
-        }
-
-        return newArrayList(transform(found, toFrameAwareWebElements));
+        switchToDefaultContext();
+        currentFramesPath.clear();
+        return findElementsInFrames(by);
     }
 
     @Override
@@ -83,31 +79,24 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
     }
 
     private List<WebElement> findElementsInFrames(final By by) {
-        final List<WebElement> foundInCurrentFrame = driverFindElements(by);
-        if (isNotEmpty(foundInCurrentFrame)) {
-            return foundInCurrentFrame;
-        }
-
-        final List<WebElement> currentFrames = driverFindElements(By.tagName("iframe"));
-        currentFrames.addAll(driverFindElements(By.tagName("frame")));
-        for (final WebElement frame : currentFrames) {
+        List<WebElement> foundInCurrentFrame = newArrayList(transform(driverFindElements(by), toFrameAwareWebElements));
+        List<WebElement> listOfFramesInCurrentFrame = driverFindElements(By.tagName("iframe"));
+        listOfFramesInCurrentFrame.addAll(driverFindElements(By.tagName("frame")));
+        for (WebElement frame : listOfFramesInCurrentFrame) {
             if (!switchToFrame(frame)) {
                 continue;
             }
 
             currentFramesPath.push(frame);
-            final List<WebElement> foundInFrames = findElementsInFrames(by);
-            if (isNotEmpty(foundInFrames)) {
-                return foundInFrames;
-            }
+            foundInCurrentFrame.addAll(findElementsInFrames(by));
 
             currentFramesPath.pop();
-            getDriver().switchTo().defaultContent();
+            switchToDefaultContext();
             for (final WebElement each : currentFramesPath) {
                 switchToFrame(each);
             }
         }
-        return emptyList();
+        return foundInCurrentFrame;
     }
 
     private List<WebElement> driverFindElements(By by) {
@@ -178,6 +167,9 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
                 }
             } catch (NullPointerException e) {
                 throw new SwitchToWindowException("Unable to switch to window: handler is null ", e);
+            } catch (UnreachableBrowserException e) {
+                TestUtils.waitForSomeTime(5000);
+                return targetLocator.window(nameOrHandle);
             }
         }
 
