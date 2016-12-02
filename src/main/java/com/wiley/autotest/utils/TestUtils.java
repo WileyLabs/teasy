@@ -31,7 +31,7 @@ public final class TestUtils {
         return testName;
     }
 
-    public static String geBoldValue() {
+    public static String getBoldValue() {
         if (ExecutionUtils.isChrome()) {
             return "bold";
         } else {
@@ -46,12 +46,13 @@ public final class TestUtils {
      * Every place of code where this method is used is potentially a weak place.
      *
      * @param milliseconds
+     * @param explanationMessage
      */
-    public static void waitForSomeTime(int milliseconds) {
+    public static void waitForSomeTime(int milliseconds, String explanationMessage) {
         try {
             Thread.sleep(milliseconds);
         } catch (InterruptedException e) {
-            throw new AssertionError("InterruptedException occurred while calling Thread.sleep for " + milliseconds + " milliseconds." + e);
+            throw new AssertionError("InterruptedException occurred while calling Thread.sleep for " + milliseconds + " milliseconds. " + explanationMessage, e);
         }
     }
 
@@ -59,7 +60,7 @@ public final class TestUtils {
      * Custom wait for Mac Safari yet we haven't found the better way to work with it
      */
     public static void waitForSafari() {
-        waitForSomeTime(3000);
+        waitForSomeTime(3000, "Special wait for Safari");
     }
 
     /**
@@ -96,5 +97,4 @@ public final class TestUtils {
         return testName.contains("E4_") ? testName.split("E4")[1].split("_")[1] :
                 testName.split("TC")[1].split("_")[1];
     }
-
 }

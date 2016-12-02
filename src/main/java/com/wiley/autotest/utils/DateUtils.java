@@ -115,7 +115,7 @@ public final class DateUtils {
         DateTime currentTime = new DateTime(dateTimeZone);
         DateTime dateWithTimeZone = date.withZoneRetainFields(dateTimeZone);
         if (dateWithTimeZone.getMillis() > currentTime.getMillis()) {
-            TestUtils.waitForSomeTime((int) (dateWithTimeZone.getMillis() - currentTime.getMillis()));
+            TestUtils.waitForSomeTime((int) (dateWithTimeZone.getMillis() - currentTime.getMillis()), "Wait for date");
         }
     }
 

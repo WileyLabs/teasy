@@ -20,6 +20,7 @@ abstract class AbstractElement implements Element {
     public static final Logger LOGGER = LoggerFactory.getLogger(AbstractElement.class);
     //TODO VE added this to avoid No buffer space available exception. To be replaced with default value of 500 if does not work.
     private static final long SLEEP_IN_MILLISECONDS = 1000;
+    protected static final String EXPLANATION_MESSAGE_FOR_WAIT = "Wait for reload element";
 
     public void init(final WebDriver driver, Long timeout) {
         elementFinder = new WebDriverAwareElementFinder(driver, new WebDriverWait(driver, timeout, SLEEP_IN_MILLISECONDS));

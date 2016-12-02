@@ -3,7 +3,6 @@ package com.wiley.autotest.selenium.driver;
 import com.google.common.base.Function;
 import com.wiley.autotest.utils.TestUtils;
 import org.openqa.selenium.*;
-import org.openqa.selenium.remote.UnreachableBrowserException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,6 +87,10 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
             }
 
             currentFramesPath.push(frame);
+
+            //For resolve UnreachableBrowserException due to - java.net.SocketException: No buffer space available (maximum connections reached?): connect
+            //http://stackoverflow.com/questions/1226155/hunt-down-java-net-socketexception-no-buffer-space-available
+            TestUtils.waitForSomeTime(50, "Wait for resolve UnreachableBrowserException, due to - SocketException: No buffer space available");
             foundInCurrentFrame.addAll(findElementsInFrames(by));
 
             currentFramesPath.pop();
@@ -167,9 +170,6 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
                 }
             } catch (NullPointerException e) {
                 throw new SwitchToWindowException("Unable to switch to window: handler is null ", e);
-            } catch (UnreachableBrowserException e) {
-                TestUtils.waitForSomeTime(5000);
-                return targetLocator.window(nameOrHandle);
             }
         }
 

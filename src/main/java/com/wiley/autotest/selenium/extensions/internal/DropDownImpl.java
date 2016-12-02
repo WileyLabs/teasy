@@ -350,7 +350,7 @@ public class DropDownImpl extends AbstractElement implements DropDown {
 //TODO VF Delete it if it will be work fine after 20.10.15
         if (dropdown.findElements(By.xpath("//*[contains(@id,'options')]//tr//td[contains(@class,'Option')]")).isEmpty()) {
             //    By unknown reason sometimes there is empty list w/o waiting
-            TestUtils.waitForSomeTime(3000);
+            TestUtils.waitForSomeTime(3000, EXPLANATION_MESSAGE_FOR_WAIT);
         }
         return dropdown.findElements(By.xpath("//*[contains(@id,'options')]//tr//td[contains(@class,'Option')]"));
     }

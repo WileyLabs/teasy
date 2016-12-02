@@ -129,7 +129,7 @@ class SelectImpl extends AbstractEnabledElement implements Select {
                 }
                 break;
             } catch (StaleElementReferenceException e) {
-                TestUtils.waitForSomeTime(1000);
+                TestUtils.waitForSomeTime(1000, EXPLANATION_MESSAGE_FOR_WAIT);
             }
         }
     }
@@ -182,7 +182,7 @@ class SelectImpl extends AbstractEnabledElement implements Select {
         } catch (UndeclaredThrowableException ignored) {
             //TODO VF fix it in other places
             //Sometimes this test fails in ie due to such exception
-            TestUtils.waitForSomeTime(3000);
+            TestUtils.waitForSomeTime(3000, EXPLANATION_MESSAGE_FOR_WAIT);
             return wrappedSelect().getOptions();
         }
     }
@@ -213,7 +213,7 @@ class SelectImpl extends AbstractEnabledElement implements Select {
                 break;
             } catch (StaleElementReferenceException e) {
                 counter++;
-                TestUtils.waitForSomeTime(1000);
+                TestUtils.waitForSomeTime(1000, EXPLANATION_MESSAGE_FOR_WAIT);
             }
         }
     }

@@ -41,7 +41,7 @@ class LinkImpl extends AbstractElement implements Link {
             } catch (WebDriverException ignored) {
                 return;
             }
-            TestUtils.waitForSomeTime(3000);
+            TestUtils.waitForSomeTime(3000, EXPLANATION_MESSAGE_FOR_WAIT);
             iterationCount++;
         }
         clickWithJavaScript();

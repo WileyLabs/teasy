@@ -484,7 +484,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
     }
 
     protected void assertElementIsAbsent(By locator, String errorMessage) {
-        TestUtils.waitForSomeTime(TIMEOUT_TO_WAIT_FOR_ABSENCE_OF_ELEMENT);
+        TestUtils.waitForSomeTime(TIMEOUT_TO_WAIT_FOR_ABSENCE_OF_ELEMENT, "Wait for absence element");
         WebElement element = findElementByNoThrow(locator);
         assertTrue(element == null || !element.isDisplayed(), errorMessage);
     }

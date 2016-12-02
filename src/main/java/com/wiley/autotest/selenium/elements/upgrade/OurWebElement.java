@@ -141,7 +141,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
                 maximizeWindow();
                 if (isChrome()) {
                     //Some pages (e.g. in Administration Workspace) are reloaded after maximize window in Chrome
-                    TestUtils.waitForSomeTime(3000);
+                    TestUtils.waitForSomeTime(3000, "Wait for window maximized");
                     againLocate();
                 }
             }
@@ -352,7 +352,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
 
     public void clickInSafari() {
         int iterationCount = 0;
-        TestUtils.waitForSomeTime(1000);
+        TestUtils.waitForSomeTime(1000, "Wait for click for Safari");
         wrappedElement.click();
         try {
             if (!isInputOrSelectOrCheckboxElement(wrappedElement) && !isClickWithReload()) {
@@ -370,7 +370,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
     }
 
     public void clickInIE() {
-        TestUtils.waitForSomeTime(500);
+        TestUtils.waitForSomeTime(500, "Wait for click for IE");
         if (isDisabledElement(wrappedElement)) {
             wrappedElement.click();
             elementFinder.waitForPageToLoad();
@@ -392,7 +392,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
             wrappedElement.click();
             elementFinder.waitForPageToLoad();
         }
-        TestUtils.waitForSomeTime(500);
+        TestUtils.waitForSomeTime(500, "");
     }
 
     public void scrollIntoView(WebElement element) {

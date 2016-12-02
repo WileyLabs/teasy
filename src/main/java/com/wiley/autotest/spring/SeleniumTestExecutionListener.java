@@ -158,7 +158,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
             try {
                 //TODO VE this should be replaced with the better solution
                 if (settings.getDriverName().equals(SAFARI)) {
-                    TestUtils.waitForSomeTime(5000);
+                    TestUtils.waitForSomeTime(5000, "Wait for create safari driver");
                 }
 
                 driver = new EventFiringWebDriver(new FramesTransparentWebDriver(initWebDriver(settings)));
@@ -171,13 +171,13 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
 
                 //TODO VE this should be replaced with the better solution
                 if (settings.getDriverName().equals(SAFARI)) {
-                    TestUtils.waitForSomeTime(5000);
+                    TestUtils.waitForSomeTime(5000, "Wait for create safari driver");
                 }
             } catch (Throwable t) {
                 LOGGER.error("*****" + t.getClass().toString() + " occurred when initializing webdriver***** -- ERROR -- " + t.getMessage());
                 //TODO VE remove this sleep when the issue become clear
                 if (driverRestartCount.get() < 5) {
-                    TestUtils.waitForSomeTime(5000);
+                    TestUtils.waitForSomeTime(5000, "Wait for retry create driver");
                     LOGGER.error("*****Try to wrap driver, count - " + driverRestartCount.get() + " *****");
                     prepareTestInstance(context);
                 } else {
