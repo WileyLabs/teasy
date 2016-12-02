@@ -1,12 +1,12 @@
 package com.wiley.autotest.selenium.context;
 
+import com.wiley.autotest.annotations.Report;
 import com.wiley.autotest.event.EventFilter;
 import com.wiley.autotest.event.Subscriber;
 import com.wiley.autotest.event.postpone.failure.PostponedFailureEvent;
 import com.wiley.autotest.event.postpone.failure.ScreenshotOnPostponeFailureSubscriber;
 import com.wiley.autotest.selenium.ParamsProvider;
 import com.wiley.autotest.selenium.ReportAnnotationsWrapperCreator;
-import com.wiley.autotest.annotations.Report;
 import com.wiley.autotest.selenium.elements.CheckBox;
 import com.wiley.autotest.selenium.extensions.ExtendedFieldDecorator;
 import com.wiley.autotest.selenium.extensions.internal.DefaultElementFactory;
@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementImpl.wrapParent;
+import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrapParent;
 
 /**
  * Created by IntelliJ IDEA.
@@ -144,10 +144,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
 
     protected final <E extends IPage> E navigateTo(final Class<E> target, final String url) {
         getDriver().get(url);
-        String serverIdCookie = String.valueOf(getDriver().manage().getCookieNamed("ServerID"));
-        reportWithStep("ServerID cookie - " + serverIdCookie);
-        System.out.println("ServerID cookie - " + serverIdCookie);
-        LOGGER.info("ServerID cookie - " + serverIdCookie);
+        getDriver().manage().getCookies().forEach(cookie -> reportWithStep(cookie.toString()));
         return redirectTo(target);
     }
 

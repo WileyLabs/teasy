@@ -4,7 +4,7 @@ import com.wiley.autotest.WebDriverAwareElementFinder;
 import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.context.AbstractElementFinder;
 import com.wiley.autotest.selenium.context.ErrorSender;
-import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
+import com.wiley.autotest.selenium.elements.upgrade.IOurWebElement;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -66,8 +66,8 @@ public abstract class AbstractWebContainer extends AbstractElementFinder impleme
 
     private void castToOurWebElement(Object[] args) {
         for (int i = 0; i < args.length; i++) {
-            if (args[i] instanceof OurWebElement) {
-                args[i] = ((OurWebElement) args[i]).getWrappedWebElement();
+            if (args[i] instanceof IOurWebElement) {
+                args[i] = ((IOurWebElement) args[i]).getWrappedWebElement();
             }
         }
     }

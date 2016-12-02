@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestContextManager;
 import org.testng.ITestContext;
+import org.testng.ITestNGMethod;
 import org.testng.TestRunner;
 import org.testng.annotations.Test;
 
@@ -26,7 +27,9 @@ import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static java.lang.String.format;
 import static org.apache.commons.lang.ArrayUtils.contains;
@@ -113,12 +116,16 @@ public class MethodsInvoker {
                         //default body is empty, for @LoginAs and @LoginTo only (E4 projects)
                         testInstance.updateLoginData(method);
                         invokeMethod(testInstance, method, context, isBeforeAfterGroup);
-                        cookiesService.deleteAllCookies();
                     }
                 }
             }
         } catch (StopTestExecutionException e) {
-            LOGGER.error("*****StopTestExecutionException*****" + context.getTestClass() + " " + e.getCause());
+            if (e.getCause() instanceof InvocationTargetException) {
+                Throwable targetException = ((InvocationTargetException) e.getCause()).getTargetException();
+                LOGGER.error("*****StopTestExecutionException*****" + context.getTestClass() + " " + targetException.getCause());
+            } else {
+                LOGGER.error("*****StopTestExecutionException*****" + context.getTestClass() + " " + e.getCause());
+            }
             try {
                 context.getTestInstance().setStopTextExecutionThrowable(e);
             } catch (NullPointerException npe) {
@@ -152,7 +159,20 @@ public class MethodsInvoker {
             }
         }
 
-        return isEmpty(context.getExcludedGroups()) && isEmpty(context.getIncludedGroups());
+        List<String> groupsFromMethods = new ArrayList<>();
+        for (ITestNGMethod testNGMethod : context.getTestContext().getAllTestMethods()) {
+            groupsFromMethods.addAll(Arrays.asList(testNGMethod.getGroups()));
+        }
+
+        boolean isContainsGroup = false;
+        for (String group : groups) {
+            if (groupsFromMethods.contains(group)) {
+                isContainsGroup = true;
+                break;
+            }
+        }
+
+        return isEmpty(context.getExcludedGroups()) && isEmpty(context.getIncludedGroups()) && isContainsGroup;
     }
 
     private String[] getGroupsFromAnnotation(final Annotation methodAnnotation) {
@@ -271,7 +291,6 @@ public class MethodsInvoker {
             }
         } finally {
             if (isFFDriver.get() && SeleniumHolder.getDriverName().equals(FIREFOX)) {
-                SeleniumHolder.getWebDriver().manage().deleteAllCookies();
                 SeleniumHolder.getWebDriver().quit();
             }
             SeleniumHolder.setDriverName(mainDriverName);

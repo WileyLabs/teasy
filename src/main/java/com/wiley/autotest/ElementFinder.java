@@ -96,4 +96,12 @@ public interface ElementFinder {
     Boolean waitForElementContainsAttributeValue(final WebElement element, final String attributeName, final String attributeValue, long timeout);
 
     Boolean waitForElementNotContainsAttributeValue(final WebElement element, final String attributeName, final String attributeValue);
+
+    Boolean waitForElementContainsAttribute(final WebElement element, final String attributeName);
+
+    Boolean waitForElementContainsAttribute(final WebElement element, final String attributeName, long timeout);
+
+    Boolean waitForElementNotContainsAttribute(final WebElement element, final String attributeName);
+
+    Boolean waitForElementNotContainsAttribute(final WebElement element, final String attributeName, long timeout);
 }

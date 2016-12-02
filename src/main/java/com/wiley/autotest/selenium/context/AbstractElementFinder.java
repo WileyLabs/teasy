@@ -17,7 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementImpl.wrap;
+import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrap;
+import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrapList;
 
 /**
  * Created by IntelliJ IDEA.
@@ -552,7 +553,7 @@ public class AbstractElementFinder {
      * then deprecated annotation will be removed
      */
     protected final List<WebElement> findElementsBy(final By locator) {
-        return wrap(elementFinder.findElementsBy(locator), locator);
+        return wrapList(elementFinder.findElementsBy(locator), locator);
     }
 
     protected final void waitForWindowToBeAppearedAndSwitchToIt(final String title) {
@@ -653,13 +654,13 @@ public class AbstractElementFinder {
 
     @Deprecated
     protected List<WebElement> waitForPresenceOfAllElementsLocatedBy(final By locator) {
-        return wrap(elementFinder.waitForPresenceOfAllElementsLocatedBy(locator), locator);
+        return wrapList(elementFinder.waitForPresenceOfAllElementsLocatedBy(locator), locator);
     }
 
     @Deprecated
     protected final List<WebElement> waitForPresenceOfAllElementsLocatedBy(final By locator, long timeoutInSec) {
         try {
-            return wrap(elementFinder.waitForPresenceOfAllElementsLocatedBy(locator, timeoutInSec), locator);
+            return wrapList(elementFinder.waitForPresenceOfAllElementsLocatedBy(locator, timeoutInSec), locator);
         } catch (TimeoutException ignored) {
             return new ArrayList<WebElement>();
         }
@@ -704,7 +705,7 @@ public class AbstractElementFinder {
     }
 
     private List<WebElement> waitForVisibilityOfAllElementsLocatedBy(final By locator) {
-        return wrap(elementFinder.waitForVisibilityOfAllElementsLocatedBy(locator), locator);
+        return wrapList(elementFinder.waitForVisibilityOfAllElementsLocatedBy(locator), locator);
     }
 
     @Deprecated
@@ -813,6 +814,22 @@ public class AbstractElementFinder {
 
     protected final void waitForElementNotContainsAttributeValue(final WebElement element, final String attributeName, final String attributeValue) {
         elementFinder.waitForElementNotContainsAttributeValue(element, attributeName, attributeValue);
+    }
+
+    protected final void waitForElementContainsAttribute(final WebElement element, final String attributeName) {
+        elementFinder.waitForElementContainsAttribute(element, attributeName);
+    }
+
+    protected final void waitForElementContainsAttribute(final WebElement element, final String attributeName, long timeout) {
+        elementFinder.waitForElementContainsAttribute(element, attributeName, timeout);
+    }
+
+    protected final void waitForElementNotContainsAttribute(final WebElement element, final String attributeName) {
+        elementFinder.waitForElementNotContainsAttribute(element, attributeName);
+    }
+
+    protected final void waitForElementNotContainsAttribute(final WebElement element, final String attributeName, long timeout) {
+        elementFinder.waitForElementNotContainsAttribute(element, attributeName, timeout);
     }
 
     /**
