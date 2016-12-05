@@ -125,6 +125,11 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
     @Override
     public void prepareTestInstance(final TestContext context) throws Exception {
         final Settings settings = getSeleniumSettings(context);
+        String findInAllFramesProperty = settings.getProperty("find.elements.in.all.frames");
+        boolean isFindElementsInAllFrames = false;
+        if (findInAllFramesProperty != null && !findInAllFramesProperty.isEmpty()) {
+            isFindElementsInAllFrames = Boolean.parseBoolean(findInAllFramesProperty);
+        }
         System.setProperty("http.maxConnections", "1000000");
         System.setProperty("http.keepAlive", "false");
         count.set(count.get() + 1);
@@ -161,7 +166,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
                     TestUtils.waitForSomeTime(5000, "Wait for create safari driver");
                 }
 
-                driver = new EventFiringWebDriver(new FramesTransparentWebDriver(initWebDriver(settings)));
+                driver = new EventFiringWebDriver(new FramesTransparentWebDriver(initWebDriver(settings), isFindElementsInAllFrames));
 
                 alertCapability.set(UnexpectedAlertBehaviour.ACCEPT);
 

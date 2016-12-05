@@ -10,21 +10,24 @@ import java.util.Stack;
 
 import static com.google.common.collect.Collections2.transform;
 import static java.lang.String.format;
+import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 import static org.testng.collections.Lists.newArrayList;
 
 public class FramesTransparentWebDriver extends WebDriverDecorator {
 
     private final Stack<WebElement> currentFramesPath;
     private final Function<WebElement, WebElement> toFrameAwareWebElements;
+    private boolean isFindElementsInAllFrames = false;
 
     //VE Do we really need a ThreadLocal here? Seems that this is an extra one
     private ThreadLocal<String> mainWindowHandle = new ThreadLocal<>();
 
-    public FramesTransparentWebDriver(final WebDriver driver) {
+    public FramesTransparentWebDriver(final WebDriver driver, boolean isFindElementsInAllFrames) {
         super(driver);
         currentFramesPath = new Stack<>();
         toFrameAwareWebElements = new FrameAwareWebElementTransformer(driver, currentFramesPath);
         mainWindowHandle.set(driver.getWindowHandle());
+        this.isFindElementsInAllFrames = isFindElementsInAllFrames;
     }
 
     @Override
@@ -35,9 +38,20 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
 
     @Override
     public List<WebElement> findElements(final By by) {
-        switchToDefaultContext();
-        currentFramesPath.clear();
-        return findElementsInFrames(by);
+        if (isFindElementsInAllFrames) {
+            switchToDefaultContext();
+            currentFramesPath.clear();
+            return findElementsInAllFrames(by);
+        } else {
+            List<WebElement> found = newArrayList(transform(driverFindElements(by), toFrameAwareWebElements));
+            if (found.isEmpty()) {
+                switchToDefaultContext();
+                currentFramesPath.clear();
+                found = findElementsInAllFrames(by);
+            }
+
+            return found;
+        }
     }
 
     @Override
@@ -77,8 +91,13 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
         }
     }
 
-    private List<WebElement> findElementsInFrames(final By by) {
+    private List<WebElement> findElementsInAllFrames(final By by) {
         List<WebElement> foundInCurrentFrame = newArrayList(transform(driverFindElements(by), toFrameAwareWebElements));
+
+        if (isNotEmpty(foundInCurrentFrame) && !isFindElementsInAllFrames) {
+            return foundInCurrentFrame;
+        }
+
         List<WebElement> listOfFramesInCurrentFrame = driverFindElements(By.tagName("iframe"));
         listOfFramesInCurrentFrame.addAll(driverFindElements(By.tagName("frame")));
         for (WebElement frame : listOfFramesInCurrentFrame) {
@@ -91,7 +110,12 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
             //For resolve UnreachableBrowserException due to - java.net.SocketException: No buffer space available (maximum connections reached?): connect
             //http://stackoverflow.com/questions/1226155/hunt-down-java-net-socketexception-no-buffer-space-available
             TestUtils.waitForSomeTime(50, "Wait for resolve UnreachableBrowserException, due to - SocketException: No buffer space available");
-            foundInCurrentFrame.addAll(findElementsInFrames(by));
+            final List<WebElement> foundInFrames = findElementsInAllFrames(by);
+            if (isNotEmpty(foundInFrames) && !isFindElementsInAllFrames) {
+                return foundInFrames;
+            }
+
+            foundInCurrentFrame.addAll(foundInFrames);
 
             currentFramesPath.pop();
             switchToDefaultContext();
