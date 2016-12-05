@@ -41,13 +41,13 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
         if (isFindElementsInAllFrames) {
             switchToDefaultContext();
             currentFramesPath.clear();
-            return findElementsInAllFrames(by);
+            return findElementsInAllFrames(by, isFindElementsInAllFrames);
         } else {
             List<WebElement> found = newArrayList(transform(driverFindElements(by), toFrameAwareWebElements));
             if (found.isEmpty()) {
                 switchToDefaultContext();
                 currentFramesPath.clear();
-                found = findElementsInAllFrames(by);
+                found = findElementsInAllFrames(by, isFindElementsInAllFrames);
             }
 
             return found;
@@ -58,6 +58,20 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
     public WebElement findElement(final By by) {
         try {
             return findElements(by).get(0);
+        } catch (IndexOutOfBoundsException e) {
+            throw new NoSuchElementException("Unable to locate element " + by + ", Exception - " + e);
+        }
+    }
+
+    public List<WebElement> findElementsInFrames(final By by) {
+        switchToDefaultContext();
+        currentFramesPath.clear();
+        return findElementsInAllFrames(by, true);
+    }
+
+    public WebElement findElementInFrames(final By by) {
+        try {
+            return findElementsInFrames(by).get(0);
         } catch (IndexOutOfBoundsException e) {
             throw new NoSuchElementException("Unable to locate element " + by + ", Exception - " + e);
         }
@@ -91,7 +105,7 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
         }
     }
 
-    private List<WebElement> findElementsInAllFrames(final By by) {
+    private List<WebElement> findElementsInAllFrames(final By by, boolean isFindElementsInAllFrames) {
         List<WebElement> foundInCurrentFrame = newArrayList(transform(driverFindElements(by), toFrameAwareWebElements));
 
         if (isNotEmpty(foundInCurrentFrame) && !isFindElementsInAllFrames) {
@@ -110,7 +124,7 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
             //For resolve UnreachableBrowserException due to - java.net.SocketException: No buffer space available (maximum connections reached?): connect
             //http://stackoverflow.com/questions/1226155/hunt-down-java-net-socketexception-no-buffer-space-available
             TestUtils.waitForSomeTime(50, "Wait for resolve UnreachableBrowserException, due to - SocketException: No buffer space available");
-            final List<WebElement> foundInFrames = findElementsInAllFrames(by);
+            final List<WebElement> foundInFrames = findElementsInAllFrames(by, isFindElementsInAllFrames);
             if (isNotEmpty(foundInFrames) && !isFindElementsInAllFrames) {
                 return foundInFrames;
             }

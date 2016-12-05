@@ -1,7 +1,9 @@
 package com.wiley.autotest;
 
+import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
 import com.wiley.autotest.selenium.elements.TextField;
 import org.openqa.selenium.*;
+import org.openqa.selenium.support.events.EventFiringWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -27,6 +29,10 @@ public class WebDriverAwareElementFinder implements ElementFinder {
         this.wait = webDriverWait;
     }
 
+    private FramesTransparentWebDriver getFrameTransparentWebDriver() {
+        return (FramesTransparentWebDriver) ((EventFiringWebDriver) driver).getWrappedDriver();
+    }
+
     @Override
     public WebElement findElementBy(final By locator) {
         return driver.findElement(locator);
@@ -47,6 +53,36 @@ public class WebDriverAwareElementFinder implements ElementFinder {
     @Deprecated
     public List<WebElement> findElementsBy(final SearchContext searchContext, final By locator) {
         return searchContext.findElements(locator);
+    }
+
+    @Override
+    public WebElement findElementByInFrames(final By locator) {
+        return getFrameTransparentWebDriver().findElementInFrames(locator);
+    }
+
+    @Override
+    public List<WebElement> findElementsByInFrames(final By locator) {
+        return getFrameTransparentWebDriver().findElementsInFrames(locator);
+    }
+
+    @Override
+    public WebElement waitForVisibilityOfElementLocatedByInFrames(final By locator) {
+        return waitFor(ExpectedConditions2.visibilityOfElementLocatedByInFrames(locator));
+    }
+
+    @Override
+    public List<WebElement> waitForVisibilityOfAllElementsLocatedByInFrames(final By locator) {
+        return waitFor(ExpectedConditions2.visibilityOfAllElementsLocatedByInFrames(locator));
+    }
+
+    @Override
+    public List<WebElement> waitForPresenceOfAllElementsLocatedByInFrames(final By locator) {
+        return waitFor(ExpectedConditions2.presenceOfAllElementsLocatedByInFrames(locator));
+    }
+
+    @Override
+    public WebElement waitForPresenceOfElementLocatedByInFrames(final By locator) {
+        return waitFor(ExpectedConditions2.presenceOfElementLocatedByInFrames(locator));
     }
 
     @Override

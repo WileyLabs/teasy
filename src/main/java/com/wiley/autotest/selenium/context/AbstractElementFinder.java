@@ -557,6 +557,30 @@ public class AbstractElementFinder {
         return wrapList(elementFinder.findElementsBy(locator), locator);
     }
 
+    protected final WebElement findElementByInFrames(final By locator) {
+        return wrap(elementFinder.findElementByInFrames(locator), locator);
+    }
+
+    protected final List<WebElement> findElementsByInFrames(final By locator) {
+        return wrapList(elementFinder.findElementsByInFrames(locator), locator);
+    }
+
+    protected final WebElement waitForVisibilityOfElementLocatedByInFrames(final By locator) {
+        return wrap(elementFinder.waitForVisibilityOfElementLocatedByInFrames(locator), locator);
+    }
+
+    protected final List<WebElement> waitForVisibilityOfAllElementsLocatedByInFrames(final By locator) {
+        return wrapList(elementFinder.waitForVisibilityOfAllElementsLocatedByInFrames(locator), locator);
+    }
+
+    protected final WebElement waitForPresenceOfElementLocatedByInFrames(final By locator) {
+        return wrap(elementFinder.waitForPresenceOfElementLocatedByInFrames(locator), locator);
+    }
+
+    protected final List<WebElement> waitForPresenceOfAllElementsLocatedByInFrames(final By locator) {
+        return wrapList(elementFinder.waitForPresenceOfAllElementsLocatedByInFrames(locator), locator);
+    }
+
     protected final void waitForWindowToBeAppearedAndSwitchToIt(final String title) {
         try {
             waitWindowIsAppearInChrome();
