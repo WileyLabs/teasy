@@ -19,15 +19,9 @@ public interface ElementFinder {
 
     List<WebElement> findElementsBy(SearchContext searchContext, final By locator);
 
-    WebElement findElementByInFrames(final By locator);
-
     List<WebElement> findElementsByInFrames(final By locator);
 
-    WebElement waitForVisibilityOfElementLocatedByInFrames(final By locator);
-
     List<WebElement> waitForVisibilityOfAllElementsLocatedByInFrames(final By locator);
-
-    WebElement waitForPresenceOfElementLocatedByInFrames(final By locator);
 
     List<WebElement> waitForPresenceOfAllElementsLocatedByInFrames(final By locator);
 

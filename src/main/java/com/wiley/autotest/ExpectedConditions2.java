@@ -264,37 +264,12 @@ public final class ExpectedConditions2 {
         };
     }
 
-    public static ExpectedCondition<WebElement> visibilityOfElementLocatedByInFrames(final By locator) {
-        return new ExpectedCondition<WebElement>() {
-            @Override
-            public WebElement apply(WebDriver driver) {
-                try {
-                    FramesTransparentWebDriver framesTransparentWebDriver = (FramesTransparentWebDriver) ((EventFiringWebDriver) driver).getWrappedDriver();
-                    WebElement element = framesTransparentWebDriver.findElementInFrames(locator);
-                    return element.isDisplayed() ? element : null;
-                } catch (StaleElementReferenceException e) {
-                    return null;
-                }
-            }
-        };
-    }
-
     public static ExpectedCondition<List<WebElement>> presenceOfAllElementsLocatedByInFrames(final By locator) {
         return new ExpectedCondition<List<WebElement>>() {
             @Override
             public List<WebElement> apply(final WebDriver driver) {
                 FramesTransparentWebDriver framesTransparentWebDriver = (FramesTransparentWebDriver) ((EventFiringWebDriver) driver).getWrappedDriver();
                 return framesTransparentWebDriver.findElementsInFrames(locator);
-            }
-        };
-    }
-
-    public static ExpectedCondition<WebElement> presenceOfElementLocatedByInFrames(final By locator) {
-        return new ExpectedCondition<WebElement>() {
-            @Override
-            public WebElement apply(final WebDriver driver) {
-                FramesTransparentWebDriver framesTransparentWebDriver = (FramesTransparentWebDriver) ((EventFiringWebDriver) driver).getWrappedDriver();
-                return framesTransparentWebDriver.findElementInFrames(locator);
             }
         };
     }
