@@ -5,6 +5,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 abstract class AbstractEnabledElement extends AbstractElement implements EnabledElement {
+
     protected AbstractEnabledElement(final WebElement wrappedElement) {
         super(wrappedElement);
     }

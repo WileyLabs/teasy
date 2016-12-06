@@ -28,7 +28,7 @@ class TextFieldImpl extends AbstractEnabledElement implements TextField {
 
             //In IE sometimes
             if (isIE() && !getText().equals(value)) {
-                TestUtils.waitForSomeTime(1000);
+                TestUtils.waitForSomeTime(1000, EXPLANATION_MESSAGE_FOR_WAIT);
                 clear();
                 getWrappedElement().sendKeys(value);
             }

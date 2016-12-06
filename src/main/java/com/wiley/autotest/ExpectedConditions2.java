@@ -1,7 +1,9 @@
 package com.wiley.autotest;
 
+import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
 import com.wiley.autotest.selenium.elements.TextField;
 import org.openqa.selenium.*;
+import org.openqa.selenium.support.events.EventFiringWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -241,6 +243,33 @@ public final class ExpectedConditions2 {
                     }
                 }
                 return isNotEmpty(visibleElements) ? visibleElements : null;
+            }
+        };
+    }
+
+    public static ExpectedCondition<List<WebElement>> visibilityOfAllElementsLocatedByInFrames(final By locator) {
+        return new ExpectedCondition<List<WebElement>>() {
+            @Override
+            public List<WebElement> apply(final WebDriver driver) {
+                FramesTransparentWebDriver framesTransparentWebDriver = (FramesTransparentWebDriver) ((EventFiringWebDriver) driver).getWrappedDriver();
+                final List<WebElement> foundElements = framesTransparentWebDriver.findElementsInFrames(locator);
+                List<WebElement> visibleElements = new ArrayList<WebElement>();
+                for (final WebElement element : foundElements) {
+                    if (element.isDisplayed()) {
+                        visibleElements.add(element);
+                    }
+                }
+                return isNotEmpty(visibleElements) ? visibleElements : null;
+            }
+        };
+    }
+
+    public static ExpectedCondition<List<WebElement>> presenceOfAllElementsLocatedByInFrames(final By locator) {
+        return new ExpectedCondition<List<WebElement>>() {
+            @Override
+            public List<WebElement> apply(final WebDriver driver) {
+                FramesTransparentWebDriver framesTransparentWebDriver = (FramesTransparentWebDriver) ((EventFiringWebDriver) driver).getWrappedDriver();
+                return framesTransparentWebDriver.findElementsInFrames(locator);
             }
         };
     }

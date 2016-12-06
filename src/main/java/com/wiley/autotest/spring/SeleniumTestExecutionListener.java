@@ -125,6 +125,11 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
     @Override
     public void prepareTestInstance(final TestContext context) throws Exception {
         final Settings settings = getSeleniumSettings(context);
+        String findInAllFramesProperty = settings.getProperty("find.elements.in.all.frames");
+        boolean isFindElementsInAllFrames = false;
+        if (findInAllFramesProperty != null && !findInAllFramesProperty.isEmpty()) {
+            isFindElementsInAllFrames = Boolean.parseBoolean(findInAllFramesProperty);
+        }
         System.setProperty("http.maxConnections", "1000000");
         System.setProperty("http.keepAlive", "false");
         count.set(count.get() + 1);
@@ -158,10 +163,10 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
             try {
                 //TODO VE this should be replaced with the better solution
                 if (settings.getDriverName().equals(SAFARI)) {
-                    TestUtils.waitForSomeTime(5000);
+                    TestUtils.waitForSomeTime(5000, "Wait for create safari driver");
                 }
 
-                driver = new EventFiringWebDriver(new FramesTransparentWebDriver(initWebDriver(settings)));
+                driver = new EventFiringWebDriver(new FramesTransparentWebDriver(initWebDriver(settings), isFindElementsInAllFrames));
 
                 alertCapability.set(UnexpectedAlertBehaviour.ACCEPT);
 
@@ -171,13 +176,13 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
 
                 //TODO VE this should be replaced with the better solution
                 if (settings.getDriverName().equals(SAFARI)) {
-                    TestUtils.waitForSomeTime(5000);
+                    TestUtils.waitForSomeTime(5000, "Wait for create safari driver");
                 }
             } catch (Throwable t) {
                 LOGGER.error("*****" + t.getClass().toString() + " occurred when initializing webdriver***** -- ERROR -- " + t.getMessage());
                 //TODO VE remove this sleep when the issue become clear
                 if (driverRestartCount.get() < 5) {
-                    TestUtils.waitForSomeTime(5000);
+                    TestUtils.waitForSomeTime(5000, "Wait for retry create driver");
                     LOGGER.error("*****Try to wrap driver, count - " + driverRestartCount.get() + " *****");
                     prepareTestInstance(context);
                 } else {

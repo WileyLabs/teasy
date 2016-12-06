@@ -27,6 +27,7 @@ import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.
  * Time: 13:02
  */
 public class AbstractElementFinder {
+    public static final String EXPLANATION_MESSAGE_FOR_WAIT = "Wait for retry find element";
     protected ElementFinder elementFinder;
     public static final Logger LOGGER = LoggerFactory.getLogger(AbstractElementFinder.class);
     //VE added this to avoid No buffer space available exception. To be replaced with default value of 500 if does not work.
@@ -49,6 +50,16 @@ public class AbstractElementFinder {
             return null;
         }
     }
+
+    protected List<WebElement> elementsInFrames(final By locator) {
+        try {
+            return waitForVisibilityOfAllElementsLocatedByInFrames(locator);
+        } catch (WebDriverException e) {
+            fail(generateErrorMessage());
+            return null;
+        }
+    }
+
 
     protected Button button(By locator) {
         return getElementNew(Button.class, locator, generateErrorMessage());
@@ -144,6 +155,15 @@ public class AbstractElementFinder {
     protected List<WebElement> domElements(By locator) {
         try {
             return waitForPresenceOfAllElementsLocatedBy(locator);
+        } catch (WebDriverException e) {
+            fail(generateErrorMessage());
+            return null;
+        }
+    }
+
+    protected List<WebElement> domElementsInFrames(By locator) {
+        try {
+            return waitForPresenceOfAllElementsLocatedByInFrames(locator);
         } catch (WebDriverException e) {
             fail(generateErrorMessage());
             return null;
@@ -380,7 +400,7 @@ public class AbstractElementFinder {
             try {
                 return getWebElementWrapper(searchContext.findElement(by)).getElement(elementType, by);
             } catch (Exception e) {
-                TestUtils.waitForSomeTime(5000);
+                TestUtils.waitForSomeTime(5000, EXPLANATION_MESSAGE_FOR_WAIT);
                 return getWebElementWrapper(searchContext.findElement(by)).getElement(elementType, by);
             }
         }
@@ -394,7 +414,7 @@ public class AbstractElementFinder {
                 try {
                     return getWebElementWrapper(searchContext.findElement(by)).getElement(elementType, by);
                 } catch (Exception e) {
-                    TestUtils.waitForSomeTime(5000);
+                    TestUtils.waitForSomeTime(5000, EXPLANATION_MESSAGE_FOR_WAIT);
                     return getWebElementWrapper(searchContext.findElement(by)).getElement(elementType, by);
                 }
             }
@@ -429,7 +449,7 @@ public class AbstractElementFinder {
             try {
                 return getWebElementWrapper(waitForVisibilityOfElementLocatedBy(by, errorMessage)).getElement(elementType, by);
             } catch (Exception e) {
-                TestUtils.waitForSomeTime(5000);
+                TestUtils.waitForSomeTime(5000, EXPLANATION_MESSAGE_FOR_WAIT);
                 return getWebElementWrapper(waitForVisibilityOfElementLocatedBy(by, errorMessage)).getElement(elementType, by);
             }
         }
@@ -446,7 +466,7 @@ public class AbstractElementFinder {
             try {
                 return getWebElementWrapper(waitForVisibilityOfElementLocatedBy(by, errorMessage)).getElement(elementType, by);
             } catch (Exception e) {
-                TestUtils.waitForSomeTime(5000);
+                TestUtils.waitForSomeTime(5000, EXPLANATION_MESSAGE_FOR_WAIT);
                 return getWebElementWrapper(waitForVisibilityOfElementLocatedBy(by, errorMessage)).getElement(elementType, by);
             }
         }
@@ -554,6 +574,18 @@ public class AbstractElementFinder {
      */
     protected final List<WebElement> findElementsBy(final By locator) {
         return wrapList(elementFinder.findElementsBy(locator), locator);
+    }
+
+    protected final List<WebElement> findElementsByInFrames(final By locator) {
+        return wrapList(elementFinder.findElementsByInFrames(locator), locator);
+    }
+
+    protected final List<WebElement> waitForVisibilityOfAllElementsLocatedByInFrames(final By locator) {
+        return wrapList(elementFinder.waitForVisibilityOfAllElementsLocatedByInFrames(locator), locator);
+    }
+
+    protected final List<WebElement> waitForPresenceOfAllElementsLocatedByInFrames(final By locator) {
+        return wrapList(elementFinder.waitForPresenceOfAllElementsLocatedByInFrames(locator), locator);
     }
 
     protected final void waitForWindowToBeAppearedAndSwitchToIt(final String title) {
@@ -931,7 +963,7 @@ public class AbstractElementFinder {
     //TODO NT: In chrome test hangs before switch to new window, to avoid this add timeout
     private void waitWindowIsAppearInChrome() {
         if (isChrome()) {
-            TestUtils.waitForSomeTime(3000);
+            TestUtils.waitForSomeTime(3000, "Wait for window is appear in chrome");
         }
     }
 }

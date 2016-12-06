@@ -19,6 +19,12 @@ public interface ElementFinder {
 
     List<WebElement> findElementsBy(SearchContext searchContext, final By locator);
 
+    List<WebElement> findElementsByInFrames(final By locator);
+
+    List<WebElement> waitForVisibilityOfAllElementsLocatedByInFrames(final By locator);
+
+    List<WebElement> waitForPresenceOfAllElementsLocatedByInFrames(final By locator);
+
     void waitForCondition(ExpectedCondition<Boolean> condition, long timeout);
 
     Boolean waitForTextToBePresentInElement(By locator, String text);

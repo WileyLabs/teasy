@@ -25,8 +25,9 @@ public final class DriverUtils {
     public static WebDriver getFFDriver() {
         Settings ffSettings = new Settings();
         BeanUtils.copyProperties(SELENIUM_SETTINGS, ffSettings);
+        boolean isFindElementsInAllFrames = Boolean.parseBoolean(ffSettings.getProperty("find.elements.in.all.frames"));
         ffSettings.setDriverName("firefox");
-        driverHolder.set(new EventFiringWebDriver(new FramesTransparentWebDriver(new FirefoxDriver(getFireFoxDesiredCapabilities(ffSettings)))));
+        driverHolder.set(new EventFiringWebDriver(new FramesTransparentWebDriver(new FirefoxDriver(getFireFoxDesiredCapabilities(ffSettings)), isFindElementsInAllFrames)));
         return driverHolder.get();
     }
 
@@ -63,7 +64,7 @@ public final class DriverUtils {
     }
 
 
-    public static void setWindowSize(final WebDriver driver, final int width, final int height){
+    public static void setWindowSize(final WebDriver driver, final int width, final int height) {
         try {
             WebDriver.Window window = driver.manage().window();
             Dimension dimension = window.getSize();
