@@ -102,7 +102,7 @@ public class WebDriverAwareElementFinder implements ElementFinder {
 
     @Override
     public void waitForVisibilityOf(final WebElement element) {
-        waitFor(ExpectedConditions2.presenceOf(element));
+        waitFor(ExpectedConditions2.visibilityOf(element));
     }
 
     @Override

@@ -23,10 +23,6 @@ public final class ExpectedConditions2 {
     private ExpectedConditions2() {
     }
 
-    public static ExpectedCondition<Boolean> presenceOf(final WebElement element) {
-        return driver -> element.isDisplayed();
-    }
-
     public static ExpectedCondition<Boolean> presenceOfAllElementsLocatedBy(final By locator) {
         return driver -> !driver.findElements(locator).isEmpty();
     }
@@ -36,6 +32,10 @@ public final class ExpectedConditions2 {
             FramesTransparentWebDriver framesTransparentWebDriver = (FramesTransparentWebDriver) ((EventFiringWebDriver) driver).getWrappedDriver();
             return framesTransparentWebDriver.findElementsInFrames(locator);
         };
+    }
+
+    public static ExpectedCondition<Boolean> visibilityOf(final WebElement element) {
+        return driver -> element.isDisplayed();
     }
 
     public static ExpectedCondition<List<WebElement>> visibilityOfAllElementsLocatedBy(final By locator) {
