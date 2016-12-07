@@ -64,7 +64,7 @@ public abstract class AbstractWebContainer extends AbstractElementFinder impleme
         return ((JavascriptExecutor) getDriver()).executeScript(script, args);
     }
 
-    private void castToOurWebElement(Object[] args) {
+    private static void castToOurWebElement(Object[] args) {
         for (int i = 0; i < args.length; i++) {
             if (args[i] instanceof IOurWebElement) {
                 args[i] = ((IOurWebElement) args[i]).getWrappedWebElement();

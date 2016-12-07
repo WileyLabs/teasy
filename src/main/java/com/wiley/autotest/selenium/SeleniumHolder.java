@@ -10,12 +10,6 @@ import org.openqa.selenium.remote.SessionId;
  */
 public final class SeleniumHolder {
 
-    /**
-     * private constructor for utils class
-     */
-    private SeleniumHolder() {
-    }
-
     private static String browser;
     private static final ThreadLocal<WebDriver> driverHolder = new ThreadLocal<>();
     private static final ThreadLocal<String> driverName = new ThreadLocal<>();
@@ -42,8 +36,13 @@ public final class SeleniumHolder {
         }
     };
     private static final ThreadLocal<SessionId> sessionId = new ThreadLocal<>();
-
     private static String ourWebElementClass;
+
+    /**
+     * private constructor for utils class
+     */
+    private SeleniumHolder() {
+    }
 
     public static WebDriver getWebDriver() {
         return driverHolder.get();

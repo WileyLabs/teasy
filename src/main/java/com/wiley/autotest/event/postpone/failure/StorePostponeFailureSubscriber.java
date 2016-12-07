@@ -8,9 +8,10 @@ import org.testng.Reporter;
 import static java.lang.String.format;
 
 public class StorePostponeFailureSubscriber extends PostponeFailureSubscriber {
+
     private final String testName;
     private final ITestContext context;
-    public static final Logger LOGGER = LoggerFactory.getLogger(StorePostponeFailureSubscriber.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(StorePostponeFailureSubscriber.class);
 
     public StorePostponeFailureSubscriber(final ITestContext context, String testName) {
         this.testName = testName;

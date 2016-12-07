@@ -51,9 +51,13 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
     @Override
     public WebElement findElement(final By by) {
         try {
-            switchToDefaultContext();
-            currentFramesPath.clear();
-            return findFirstElements(by).get(0);
+            List<WebElement> found = newArrayList(transform(driverFindElements(by), toFrameAwareWebElements));
+            if (found.isEmpty()) {
+                switchToDefaultContext();
+                currentFramesPath.clear();
+                found = findFirstElements(by);
+            }
+            return found.get(0);
         } catch (IndexOutOfBoundsException e) {
             throw new NoSuchElementException("Unable to locate element " + by + ", Exception - " + e);
         }

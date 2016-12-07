@@ -18,16 +18,16 @@ import java.util.regex.Pattern;
  */
 public final class SortingMatchers {
 
+    private static final String DEFAULT_PATTERN = "MMM dd hh:mm a";
+    private static final int MAX_DIGIT_COUNT = 10;
+    private static final int MAX_PERCENTAGE_OF_INCORRECT_SORTING = 5;
+    private static String pattern;
+
     /**
      * private constructor for utils class
      */
     private SortingMatchers() {
     }
-
-    private static final String DEFAULT_PATTERN = "MMM dd hh:mm a";
-    private static final int MAX_DIGIT_COUNT = 10;
-    private static final int MAX_PERCENTAGE_OF_INCORRECT_SORTING = 5;
-    private static String pattern;
 
     public static Matcher<List<WebElement>> sortedInAscendingOrder() {
         return sorted(TextComparator.ASC);

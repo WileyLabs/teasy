@@ -7,6 +7,8 @@ package com.wiley.autotest.event;
  * @version 1.0
  */
 
+@FunctionalInterface
 public interface EventFilter {
+
     <MsgType> void fire(Subscriber<MsgType> each, MsgType message);
 }
