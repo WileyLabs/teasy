@@ -2,9 +2,6 @@ package com.wiley.autotest.selenium;
 
 public final class Group {
 
-    private Group() {
-    }
-
     //Groups related to test plans
     public static final String smoke = "smoke";
     public static final String core = "core";
@@ -32,4 +29,7 @@ public final class Group {
      * basically such tests are excluded from nightly builds
      */
     public static final String bug = "bug";
+
+    private Group() {
+    }
 }

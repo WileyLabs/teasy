@@ -15,6 +15,7 @@ import static java.lang.String.format;
 import static org.testng.ITestResult.FAILURE;
 
 public class ProcessPostponedFailureListener implements IInvokedMethodListener2 {
+
     @Override
     public void beforeInvocation(final IInvokedMethod method, final ITestResult testResult, final ITestContext context) {
     }
@@ -30,7 +31,7 @@ public class ProcessPostponedFailureListener implements IInvokedMethodListener2 
         }
     }
 
-    private String getErrorMessage(final String testName) {
+    private static String getErrorMessage(final String testName) {
         final StringBuilder result = new StringBuilder();
         final List<ScreenshotInfo> screenshotInfoList = getScreenShotPathsForTest(testName);
         for (ScreenshotInfo screenshotInfo : screenshotInfoList) {

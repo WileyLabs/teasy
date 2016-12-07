@@ -72,7 +72,7 @@ public class SkipTestsListener implements IInvokedMethodListener {
     public void afterInvocation(IInvokedMethod iInvokedMethod, ITestResult iTestResult) {
     }
 
-    private boolean isNoGroupTest(ITestResult iTestResult, String noGroupName) {
+    private static boolean isNoGroupTest(ITestResult iTestResult, String noGroupName) {
         String[] groups = iTestResult.getMethod().getGroups();
         for (String group : groups) {
             if (group.equals(noGroupName)) {

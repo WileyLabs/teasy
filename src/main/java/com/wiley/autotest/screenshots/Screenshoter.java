@@ -29,12 +29,13 @@ import static com.wiley.autotest.selenium.SeleniumHolder.getWebDriver;
 import static com.wiley.autotest.utils.TestUtils.getTestName;
 
 public class Screenshoter {
+
     private static final double TRANSPARENCY_MASK_PERCENT = 85; //percent
 
     private static final int BRIGHTNESS = (int) (TRANSPARENCY_MASK_PERCENT * 255 / 100);
     private static final Color NON_ANALISE_REGION_COLOR = new Color(255, 220, 220, BRIGHTNESS);
 
-    private static final Log logger = LogFactory.getLog(Screenshoter.class);
+    private static final Log LOGGER = LogFactory.getLog(Screenshoter.class);
 
     private enum CombinationType {
         ADDITION {
@@ -81,11 +82,11 @@ public class Screenshoter {
             Reporter.log("<br/><a href='" + pathToImage + "' target='_blank'> <img src='" + pathToImage + "' height='100' width='100'/> </a><br/>");
 
         } catch (IOException e) {
-            logger.error("IOException occurs", e);
+            LOGGER.error("IOException occurs", e);
         } catch (UnhandledAlertException alertException) {
             Alert alert = getWebDriver().switchTo().alert();
             String alertText = alert.getText();
-            logger.error("*****ERROR***** Unexpected Alert appeared. Alert text " + alertText);
+            LOGGER.error("*****ERROR***** Unexpected Alert appeared. Alert text " + alertText);
             alert.dismiss();
             takeScreenshot(errorMessage, testName);
         }
@@ -104,7 +105,7 @@ public class Screenshoter {
             final String pathName = path + "\\" + name;
             ImageIO.write(image, "png", new File(pathName));
         } catch (IOException e) {
-            logger.error("IOException occurs", e);
+            LOGGER.error("IOException occurs", e);
         }
     }
 
@@ -143,7 +144,7 @@ public class Screenshoter {
         try {
             return ImageIO.read(file);
         } catch (IOException e) {
-            logger.error("IOException occurs during reading", e);
+            LOGGER.error("IOException occurs during reading", e);
         }
         return null;
     }
@@ -152,7 +153,7 @@ public class Screenshoter {
         try {
             ImageIO.write(image, "png", file);
         } catch (IOException e) {
-            logger.error("IOException occurs during writing", e);
+            LOGGER.error("IOException occurs during writing", e);
         }
     }
 
@@ -163,7 +164,7 @@ public class Screenshoter {
         try {
             return ImageIO.read(new ByteArrayInputStream(((TakesScreenshot) getWebDriver()).getScreenshotAs(OutputType.BYTES)));
         } catch (IOException e) {
-            logger.error("IOException occurs", e);
+            LOGGER.error("IOException occurs", e);
         }
         return null;
     }
@@ -183,7 +184,7 @@ public class Screenshoter {
             try {
                 image = createScreenshotImage(image, createMask(image, provider.getIncludeLocators(), provider.getExcludeLocators()));
             } catch (IOException e) {
-                logger.error("IOException occurs", e);
+                LOGGER.error("IOException occurs", e);
             }
         }
         if (image != null) {
@@ -225,7 +226,7 @@ public class Screenshoter {
                         previousStateMap.put(element, element.getAttribute("innerHTML"));
                         Substitution.substitute(webDriver, element, substitution.getHTML(element));
                     } catch (Exception e) {
-                        logger.error("JDOM object cannot be created for a substitution", e);
+                        LOGGER.error("JDOM object cannot be created for a substitution", e);
                     }
                 }
             }

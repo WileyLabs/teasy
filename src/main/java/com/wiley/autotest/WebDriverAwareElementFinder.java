@@ -59,6 +59,7 @@ public class WebDriverAwareElementFinder implements ElementFinder {
     public List<WebElement> findElementsByInFrames(final By locator) {
         return getFrameTransparentWebDriver().findElementsInFrames(locator);
     }
+
     @Override
     public List<WebElement> waitForVisibilityOfAllElementsLocatedByInFrames(final By locator) {
         return waitFor(ExpectedConditions2.visibilityOfAllElementsLocatedByInFrames(locator));

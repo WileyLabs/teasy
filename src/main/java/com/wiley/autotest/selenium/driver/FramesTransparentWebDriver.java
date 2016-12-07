@@ -44,16 +44,20 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
         if (isFindElementsInAllFrames) {
             return findAllElementsInAllFrames(by);
         } else {
-            return findFirstElementsInAllFrames(by);
+            return findFirstElements(by);
         }
     }
 
     @Override
     public WebElement findElement(final By by) {
         try {
-            switchToDefaultContext();
-            currentFramesPath.clear();
-            return findFirstElementsInAllFrames(by).get(0);
+            List<WebElement> found = newArrayList(transform(driverFindElements(by), toFrameAwareWebElements));
+            if (found.isEmpty()) {
+                switchToDefaultContext();
+                currentFramesPath.clear();
+                found = findFirstElements(by);
+            }
+            return found.get(0);
         } catch (IndexOutOfBoundsException e) {
             throw new NoSuchElementException("Unable to locate element " + by + ", Exception - " + e);
         }
@@ -93,7 +97,7 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
         }
     }
 
-    private List<WebElement> findFirstElementsInAllFrames(final By by) {
+    private List<WebElement> findFirstElements(final By by) {
         final List<WebElement> foundInCurrentFrame = newArrayList(transform(driverFindElements(by), toFrameAwareWebElements));
         if (isNotEmpty(foundInCurrentFrame)) {
             return foundInCurrentFrame;
@@ -107,7 +111,7 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
             }
 
             currentFramesPath.push(frame);
-            final List<WebElement> foundInFrames = findElementsInFrames(by);
+            final List<WebElement> foundInFrames = findFirstElements(by);
             if (isNotEmpty(foundInFrames)) {
                 return foundInFrames;
             }

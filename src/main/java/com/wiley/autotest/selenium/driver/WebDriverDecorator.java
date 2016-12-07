@@ -12,14 +12,15 @@ import java.util.List;
 import java.util.Set;
 
 public abstract class WebDriverDecorator implements WebDriver, JavascriptExecutor, TakesScreenshot, HasInputDevices {
-    private final WebDriver driver;
 
-    public WebDriver getDriver() {
-        return driver;
-    }
+    private final WebDriver driver;
 
     public WebDriverDecorator(final WebDriver driver) {
         this.driver = driver;
+    }
+
+    public WebDriver getDriver() {
+        return driver;
     }
 
     @Override

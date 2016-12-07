@@ -25,13 +25,14 @@ import static org.openqa.selenium.By.xpath;
  * @author alexey.a.semenov@gmail.com
  */
 public class WordsBasedPageLoadingValidator implements PageLoadingValidator {
-    private final Log log = LogFactory.getLog(getClass());
 
-    private final Collection<String> words = new ArrayList<String>();
+    private final Log LOGGER = LogFactory.getLog(getClass());
+
+    private final Collection<String> words = new ArrayList<>();
 
     private By evilWordsLocator;
 
-    private ThreadLocal<Boolean> validationOn = new ThreadLocal<Boolean>();
+    private ThreadLocal<Boolean> validationOn = new ThreadLocal<>();
 
     @Override
     public void assertLoaded(final WebDriver driver) {
@@ -41,7 +42,7 @@ public class WordsBasedPageLoadingValidator implements PageLoadingValidator {
 
         final List<WebElement> foundEvilWords = driver.findElements(evilWordsLocator);
         if (isNotEmpty(foundEvilWords)) {
-            log.fatal("Unexpected evil word found. Pages source:\n" + driver.getPageSource());
+            LOGGER.fatal("Unexpected evil word found. Pages source:\n" + driver.getPageSource());
             lookForConcreteEvilWord(driver);
             fail("oops! I found evil word, but didn't find element with it");
         }
