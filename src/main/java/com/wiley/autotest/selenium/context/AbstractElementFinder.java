@@ -14,13 +14,12 @@ import org.slf4j.LoggerFactory;
 import org.testng.Reporter;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrap;
 import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrapList;
-import static java.util.Collections.*;
+import static java.util.Collections.emptyList;
 
 /**
  * Created by IntelliJ IDEA.
@@ -37,7 +36,7 @@ public class AbstractElementFinder {
 
     protected WebElement element(final By locator) {
         try {
-            return waitForVisibilityOfAllElementsLocatedBy(locator).get(0);
+            return waitForVisibilityOfElementLocatedBy(locator);
         } catch (WebDriverException e) {
             fail(generateErrorMessage());
             return null;
