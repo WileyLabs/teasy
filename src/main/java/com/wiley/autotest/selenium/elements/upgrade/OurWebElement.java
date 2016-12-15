@@ -289,6 +289,11 @@ public class OurWebElement implements IOurWebElement, Locatable {
     }
 
     @Override
+    public Rectangle getRect() {
+        return wrappedElement.getRect();
+    }
+
+    @Override
     public String getCssValue(String s) {
         return wrappedElement.getCssValue(s);
     }

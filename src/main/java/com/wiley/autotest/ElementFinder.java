@@ -53,7 +53,7 @@ public interface ElementFinder {
 
     void waitForVisibilityOf(WebElement element);
 
-    WebElement waitForInvisibilityOfElementLocatedBy(By locator);
+    Boolean waitForInvisibilityOfElementLocatedBy(By locator);
 
     WebElement waitForInvisibilityOfElement(WebElement element);
 

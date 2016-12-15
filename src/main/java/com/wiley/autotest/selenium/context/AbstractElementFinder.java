@@ -14,11 +14,13 @@ import org.slf4j.LoggerFactory;
 import org.testng.Reporter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrap;
 import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrapList;
+import static java.util.Collections.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -47,7 +49,7 @@ public class AbstractElementFinder {
             return waitForVisibilityOfAllElementsLocatedBy(locator);
         } catch (WebDriverException e) {
             fail(generateErrorMessage());
-            return null;
+            return emptyList();
         }
     }
 
@@ -56,7 +58,7 @@ public class AbstractElementFinder {
             return waitForVisibilityOfAllElementsLocatedByInFrames(locator);
         } catch (WebDriverException e) {
             fail(generateErrorMessage());
-            return null;
+            return emptyList();
         }
     }
 
@@ -157,7 +159,7 @@ public class AbstractElementFinder {
             return waitForPresenceOfAllElementsLocatedBy(locator);
         } catch (WebDriverException e) {
             fail(generateErrorMessage());
-            return null;
+            return emptyList();
         }
     }
 
@@ -166,7 +168,7 @@ public class AbstractElementFinder {
             return waitForPresenceOfAllElementsLocatedByInFrames(locator);
         } catch (WebDriverException e) {
             fail(generateErrorMessage());
-            return null;
+            return emptyList();
         }
     }
 
@@ -751,12 +753,12 @@ public class AbstractElementFinder {
             return waitForVisibilityOfAllElementsLocatedBy(locator);
         } catch (WebDriverException e) {
             fail(errorMessage);
-            return null;
+            return emptyList();
         }
     }
 
-    private WebElement waitForInvisibilityOfElementLocatedBy(final By locator) {
-        return wrap(elementFinder.waitForInvisibilityOfElementLocatedBy(locator), locator);
+    private Boolean waitForInvisibilityOfElementLocatedBy(final By locator) {
+        return elementFinder.waitForInvisibilityOfElementLocatedBy(locator);
     }
 
     private void waitForAbsenceOfElementLocatedBy(final By locator) {

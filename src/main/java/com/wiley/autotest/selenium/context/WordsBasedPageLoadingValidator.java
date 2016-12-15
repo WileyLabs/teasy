@@ -1,11 +1,11 @@
 package com.wiley.autotest.selenium.context;
 
 import com.google.common.base.Function;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import org.testng.Reporter;
 
@@ -26,7 +26,7 @@ import static org.openqa.selenium.By.xpath;
  */
 public class WordsBasedPageLoadingValidator implements PageLoadingValidator {
 
-    private final Log LOGGER = LogFactory.getLog(getClass());
+    private static final Logger LOGGER = LoggerFactory.getLogger(WordsBasedPageLoadingValidator.class);
 
     private final Collection<String> words = new ArrayList<>();
 
@@ -42,7 +42,7 @@ public class WordsBasedPageLoadingValidator implements PageLoadingValidator {
 
         final List<WebElement> foundEvilWords = driver.findElements(evilWordsLocator);
         if (isNotEmpty(foundEvilWords)) {
-            LOGGER.fatal("Unexpected evil word found. Pages source:\n" + driver.getPageSource());
+            LOGGER.error("Unexpected evil word found. Pages source:\n" + driver.getPageSource());
             lookForConcreteEvilWord(driver);
             fail("oops! I found evil word, but didn't find element with it");
         }

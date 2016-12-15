@@ -546,6 +546,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
     private DesiredCapabilities getFireFoxDesiredCapabilities(Settings settings) {
         DesiredCapabilities capabilities = DesiredCapabilities.firefox();
         setAlertBehaviorCapabilities(capabilities);
+        capabilities.setCapability(FirefoxDriver.MARIONETTE, false);
         capabilities.setCapability(FirefoxDriver.PROFILE, getFirefoxProfile(settings));
         capabilities.setPlatform(Platform.WINDOWS);
         setProxy(capabilities);
@@ -644,14 +645,11 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         profile.setPreference("browser.selfsupport.url", "");
 
         if (isUseFireBug.get()) {
-            try {
-                //Using this way of adding extension because otherwise extensions could not be converted to Java File from selenium jar file.
-                profile.addExtension(this.getClass(), EXTENSIONS_FIREBUG_XPI_PATH);
-                profile.addExtension(this.getClass(), EXTENSIONS_NET_EXPORT_XPI_PATH);
-                profile.addExtension(this.getClass(), EXTENSIONS_FIRE_STARTER_XPI_PATH);
-            } catch (IOException e) {
-                throw new RuntimeException("Could not load required extensions, did you download them to the above location? ", e);
-            }
+            //Using this way of adding extension because otherwise extensions could not be converted to Java File from selenium jar file.
+            profile.addExtension(this.getClass(), EXTENSIONS_FIREBUG_XPI_PATH);
+            profile.addExtension(this.getClass(), EXTENSIONS_NET_EXPORT_XPI_PATH);
+            profile.addExtension(this.getClass(), EXTENSIONS_FIRE_STARTER_XPI_PATH);
+
             profile.setPreference("extensions.firebug.currentVersion", "2.0.11");
             profile.setPreference("extensions.firebug.DBG_NETEXPORT", false);
             profile.setPreference("extensions.firebug.onByDefault", true);
