@@ -40,7 +40,7 @@ public final class ExpectedConditions2 {
 
     public static ExpectedCondition<List<WebElement>> visibilityOfAllElementsLocatedBy(final By locator) {
         return driver -> {
-            List<WebElement> visibleElements = getVisibleWebElementList(locator, driver);
+            List<WebElement> visibleElements = getVisibleWebElementList(driver.findElements(locator));
             return isNotEmpty(visibleElements) ? visibleElements : null;
         };
     }
@@ -48,7 +48,7 @@ public final class ExpectedConditions2 {
     public static ExpectedCondition<List<WebElement>> visibilityOfAllElementsLocatedByInFrames(final By locator) {
         return driver -> {
             FramesTransparentWebDriver framesTransparentWebDriver = (FramesTransparentWebDriver) ((EventFiringWebDriver) driver).getWrappedDriver();
-            List<WebElement> visibleElements = getVisibleWebElementList(locator, framesTransparentWebDriver);
+            List<WebElement> visibleElements = getVisibleWebElementList(framesTransparentWebDriver.findElementsInFrames(locator));
             return isNotEmpty(visibleElements) ? visibleElements : null;
         };
     }
@@ -222,8 +222,7 @@ public final class ExpectedConditions2 {
         return driver -> driver.getWindowHandles().size() == 1;
     }
 
-    private static List<WebElement> getVisibleWebElementList(By locator, WebDriver driver) {
-        final List<WebElement> foundElements = driver.findElements(locator);
+    private static List<WebElement> getVisibleWebElementList(List<WebElement> foundElements) {
         List<WebElement> visibleElements = new ArrayList<>();
         for (final WebElement element : foundElements) {
             if (element.isDisplayed()) {

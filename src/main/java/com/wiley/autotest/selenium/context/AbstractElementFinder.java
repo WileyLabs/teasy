@@ -36,7 +36,7 @@ public class AbstractElementFinder {
 
     protected WebElement element(final By locator) {
         try {
-            return waitForVisibilityOfElementLocatedBy(locator);
+            return waitForVisibilityOfAllElementsLocatedBy(locator).get(0);
         } catch (WebDriverException e) {
             fail(generateErrorMessage());
             return null;
