@@ -244,23 +244,14 @@ public class OurWebElement implements IOurWebElement, Locatable {
         List<WebElement> result = new ArrayList<>(elements.size());
         for (int i = 0; i < elements.size(); i++) {
             WebElement element = elements.get(i);
-            OurWebElementData ourWebElementData = new OurWebElementData();
-            ourWebElementData.setElement(element);
-            ourWebElementData.setSearchContext(this);
-            ourWebElementData.setBy(by);
-            ourWebElementData.setIndex(i);
-            result.add(new OurWebElement(ourWebElementData));
+            result.add(OurWebElementFactory.wrap(element, by, i));
         }
         return result;
     }
 
     @Override
     public WebElement findElement(By by) {
-        OurWebElementData ourWebElementData = new OurWebElementData();
-        ourWebElementData.setElement(find(by));
-        ourWebElementData.setSearchContext(this);
-        ourWebElementData.setBy(by);
-        return new OurWebElement(ourWebElementData);
+        return OurWebElementFactory.wrap(getWrappedWebElement().findElement(by), by);
     }
 
     @Override
