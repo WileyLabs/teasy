@@ -564,7 +564,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         setAlertBehaviorCapabilities(capabilities);
         setProxy(capabilities);
         //Found that setting this capability could increase IE tests speed. Should be checked.
-        //   capabilities.setCapability(InternetExplorerDriver.REQUIRE_WINDOW_FOCUS, true);
+        capabilities.setCapability(InternetExplorerDriver.REQUIRE_WINDOW_FOCUS, true);
         return capabilities;
     }
 
