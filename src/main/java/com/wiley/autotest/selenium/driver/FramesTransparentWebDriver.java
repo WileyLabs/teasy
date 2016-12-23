@@ -63,12 +63,6 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
         }
     }
 
-    public List<WebElement> findElementsInFrames(final By by) {
-        switchToDefaultContext();
-        currentFramesPath.clear();
-        return findAllElementsInAllFrames(by);
-    }
-
     @Override
     public void close() {
         getDriver().close();

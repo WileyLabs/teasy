@@ -56,6 +56,16 @@ public final class TestUtils {
         }
     }
 
+    @Deprecated
+    public static void waitForSomeTime(int milliseconds) {
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException e) {
+            throw new AssertionError("InterruptedException occurred while calling Thread.sleep for " + milliseconds + " milliseconds.", e);
+        }
+    }
+
+
     /**
      * Custom wait for Mac Safari yet we haven't found the better way to work with it
      */
