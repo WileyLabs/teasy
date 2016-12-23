@@ -1,5 +1,7 @@
-package com.wiley.autotest.selenium.context;
+package com.wiley.autotest.services;
 
+import com.wiley.autotest.selenium.context.HelperRegistry;
+import com.wiley.autotest.selenium.context.IPage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -10,6 +12,7 @@ import static com.wiley.autotest.selenium.SeleniumHolder.getWebDriver;
  */
 @Component
 public class PageProvider {
+
     @Autowired
     private HelperRegistry registry;
 
