@@ -7,6 +7,8 @@ import org.openqa.selenium.WebElement;
 
 import java.util.List;
 
+import static com.wiley.autotest.utils.ExecutionUtils.isIE;
+
 public class RadioButtonImpl extends AbstractEnabledElement implements RadioButton {
     protected RadioButtonImpl(final WebElement wrappedElement) {
         super(wrappedElement);

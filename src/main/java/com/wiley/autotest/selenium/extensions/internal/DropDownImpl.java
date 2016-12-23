@@ -12,6 +12,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import static com.wiley.autotest.utils.ExecutionUtils.isIE;
+
 /**
  * User: ntyukavkin
  * Date: 21.04.2015
@@ -392,5 +394,6 @@ public class DropDownImpl extends AbstractElement implements DropDown {
     public void selectByPartialText(String partialText) {
         //TODO NT: need to complete
     }
+
 
 }

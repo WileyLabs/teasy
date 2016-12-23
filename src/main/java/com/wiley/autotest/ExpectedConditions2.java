@@ -1,9 +1,10 @@
 package com.wiley.autotest;
 
-import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
 import com.wiley.autotest.selenium.elements.TextField;
-import org.openqa.selenium.*;
-import org.openqa.selenium.support.events.EventFiringWebDriver;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,31 +28,35 @@ public final class ExpectedConditions2 {
         return driver -> !driver.findElements(locator).isEmpty();
     }
 
-    public static ExpectedCondition<List<WebElement>> presenceOfAllElementsLocatedByInFrames(final By locator) {
-        return driver -> {
-            FramesTransparentWebDriver framesTransparentWebDriver = (FramesTransparentWebDriver) ((EventFiringWebDriver) driver).getWrappedDriver();
-            return framesTransparentWebDriver.findElementsInFrames(locator);
-        };
-    }
-
     public static ExpectedCondition<Boolean> visibilityOf(final WebElement element) {
         return driver -> element.isDisplayed();
     }
 
     public static ExpectedCondition<List<WebElement>> visibilityOfAllElementsLocatedBy(final By locator) {
         return driver -> {
-            List<WebElement> visibleElements = getVisibleWebElementList(locator, driver);
+            final List<WebElement> foundElements = driver.findElements(locator);
+            List<WebElement> visibleElements1 = new ArrayList<>();
+            for (final WebElement element : foundElements) {
+                if (element.isDisplayed()) {
+                    visibleElements1.add(element);
+                }
+            }
+            List<WebElement> visibleElements = visibleElements1;
             return isNotEmpty(visibleElements) ? visibleElements : null;
         };
     }
 
-    public static ExpectedCondition<List<WebElement>> visibilityOfAllElementsLocatedByInFrames(final By locator) {
+    public static ExpectedCondition<WebElement> visibilityOfElementLocatedBy(By locator) {
         return driver -> {
-            FramesTransparentWebDriver framesTransparentWebDriver = (FramesTransparentWebDriver) ((EventFiringWebDriver) driver).getWrappedDriver();
-            List<WebElement> visibleElements = getVisibleWebElementList(locator, framesTransparentWebDriver);
-            return isNotEmpty(visibleElements) ? visibleElements : null;
+            try {
+                final WebElement foundElement = driver.findElement(locator);
+                return foundElement.isDisplayed() ? foundElement : null;
+            } catch (Exception e) {
+                return null;
+            }
         };
     }
+
 
     public static ExpectedCondition<WebElement> invisibleOf(final By locator) {
         return driver -> elementIfInvisible(driver.findElement(locator));
@@ -220,17 +225,6 @@ public final class ExpectedConditions2 {
 
     public static ExpectedCondition<Boolean> onlyOneWindowIsOpen() {
         return driver -> driver.getWindowHandles().size() == 1;
-    }
-
-    private static List<WebElement> getVisibleWebElementList(By locator, WebDriver driver) {
-        final List<WebElement> foundElements = driver.findElements(locator);
-        List<WebElement> visibleElements = new ArrayList<>();
-        for (final WebElement element : foundElements) {
-            if (element.isDisplayed()) {
-                visibleElements.add(element);
-            }
-        }
-        return visibleElements;
     }
 
     private static boolean needToSwitch(String initialHandle, String handle) {

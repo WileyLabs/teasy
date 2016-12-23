@@ -5,6 +5,10 @@ import com.wiley.autotest.utils.TestUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.HasInputDevices;
 
+import static com.wiley.autotest.utils.ExecutionUtils.isAndroid;
+import static com.wiley.autotest.utils.ExecutionUtils.isIE;
+import static com.wiley.autotest.utils.ExecutionUtils.isSafari;
+
 class TextFieldImpl extends AbstractEnabledElement implements TextField {
     protected TextFieldImpl(final WebElement wrappedElement) {
         super(wrappedElement);

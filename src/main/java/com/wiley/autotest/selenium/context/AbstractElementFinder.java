@@ -3,7 +3,6 @@ package com.wiley.autotest.selenium.context;
 import com.wiley.autotest.ElementFinder;
 import com.wiley.autotest.WebDriverAwareElementFinder;
 import com.wiley.autotest.selenium.elements.*;
-import com.wiley.autotest.utils.ExecutionUtils;
 import com.wiley.autotest.utils.TestUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.remote.UnreachableBrowserException;
@@ -19,6 +18,7 @@ import java.util.Set;
 
 import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrap;
 import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrapList;
+import static com.wiley.autotest.utils.ExecutionUtils.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -27,7 +27,7 @@ import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.
  * Time: 13:02
  */
 public class AbstractElementFinder {
-    public static final String EXPLANATION_MESSAGE_FOR_WAIT = "Wait for retry find element";
+    private static final String EXPLANATION_MESSAGE_FOR_WAIT = "Wait for retry find element";
     protected ElementFinder elementFinder;
     public static final Logger LOGGER = LoggerFactory.getLogger(AbstractElementFinder.class);
     //VE added this to avoid No buffer space available exception. To be replaced with default value of 500 if does not work.
@@ -35,7 +35,7 @@ public class AbstractElementFinder {
 
     protected WebElement element(final By locator) {
         try {
-            return waitForVisibilityOfAllElementsLocatedBy(locator).get(0);
+            return waitForVisibilityOfElementLocatedBy(locator);
         } catch (WebDriverException e) {
             fail(generateErrorMessage());
             return null;
@@ -51,91 +51,89 @@ public class AbstractElementFinder {
         }
     }
 
-    protected List<WebElement> elementsInFrames(final By locator) {
-        try {
-            return waitForVisibilityOfAllElementsLocatedByInFrames(locator);
-        } catch (WebDriverException e) {
-            fail(generateErrorMessage());
-            return null;
-        }
+    protected final WebElement elementOrNull(final By locator) {
+        return findElementByNoThrow(locator);
     }
 
+    protected final WebElement elementOrNull(final SearchContext searchContext, final By locator) {
+        return findElementByNoThrow(searchContext, locator);
+    }
 
     protected Button button(By locator) {
-        return getElementNew(Button.class, locator, generateErrorMessage());
+        return getElement(Button.class, locator, generateErrorMessage());
     }
 
     protected Button button(SearchContext searchContext, By locator) {
-        return getElementNew(Button.class, searchContext, locator);
+        return getElement(Button.class, searchContext, locator);
     }
 
     protected List<Button> buttons(By locator) {
-        return getElementListNew(Button.class, locator, generateErrorMessage());
+        return getElements(Button.class, locator, generateErrorMessage());
     }
 
     protected List<Button> buttons(SearchContext searchContext, By locator) {
-        return getElementListNew(Button.class, searchContext, locator);
+        return getElements(Button.class, searchContext, locator);
     }
 
     protected Link link(By locator) {
-        return getElementNew(Link.class, locator, generateErrorMessage());
+        return getElement(Link.class, locator, generateErrorMessage());
     }
 
     protected Link link(SearchContext searchContext, By locator) {
-        return getElementNew(Link.class, searchContext, locator, generateErrorMessage());
+        return getElement(Link.class, searchContext, locator, generateErrorMessage());
     }
 
     protected List<Link> links(By locator) {
-        return getElementListNew(Link.class, locator, generateErrorMessage());
+        return getElements(Link.class, locator, generateErrorMessage());
     }
 
     protected CheckBox checkBox(By locator) {
-        return getElementNew(CheckBox.class, locator, generateErrorMessage());
+        return getElement(CheckBox.class, locator, generateErrorMessage());
     }
 
     protected CheckBox checkBox(SearchContext searchContext, By locator) {
-        return getElementNew(CheckBox.class, searchContext, locator, generateErrorMessage());
+        return getElement(CheckBox.class, searchContext, locator, generateErrorMessage());
     }
 
     protected List<CheckBox> checkBoxes(By locator) {
-        return getElementListNew(CheckBox.class, locator, generateErrorMessage());
+        return getElements(CheckBox.class, locator, generateErrorMessage());
     }
 
     protected RadioButton radioButton(By locator) {
-        return getElementNew(RadioButton.class, locator, generateErrorMessage());
+        return getElement(RadioButton.class, locator, generateErrorMessage());
     }
 
     protected RadioButton radioButton(SearchContext searchContext, By locator) {
-        return getElementNew(RadioButton.class, searchContext, locator, generateErrorMessage());
+        return getElement(RadioButton.class, searchContext, locator, generateErrorMessage());
     }
 
     protected List<RadioButton> radioButtons(By locator) {
-        return getElementListNew(RadioButton.class, locator, generateErrorMessage());
+        return getElements(RadioButton.class, locator, generateErrorMessage());
     }
 
     protected Select select(By locator) {
-        return getElementNew(Select.class, locator, generateErrorMessage());
+        return getElement(Select.class, locator, generateErrorMessage());
     }
 
     protected Select select(SearchContext searchContext, By locator) {
-        return getElementNew(Select.class, searchContext, locator, generateErrorMessage());
+        return getElement(Select.class, searchContext, locator, generateErrorMessage());
     }
 
     protected List<Select> selects(By locator) {
-        return getElementListNew(Select.class, locator, generateErrorMessage());
+        return getElements(Select.class, locator, generateErrorMessage());
     }
 
     protected TextField textField(By locator) {
-        return getElementNew(TextField.class, locator, generateErrorMessage());
+        return getElement(TextField.class, locator, generateErrorMessage());
     }
 
     protected TextField textField(SearchContext searchContext, By locator) {
-        return getElementNew(TextField.class, searchContext, locator, generateErrorMessage());
+        return getElement(TextField.class, searchContext, locator, generateErrorMessage());
     }
 
 
     protected List<TextField> textFields(By locator) {
-        return getElementListNew(TextField.class, locator, generateErrorMessage());
+        return getElements(TextField.class, locator, generateErrorMessage());
     }
 
     /**
@@ -155,15 +153,6 @@ public class AbstractElementFinder {
     protected List<WebElement> domElements(By locator) {
         try {
             return waitForPresenceOfAllElementsLocatedBy(locator);
-        } catch (WebDriverException e) {
-            fail(generateErrorMessage());
-            return null;
-        }
-    }
-
-    protected List<WebElement> domElementsInFrames(By locator) {
-        try {
-            return waitForPresenceOfAllElementsLocatedByInFrames(locator);
         } catch (WebDriverException e) {
             fail(generateErrorMessage());
             return null;
@@ -276,124 +265,12 @@ public class AbstractElementFinder {
     }
 
     private class UnsupportedConditionException extends RuntimeException {
-        public UnsupportedConditionException(String message) {
+        UnsupportedConditionException(String message) {
             super(message);
         }
     }
 
-    @Deprecated
-    /**
-     * use button(By locator)
-     */
-    protected Button waitForButton(By locator, String errorMessage) {
-        return getElement(Button.class, locator, errorMessage);
-    }
-
-//TODO VE: do not delete this methods untill Jan 2017
-//    protected Button waitForButton(SearchContext searchContext, By locator, String errorMessage) {
-//        return getElement(Button.class, searchContext, locator, errorMessage);
-//    }
-//
-//    protected Button waitForButton(By locator, long timeout, String errorMessage) {
-//        return getElement(Button.class, locator, timeout, errorMessage);
-//    }
-
-    @Deprecated
-    /**
-     * use link(By locator)
-     */
-    protected Link waitForLink(By locator, String errorMessage) {
-        return getElement(Link.class, locator, errorMessage);
-    }
-
-//TODO VE: do not delete this methods untill Jan 2017
-//    protected Link waitForLink(By locator, long timeout, String errorMessage) {
-//        return getElement(Link.class, locator, errorMessage);
-//    }
-
-    @Deprecated
-    /**
-     * use links(By locator)
-     */
-    protected List<Link> waitForLinkList(By locator, String errorMessage) {
-        return getElementList(Link.class, locator, errorMessage);
-    }
-
-    @Deprecated
-    /**
-     * use checkBox(By locator)
-     */
-    protected CheckBox waitForCheckBox(By locator, String errorMessage) {
-        return getElement(CheckBox.class, locator, errorMessage);
-    }
-
-    @Deprecated
-    /**
-     * use checkBoxes(By locator)
-     */
-    protected List<CheckBox> waitForCheckBoxList(By locator, String errorMessage) {
-        return getElementList(CheckBox.class, locator, errorMessage);
-    }
-
-    @Deprecated
-    /**
-     * use select(By locator)
-     */
-    protected Select waitForSelect(By locator, String errorMessage) {
-        return getElement(Select.class, locator, errorMessage);
-    }
-
-    @Deprecated
-    /**
-     * use selects(By locator)
-     */
-    protected List<Select> waitForSelectList(By locator, String errorMessage) {
-        return getElementList(Select.class, locator, errorMessage);
-    }
-
-    @Deprecated
-    /**
-     * use radioButton(By locator)
-     */
-    protected RadioButton waitForRadioButton(By locator, String errorMessage) {
-        return getElement(RadioButton.class, locator, errorMessage);
-    }
-
-    //TODO VE: do not delete this methods untill Jan 2017
-//    protected RadioButton waitForRadioButton(By locator, long timeout, String errorMessage) {
-//        return getElement(RadioButton.class, locator, errorMessage);
-//    }
-    @Deprecated
-    /**
-     * use radioButtons(By locator)
-     */
-    protected List<RadioButton> waitForRadioButtonList(By locator, String errorMessage) {
-        return getElementList(RadioButton.class, locator, errorMessage);
-    }
-
-    @Deprecated
-    /**
-     * use textField(By locator)
-     */
-    protected TextField waitForTextField(By locator, String errorMessage) {
-        return getElement(TextField.class, locator, errorMessage);
-    }
-
-//TODO VE: do not delete this methods untill Jan 2017
-//    protected TextField waitForTextField(By locator, long timeout, String errorMessage) {
-//        return getElement(TextField.class, locator, errorMessage);
-//    }
-
-    @Deprecated
-    /**
-     * use textFields(By locator)
-     */
-    protected List<TextField> waitForTextFieldList(By locator, String errorMessage) {
-        return getElementList(TextField.class, locator, errorMessage);
-    }
-
-
-    private <T extends Element> T getElementNew(Class<T> elementType, SearchContext searchContext, By by) {
+    private <T extends Element> T getElement(Class<T> elementType, SearchContext searchContext, By by) {
         if (!isIE()) {
             return getWebElementWrapper(searchContext.findElement(by)).getElement(elementType, by);
         } else {
@@ -406,7 +283,7 @@ public class AbstractElementFinder {
         }
     }
 
-    private <T extends Element> T getElementNew(Class<T> elementType, SearchContext searchContext, By by, String errorMessage) {
+    private <T extends Element> T getElement(Class<T> elementType, SearchContext searchContext, By by, String errorMessage) {
         try {
             if (!isIE()) {
                 return getWebElementWrapper(searchContext.findElement(by)).getElement(elementType, by);
@@ -424,8 +301,8 @@ public class AbstractElementFinder {
         }
     }
 
-    private <T extends Element> List<T> getElementListNew(Class<T> elementType, By by, String errorMessage) {
-        List<T> result = new ArrayList<T>();
+    private <T extends Element> List<T> getElements(Class<T> elementType, By by, String errorMessage) {
+        List<T> result = new ArrayList<>();
         List<WebElement> webElementList = waitForVisibilityOfAllElementsLocatedBy(by, errorMessage);
         for (WebElement webElement : webElementList) {
             result.add(getWebElementWrapper(webElement).getElement(elementType, by));
@@ -433,8 +310,8 @@ public class AbstractElementFinder {
         return result;
     }
 
-    private <T extends Element> List<T> getElementListNew(Class<T> elementType, SearchContext searchContext, By by) {
-        List<T> result = new ArrayList<T>();
+    private <T extends Element> List<T> getElements(Class<T> elementType, SearchContext searchContext, By by) {
+        List<T> result = new ArrayList<>();
         List<WebElement> webElementList = searchContext.findElements(by);
         for (WebElement webElement : webElementList) {
             result.add(getWebElementWrapper(webElement).getElement(elementType, by));
@@ -442,59 +319,18 @@ public class AbstractElementFinder {
         return result;
     }
 
-    private <T extends Element> T getElementNew(Class<T> elementType, By by, String errorMessage) {
-        if (!isIE()) {
+    private <T extends Element> T getElement(Class<T> elementType, By by, String errorMessage) {
+        try {
             return getWebElementWrapper(waitForVisibilityOfElementLocatedBy(by, errorMessage)).getElement(elementType, by);
-        } else {
-            try {
-                return getWebElementWrapper(waitForVisibilityOfElementLocatedBy(by, errorMessage)).getElement(elementType, by);
-            } catch (Exception e) {
+        } catch (Exception e) {
+            if (isIE()) {
                 TestUtils.waitForSomeTime(5000, EXPLANATION_MESSAGE_FOR_WAIT);
                 return getWebElementWrapper(waitForVisibilityOfElementLocatedBy(by, errorMessage)).getElement(elementType, by);
+            } else {
+                throw e;
             }
         }
     }
-
-    @Deprecated
-    /**
-     * Use getElementNew()
-     */
-    protected <T extends Element> T getElement(Class<T> elementType, By by, String errorMessage) {
-        if (!isIE()) {
-            return getWebElementWrapper(waitForPresenceOfElementLocatedBy(by, errorMessage)).getElement(elementType, by);
-        } else {
-            try {
-                return getWebElementWrapper(waitForVisibilityOfElementLocatedBy(by, errorMessage)).getElement(elementType, by);
-            } catch (Exception e) {
-                TestUtils.waitForSomeTime(5000, EXPLANATION_MESSAGE_FOR_WAIT);
-                return getWebElementWrapper(waitForVisibilityOfElementLocatedBy(by, errorMessage)).getElement(elementType, by);
-            }
-        }
-    }
-
-    @Deprecated
-    /**
-     * Use getElementListNew()
-     */
-    protected <T extends Element> List<T> getElementList(Class<T> elementType, By by, String errorMessage) {
-        List<T> result = new ArrayList<T>();
-        List<WebElement> webElementList = waitForPresenceOfAllElementsLocatedBy(by, errorMessage);
-        for (WebElement webElement : webElementList) {
-            result.add(getWebElementWrapper(webElement).getElement(elementType, by));
-        }
-        return result;
-    }
-
-    //TODO VE: do not delete this methods untill Jan 2017
-    private <T extends Element> T getElement(Class<T> elementType, By by, long timeout, String errorMessage) {
-        return getWebElementWrapper(waitForPresenceOfElementLocatedBy(by, timeout, errorMessage)).getElement(elementType, by);
-    }
-
-    //TODO VE: do not delete this methods untill Jan 2017
-    private <T extends Element> T getElement(Class<T> elementType, SearchContext searchContext, By by, String errorMessage) {
-        return getWebElementWrapper(waitForPresenceOfElementLocatedBy(by, errorMessage)).getElement(elementType, by);
-    }
-
 
     /**
      * Takes the 4th method from a StackTrace chain. It should be the method from Page that called method
@@ -533,6 +369,11 @@ public class AbstractElementFinder {
         return new WebElementWrapper(wrappedElement);
     }
 
+    /**
+     * use {@link #elementOrNull(By)}
+     * this method will be removed
+     */
+    @Deprecated
     protected final WebElement findElementByNoThrow(final By locator) {
         try {
             return wrap(elementFinder.findElementBy(locator), locator);
@@ -550,6 +391,11 @@ public class AbstractElementFinder {
         }
     }
 
+    /**
+     * use {@link #elementOrNull(SearchContext, By)}
+     * this method will be removed
+     */
+    @Deprecated
     protected final WebElement findElementByNoThrow(final SearchContext searchContext, final By locator) {
         try {
             return wrap(elementFinder.findElementBy(searchContext, locator), locator);
@@ -567,25 +413,13 @@ public class AbstractElementFinder {
         }
     }
 
-    @Deprecated
     /**
      * This method is valid but now it's used in many places incorrectly. All usages should be verified and fixed
      * then deprecated annotation will be removed
      */
+    @Deprecated
     protected final List<WebElement> findElementsBy(final By locator) {
         return wrapList(elementFinder.findElementsBy(locator), locator);
-    }
-
-    protected final List<WebElement> findElementsByInFrames(final By locator) {
-        return wrapList(elementFinder.findElementsByInFrames(locator), locator);
-    }
-
-    protected final List<WebElement> waitForVisibilityOfAllElementsLocatedByInFrames(final By locator) {
-        return wrapList(elementFinder.waitForVisibilityOfAllElementsLocatedByInFrames(locator), locator);
-    }
-
-    protected final List<WebElement> waitForPresenceOfAllElementsLocatedByInFrames(final By locator) {
-        return wrapList(elementFinder.waitForPresenceOfAllElementsLocatedByInFrames(locator), locator);
     }
 
     protected final void waitForWindowToBeAppearedAndSwitchToIt(final String title) {
@@ -645,11 +479,11 @@ public class AbstractElementFinder {
         return wrap(elementFinder.waitForPresenceOfElementLocatedBy(locator, timeout), locator);
     }
 
-    @Deprecated
     /**
      * Use element/select/textField/checkBox - when you need VISIBLE element
      * Use domElement - when you need element which is PRESENT IN DOM
      */
+    @Deprecated
     protected final WebElement waitForPresenceOfElementLocatedBy(final By locator, final String errorMessage) {
         try {
             return waitForPresenceOfElementLocatedBy(locator);
@@ -659,6 +493,10 @@ public class AbstractElementFinder {
         return null;
     }
 
+    /**
+     * Use element/select/textField/checkBox - when you need VISIBLE element
+     * Use domElement - when you need element which is PRESENT IN DOM
+     */
     @Deprecated
     protected final WebElement waitForPresenceOfElementLocatedBy(final By locator, long timeout, final String errorMessage) {
         try {
@@ -698,11 +536,11 @@ public class AbstractElementFinder {
         }
     }
 
-    @Deprecated
     /**
      * Use elements/selects/textFields/checkBoxes - when you need VISIBLE element
      * Use domElement - when you need element which is PRESENT IN DOM
      */
+    @Deprecated
     protected final List<WebElement> waitForPresenceOfAllElementsLocatedBy(final By locator, String errorMessage) {
         try {
             return waitForPresenceOfAllElementsLocatedBy(locator);
@@ -712,12 +550,12 @@ public class AbstractElementFinder {
         return null;
     }
 
-    @Deprecated
     /**
      * Instead of this method create a 1 line private getter with meaningful name in Page
      * and call element(By locator) instead of this method. Error message will be automatically generated based on this.
      * This method will be removed by Jan 2017.
      */
+    @Deprecated
     protected final WebElement waitForVisibilityOfElementLocatedBy(final By locator, final String errorMessage) {
         try {
             return waitForVisibilityOfElementLocatedBy(locator);
@@ -740,12 +578,12 @@ public class AbstractElementFinder {
         return wrapList(elementFinder.waitForVisibilityOfAllElementsLocatedBy(locator), locator);
     }
 
-    @Deprecated
     /**
      * Instead of this method create a 1 line private getter with meaningful name in Page
      * and call elements(By locator) instead of this method. Error message will be automatically generated based on this.
      * This method will be removed by Jan 2017.
      */
+    @Deprecated
     protected final List<WebElement> waitForVisibilityOfAllElementsLocatedBy(final By locator, final String errorMessage) {
         try {
             return waitForVisibilityOfAllElementsLocatedBy(locator);
@@ -914,38 +752,6 @@ public class AbstractElementFinder {
 
     protected final void setTimeout(final long timeout) {
         elementFinder.setTimeout(timeout);
-    }
-
-    public boolean isIE() {
-        return ExecutionUtils.isIE();
-    }
-
-    public boolean isSafari() {
-        return ExecutionUtils.isSafari();
-    }
-
-    public boolean isFF() {
-        return ExecutionUtils.isFF();
-    }
-
-    public boolean isChrome() {
-        return ExecutionUtils.isChrome();
-    }
-
-    public boolean isWindows() {
-        return ExecutionUtils.isWindows();
-    }
-
-    public boolean isAndroid() {
-        return ExecutionUtils.isAndroid();
-    }
-
-    public boolean isMac() {
-        return ExecutionUtils.isMac();
-    }
-
-    public boolean isIOs() {
-        return ExecutionUtils.isIOs();
     }
 
     public void switchToLastWindow() {

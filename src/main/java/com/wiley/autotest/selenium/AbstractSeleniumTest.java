@@ -10,6 +10,7 @@ import com.wiley.autotest.listeners.SkipTestsListener;
 import com.wiley.autotest.screenshots.Screenshoter;
 import com.wiley.autotest.selenium.context.HelperRegistry;
 import com.wiley.autotest.selenium.context.IPage;
+import com.wiley.autotest.selenium.context.PageProvider;
 import com.wiley.autotest.selenium.context.ScreenshotHelper;
 import com.wiley.autotest.selenium.driver.events.listeners.ScreenshotWebDriverEventListener;
 import com.wiley.autotest.services.CookiesService;
@@ -56,8 +57,11 @@ public abstract class AbstractSeleniumTest extends AbstractTestNGSpringContextTe
 
     public static final Logger LOGGER = LoggerFactory.getLogger(AbstractSeleniumTest.class);
 
+//    @Autowired
+//    private HelperRegistry registry;
+
     @Autowired
-    private HelperRegistry registry;
+    private PageProvider pageProvider;
 
     @Autowired
     private Settings settings;
@@ -210,15 +214,11 @@ public abstract class AbstractSeleniumTest extends AbstractTestNGSpringContextTe
     }
 
     public <E extends IPage> E getPage(final Class<E> helperClass) {
-        E helper = registry.getPageHelper(helperClass);
-        helper.init(getWebDriver(), this);
-        return helper;
+        return pageProvider.getPage(helperClass);
     }
 
     public <E extends IPage> E getPage(final Class<E> helperClass, final String urlToOpen) {
-        E helper = getPage(helperClass);
-        helper.load(urlToOpen);
-        return helper;
+        return pageProvider.getPage(helperClass, urlToOpen);
     }
 
     public Settings getSettings() {

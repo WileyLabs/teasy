@@ -80,34 +80,6 @@ abstract class AbstractElement implements Element {
         return false;
     }
 
-    protected static boolean isIE() {
-        return ExecutionUtils.isIE();
-    }
-
-    protected static boolean isFF() {
-        return ExecutionUtils.isFF();
-    }
-
-    protected static boolean isChrome() {
-        return ExecutionUtils.isChrome();
-    }
-
-    protected static boolean isSafari() {
-        return ExecutionUtils.isSafari();
-    }
-
-    protected static boolean isWindows() {
-        return ExecutionUtils.isWindows();
-    }
-
-    protected static boolean isAndroid() {
-        return ExecutionUtils.isAndroid();
-    }
-
-    protected static boolean isMac() {
-        return ExecutionUtils.isMac();
-    }
-
     protected void scrollIntoView(WebElement element) {
         executeScript("arguments[0].scrollIntoView(true);", element);
     }
