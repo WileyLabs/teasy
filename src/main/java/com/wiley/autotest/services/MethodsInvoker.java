@@ -5,7 +5,6 @@ import com.wiley.autotest.annotations.OurAfterSuite;
 import com.wiley.autotest.annotations.OurBeforeGroups;
 import com.wiley.autotest.annotations.OurBeforeSuite;
 import com.wiley.autotest.selenium.AbstractTest;
-import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -39,7 +38,7 @@ public abstract class MethodsInvoker {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodsInvoker.class);
     private static final String UNABLE_TO_CREATE_TEST_CLASS_INSTANCE = "Unable to create test class instance. ";
 
-    abstract void invokeMethod(final Class<? extends AbstractTest> instance, final Method method, TestClassContext context, boolean isBeforeAfterGroup);
+    abstract void invokeMethod(final AbstractTest instance, final Method method, TestClassContext context, boolean isBeforeAfterGroup);
 
     /**
      * Called when using all project-specific annotations (E4BeforeGroups, E4AfterMethod, etc.)
@@ -55,7 +54,7 @@ public abstract class MethodsInvoker {
             final Method[] methods = context.getTestClass().getMethods();
             for (Method method : methods) {
                 if (isMethodShouldBeInvoked(method, context)) {
-                    Class<? extends AbstractTest> testInstance = context.getTestInstance();
+                    AbstractTest testInstance = context.getTestInstance();
                     if (testInstance != null || (testInstance = createTestClassInstance(context.getTestClass())) != null) {
                         //hack for E4 project only (@LoginAs and @LoginTo) by default the method will do nothing untill you override it
                         //and add some specific logic. For example handle your special anotations
@@ -171,21 +170,21 @@ public abstract class MethodsInvoker {
     }
 
     protected static final class TestClassContext {
-        private final Class<? extends AbstractTest> testClass;
-        private final Class<? extends AbstractTest> testInstance;
+        private final Class testClass;
+        private final AbstractTest testInstance;
         private final Class<? extends Annotation> annotationClassToInvokeMethods;
         private String[] includedGroups;
         private String[] excludedGroups;
         private ITestContext testContext;
         private Class<? extends AbstractTest> baseClass;
 
-        protected TestClassContext(Class<? extends AbstractTest> testClass, Class<? extends AbstractTest> testInstance, Class<? extends Annotation> annotationClassToInvokeMethods) {
+        protected TestClassContext(Class testClass, AbstractTest testInstance, Class<? extends Annotation> annotationClassToInvokeMethods) {
             this.testClass = testClass;
             this.testInstance = testInstance;
             this.annotationClassToInvokeMethods = annotationClassToInvokeMethods;
         }
 
-        protected TestClassContext(Class<? extends AbstractTest> testClass, Class<? extends AbstractTest> testInstance, Class<? extends Annotation> annotationClassToInvokeMethods,
+        protected TestClassContext(Class testClass, AbstractTest testInstance, Class<? extends Annotation> annotationClassToInvokeMethods,
                                    ITestContext testContext, Class<? extends AbstractTest> baseClass) {
             this.testClass = testClass;
             this.testInstance = testInstance;
@@ -204,11 +203,11 @@ public abstract class MethodsInvoker {
             this.baseClass = baseClass;
         }
 
-        public Class<? extends AbstractTest> getTestClass() {
+        public Class getTestClass() {
             return testClass;
         }
 
-        public Class<? extends AbstractTest> getTestInstance() {
+        public AbstractTest getTestInstance() {
             return testInstance;
         }
 
@@ -224,7 +223,7 @@ public abstract class MethodsInvoker {
             return excludedGroups;
         }
 
-        private ITestContext getTestContext() {
+        ITestContext getTestContext() {
             return testContext;
         }
 

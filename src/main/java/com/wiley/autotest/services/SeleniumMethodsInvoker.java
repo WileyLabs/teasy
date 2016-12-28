@@ -88,13 +88,13 @@ public class SeleniumMethodsInvoker extends MethodsInvoker {
 
 
     @Override
-    void invokeMethod(Class<? extends AbstractTest> instance, Method method, TestClassContext context, boolean isBeforeAfterGroup) {
+    void invokeMethod(AbstractTest instance, Method method, TestClassContext context, boolean isBeforeAfterGroup) {
         final WebDriver mainDriver = SeleniumHolder.getWebDriver();
         final String mainDriverName = SeleniumHolder.getDriverName();
 
-//        AbstractSeleniumTest abstractSeleniumTest = instance;
+        AbstractSeleniumTest abstractSeleniumTest = (AbstractSeleniumTest) instance;
 
-        if (instance.getTestMethod() != null && isSkippedTest(instance)) {
+        if (abstractSeleniumTest.getTestMethod() != null && isSkippedTest(abstractSeleniumTest)) {
             return;
         }
 
@@ -124,16 +124,16 @@ public class SeleniumMethodsInvoker extends MethodsInvoker {
         try {
             method.invoke(instance);
         } catch (Throwable e) {
-            instance.takeScreenshot(e.getMessage(), method.getName());
+            abstractSeleniumTest.takeScreenshot(e.getMessage(), method.getName());
             final Writer result = new StringWriter();
             final PrintWriter printWriter = new PrintWriter(result);
             ((InvocationTargetException) e).getTargetException().printStackTrace(printWriter);
             String errorMessage = format("Precondition method '%s' failed ", method.getName()) + "\n " +
                     result.toString();
             if (isBeforeAfterGroup) {
-                instance.setPostponedBeforeAfterGroupFail(errorMessage, context.getTestContext());
+                abstractSeleniumTest.setPostponedBeforeAfterGroupFail(errorMessage, context.getTestContext());
             } else {
-                instance.setPostponedTestFail(errorMessage);
+                abstractSeleniumTest.setPostponedTestFail(errorMessage);
             }
 
             if (method.getAnnotation(RetryPrecondition.class) != null) {
