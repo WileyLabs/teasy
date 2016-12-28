@@ -6,6 +6,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 
+import static com.wiley.autotest.utils.ExecutionUtils.isIE;
+
 class ButtonImpl extends AbstractEnabledElement implements Button {
     protected ButtonImpl(final WebElement wrappedElement) {
         super(wrappedElement);

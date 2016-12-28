@@ -26,6 +26,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.wiley.autotest.screenshots.ScreenShotsPathsHolder.addScreenShotPathForTest;
+import static com.wiley.autotest.selenium.SeleniumHolder.getDriverName;
 import static com.wiley.autotest.selenium.SeleniumHolder.getWebDriver;
 import static com.wiley.autotest.utils.TestUtils.getTestName;
 
@@ -66,7 +67,11 @@ public class Screenshoter {
 //This probably could be used someday (do not delete)
 //            int jsErrorNumber = JavaScriptError.readErrors(getWebDriver()).size();
 //            printStrings(image, removeNL(testName, errorMessage, "The following number of JS errors appeared during the test: " + jsErrorNumber));
-            printStrings(image, removeNL(testName, errorMessage));
+            List<String> lines = new ArrayList<>();
+            lines.add("Url: " + getWebDriver().getCurrentUrl());
+            lines.add("Browser: " + getDriverName());
+            lines.addAll(removeNL(testName, errorMessage));
+            printStrings(image, lines);
 
             final String pathName = getFilenameFor(testName);
             final File screenShotWithProjectPath = new File(pathName);

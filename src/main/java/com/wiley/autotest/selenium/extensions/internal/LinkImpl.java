@@ -6,6 +6,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 
+import static com.wiley.autotest.utils.ExecutionUtils.isIE;
+
 class LinkImpl extends AbstractElement implements Link {
     protected LinkImpl(final WebElement wrappedElement) {
         super(wrappedElement);

@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrapParent;
+import static com.wiley.autotest.utils.ExecutionUtils.isIE;
 
 /**
  * Created by IntelliJ IDEA.
