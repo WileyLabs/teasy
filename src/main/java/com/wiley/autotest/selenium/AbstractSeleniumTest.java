@@ -8,19 +8,17 @@ import com.wiley.autotest.event.postpone.failure.StorePostponeFailureSubscriber;
 import com.wiley.autotest.listeners.ProcessPostponedFailureListener;
 import com.wiley.autotest.listeners.SkipTestsListener;
 import com.wiley.autotest.screenshots.Screenshoter;
-import com.wiley.autotest.selenium.context.HelperRegistry;
 import com.wiley.autotest.selenium.context.IPage;
 import com.wiley.autotest.selenium.context.ScreenshotHelper;
 import com.wiley.autotest.selenium.driver.events.listeners.ScreenshotWebDriverEventListener;
 import com.wiley.autotest.services.CookiesService;
+import com.wiley.autotest.services.PageProvider;
 import com.wiley.autotest.services.SeleniumMethodsInvoker;
 import com.wiley.autotest.spring.SeleniumTestExecutionListener;
 import com.wiley.autotest.utils.JavaUtils;
 import com.wiley.autotest.utils.TestUtils;
 import net.lightbody.bmp.proxy.ProxyServer;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestExecutionListeners;
 import org.testng.IHookCallBack;
@@ -47,10 +45,8 @@ import static org.testng.Reporter.log;
 })
 public abstract class AbstractSeleniumTest extends AbstractTest implements ITest, ScreenshotHelper {
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(AbstractSeleniumTest.class);
-
     @Autowired
-    private HelperRegistry registry;
+    private PageProvider pageProvider;
 
     @Autowired
     private PostponedFailureEvent postponeFailureEvent;
@@ -189,15 +185,11 @@ public abstract class AbstractSeleniumTest extends AbstractTest implements ITest
     }
 
     public <E extends IPage> E getPage(final Class<E> helperClass) {
-        E helper = registry.getPageHelper(helperClass);
-        helper.init(getWebDriver(), this);
-        return helper;
+        return pageProvider.getPage(helperClass);
     }
 
     public <E extends IPage> E getPage(final Class<E> helperClass, final String urlToOpen) {
-        E helper = getPage(helperClass);
-        helper.load(urlToOpen);
-        return helper;
+        return pageProvider.getPage(helperClass, urlToOpen);
     }
 
     public void setPostponedTestFail(final String message) {

@@ -5,7 +5,6 @@ import com.wiley.autotest.event.postpone.failure.BeforeAfterGroupFailureEvent;
 import com.wiley.autotest.event.postpone.failure.PostponedFailureEvent;
 import com.wiley.autotest.event.postpone.failure.StorePostponeFailureSubscriber;
 import com.wiley.autotest.listeners.ProcessPostponedFailureListener;
-import com.wiley.autotest.services.SeleniumMethodsInvoker;
 import com.wiley.autotest.services.WebServiceMethodsInvoker;
 import com.wiley.autotest.utils.TestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +45,7 @@ public class AbstractWebServiceTest extends AbstractTest implements ITest {
     @BeforeSuite(alwaysRun = true)
     public void beforeSuite(final ITestContext context) {
         if (methodsInvoker == null) {
-            new SeleniumMethodsInvoker().invokeSuiteMethodsByAnnotation(OurBeforeSuite.class, context);
+            new WebServiceMethodsInvoker().invokeSuiteMethodsByAnnotation(OurBeforeSuite.class, context);
         } else {
             methodsInvoker.invokeSuiteMethodsByAnnotation(OurBeforeSuite.class, context);
         }
@@ -96,7 +95,7 @@ public class AbstractWebServiceTest extends AbstractTest implements ITest {
     @AfterSuite(alwaysRun = true)
     public void afterSuite(final ITestContext context) {
         if (methodsInvoker == null) {
-            new SeleniumMethodsInvoker().invokeSuiteMethodsByAnnotation(OurAfterSuite.class, context);
+            new WebServiceMethodsInvoker().invokeSuiteMethodsByAnnotation(OurAfterSuite.class, context);
         } else {
             methodsInvoker.invokeSuiteMethodsByAnnotation(OurAfterSuite.class, context);
         }
@@ -105,7 +104,7 @@ public class AbstractWebServiceTest extends AbstractTest implements ITest {
     @BeforeGroups
     public void doBeforeGroups(final ITestContext context) {
         if (methodsInvoker == null) {
-            new SeleniumMethodsInvoker().invokeGroupMethodsByAnnotation(OurBeforeGroups.class, context);
+            new WebServiceMethodsInvoker().invokeGroupMethodsByAnnotation(OurBeforeGroups.class, context);
         } else {
             methodsInvoker.invokeGroupMethodsByAnnotation(OurBeforeGroups.class, context);
         }
@@ -114,7 +113,7 @@ public class AbstractWebServiceTest extends AbstractTest implements ITest {
     @AfterGroups
     public void doAfterGroups(final ITestContext context) {
         if (methodsInvoker == null) {
-            new SeleniumMethodsInvoker().invokeGroupMethodsByAnnotation(OurAfterGroups.class, context);
+            new WebServiceMethodsInvoker().invokeGroupMethodsByAnnotation(OurAfterGroups.class, context);
         } else {
             methodsInvoker.invokeGroupMethodsByAnnotation(OurAfterGroups.class, context);
         }

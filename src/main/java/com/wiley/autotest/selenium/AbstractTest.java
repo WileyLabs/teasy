@@ -2,6 +2,8 @@ package com.wiley.autotest.selenium;
 
 import com.wiley.autotest.spring.Settings;
 import com.wiley.autotest.utils.TestUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
@@ -16,6 +18,8 @@ import java.lang.reflect.Method;
         "classpath*:/META-INF/spring/component-scan.xml"
 })
 public class AbstractTest extends AbstractTestNGSpringContextTests {
+
+    protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractSeleniumTest.class);
 
     @Autowired
     private Settings settings;
