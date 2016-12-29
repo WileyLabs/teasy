@@ -7,8 +7,6 @@ import com.wiley.autotest.selenium.Group;
 import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.utils.DriverUtils;
 import org.openqa.selenium.WebDriver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.testng.ITestContext;
@@ -42,19 +40,12 @@ public class SeleniumMethodsInvoker extends MethodsInvoker {
     private static final String WINDOWS = "windows";
     private static final String MAC = "mac";
 
+    private CookiesService cookiesService;
+
     @Autowired
     public void setCookiesService(CookiesService cookiesService) {
         this.cookiesService = cookiesService;
     }
-
-    private CookiesService cookiesService;
-
-    private static ThreadLocal<Integer> retryCount = new ThreadLocal<Integer>() {
-        @Override
-        protected Integer initialValue() {
-            return 0;
-        }
-    };
 
     private static ThreadLocal<Boolean> isFFDriver = new ThreadLocal<Boolean>() {
         @Override
@@ -63,21 +54,18 @@ public class SeleniumMethodsInvoker extends MethodsInvoker {
         }
     };
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SeleniumMethodsInvoker.class);
-    private static final String UNABLE_TO_CREATE_TEST_CLASS_INSTANCE = "Unable to create test class instance. ";
-
-    public <T extends Annotation> void invokeSuiteMethodsByAnnotation(final Class<T> annotationClass, final ITestContext testContext, Class<? extends AbstractSeleniumTest> baseClass) {
-        invokeGroupMethodsByAnnotation(annotationClass, testContext, baseClass);
+    public <T extends Annotation> void invokeSuiteMethodsByAnnotation(final Class<T> annotationClass, final ITestContext testContext) {
+        invokeGroupMethodsByAnnotation(annotationClass, testContext);
     }
 
-    public <T extends Annotation> void invokeGroupMethodsByAnnotation(final Class<T> annotationClass, final ITestContext testContext, Class<? extends AbstractSeleniumTest> baseClass) {
+    public <T extends Annotation> void invokeGroupMethodsByAnnotation(final Class<T> annotationClass, final ITestContext testContext) {
         initialize();
-        final TestClassContext testClassContext = new TestClassContext(((TestRunner) testContext).getTest().getXmlClasses().get(0).getSupportClass(), null, annotationClass, testContext, baseClass);
+        final TestClassContext testClassContext = new TestClassContext(((TestRunner) testContext).getTest().getXmlClasses().get(0).getSupportClass(), null, annotationClass, testContext);
         invokeMethodsByAnnotation(testClassContext, true);
     }
 
     public <T extends Annotation> void invokeMethodsByAnnotation(final AbstractSeleniumTest testObject, final Class<T> annotationClass) {
-//        invokeMethodsByAnnotation(new TestClassContext(testObject.getClass(), testObject, annotationClass), false);
+        invokeMethodsByAnnotation(new TestClassContext(testObject.getClass(), testObject, annotationClass), false);
     }
 
     private void initialize() {
@@ -85,7 +73,6 @@ public class SeleniumMethodsInvoker extends MethodsInvoker {
             cookiesService = new CookiesService();
         }
     }
-
 
     @Override
     void invokeMethod(AbstractTest instance, Method method, TestClassContext context, boolean isBeforeAfterGroup) {
@@ -158,8 +145,6 @@ public class SeleniumMethodsInvoker extends MethodsInvoker {
         }
     }
 
-
-
     public boolean isSkippedTest(AbstractSeleniumTest instance) {
         Method method = instance.getTestMethod();
         String platform = SeleniumHolder.getPlatform();
@@ -208,5 +193,4 @@ public class SeleniumMethodsInvoker extends MethodsInvoker {
         }
         return false;
     }
-
 }

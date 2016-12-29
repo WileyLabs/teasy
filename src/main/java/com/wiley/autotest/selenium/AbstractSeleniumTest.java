@@ -8,14 +8,13 @@ import com.wiley.autotest.event.postpone.failure.StorePostponeFailureSubscriber;
 import com.wiley.autotest.listeners.ProcessPostponedFailureListener;
 import com.wiley.autotest.listeners.SkipTestsListener;
 import com.wiley.autotest.screenshots.Screenshoter;
+import com.wiley.autotest.selenium.context.HelperRegistry;
 import com.wiley.autotest.selenium.context.IPage;
-import com.wiley.autotest.services.PageProvider;
 import com.wiley.autotest.selenium.context.ScreenshotHelper;
 import com.wiley.autotest.selenium.driver.events.listeners.ScreenshotWebDriverEventListener;
 import com.wiley.autotest.services.CookiesService;
-import com.wiley.autotest.services.MethodsInvoker;
+import com.wiley.autotest.services.SeleniumMethodsInvoker;
 import com.wiley.autotest.spring.SeleniumTestExecutionListener;
-import com.wiley.autotest.spring.Settings;
 import com.wiley.autotest.utils.JavaUtils;
 import com.wiley.autotest.utils.TestUtils;
 import net.lightbody.bmp.proxy.ProxyServer;
@@ -23,9 +22,7 @@ import org.openqa.selenium.support.events.EventFiringWebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.IHookCallBack;
 import org.testng.ITest;
 import org.testng.ITestContext;
@@ -53,16 +50,7 @@ public abstract class AbstractSeleniumTest extends AbstractTest implements ITest
     public static final Logger LOGGER = LoggerFactory.getLogger(AbstractSeleniumTest.class);
 
     @Autowired
-    private PageProvider pageProvider;
-//
-//    @Autowired
-//    private Settings settings;
-//
-//    @Autowired
-//    private ParamsProvider parameterProvider;
-//
-//    @Autowired
-//    private ParamsProvider parameterProviderForGroup;
+    private HelperRegistry registry;
 
     @Autowired
     private PostponedFailureEvent postponeFailureEvent;
@@ -73,11 +61,9 @@ public abstract class AbstractSeleniumTest extends AbstractTest implements ITest
     @Autowired
     protected CookiesService cookiesService;
 
-//    private MethodsInvoker methodsInvoker;
+    protected SeleniumMethodsInvoker methodsInvoker;
 
     private ScreenshotWebDriverEventListener screenshotWebDriverEventListener;
-
-//    private ThreadLocal<Throwable> stopTextExecutionThrowableHolder = new ThreadLocal<>();
 
     public ThreadLocal<String> mainWindowHandle = new ThreadLocal<>();
 
@@ -90,19 +76,19 @@ public abstract class AbstractSeleniumTest extends AbstractTest implements ITest
         return testName;
     }
 
-//    @Autowired
-//    public void setMethodsInvoker(MethodsInvoker methodsInvokerValue) {
-//        this.methodsInvoker = methodsInvokerValue;
-//    }
-//
-//    @BeforeSuite(alwaysRun = true)
-//    public void beforeSuite(final ITestContext context) {
-//        if (methodsInvoker == null) {
-//            new MethodsInvoker().invokeSuiteMethodsByAnnotation(OurBeforeSuite.class, context, this.getClass());
-//        } else {
-//            methodsInvoker.invokeSuiteMethodsByAnnotation(OurBeforeSuite.class, context, this.getClass());
-//        }
-//    }
+    @Autowired
+    public void setMethodsInvoker(SeleniumMethodsInvoker methodsInvokerValue) {
+        this.methodsInvoker = methodsInvokerValue;
+    }
+
+    @BeforeSuite(alwaysRun = true)
+    public void beforeSuite(final ITestContext context) {
+        if (methodsInvoker == null) {
+            new SeleniumMethodsInvoker().invokeSuiteMethodsByAnnotation(OurBeforeSuite.class, context);
+        } else {
+            methodsInvoker.invokeSuiteMethodsByAnnotation(OurBeforeSuite.class, context);
+        }
+    }
 
     @BeforeClass(alwaysRun = true)
     public void initScreenshotWebDriverEventListener() {
@@ -110,10 +96,10 @@ public abstract class AbstractSeleniumTest extends AbstractTest implements ITest
         ((EventFiringWebDriver) getWebDriver()).register(screenshotWebDriverEventListener);
     }
 
-//    @BeforeClass(alwaysRun = true)
-//    public void doBeforeClassMethods() {
-//        methodsInvoker.invokeMethodsByAnnotation(this, OurBeforeClass.class);
-//    }
+    @BeforeClass(alwaysRun = true)
+    public void doBeforeClassMethods() {
+        methodsInvoker.invokeMethodsByAnnotation(this, OurBeforeClass.class);
+    }
 
     @BeforeMethod(alwaysRun = true)
     public void beforeMethod(final Method test, final Object[] params, final ITestContext context) {
@@ -126,7 +112,7 @@ public abstract class AbstractSeleniumTest extends AbstractTest implements ITest
     @BeforeMethod(alwaysRun = true)
     public void setBugId(final Method test) {
         Bug bugAnnotation = test.getAnnotation(Bug.class);
-        if (bugAnnotation != null){
+        if (bugAnnotation != null) {
             SeleniumHolder.setBugId(bugAnnotation.id());
         }
     }
@@ -134,7 +120,7 @@ public abstract class AbstractSeleniumTest extends AbstractTest implements ITest
     @BeforeMethod(alwaysRun = true)
     public void doBeforeMethods(final Method test, final ITestContext context) {
         mainWindowHandle.set(getWebDriver().getWindowHandle());
-//        methodsInvoker.invokeMethodsByAnnotation(this, OurBeforeMethod.class);
+        methodsInvoker.invokeMethodsByAnnotation(this, OurBeforeMethod.class);
     }
 
     @BeforeTest(alwaysRun = true)
@@ -151,7 +137,7 @@ public abstract class AbstractSeleniumTest extends AbstractTest implements ITest
 
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
-//        parameterProvider.clear();
+        getParameterProvider().clear();
         postponeFailureEvent.unsubscribeAll();
         SeleniumHolder.setBugId(null);
     }
@@ -159,46 +145,43 @@ public abstract class AbstractSeleniumTest extends AbstractTest implements ITest
     @AfterMethod(alwaysRun = true)
     public void doAfterMethods() {
         cookiesService.deleteAllCookies();
-//        methodsInvoker.invokeMethodsByAnnotation(this, OurAfterMethod.class);
+        methodsInvoker.invokeMethodsByAnnotation(this, OurAfterMethod.class);
     }
 
-//    @AfterClass(alwaysRun = true)
-//    public void doAfterClassMethods() {
-//        methodsInvoker.invokeMethodsByAnnotation(this, OurAfterClass.class);
-//    }
+    @AfterClass(alwaysRun = true)
+    public void doAfterClassMethods() {
+        methodsInvoker.invokeMethodsByAnnotation(this, OurAfterClass.class);
+    }
 
-//    @AfterSuite(alwaysRun = true)
-//    public void afterSuite(final ITestContext context) {
-//        if (methodsInvoker == null) {
-//            new MethodsInvoker().invokeSuiteMethodsByAnnotation(OurAfterSuite.class, context, this.getClass());
-//        } else {
-//            methodsInvoker.invokeSuiteMethodsByAnnotation(OurAfterSuite.class, context, this.getClass());
-//        }
-//    }
-//
-//    @BeforeGroups
-//    public void doBeforeGroups(final ITestContext context) {
-//        if (methodsInvoker == null) {
-//            new MethodsInvoker().invokeGroupMethodsByAnnotation(OurBeforeGroups.class, context, this.getClass());
-//        } else {
-//            methodsInvoker.invokeGroupMethodsByAnnotation(OurBeforeGroups.class, context, this.getClass());
-//        }
-//    }
-//
-//    @AfterGroups
-//    public void doAfterGroups(final ITestContext context) {
-//        if (methodsInvoker == null) {
-//            new MethodsInvoker().invokeGroupMethodsByAnnotation(OurAfterGroups.class, context, this.getClass());
-//        } else {
-//            methodsInvoker.invokeGroupMethodsByAnnotation(OurAfterGroups.class, context, this.getClass());
-//        }
-//        if (getParameterProviderForGroup() != null) {
-//            getParameterProviderForGroup().clear();
-//        }
-//    }
+    @AfterSuite(alwaysRun = true)
+    public void afterSuite(final ITestContext context) {
+        if (methodsInvoker == null) {
+            new SeleniumMethodsInvoker().invokeSuiteMethodsByAnnotation(OurAfterSuite.class, context);
+        } else {
+            methodsInvoker.invokeSuiteMethodsByAnnotation(OurAfterSuite.class, context);
+        }
+    }
 
-//    public void handleBeforeAfterAnnotations(final Method test) {
-//    }
+    @BeforeGroups
+    public void doBeforeGroups(final ITestContext context) {
+        if (methodsInvoker == null) {
+            new SeleniumMethodsInvoker().invokeGroupMethodsByAnnotation(OurBeforeGroups.class, context);
+        } else {
+            methodsInvoker.invokeGroupMethodsByAnnotation(OurBeforeGroups.class, context);
+        }
+    }
+
+    @AfterGroups
+    public void doAfterGroups(final ITestContext context) {
+        if (methodsInvoker == null) {
+            new SeleniumMethodsInvoker().invokeGroupMethodsByAnnotation(OurAfterGroups.class, context);
+        } else {
+            methodsInvoker.invokeGroupMethodsByAnnotation(OurAfterGroups.class, context);
+        }
+        if (getParameterProviderForGroup() != null) {
+            getParameterProviderForGroup().clear();
+        }
+    }
 
     public void addSubscribersForBeforeAfterGroupFailureEvents(ITestContext context) {
         beforeAfterGroupFailureEvent.subscribe(new ScreenshotOnPostponeFailureSubscriber("OurBeforeGroups"));
@@ -206,36 +189,16 @@ public abstract class AbstractSeleniumTest extends AbstractTest implements ITest
     }
 
     public <E extends IPage> E getPage(final Class<E> helperClass) {
-        return pageProvider.getPage(helperClass);
+        E helper = registry.getPageHelper(helperClass);
+        helper.init(getWebDriver(), this);
+        return helper;
     }
 
     public <E extends IPage> E getPage(final Class<E> helperClass, final String urlToOpen) {
-        return pageProvider.getPage(helperClass, urlToOpen);
+        E helper = getPage(helperClass);
+        helper.load(urlToOpen);
+        return helper;
     }
-
-//    public Settings getSettings() {
-//        return settings;
-//    }
-//
-//    protected final Object getParameter(final String key) {
-//        return parameterProvider.get(TestUtils.modifyKeyForCurrentThread(key));
-//    }
-//
-//    protected final Object getParameterForGroup(final String key) {
-//        return parameterProviderForGroup.get(TestUtils.modifyKeyForCurrentThread(key));
-//    }
-//
-//    public ParamsProvider getParameterProviderForGroup() {
-//        return parameterProviderForGroup;
-//    }
-//
-//    protected void setParameter(final String key, final Object value) {
-//        parameterProvider.put(TestUtils.modifyKeyForCurrentThread(key), value);
-//    }
-//
-//    protected void setParameterForGroup(final String key, final Object value) {
-//        parameterProviderForGroup.put(TestUtils.modifyKeyForCurrentThread(key), value);
-//    }
 
     public void setPostponedTestFail(final String message) {
         postponeFailureEvent.fire(message);

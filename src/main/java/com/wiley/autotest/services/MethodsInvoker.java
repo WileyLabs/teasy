@@ -34,9 +34,9 @@ import static org.testng.Reporter.log;
 @Service
 public abstract class MethodsInvoker {
 
-    private static ThreadLocal<Integer> retryCount = ThreadLocal.withInitial(() -> 0);
-    private static final Logger LOGGER = LoggerFactory.getLogger(MethodsInvoker.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(MethodsInvoker.class);
     private static final String UNABLE_TO_CREATE_TEST_CLASS_INSTANCE = "Unable to create test class instance. ";
+    protected static ThreadLocal<Integer> retryCount = ThreadLocal.withInitial(() -> 0);
 
     abstract void invokeMethod(final AbstractTest instance, final Method method, TestClassContext context, boolean isBeforeAfterGroup);
 
@@ -176,7 +176,6 @@ public abstract class MethodsInvoker {
         private String[] includedGroups;
         private String[] excludedGroups;
         private ITestContext testContext;
-        private Class<? extends AbstractTest> baseClass;
 
         protected TestClassContext(Class testClass, AbstractTest testInstance, Class<? extends Annotation> annotationClassToInvokeMethods) {
             this.testClass = testClass;
@@ -184,8 +183,7 @@ public abstract class MethodsInvoker {
             this.annotationClassToInvokeMethods = annotationClassToInvokeMethods;
         }
 
-        protected TestClassContext(Class testClass, AbstractTest testInstance, Class<? extends Annotation> annotationClassToInvokeMethods,
-                                   ITestContext testContext, Class<? extends AbstractTest> baseClass) {
+        protected TestClassContext(Class testClass, AbstractTest testInstance, Class<? extends Annotation> annotationClassToInvokeMethods, ITestContext testContext) {
             this.testClass = testClass;
             this.testInstance = testInstance;
             this.annotationClassToInvokeMethods = annotationClassToInvokeMethods;
@@ -200,7 +198,6 @@ public abstract class MethodsInvoker {
                 this.includedGroups = Arrays.copyOf(testContext.getIncludedGroups(), testContext.getIncludedGroups().length);
             }
             this.testContext = testContext;
-            this.baseClass = baseClass;
         }
 
         public Class getTestClass() {
@@ -225,10 +222,6 @@ public abstract class MethodsInvoker {
 
         ITestContext getTestContext() {
             return testContext;
-        }
-
-        public Class<? extends AbstractTest> getBaseClass() {
-            return baseClass;
         }
     }
 }
