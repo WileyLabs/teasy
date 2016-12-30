@@ -9,11 +9,11 @@ import com.wiley.autotest.listeners.ProcessPostponedFailureListener;
 import com.wiley.autotest.listeners.SkipTestsListener;
 import com.wiley.autotest.screenshots.Screenshoter;
 import com.wiley.autotest.selenium.context.IPage;
-import com.wiley.autotest.services.PageProvider;
 import com.wiley.autotest.selenium.context.ScreenshotHelper;
 import com.wiley.autotest.selenium.driver.events.listeners.ScreenshotWebDriverEventListener;
 import com.wiley.autotest.services.CookiesService;
 import com.wiley.autotest.services.MethodsInvoker;
+import com.wiley.autotest.services.PageProvider;
 import com.wiley.autotest.spring.SeleniumTestExecutionListener;
 import com.wiley.autotest.spring.Settings;
 import com.wiley.autotest.utils.JavaUtils;
@@ -55,9 +55,6 @@ import static org.testng.Reporter.log;
 public abstract class AbstractSeleniumTest extends AbstractTestNGSpringContextTests implements ITest, ScreenshotHelper {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(AbstractSeleniumTest.class);
-
-//    @Autowired
-//    private HelperRegistry registry;
 
     @Autowired
     private PageProvider pageProvider;
@@ -133,7 +130,7 @@ public abstract class AbstractSeleniumTest extends AbstractTestNGSpringContextTe
     @BeforeMethod(alwaysRun = true)
     public void setBugId(final Method test) {
         Bug bugAnnotation = test.getAnnotation(Bug.class);
-        if (bugAnnotation != null){
+        if (bugAnnotation != null) {
             SeleniumHolder.setBugId(bugAnnotation.id());
         }
     }
