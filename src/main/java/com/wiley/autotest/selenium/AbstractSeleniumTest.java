@@ -213,11 +213,11 @@ public abstract class AbstractSeleniumTest extends AbstractTestNGSpringContextTe
     }
 
     public <E extends IPage> E getPage(final Class<E> helperClass) {
-        return pageProvider.getPage(helperClass);
+        return pageProvider.getPage(helperClass, this);
     }
 
     public <E extends IPage> E getPage(final Class<E> helperClass, final String urlToOpen) {
-        return pageProvider.getPage(helperClass, urlToOpen);
+        return pageProvider.getPage(helperClass, this, urlToOpen);
     }
 
     public Settings getSettings() {
