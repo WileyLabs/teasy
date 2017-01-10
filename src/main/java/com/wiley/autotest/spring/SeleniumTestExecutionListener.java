@@ -643,6 +643,10 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         //http://selenium2.ru/news/131-rekomenduetsya-otklyuchit-advocacy-heartbeat-v-firefox-37.html
         profile.setPreference("browser.selfsupport.url", "");
 
+        //for use with sso auth
+        profile.setPreference("network.http.phishy-userpass-length", 255);
+        profile.setPreference("network.automatic-ntlm-auth.trusted-uris", "http://,https://");
+
         if (isUseFireBug.get()) {
             try {
                 //Using this way of adding extension because otherwise extensions could not be converted to Java File from selenium jar file.
