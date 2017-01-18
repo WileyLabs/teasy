@@ -17,12 +17,45 @@ public class PageProvider {
     @Autowired
     private HelperRegistry registry;
 
+    public <E extends IPage> E get(final Class<E> helperClass, ScreenshotHelper screenshotHelper) {
+        E helper = registry.getPageHelper(helperClass);
+        helper.init(getWebDriver(), screenshotHelper);
+        return helper;
+    }
+
+    public <E extends IPage> E get(final Class<E> helperClass) {
+        E helper = registry.getPageHelper(helperClass);
+        //TODO VE implement proper support of ScreenshotHelper. As for now it's only used for screenshot base tests passing it as null
+        helper.init(getWebDriver(), null);
+        return helper;
+    }
+
+    public <E extends IPage> E get(final Class<E> helperClass, ScreenshotHelper screenshotHelper, final String urlToOpen) {
+        E helper = get(helperClass, screenshotHelper);
+        helper.load(urlToOpen);
+        return helper;
+    }
+
+    public <E extends IPage> E get(final Class<E> helperClass, final String urlToOpen) {
+        E helper = get(helperClass);
+        helper.load(urlToOpen);
+        return helper;
+    }
+
+    /**
+     * Please use get()
+     */
+    @Deprecated
     public <E extends IPage> E getPage(final Class<E> helperClass, ScreenshotHelper screenshotHelper) {
         E helper = registry.getPageHelper(helperClass);
         helper.init(getWebDriver(), screenshotHelper);
         return helper;
     }
 
+    /**
+     * Please use get()
+     */
+    @Deprecated
     public <E extends IPage> E getPage(final Class<E> helperClass) {
         E helper = registry.getPageHelper(helperClass);
         //TODO VE implement proper support of ScreenshotHelper. As for now it's only used for screenshot base tests passing it as null
@@ -30,14 +63,22 @@ public class PageProvider {
         return helper;
     }
 
+    /**
+     * Please use get()
+     */
+    @Deprecated
     public <E extends IPage> E getPage(final Class<E> helperClass, ScreenshotHelper screenshotHelper, final String urlToOpen) {
-        E helper = getPage(helperClass, screenshotHelper);
+        E helper = get(helperClass, screenshotHelper);
         helper.load(urlToOpen);
         return helper;
     }
 
+    /**
+     * Please use get()
+     */
+    @Deprecated
     public <E extends IPage> E getPage(final Class<E> helperClass, final String urlToOpen) {
-        E helper = getPage(helperClass);
+        E helper = get(helperClass);
         helper.load(urlToOpen);
         return helper;
     }

@@ -185,11 +185,11 @@ public abstract class AbstractSeleniumTest extends AbstractTest implements ITest
     }
 
     public <E extends IPage> E getPage(final Class<E> helperClass) {
-        return pageProvider.getPage(helperClass, this);
+        return pageProvider.get(helperClass, this);
     }
 
     public <E extends IPage> E getPage(final Class<E> helperClass, final String urlToOpen) {
-        return pageProvider.getPage(helperClass, this, urlToOpen);
+        return pageProvider.get(helperClass, this, urlToOpen);
     }
 
     public void setPostponedTestFail(final String message) {
