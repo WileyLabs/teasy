@@ -60,7 +60,7 @@ public class AbstractElementFinder {
     }
 
     protected Button button(By locator) {
-        return getElement(Button.class, locator, generateErrorMessage());
+        return getElement(Button.class, locator);
     }
 
     protected Button button(SearchContext searchContext, By locator) {
@@ -68,7 +68,7 @@ public class AbstractElementFinder {
     }
 
     protected List<Button> buttons(By locator) {
-        return getElements(Button.class, locator, generateErrorMessage());
+        return getElements(Button.class, locator);
     }
 
     protected List<Button> buttons(SearchContext searchContext, By locator) {
@@ -76,64 +76,64 @@ public class AbstractElementFinder {
     }
 
     protected Link link(By locator) {
-        return getElement(Link.class, locator, generateErrorMessage());
+        return getElement(Link.class, locator);
     }
 
     protected Link link(SearchContext searchContext, By locator) {
-        return getElement(Link.class, searchContext, locator, generateErrorMessage());
+        return getElement(Link.class, searchContext, locator);
     }
 
     protected List<Link> links(By locator) {
-        return getElements(Link.class, locator, generateErrorMessage());
+        return getElements(Link.class, locator);
     }
 
     protected CheckBox checkBox(By locator) {
-        return getElement(CheckBox.class, locator, generateErrorMessage());
+        return getElement(CheckBox.class, locator);
     }
 
     protected CheckBox checkBox(SearchContext searchContext, By locator) {
-        return getElement(CheckBox.class, searchContext, locator, generateErrorMessage());
+        return getElement(CheckBox.class, searchContext, locator);
     }
 
     protected List<CheckBox> checkBoxes(By locator) {
-        return getElements(CheckBox.class, locator, generateErrorMessage());
+        return getElements(CheckBox.class, locator);
     }
 
     protected RadioButton radioButton(By locator) {
-        return getElement(RadioButton.class, locator, generateErrorMessage());
+        return getElement(RadioButton.class, locator);
     }
 
     protected RadioButton radioButton(SearchContext searchContext, By locator) {
-        return getElement(RadioButton.class, searchContext, locator, generateErrorMessage());
+        return getElement(RadioButton.class, searchContext, locator);
     }
 
     protected List<RadioButton> radioButtons(By locator) {
-        return getElements(RadioButton.class, locator, generateErrorMessage());
+        return getElements(RadioButton.class, locator);
     }
 
     protected Select select(By locator) {
-        return getElement(Select.class, locator, generateErrorMessage());
+        return getElement(Select.class, locator);
     }
 
     protected Select select(SearchContext searchContext, By locator) {
-        return getElement(Select.class, searchContext, locator, generateErrorMessage());
+        return getElement(Select.class, searchContext, locator);
     }
 
     protected List<Select> selects(By locator) {
-        return getElements(Select.class, locator, generateErrorMessage());
+        return getElements(Select.class, locator);
     }
 
     protected TextField textField(By locator) {
-        return getElement(TextField.class, locator, generateErrorMessage());
+        return getElement(TextField.class, locator);
     }
 
     protected TextField textField(SearchContext searchContext, By locator) {
-        return getElement(TextField.class, searchContext, locator, generateErrorMessage());
+        return getElement(TextField.class, searchContext, locator);
     }
 
 
     protected List<TextField> textFields(By locator) {
-        return getElements(TextField.class, locator, generateErrorMessage());
+        return getElements(TextField.class, locator);
     }
 
     /**
@@ -283,27 +283,9 @@ public class AbstractElementFinder {
         }
     }
 
-    private <T extends Element> T getElement(Class<T> elementType, SearchContext searchContext, By by, String errorMessage) {
-        try {
-            if (!isIE()) {
-                return getWebElementWrapper(searchContext.findElement(by)).getElement(elementType, by);
-            } else {
-                try {
-                    return getWebElementWrapper(searchContext.findElement(by)).getElement(elementType, by);
-                } catch (Exception e) {
-                    TestUtils.waitForSomeTime(5000, EXPLANATION_MESSAGE_FOR_WAIT);
-                    return getWebElementWrapper(searchContext.findElement(by)).getElement(elementType, by);
-                }
-            }
-        } catch (NoSuchElementException elementNotFound) {
-            fail(errorMessage);
-            return null;
-        }
-    }
-
-    private <T extends Element> List<T> getElements(Class<T> elementType, By by, String errorMessage) {
+    private <T extends Element> List<T> getElements(Class<T> elementType, By by) {
         List<T> result = new ArrayList<>();
-        List<WebElement> webElementList = waitForVisibilityOfAllElementsLocatedBy(by, errorMessage);
+        List<WebElement> webElementList = elements(by);
         for (WebElement webElement : webElementList) {
             result.add(getWebElementWrapper(webElement).getElement(elementType, by));
         }
@@ -319,13 +301,13 @@ public class AbstractElementFinder {
         return result;
     }
 
-    private <T extends Element> T getElement(Class<T> elementType, By by, String errorMessage) {
+    private <T extends Element> T getElement(Class<T> elementType, By by) {
         try {
-            return getWebElementWrapper(waitForVisibilityOfElementLocatedBy(by, errorMessage)).getElement(elementType, by);
+            return getWebElementWrapper(element(by)).getElement(elementType, by);
         } catch (Exception e) {
             if (isIE()) {
                 TestUtils.waitForSomeTime(5000, EXPLANATION_MESSAGE_FOR_WAIT);
-                return getWebElementWrapper(waitForVisibilityOfElementLocatedBy(by, errorMessage)).getElement(elementType, by);
+                return getWebElementWrapper(element(by)).getElement(elementType, by);
             } else {
                 throw e;
             }
@@ -346,7 +328,21 @@ public class AbstractElementFinder {
         if (stackTrace.length < 4) {
             return "***Code issue during generating error message for assert! Check the code at AbstractElementFinder";
         }
-        String nameOfMethodThatCalledMe = stackTrace[3].getMethodName();
+
+        StackTraceElement stackTraceElementForGenerateReport = null;
+        for (StackTraceElement stackTraceElement : stackTrace) {
+            if (stackTraceElement.getClassName().toLowerCase().endsWith("page")){
+                stackTraceElementForGenerateReport = stackTraceElement;
+                break;
+            }
+        }
+
+        String nameOfMethodThatCalledMe;
+        if (stackTraceElementForGenerateReport != null){
+            nameOfMethodThatCalledMe = stackTraceElementForGenerateReport.getMethodName();
+        } else {
+            nameOfMethodThatCalledMe = stackTrace[3].getMethodName();
+        }
 
         String[] splitName = nameOfMethodThatCalledMe.split("(?<=[a-z])(?=[A-Z])");
 
