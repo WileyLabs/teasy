@@ -12,9 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Reporter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrap;
 import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrapList;
@@ -329,17 +327,11 @@ public class AbstractElementFinder {
             return "***Code issue during generating error message for assert! Check the code at AbstractElementFinder";
         }
 
-        StackTraceElement stackTraceElementForGenerateReport = null;
-        for (StackTraceElement stackTraceElement : stackTrace) {
-            if (stackTraceElement.getClassName().toLowerCase().endsWith("page")){
-                stackTraceElementForGenerateReport = stackTraceElement;
-                break;
-            }
-        }
+        Optional<StackTraceElement> first = Arrays.asList(stackTrace).stream().filter(stackTraceElement -> stackTraceElement.getClassName().toLowerCase().endsWith("page")).findFirst();
 
         String nameOfMethodThatCalledMe;
-        if (stackTraceElementForGenerateReport != null){
-            nameOfMethodThatCalledMe = stackTraceElementForGenerateReport.getMethodName();
+        if (first.isPresent()) {
+            nameOfMethodThatCalledMe = first.get().getMethodName();
         } else {
             nameOfMethodThatCalledMe = stackTrace[3].getMethodName();
         }
