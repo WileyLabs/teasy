@@ -85,6 +85,10 @@ public class AbstractElementFinder {
         return getElements(Link.class, locator);
     }
 
+    protected List<Link> links(SearchContext searchContext, By locator) {
+        return getElements(Link.class, searchContext, locator);
+    }
+
     protected CheckBox checkBox(By locator) {
         return getElement(CheckBox.class, locator);
     }
@@ -97,6 +101,10 @@ public class AbstractElementFinder {
         return getElements(CheckBox.class, locator);
     }
 
+    protected List<CheckBox> checkBoxes(SearchContext searchContext, By locator) {
+        return getElements(CheckBox.class, searchContext, locator);
+    }
+
     protected RadioButton radioButton(By locator) {
         return getElement(RadioButton.class, locator);
     }
@@ -106,6 +114,10 @@ public class AbstractElementFinder {
     }
 
     protected List<RadioButton> radioButtons(By locator) {
+        return getElements(RadioButton.class, locator);
+    }
+
+    protected List<RadioButton> radioButtons(SearchContext searchContext, By locator) {
         return getElements(RadioButton.class, locator);
     }
 
@@ -121,6 +133,10 @@ public class AbstractElementFinder {
         return getElements(Select.class, locator);
     }
 
+    protected List<Select> selects(SearchContext searchContext, By locator) {
+        return getElements(Select.class, locator);
+    }
+
     protected TextField textField(By locator) {
         return getElement(TextField.class, locator);
     }
@@ -131,6 +147,10 @@ public class AbstractElementFinder {
 
 
     protected List<TextField> textFields(By locator) {
+        return getElements(TextField.class, locator);
+    }
+
+    protected List<TextField> textFields(SearchContext searchContext, By locator) {
         return getElements(TextField.class, locator);
     }
 
