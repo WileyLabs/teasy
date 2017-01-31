@@ -18,6 +18,7 @@ public interface ElementFinder {
     List<WebElement> findElementsBy(SearchContext searchContext, final By locator);
 
     List<WebElement> waitForVisibilityOfAllElementsLocatedBy(final By locator);
+    List<WebElement> waitForVisibilityOfAllElementsLocatedBy(final SearchContext searchContext, final By locator);
     WebElement waitForVisibilityOfElementLocatedBy(final By locator);
     WebElement waitForVisibilityOfElementLocatedBy(final By locator, final long timeout);
     void waitForVisibilityOf(WebElement element);

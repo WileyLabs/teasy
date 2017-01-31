@@ -40,9 +40,27 @@ public class AbstractElementFinder {
         }
     }
 
+    protected WebElement element(final SearchContext searchContext, final By locator) {
+        try {
+            return waitForVisibilityOfAllElementsLocatedBy(searchContext, locator).get(0);
+        } catch (WebDriverException e) {
+            fail(generateErrorMessage());
+            return null;
+        }
+    }
+
     protected List<WebElement> elements(final By locator) {
         try {
             return waitForVisibilityOfAllElementsLocatedBy(locator);
+        } catch (WebDriverException e) {
+            fail(generateErrorMessage());
+            return null;
+        }
+    }
+
+    protected List<WebElement> elements(final SearchContext searchContext, final By locator) {
+        try {
+            return waitForVisibilityOfAllElementsLocatedBy(searchContext, locator);
         } catch (WebDriverException e) {
             fail(generateErrorMessage());
             return null;
@@ -288,48 +306,32 @@ public class AbstractElementFinder {
         }
     }
 
+    private <T extends Element> T getElement(Class<T> elementType, By by) {
+        try {
+            return getWebElementWrapper(element(by)).getElement(elementType, by);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     private <T extends Element> T getElement(Class<T> elementType, SearchContext searchContext, By by) {
-        if (!isIE()) {
-            return getWebElementWrapper(searchContext.findElement(by)).getElement(elementType, by);
-        } else {
-            try {
-                return getWebElementWrapper(searchContext.findElement(by)).getElement(elementType, by);
-            } catch (Exception e) {
-                TestUtils.waitForSomeTime(5000, EXPLANATION_MESSAGE_FOR_WAIT);
-                return getWebElementWrapper(searchContext.findElement(by)).getElement(elementType, by);
-            }
+        try {
+            return getWebElementWrapper(element(searchContext, by)).getElement(elementType, by);
+        } catch (Exception e) {
+            return null;
         }
     }
 
     private <T extends Element> List<T> getElements(Class<T> elementType, By by) {
         List<T> result = new ArrayList<>();
-        List<WebElement> webElementList = elements(by);
-        for (WebElement webElement : webElementList) {
-            result.add(getWebElementWrapper(webElement).getElement(elementType, by));
-        }
+        elements(by).stream().forEach(element -> result.add(getWebElementWrapper(element).getElement(elementType, by)));
         return result;
     }
 
     private <T extends Element> List<T> getElements(Class<T> elementType, SearchContext searchContext, By by) {
         List<T> result = new ArrayList<>();
-        List<WebElement> webElementList = searchContext.findElements(by);
-        for (WebElement webElement : webElementList) {
-            result.add(getWebElementWrapper(webElement).getElement(elementType, by));
-        }
+        elements(searchContext, by).stream().forEach(element -> result.add(getWebElementWrapper(element).getElement(elementType, by)));
         return result;
-    }
-
-    private <T extends Element> T getElement(Class<T> elementType, By by) {
-        try {
-            return getWebElementWrapper(element(by)).getElement(elementType, by);
-        } catch (Exception e) {
-            if (isIE()) {
-                TestUtils.waitForSomeTime(5000, EXPLANATION_MESSAGE_FOR_WAIT);
-                return getWebElementWrapper(element(by)).getElement(elementType, by);
-            } else {
-                throw e;
-            }
-        }
     }
 
     /**
@@ -584,6 +586,10 @@ public class AbstractElementFinder {
 
     private List<WebElement> waitForVisibilityOfAllElementsLocatedBy(final By locator) {
         return wrapList(elementFinder.waitForVisibilityOfAllElementsLocatedBy(locator), locator);
+    }
+
+    private List<WebElement> waitForVisibilityOfAllElementsLocatedBy(final SearchContext searchContext, final By locator) {
+        return wrapList(elementFinder.waitForVisibilityOfAllElementsLocatedBy(searchContext, locator), locator);
     }
 
     /**
