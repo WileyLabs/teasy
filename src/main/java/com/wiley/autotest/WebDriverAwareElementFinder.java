@@ -263,6 +263,11 @@ public class WebDriverAwareElementFinder implements ElementFinder {
     }
 
     @Override
+    public List<WebElement> waitForVisibilityOfAllElementsLocatedBy(final SearchContext searchContext, final By locator) {
+        return waitFor(ExpectedConditions2.visibilityOfAllElementsLocatedBy(searchContext, locator));
+    }
+
+    @Override
     public WebElement waitForVisibilityOfElementLocatedBy(final By locator, long timeout) {
         return waitFor(visibilityOfElementLocated(locator), timeout);
     }

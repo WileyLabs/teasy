@@ -1,19 +1,16 @@
 package com.wiley.autotest;
 
 import com.wiley.autotest.selenium.elements.TextField;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 
@@ -33,17 +30,26 @@ public final class ExpectedConditions2 {
     }
 
     public static ExpectedCondition<List<WebElement>> visibilityOfAllElementsLocatedBy(final By locator) {
-        return driver -> {
-            final List<WebElement> foundElements = driver.findElements(locator);
-            List<WebElement> visibleElements1 = new ArrayList<>();
-            for (final WebElement element : foundElements) {
-                if (element.isDisplayed()) {
-                    visibleElements1.add(element);
-                }
+        return new ExpectedCondition<List<WebElement>>() {
+            @Override
+            public List<WebElement> apply(final WebDriver driver) {
+                return getVisibleWebElements(driver, locator);
             }
-            List<WebElement> visibleElements = visibleElements1;
-            return isNotEmpty(visibleElements) ? visibleElements : null;
         };
+    }
+
+    public static ExpectedCondition<List<WebElement>> visibilityOfAllElementsLocatedBy(final SearchContext searchContext, final By locator) {
+        return new ExpectedCondition<List<WebElement>>() {
+            @Override
+            public List<WebElement> apply(final WebDriver driver) {
+                return getVisibleWebElements(searchContext, locator);
+            }
+        };
+    }
+
+    private static List<WebElement> getVisibleWebElements(SearchContext context, By locator) {
+        List<WebElement> visibleElements = context.findElements(locator).stream().filter(WebElement::isDisplayed).collect(Collectors.toList());
+        return isNotEmpty(visibleElements) ? visibleElements : null;
     }
 
     public static ExpectedCondition<WebElement> visibilityOfElementLocatedBy(By locator) {
@@ -56,7 +62,6 @@ public final class ExpectedConditions2 {
             }
         };
     }
-
 
     public static ExpectedCondition<WebElement> invisibleOf(final By locator) {
         return driver -> elementIfInvisible(driver.findElement(locator));
