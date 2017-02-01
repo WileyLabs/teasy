@@ -21,8 +21,16 @@ public final class ExpectedConditions2 {
     private ExpectedConditions2() {
     }
 
-    public static ExpectedCondition<Boolean> presenceOfAllElementsLocatedBy(final By locator) {
-        return driver -> !driver.findElements(locator).isEmpty();
+    public static ExpectedCondition<WebElement> presenceOfElementLocatedBy(final SearchContext searchContext, final By locator) {
+        return driver -> searchContext.findElement(locator);
+    }
+
+    public static ExpectedCondition<List<WebElement>> presenceOfAllElementsLocatedBy(final SearchContext searchContext, final By locator) {
+        return driver -> searchContext.findElements(locator);
+    }
+
+    public static ExpectedCondition<List<WebElement>> presenceOfAllElementsLocatedBy(final By locator) {
+        return driver -> driver.findElements(locator);
     }
 
     public static ExpectedCondition<Boolean> visibilityOf(final WebElement element) {

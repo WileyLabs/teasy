@@ -25,8 +25,10 @@ public interface ElementFinder {
 
     WebElement waitForPresenceOfElementLocatedBy(By locator);
     WebElement waitForPresenceOfElementLocatedBy(By locator, long timeout);
+    WebElement waitForPresenceOfElementLocatedBy(final SearchContext searchContext, final By locator);
     List<WebElement> waitForPresenceOfAllElementsLocatedBy(By locator, long timeout);
     List<WebElement> waitForPresenceOfAllElementsLocatedBy(By locator);
+    List<WebElement> waitForPresenceOfAllElementsLocatedBy(final SearchContext searchContext, final By locator);
     void waitForPresenceOfElementCount(By locator, int expectedNumberOfElements, long timeout);
 
     Boolean waitForTextToBePresentInElement(By locator, String text);
