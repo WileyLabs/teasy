@@ -92,19 +92,27 @@ public class WebDriverAwareElementFinder implements ElementFinder {
 
     @Override
     public List<WebElement> waitForPresenceOfAllElementsLocatedBy(final By locator) {
-        waitFor(ExpectedConditions2.presenceOfAllElementsLocatedBy(locator));
-        return findElementsBy(locator);
+        return waitFor(ExpectedConditions2.presenceOfAllElementsLocatedBy(locator));
     }
 
     @Override
     public List<WebElement> waitForPresenceOfAllElementsLocatedBy(final By locator, long timeoutInSec) {
-        waitFor(ExpectedConditions2.presenceOfAllElementsLocatedBy(locator), timeoutInSec);
-        return findElementsBy(locator);
+        return waitFor(ExpectedConditions2.presenceOfAllElementsLocatedBy(locator), timeoutInSec);
     }
 
     @Override
     public WebElement waitForPresenceOfElementLocatedBy(final By locator) {
         return waitFor(presenceOfElementLocated(locator));
+    }
+
+    @Override
+    public WebElement waitForPresenceOfElementLocatedBy(final SearchContext searchContext, final By locator) {
+        return waitFor(ExpectedConditions2.presenceOfElementLocatedBy(searchContext, locator));
+    }
+
+    @Override
+    public List<WebElement> waitForPresenceOfAllElementsLocatedBy(final SearchContext searchContext, final By locator) {
+        return waitFor(ExpectedConditions2.presenceOfAllElementsLocatedBy(searchContext, locator));
     }
 
     @Override

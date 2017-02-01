@@ -16,7 +16,8 @@ import java.util.*;
 
 import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrap;
 import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrapList;
-import static com.wiley.autotest.utils.ExecutionUtils.*;
+import static com.wiley.autotest.utils.ExecutionUtils.isChrome;
+import static com.wiley.autotest.utils.ExecutionUtils.isSafari;
 
 /**
  * Created by IntelliJ IDEA.
@@ -186,9 +187,27 @@ public class AbstractElementFinder {
         }
     }
 
+    protected WebElement domElement(SearchContext searchContext, By locator) {
+        try {
+            return waitForPresenceOfElementLocatedBy(searchContext, locator);
+        } catch (WebDriverException e) {
+            fail(generateErrorMessage());
+            return null;
+        }
+    }
+
     protected List<WebElement> domElements(By locator) {
         try {
             return waitForPresenceOfAllElementsLocatedBy(locator);
+        } catch (WebDriverException e) {
+            fail(generateErrorMessage());
+            return null;
+        }
+    }
+
+    protected List<WebElement> domElements(SearchContext searchContext, By locator) {
+        try {
+            return waitForPresenceOfAllElementsLocatedBy(searchContext, locator);
         } catch (WebDriverException e) {
             fail(generateErrorMessage());
             return null;
@@ -306,7 +325,7 @@ public class AbstractElementFinder {
         }
     }
 
-    private <T extends Element> T getElement(Class<T> elementType, By by) {
+    protected <T extends Element> T getElement(Class<T> elementType, By by) {
         try {
             return getWebElementWrapper(element(by)).getElement(elementType, by);
         } catch (Exception e) {
@@ -314,7 +333,7 @@ public class AbstractElementFinder {
         }
     }
 
-    private <T extends Element> T getElement(Class<T> elementType, SearchContext searchContext, By by) {
+    protected <T extends Element> T getElement(Class<T> elementType, SearchContext searchContext, By by) {
         try {
             return getWebElementWrapper(element(searchContext, by)).getElement(elementType, by);
         } catch (Exception e) {
@@ -322,13 +341,13 @@ public class AbstractElementFinder {
         }
     }
 
-    private <T extends Element> List<T> getElements(Class<T> elementType, By by) {
+    protected <T extends Element> List<T> getElements(Class<T> elementType, By by) {
         List<T> result = new ArrayList<>();
         elements(by).stream().forEach(element -> result.add(getWebElementWrapper(element).getElement(elementType, by)));
         return result;
     }
 
-    private <T extends Element> List<T> getElements(Class<T> elementType, SearchContext searchContext, By by) {
+    protected <T extends Element> List<T> getElements(Class<T> elementType, SearchContext searchContext, By by) {
         List<T> result = new ArrayList<>();
         elements(searchContext, by).stream().forEach(element -> result.add(getWebElementWrapper(element).getElement(elementType, by)));
         return result;
@@ -484,6 +503,10 @@ public class AbstractElementFinder {
         return wrap(elementFinder.waitForPresenceOfElementLocatedBy(locator), locator);
     }
 
+    private WebElement waitForPresenceOfElementLocatedBy(final SearchContext searchContext, final By locator) {
+        return wrap(elementFinder.waitForPresenceOfElementLocatedBy(searchContext, locator), locator);
+    }
+
     @Deprecated
     protected final WebElement waitForPresenceOfElementLocatedBy(final By locator, long timeout) {
         return wrap(elementFinder.waitForPresenceOfElementLocatedBy(locator, timeout), locator);
@@ -544,6 +567,10 @@ public class AbstractElementFinder {
         } catch (TimeoutException ignored) {
             return new ArrayList<WebElement>();
         }
+    }
+
+    protected List<WebElement> waitForPresenceOfAllElementsLocatedBy(final SearchContext searchContext, final By locator) {
+        return wrapList(elementFinder.waitForPresenceOfAllElementsLocatedBy(searchContext, locator), locator);
     }
 
     /**
