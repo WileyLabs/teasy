@@ -128,7 +128,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
         increment();
         //For Android error text is different and does not have any information related to clickable issue
         String ignoredOrNeedToScrollMessage = ignoredOrNeedToScroll.getMessage();
-        if (isAndroid() || ignoredOrNeedToScrollMessage.contains("Element is not clickable at point")) {
+        if (isAndroid() || ignoredOrNeedToScrollMessage.contains("is not clickable at point")) {
             LOGGER.error("*****ERROR*****Element is not clickable at point***** during click! Scrolling to element and trying again. ---Locator=" + locator.getByLocator());
             if (isAndroid()) {
                 //set size of page to 80%
