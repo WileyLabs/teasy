@@ -215,6 +215,14 @@ public class AbstractElementFinder {
     }
 
     /**
+     * @param locator- locator for element you would like to find
+     * @return list of webElements or empty list in case no such element were found by given locator
+     */
+    protected List<WebElement> domElementsOrEmpty(final By locator) {
+        return wrapList(elementFinder.findElementsBy(locator), locator);
+    }
+
+    /**
      * This method is to be used for different conditions you want to wait for to happen with element using LOCATOR
      *
      * @param condition - condition to happen with element
