@@ -159,7 +159,19 @@ public abstract class MethodsInvoker {
 
     protected <T extends AbstractTest> T createTestClassInstance(final Class<T> testClass) {
         try {
-            final String[] locations = AbstractTest.class.getAnnotation(ContextConfiguration.class).locations();
+            List<String> configurationLocationsList = new ArrayList<>();
+
+            String[] baseConfigurationLocations = AbstractTest.class.getAnnotation(ContextConfiguration.class).locations();
+            configurationLocationsList.addAll(Arrays.asList(baseConfigurationLocations));
+
+            ContextConfiguration testContextConfiguration = testClass.getAnnotation(ContextConfiguration.class);
+            if (testContextConfiguration != null) {
+                String[] testContextConfigurationLocations = testContextConfiguration.locations();
+                configurationLocationsList.addAll(Arrays.asList(testContextConfigurationLocations));
+            }
+
+            final String[] locations = configurationLocationsList.stream().toArray(String[]::new);
+
             final ApplicationContext applicationContext = new ClassPathXmlApplicationContext(locations);
 
             final T instance = applicationContext.getAutowireCapableBeanFactory().createBean(testClass);
