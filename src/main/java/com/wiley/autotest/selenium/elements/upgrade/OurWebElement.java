@@ -240,18 +240,28 @@ public class OurWebElement implements IOurWebElement, Locatable {
 
     @Override
     public List<WebElement> findElements(By by) {
-        List<WebElement> elements = finds(by);
-        List<WebElement> result = new ArrayList<>(elements.size());
-        for (int i = 0; i < elements.size(); i++) {
-            WebElement element = elements.get(i);
-            result.add(OurWebElementFactory.wrap(element, by, i));
+        try {
+            List<WebElement> elements = finds(by);
+            List<WebElement> result = new ArrayList<>(elements.size());
+            for (int i = 0; i < elements.size(); i++) {
+                WebElement element = elements.get(i);
+                result.add(OurWebElementFactory.wrap(this, element, by, i));
+            }
+            return result;
+        } catch (UndeclaredThrowableException e) {
+            againLocate();
+            return findElements(by);
         }
-        return result;
     }
 
     @Override
     public WebElement findElement(By by) {
-        return OurWebElementFactory.wrap(getWrappedWebElement().findElement(by), by);
+        try {
+            return OurWebElementFactory.wrap(this, getWrappedWebElement().findElement(by), by);
+        } catch (UndeclaredThrowableException e) {
+            againLocate();
+            return findElement(by);
+        }
     }
 
     @Override
