@@ -2,6 +2,7 @@ package com.wiley.autotest.selenium.elements.upgrade;
 
 import com.wiley.autotest.selenium.SeleniumHolder;
 import org.openqa.selenium.By;
+import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebElement;
 import org.slf4j.LoggerFactory;
 
@@ -25,8 +26,25 @@ public class OurWebElementFactory {
         return wrapBase(ourWebElementData);
     }
 
+    public static <T extends IOurWebElement> T wrap(SearchContext searchContext, WebElement webElement, By by) {
+        OurWebElementData ourWebElementData = new OurWebElementData();
+        ourWebElementData.setSearchContext(searchContext);
+        ourWebElementData.setElement(webElement);
+        ourWebElementData.setBy(by);
+        return wrapBase(ourWebElementData);
+    }
+
     public static <T extends IOurWebElement> T wrap(WebElement webElement, By by, int index) {
         OurWebElementData ourWebElementData = new OurWebElementData();
+        ourWebElementData.setElement(webElement);
+        ourWebElementData.setBy(by);
+        ourWebElementData.setIndex(index);
+        return wrapBase(ourWebElementData);
+    }
+
+    public static <T extends IOurWebElement> T wrap(SearchContext searchContext, WebElement webElement, By by, int index) {
+        OurWebElementData ourWebElementData = new OurWebElementData();
+        ourWebElementData.setSearchContext(searchContext);
         ourWebElementData.setElement(webElement);
         ourWebElementData.setBy(by);
         ourWebElementData.setIndex(index);
