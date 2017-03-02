@@ -35,37 +35,49 @@ public class AbstractElementFinder {
     protected WebElement element(final By locator) {
         try {
             return waitForVisibilityOfAllElementsLocatedBy(locator).get(0);
-        } catch (WebDriverException e) {
+        } catch (TimeoutException time) {
             fail(generateErrorMessage());
-            return null;
+        } catch (WebDriverException wde) {
+            LOGGER.error("****WebDriverException in element()****", wde);
+            fail(generateErrorMessage() + "\nException:" + wde.getMessage());
         }
+        return null;
     }
 
     protected WebElement element(final SearchContext searchContext, final By locator) {
         try {
             return waitForVisibilityOfAllElementsLocatedBy(searchContext, locator).get(0);
-        } catch (WebDriverException e) {
+        } catch (TimeoutException time) {
             fail(generateErrorMessage());
-            return null;
+        } catch (WebDriverException wde) {
+            LOGGER.error("****WebDriverException in element()****", wde);
+            fail(generateErrorMessage() + "\nException:" + wde.getMessage());
         }
+        return null;
     }
 
     protected List<WebElement> elements(final By locator) {
         try {
             return waitForVisibilityOfAllElementsLocatedBy(locator);
-        } catch (WebDriverException e) {
+        } catch (TimeoutException time) {
             fail(generateErrorMessage());
-            return null;
+        } catch (WebDriverException wde) {
+            LOGGER.error("****WebDriverException in elements()****", wde);
+            fail(generateErrorMessage() + "\nException:" + wde.getMessage());
         }
+        return null;
     }
 
     protected List<WebElement> elements(final SearchContext searchContext, final By locator) {
         try {
             return waitForVisibilityOfAllElementsLocatedBy(searchContext, locator);
-        } catch (WebDriverException e) {
+        } catch (TimeoutException time) {
             fail(generateErrorMessage());
-            return null;
+        } catch (WebDriverException wde) {
+            LOGGER.error("****WebDriverException in elements()****", wde);
+            fail(generateErrorMessage() + "\nException:" + wde.getMessage());
         }
+        return null;
     }
 
     protected final WebElement elementOrNull(final By locator) {
@@ -181,37 +193,49 @@ public class AbstractElementFinder {
     protected WebElement domElement(By locator) {
         try {
             return waitForPresenceOfElementLocatedBy(locator);
-        } catch (WebDriverException e) {
+        } catch (TimeoutException time) {
             fail(generateErrorMessage());
-            return null;
+        } catch (WebDriverException wde) {
+            LOGGER.error("****WebDriverException in domElement()****", wde);
+            fail(generateErrorMessage() + "\nException:" + wde.getMessage());
         }
+        return null;
     }
 
     protected WebElement domElement(SearchContext searchContext, By locator) {
         try {
             return waitForPresenceOfElementLocatedBy(searchContext, locator);
-        } catch (WebDriverException e) {
+        } catch (TimeoutException time) {
             fail(generateErrorMessage());
-            return null;
+        } catch (WebDriverException wde) {
+            LOGGER.error("****WebDriverException in domElement()****", wde);
+            fail(generateErrorMessage() + "\nException:" + wde.getMessage());
         }
+        return null;
     }
 
     protected List<WebElement> domElements(By locator) {
         try {
             return waitForPresenceOfAllElementsLocatedBy(locator);
-        } catch (WebDriverException e) {
+        } catch (TimeoutException time) {
             fail(generateErrorMessage());
-            return null;
+        } catch (WebDriverException wde) {
+            LOGGER.error("****WebDriverException in domElements()****", wde);
+            fail(generateErrorMessage() + "\nException:" + wde.getMessage());
         }
+        return null;
     }
 
     protected List<WebElement> domElements(SearchContext searchContext, By locator) {
         try {
             return waitForPresenceOfAllElementsLocatedBy(searchContext, locator);
-        } catch (WebDriverException e) {
+        } catch (TimeoutException time) {
             fail(generateErrorMessage());
-            return null;
+        } catch (WebDriverException wde) {
+            LOGGER.error("****WebDriverException in domElements()****", wde);
+            fail(generateErrorMessage() + "\nException:" + wde.getMessage());
         }
+        return null;
     }
 
     /**
