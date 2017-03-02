@@ -164,6 +164,8 @@ public abstract class MethodsInvoker {
             String[] baseConfigurationLocations = AbstractTest.class.getAnnotation(ContextConfiguration.class).locations();
             configurationLocationsList.addAll(Arrays.asList(baseConfigurationLocations));
 
+            //Load spring configuration file from each project for run OurBefore\After methods.
+            //Without it @Autowired fields not load in OurBefore\After methods.
             ContextConfiguration testContextConfiguration = testClass.getAnnotation(ContextConfiguration.class);
             if (testContextConfiguration != null) {
                 String[] testContextConfigurationLocations = testContextConfiguration.locations();
