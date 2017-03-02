@@ -39,7 +39,7 @@ public class AbstractElementFinder {
             fail(generateErrorMessage());
         } catch (WebDriverException wde) {
             LOGGER.error("****WebDriverException in element()****", wde);
-            fail(generateErrorMessage() + "\nException:" + wde.getMessage());
+            fail(generateErrorMessage() + "\nException: " + wde.getMessage() + "\nStackTrace: " + Arrays.toString(wde.getStackTrace()));
         }
         return null;
     }
@@ -51,7 +51,7 @@ public class AbstractElementFinder {
             fail(generateErrorMessage());
         } catch (WebDriverException wde) {
             LOGGER.error("****WebDriverException in element()****", wde);
-            fail(generateErrorMessage() + "\nException:" + wde.getMessage());
+            fail(generateErrorMessage() + "\nException: " + wde.getMessage() + "\nStackTrace: " + Arrays.toString(wde.getStackTrace()));
         }
         return null;
     }
@@ -63,7 +63,7 @@ public class AbstractElementFinder {
             fail(generateErrorMessage());
         } catch (WebDriverException wde) {
             LOGGER.error("****WebDriverException in elements()****", wde);
-            fail(generateErrorMessage() + "\nException:" + wde.getMessage());
+            fail(generateErrorMessage() + "\nException: " + wde.getMessage() + "\nStackTrace: " + Arrays.toString(wde.getStackTrace()));
         }
         return null;
     }
@@ -75,7 +75,7 @@ public class AbstractElementFinder {
             fail(generateErrorMessage());
         } catch (WebDriverException wde) {
             LOGGER.error("****WebDriverException in elements()****", wde);
-            fail(generateErrorMessage() + "\nException:" + wde.getMessage());
+            fail(generateErrorMessage() + "\nException: " + wde.getMessage() + "\nStackTrace: " + Arrays.toString(wde.getStackTrace()));
         }
         return null;
     }
@@ -197,7 +197,7 @@ public class AbstractElementFinder {
             fail(generateErrorMessage());
         } catch (WebDriverException wde) {
             LOGGER.error("****WebDriverException in domElement()****", wde);
-            fail(generateErrorMessage() + "\nException:" + wde.getMessage());
+            fail(generateErrorMessage() + "\nException: " + wde.getMessage() + "\nStackTrace: " + Arrays.toString(wde.getStackTrace()));
         }
         return null;
     }
@@ -209,7 +209,7 @@ public class AbstractElementFinder {
             fail(generateErrorMessage());
         } catch (WebDriverException wde) {
             LOGGER.error("****WebDriverException in domElement()****", wde);
-            fail(generateErrorMessage() + "\nException:" + wde.getMessage());
+            fail(generateErrorMessage() + "\nException: " + wde.getMessage() + "\nStackTrace: " + Arrays.toString(wde.getStackTrace()));
         }
         return null;
     }
@@ -221,7 +221,7 @@ public class AbstractElementFinder {
             fail(generateErrorMessage());
         } catch (WebDriverException wde) {
             LOGGER.error("****WebDriverException in domElements()****", wde);
-            fail(generateErrorMessage() + "\nException:" + wde.getMessage());
+            fail(generateErrorMessage() + "\nException: " + wde.getMessage() + "\nStackTrace: " + Arrays.toString(wde.getStackTrace()));
         }
         return null;
     }
@@ -233,7 +233,7 @@ public class AbstractElementFinder {
             fail(generateErrorMessage());
         } catch (WebDriverException wde) {
             LOGGER.error("****WebDriverException in domElements()****", wde);
-            fail(generateErrorMessage() + "\nException:" + wde.getMessage());
+            fail(generateErrorMessage() + "\nException: " + wde.getMessage() + "\nStackTrace: " + Arrays.toString(wde.getStackTrace()));
         }
         return null;
     }
