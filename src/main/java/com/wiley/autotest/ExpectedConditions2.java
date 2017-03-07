@@ -1,13 +1,16 @@
 package com.wiley.autotest;
 
+import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
 import com.wiley.autotest.selenium.elements.TextField;
 import org.openqa.selenium.*;
+import org.openqa.selenium.support.events.EventFiringWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -31,6 +34,21 @@ public final class ExpectedConditions2 {
 
     public static ExpectedCondition<List<WebElement>> presenceOfAllElementsLocatedBy(final By locator) {
         return driver -> driver.findElements(locator);
+    }
+
+    public static ExpectedCondition<List<WebElement>> presenceOfAllElementsLocatedByInFrames(final By locator) {
+        return driver -> {
+            FramesTransparentWebDriver framesTransparentWebDriver = (FramesTransparentWebDriver) ((EventFiringWebDriver) driver).getWrappedDriver();
+            return framesTransparentWebDriver.findElementsInFrames(locator);
+        };
+    }
+
+    public static ExpectedCondition<List<WebElement>> visibilityOfAllElementsLocatedByInFrames(final By locator) {
+        return driver -> {
+            FramesTransparentWebDriver framesTransparentWebDriver = (FramesTransparentWebDriver) ((EventFiringWebDriver) driver).getWrappedDriver();
+            List<WebElement> visibleElements = getVisibleWebElements(framesTransparentWebDriver, locator);
+            return isNotEmpty(visibleElements) ? visibleElements : null;
+        };
     }
 
     public static ExpectedCondition<Boolean> visibilityOf(final WebElement element) {
