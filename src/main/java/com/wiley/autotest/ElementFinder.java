@@ -22,6 +22,8 @@ public interface ElementFinder {
     WebElement waitForVisibilityOfElementLocatedBy(final By locator);
     WebElement waitForVisibilityOfElementLocatedBy(final By locator, final long timeout);
     void waitForVisibilityOf(WebElement element);
+    List<WebElement> waitForVisibilityOfAllElementsLocatedByInFrames(final By locator);
+    List<WebElement> waitForPresenceOfAllElementsLocatedByInFrames(final By locator);
 
     WebElement waitForPresenceOfElementLocatedBy(By locator);
     WebElement waitForPresenceOfElementLocatedBy(By locator, long timeout);

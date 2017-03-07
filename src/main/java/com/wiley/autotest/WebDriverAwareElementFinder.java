@@ -91,6 +91,16 @@ public class WebDriverAwareElementFinder implements ElementFinder {
     }
 
     @Override
+    public List<WebElement> waitForVisibilityOfAllElementsLocatedByInFrames(final By locator) {
+        return waitFor(ExpectedConditions2.visibilityOfAllElementsLocatedByInFrames(locator));
+    }
+
+    @Override
+    public List<WebElement> waitForPresenceOfAllElementsLocatedByInFrames(final By locator) {
+        return waitFor(ExpectedConditions2.presenceOfAllElementsLocatedByInFrames(locator));
+    }
+
+    @Override
     public List<WebElement> waitForPresenceOfAllElementsLocatedBy(final By locator) {
         return waitFor(ExpectedConditions2.presenceOfAllElementsLocatedBy(locator));
     }

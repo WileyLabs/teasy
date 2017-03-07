@@ -26,6 +26,7 @@ import static com.wiley.autotest.utils.ExecutionUtils.isSafari;
  * Time: 13:02
  */
 public class AbstractElementFinder {
+
     private static final String EXPLANATION_MESSAGE_FOR_WAIT = "Wait for retry find element";
     protected ElementFinder elementFinder;
     public static final Logger LOGGER = LoggerFactory.getLogger(AbstractElementFinder.class);
@@ -86,6 +87,15 @@ public class AbstractElementFinder {
 
     protected final WebElement elementOrNull(final SearchContext searchContext, final By locator) {
         return findElementByNoThrow(searchContext, locator);
+    }
+
+    protected List<WebElement> elementsInFrames(final By locator) {
+        try {
+            return waitForVisibilityOfAllElementsLocatedByInFrames(locator);
+        } catch (WebDriverException e) {
+            fail(generateErrorMessage());
+            return null;
+        }
     }
 
     protected Button button(By locator) {
@@ -244,6 +254,15 @@ public class AbstractElementFinder {
      */
     protected List<WebElement> domElementsOrEmpty(final By locator) {
         return wrapList(elementFinder.findElementsBy(locator), locator);
+    }
+
+    protected List<WebElement> domElementsInFrames(By locator) {
+        try {
+            return waitForPresenceOfAllElementsLocatedByInFrames(locator);
+        } catch (WebDriverException e) {
+            fail(generateErrorMessage());
+            return null;
+        }
     }
 
     /**
@@ -649,6 +668,14 @@ public class AbstractElementFinder {
 
     private List<WebElement> waitForVisibilityOfAllElementsLocatedBy(final SearchContext searchContext, final By locator) {
         return wrapList(elementFinder.waitForVisibilityOfAllElementsLocatedBy(searchContext, locator), locator);
+    }
+
+    private List<WebElement> waitForVisibilityOfAllElementsLocatedByInFrames(final By locator) {
+        return wrapList(elementFinder.waitForVisibilityOfAllElementsLocatedByInFrames(locator), locator);
+    }
+
+    private List<WebElement> waitForPresenceOfAllElementsLocatedByInFrames(final By locator) {
+        return wrapList(elementFinder.waitForPresenceOfAllElementsLocatedByInFrames(locator), locator);
     }
 
     /**
