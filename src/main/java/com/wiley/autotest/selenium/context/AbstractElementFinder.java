@@ -57,16 +57,28 @@ public class AbstractElementFinder {
         return null;
     }
 
-    protected List<WebElement> elements(final By locator) {
+    protected List<WebElement> elements(final By locator, SearchStrategy searchStrategy) {
+        List<WebElement> finds = null;
         try {
-            return waitForVisibilityOfAllElementsLocatedBy(locator);
+            switch (searchStrategy) {
+                case SEARCH_FIRST_ELEMENTS:
+                    finds = waitForVisibilityOfAllElementsLocatedBy(locator);
+                    break;
+                case SEARCH_IN_ALL_FRAMES:
+                    finds = waitForVisibilityOfAllElementsLocatedByInFrames(locator);
+                    break;
+            }
         } catch (TimeoutException time) {
             fail(generateErrorMessage());
         } catch (WebDriverException wde) {
-            LOGGER.error("****WebDriverException in elements()****", wde);
+            LOGGER.error("****WebDriverException in domElements()****", wde);
             fail(generateErrorMessage() + "\nException: " + wde.getMessage() + "\nStackTrace: " + Arrays.toString(wde.getStackTrace()));
         }
-        return null;
+        return finds;
+    }
+
+    protected List<WebElement> elements(final By locator) {
+        return elements(locator, SearchStrategy.SEARCH_FIRST_ELEMENTS);
     }
 
     protected List<WebElement> elements(final SearchContext searchContext, final By locator) {
@@ -89,13 +101,77 @@ public class AbstractElementFinder {
         return findElementByNoThrow(searchContext, locator);
     }
 
-    protected List<WebElement> elementsInFrames(final By locator) {
+    /**
+     * Use this method when you need element which is present in DOM but you are not sure if it's visible or not
+     * call it from a private getter method on Page
+     * use "inDOM" as a postfix for a method name
+     */
+    protected WebElement domElement(By locator) {
         try {
-            return waitForVisibilityOfAllElementsLocatedByInFrames(locator);
-        } catch (WebDriverException e) {
+            return waitForPresenceOfElementLocatedBy(locator);
+        } catch (TimeoutException time) {
             fail(generateErrorMessage());
-            return null;
+        } catch (WebDriverException wde) {
+            LOGGER.error("****WebDriverException in domElement()****", wde);
+            fail(generateErrorMessage() + "\nException: " + wde.getMessage() + "\nStackTrace: " + Arrays.toString(wde.getStackTrace()));
         }
+        return null;
+    }
+
+    protected WebElement domElement(SearchContext searchContext, By locator) {
+        try {
+            return waitForPresenceOfElementLocatedBy(searchContext, locator);
+        } catch (TimeoutException time) {
+            fail(generateErrorMessage());
+        } catch (WebDriverException wde) {
+            LOGGER.error("****WebDriverException in domElement()****", wde);
+            fail(generateErrorMessage() + "\nException: " + wde.getMessage() + "\nStackTrace: " + Arrays.toString(wde.getStackTrace()));
+        }
+        return null;
+    }
+
+    protected List<WebElement> domElements(By locator, SearchStrategy searchStrategy) {
+        List<WebElement> finds = null;
+        try {
+            switch (searchStrategy) {
+                case SEARCH_FIRST_ELEMENTS:
+                    finds = waitForPresenceOfAllElementsLocatedBy(locator);
+                    break;
+                case SEARCH_IN_ALL_FRAMES:
+                    finds = waitForPresenceOfAllElementsLocatedByInFrames(locator);
+                    break;
+            }
+        } catch (TimeoutException time) {
+            fail(generateErrorMessage());
+        } catch (WebDriverException wde) {
+            LOGGER.error("****WebDriverException in domElements()****", wde);
+            fail(generateErrorMessage() + "\nException: " + wde.getMessage() + "\nStackTrace: " + Arrays.toString(wde.getStackTrace()));
+        }
+        return finds;
+    }
+
+    protected List<WebElement> domElements(By locator) {
+        return domElements(locator, SearchStrategy.SEARCH_FIRST_ELEMENTS);
+    }
+
+    protected List<WebElement> domElements(SearchContext searchContext, By locator) {
+        try {
+            return waitForPresenceOfAllElementsLocatedBy(searchContext, locator);
+        } catch (TimeoutException time) {
+            fail(generateErrorMessage());
+        } catch (WebDriverException wde) {
+            LOGGER.error("****WebDriverException in domElements()****", wde);
+            fail(generateErrorMessage() + "\nException: " + wde.getMessage() + "\nStackTrace: " + Arrays.toString(wde.getStackTrace()));
+        }
+        return null;
+    }
+
+    /**
+     * @param locator- locator for element you would like to find
+     * @return list of webElements or empty list in case no such element were found by given locator
+     */
+    protected List<WebElement> domElementsOrEmpty(final By locator) {
+        return wrapList(elementFinder.findElementsBy(locator), locator);
     }
 
     protected Button button(By locator) {
@@ -193,76 +269,6 @@ public class AbstractElementFinder {
 
     protected List<TextField> textFields(SearchContext searchContext, By locator) {
         return getElements(TextField.class, locator);
-    }
-
-    /**
-     * Use this method when you need element which is present in DOM but you are not sure if it's visible or not
-     * call it from a private getter method on Page
-     * use "inDOM" as a postfix for a method name
-     */
-    protected WebElement domElement(By locator) {
-        try {
-            return waitForPresenceOfElementLocatedBy(locator);
-        } catch (TimeoutException time) {
-            fail(generateErrorMessage());
-        } catch (WebDriverException wde) {
-            LOGGER.error("****WebDriverException in domElement()****", wde);
-            fail(generateErrorMessage() + "\nException: " + wde.getMessage() + "\nStackTrace: " + Arrays.toString(wde.getStackTrace()));
-        }
-        return null;
-    }
-
-    protected WebElement domElement(SearchContext searchContext, By locator) {
-        try {
-            return waitForPresenceOfElementLocatedBy(searchContext, locator);
-        } catch (TimeoutException time) {
-            fail(generateErrorMessage());
-        } catch (WebDriverException wde) {
-            LOGGER.error("****WebDriverException in domElement()****", wde);
-            fail(generateErrorMessage() + "\nException: " + wde.getMessage() + "\nStackTrace: " + Arrays.toString(wde.getStackTrace()));
-        }
-        return null;
-    }
-
-    protected List<WebElement> domElements(By locator) {
-        try {
-            return waitForPresenceOfAllElementsLocatedBy(locator);
-        } catch (TimeoutException time) {
-            fail(generateErrorMessage());
-        } catch (WebDriverException wde) {
-            LOGGER.error("****WebDriverException in domElements()****", wde);
-            fail(generateErrorMessage() + "\nException: " + wde.getMessage() + "\nStackTrace: " + Arrays.toString(wde.getStackTrace()));
-        }
-        return null;
-    }
-
-    protected List<WebElement> domElements(SearchContext searchContext, By locator) {
-        try {
-            return waitForPresenceOfAllElementsLocatedBy(searchContext, locator);
-        } catch (TimeoutException time) {
-            fail(generateErrorMessage());
-        } catch (WebDriverException wde) {
-            LOGGER.error("****WebDriverException in domElements()****", wde);
-            fail(generateErrorMessage() + "\nException: " + wde.getMessage() + "\nStackTrace: " + Arrays.toString(wde.getStackTrace()));
-        }
-        return null;
-    }
-
-    /**
-     * @param locator- locator for element you would like to find
-     * @return list of webElements or empty list in case no such element were found by given locator
-     */
-    protected List<WebElement> domElementsOrEmpty(final By locator) {
-        return wrapList(elementFinder.findElementsBy(locator), locator);
-    }
-
-    protected List<WebElement> domElementsInFrames(By locator) {
-        try {
-            return waitForPresenceOfAllElementsLocatedByInFrames(locator);
-        } catch (WebDriverException e) {
-            fail(generateErrorMessage());
-            return null;
-        }
     }
 
     /**

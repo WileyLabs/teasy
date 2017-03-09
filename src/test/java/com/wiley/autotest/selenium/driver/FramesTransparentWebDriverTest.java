@@ -35,7 +35,7 @@ public class FramesTransparentWebDriverTest {
         when(wrappedDriver.switchTo()).thenReturn(targetLocator);
         when(wrappedDriver.getWindowHandle()).thenReturn(MAIN_WINDOW_HANDLER);
         whenFindFrames(wrappedDriver);
-        driver = new FramesTransparentWebDriver(wrappedDriver, false);
+        driver = new FramesTransparentWebDriver(wrappedDriver);
     }
 
     @Test(enabled = false, expectedExceptions = SwitchToFrameOperationNotAllowedException.class)
