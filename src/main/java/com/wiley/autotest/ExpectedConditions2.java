@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -46,7 +45,7 @@ public final class ExpectedConditions2 {
     public static ExpectedCondition<List<WebElement>> visibilityOfAllElementsLocatedByInFrames(final By locator) {
         return driver -> {
             FramesTransparentWebDriver framesTransparentWebDriver = (FramesTransparentWebDriver) ((EventFiringWebDriver) driver).getWrappedDriver();
-            List<WebElement> visibleElements = getVisibleWebElements(framesTransparentWebDriver, locator);
+            List<WebElement> visibleElements = getVisibleWebElements(framesTransparentWebDriver.findElementsInFrames(locator));
             return isNotEmpty(visibleElements) ? visibleElements : null;
         };
     }
@@ -59,7 +58,7 @@ public final class ExpectedConditions2 {
         return new ExpectedCondition<List<WebElement>>() {
             @Override
             public List<WebElement> apply(final WebDriver driver) {
-                return getVisibleWebElements(driver, locator);
+                return getVisibleWebElements(driver.findElements(locator));
             }
         };
     }
@@ -68,13 +67,13 @@ public final class ExpectedConditions2 {
         return new ExpectedCondition<List<WebElement>>() {
             @Override
             public List<WebElement> apply(final WebDriver driver) {
-                return getVisibleWebElements(searchContext, locator);
+                return getVisibleWebElements(searchContext.findElements(locator));
             }
         };
     }
 
-    private static List<WebElement> getVisibleWebElements(SearchContext context, By locator) {
-        List<WebElement> visibleElements = context.findElements(locator).stream().filter(WebElement::isDisplayed).collect(Collectors.toList());
+    private static List<WebElement> getVisibleWebElements(List<WebElement> elements) {
+        List<WebElement> visibleElements = elements.stream().filter(WebElement::isDisplayed).collect(Collectors.toList());
         return isNotEmpty(visibleElements) ? visibleElements : null;
     }
 
