@@ -266,8 +266,8 @@ public class WebDriverAwareElementFinder implements ElementFinder {
     }
 
     @Override
-    public WebElement waitForInvisibilityOfElementLocatedBy(final By locator) {
-        return waitFor(ExpectedConditions2.invisibleOf(locator));
+    public Boolean waitForInvisibilityOfElementLocatedBy(final By locator) {
+        return waitFor(ExpectedConditions.invisibilityOfElementLocated(locator));
     }
 
     @Override
