@@ -18,17 +18,15 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
 
     private final Stack<WebElement> currentFramesPath;
     private final Function<WebElement, WebElement> toFrameAwareWebElements;
-    private boolean isFindElementsInAllFrames = false;
 
     //VE Do we really need a ThreadLocal here? Seems that this is an extra one
     private ThreadLocal<String> mainWindowHandle = new ThreadLocal<>();
 
-    public FramesTransparentWebDriver(final WebDriver driver, boolean isFindElementsInAllFrames) {
+    public FramesTransparentWebDriver(final WebDriver driver) {
         super(driver);
         currentFramesPath = new Stack<>();
         toFrameAwareWebElements = new FrameAwareWebElementTransformer(driver, currentFramesPath);
         mainWindowHandle.set(driver.getWindowHandle());
-        this.isFindElementsInAllFrames = isFindElementsInAllFrames;
     }
 
     @Override
@@ -41,11 +39,7 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
     public List<WebElement> findElements(final By by) {
         switchToDefaultContext();
         currentFramesPath.clear();
-        if (isFindElementsInAllFrames) {
-            return findAllElementsInAllFrames(by);
-        } else {
-            return findFirstElements(by);
-        }
+        return findFirstElements(by);
     }
 
     @Override
