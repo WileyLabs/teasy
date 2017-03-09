@@ -40,7 +40,7 @@ public interface ElementFinder {
     Boolean waitForTextToBePresentIn(WebElement element);
 
     Boolean waitForAbsenceOfElementLocatedBy(By locator);
-    WebElement waitForInvisibilityOfElementLocatedBy(By locator);
+    Boolean waitForInvisibilityOfElementLocatedBy(By locator);
     WebElement waitForInvisibilityOfElement(WebElement element);
 
     WebElement waitForElementToBeClickable(By locator);

@@ -693,8 +693,8 @@ public class AbstractElementFinder {
         }
     }
 
-    private WebElement waitForInvisibilityOfElementLocatedBy(final By locator) {
-        return wrap(elementFinder.waitForInvisibilityOfElementLocatedBy(locator), locator);
+    private Boolean waitForInvisibilityOfElementLocatedBy(final By locator) {
+        return elementFinder.waitForInvisibilityOfElementLocatedBy(locator);
     }
 
     private void waitForAbsenceOfElementLocatedBy(final By locator) {
