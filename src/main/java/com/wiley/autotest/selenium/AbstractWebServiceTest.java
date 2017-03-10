@@ -65,7 +65,7 @@ public class AbstractWebServiceTest extends AbstractTest implements ITest {
     @BeforeMethod(alwaysRun = true)
     public void setBugId(final Method test) {
         Bug bugAnnotation = test.getAnnotation(Bug.class);
-        if (bugAnnotation != null) {
+        if (bugAnnotation != null && bugAnnotation.id() != null && !bugAnnotation.id().isEmpty()) {
             SeleniumHolder.setBugId(bugAnnotation.id());
         }
     }

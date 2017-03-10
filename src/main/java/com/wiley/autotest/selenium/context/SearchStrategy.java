@@ -10,12 +10,12 @@ public enum SearchStrategy {
     /**
      * Default value.
      * Search in all frames until there are elements.
-     * Return first found elements from one frame or fail with error.
+     * Return first found elements from one frame.
      */
-    SEARCH_FIRST_ELEMENTS,
+    FIRST_ELEMENTS,
     /**
      * Search in all frames every time.
-     * Return elements from all frames or fail with error.
+     * Return elements from all frames.
      */
-    SEARCH_IN_ALL_FRAMES
+    IN_ALL_FRAMES
 }

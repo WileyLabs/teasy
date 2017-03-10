@@ -19,5 +19,7 @@ import static java.lang.annotation.ElementType.TYPE;
 @Target({METHOD, TYPE})
 public @interface Bug {
 
-    String id();
+    String id() default "";
+
+    String[] idList() default {};
 }
