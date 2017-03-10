@@ -61,10 +61,10 @@ public class AbstractElementFinder {
         List<WebElement> finds = null;
         try {
             switch (searchStrategy) {
-                case SEARCH_FIRST_ELEMENTS:
+                case FIRST_ELEMENTS:
                     finds = waitForVisibilityOfAllElementsLocatedBy(locator);
                     break;
-                case SEARCH_IN_ALL_FRAMES:
+                case IN_ALL_FRAMES:
                     finds = waitForVisibilityOfAllElementsLocatedByInFrames(locator);
                     break;
             }
@@ -78,7 +78,7 @@ public class AbstractElementFinder {
     }
 
     protected List<WebElement> elements(final By locator) {
-        return elements(locator, SearchStrategy.SEARCH_FIRST_ELEMENTS);
+        return elements(locator, SearchStrategy.FIRST_ELEMENTS);
     }
 
     protected List<WebElement> elements(final SearchContext searchContext, final By locator) {
@@ -134,10 +134,10 @@ public class AbstractElementFinder {
         List<WebElement> finds = null;
         try {
             switch (searchStrategy) {
-                case SEARCH_FIRST_ELEMENTS:
+                case FIRST_ELEMENTS:
                     finds = waitForPresenceOfAllElementsLocatedBy(locator);
                     break;
-                case SEARCH_IN_ALL_FRAMES:
+                case IN_ALL_FRAMES:
                     finds = waitForPresenceOfAllElementsLocatedByInFrames(locator);
                     break;
             }
@@ -151,7 +151,7 @@ public class AbstractElementFinder {
     }
 
     protected List<WebElement> domElements(By locator) {
-        return domElements(locator, SearchStrategy.SEARCH_FIRST_ELEMENTS);
+        return domElements(locator, SearchStrategy.FIRST_ELEMENTS);
     }
 
     protected List<WebElement> domElements(SearchContext searchContext, By locator) {

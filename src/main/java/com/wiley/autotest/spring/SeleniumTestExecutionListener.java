@@ -36,6 +36,8 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.firefox.internal.ProfilesIni;
 import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.logging.LogType;
+import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.remote.*;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
@@ -51,6 +53,7 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.net.*;
 import java.util.Arrays;
+import java.util.logging.Level;
 
 import static com.wiley.autotest.selenium.SeleniumHolder.*;
 
@@ -543,6 +546,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         setAlertBehaviorCapabilities(capabilities);
         capabilities.setCapability(FirefoxDriver.PROFILE, getFirefoxProfile(settings));
         capabilities.setPlatform(Platform.WINDOWS);
+        setLoggingPrefs(capabilities);
         setProxy(capabilities);
         return capabilities;
     }
@@ -586,6 +590,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         capabilities.setCapability(ChromeOptions.CAPABILITY, options);
         capabilities.setPlatform(Platform.WINDOWS);
         setAlertBehaviorCapabilities(capabilities);
+        setLoggingPrefs(capabilities);
         setProxy(capabilities);
         return capabilities;
     }
@@ -609,6 +614,12 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
     private void setAlertBehaviorCapabilities(DesiredCapabilities capabilities) {
         capabilities.setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, alertCapability.get());
         currentAlertCapability.set(alertCapability.get());
+    }
+
+    private void setLoggingPrefs(DesiredCapabilities capabilities) {
+        LoggingPreferences logPrefs = new LoggingPreferences();
+        logPrefs.enable(LogType.BROWSER, Level.ALL);
+        capabilities.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
     }
 
     private FirefoxProfile getFirefoxProfile(Settings settings) {
