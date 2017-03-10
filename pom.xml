@@ -11,7 +11,7 @@
     <version>2.1.22</version>
 
     <properties>
-        <selenium-version>3.3.1</selenium-version>
+        <selenium-version>3.0.1</selenium-version>
         <testng-version>6.8.21</testng-version>
         <org.slf4j.version>1.6.2</org.slf4j.version>
         <org.springframework-version>4.2.4.RELEASE</org.springframework-version>
