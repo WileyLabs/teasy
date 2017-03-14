@@ -2,6 +2,7 @@ package com.wiley.autotest.selenium.context;
 
 import com.wiley.autotest.ElementFinder;
 import com.wiley.autotest.WebDriverAwareElementFinder;
+import com.wiley.autotest.actions.Actions;
 import com.wiley.autotest.selenium.elements.*;
 import com.wiley.autotest.utils.TestUtils;
 import org.openqa.selenium.*;
@@ -13,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import org.testng.Reporter;
 
 import java.util.*;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrap;
 import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrapList;
@@ -34,47 +37,23 @@ public class AbstractElementFinder {
     protected static final long SLEEP_IN_MILLISECONDS = 1000;
 
     protected WebElement element(final By locator) {
-        try {
-            return waitForVisibilityOfAllElementsLocatedBy(locator).get(0);
-        } catch (TimeoutException time) {
-            fail(generateErrorMessage());
-        } catch (WebDriverException wde) {
-            LOGGER.error("****WebDriverException in element()****", wde);
-            fail(generateErrorMessage() + "\nException: " + wde.getMessage() + "\nStackTrace: " + Arrays.toString(wde.getStackTrace()));
-        }
-        return null;
+        return getElementOrWebDriverException(() -> waitForVisibilityOfAllElementsLocatedBy(locator).get(0));
     }
 
     protected WebElement element(final SearchContext searchContext, final By locator) {
-        try {
-            return waitForVisibilityOfAllElementsLocatedBy(searchContext, locator).get(0);
-        } catch (TimeoutException time) {
-            fail(generateErrorMessage());
-        } catch (WebDriverException wde) {
-            LOGGER.error("****WebDriverException in element()****", wde);
-            fail(generateErrorMessage() + "\nException: " + wde.getMessage() + "\nStackTrace: " + Arrays.toString(wde.getStackTrace()));
-        }
-        return null;
+        return getElementOrWebDriverException(() -> waitForVisibilityOfAllElementsLocatedBy(searchContext, locator).get(0));
     }
 
     protected List<WebElement> elements(final By locator, SearchStrategy searchStrategy) {
-        List<WebElement> finds = null;
-        try {
+        return getElementsOrWebDriverException(() -> {
             switch (searchStrategy) {
                 case FIRST_ELEMENTS:
-                    finds = waitForVisibilityOfAllElementsLocatedBy(locator);
-                    break;
+                    return waitForVisibilityOfAllElementsLocatedBy(locator);
                 case IN_ALL_FRAMES:
-                    finds = waitForVisibilityOfAllElementsLocatedByInFrames(locator);
-                    break;
+                    return waitForVisibilityOfAllElementsLocatedByInFrames(locator);
             }
-        } catch (TimeoutException time) {
-            fail(generateErrorMessage());
-        } catch (WebDriverException wde) {
-            LOGGER.error("****WebDriverException in domElements()****", wde);
-            fail(generateErrorMessage() + "\nException: " + wde.getMessage() + "\nStackTrace: " + Arrays.toString(wde.getStackTrace()));
-        }
-        return finds;
+            throw new EnumConstantNotPresentException(searchStrategy.getDeclaringClass(), " enum constant is not recognized");
+        });
     }
 
     protected List<WebElement> elements(final By locator) {
@@ -82,15 +61,7 @@ public class AbstractElementFinder {
     }
 
     protected List<WebElement> elements(final SearchContext searchContext, final By locator) {
-        try {
-            return waitForVisibilityOfAllElementsLocatedBy(searchContext, locator);
-        } catch (TimeoutException time) {
-            fail(generateErrorMessage());
-        } catch (WebDriverException wde) {
-            LOGGER.error("****WebDriverException in elements()****", wde);
-            fail(generateErrorMessage() + "\nException: " + wde.getMessage() + "\nStackTrace: " + Arrays.toString(wde.getStackTrace()));
-        }
-        return null;
+        return getElementsOrWebDriverException(() -> waitForVisibilityOfAllElementsLocatedBy(searchContext, locator));
     }
 
     protected final WebElement elementOrNull(final By locator) {
@@ -107,47 +78,23 @@ public class AbstractElementFinder {
      * use "inDOM" as a postfix for a method name
      */
     protected WebElement domElement(By locator) {
-        try {
-            return waitForPresenceOfElementLocatedBy(locator);
-        } catch (TimeoutException time) {
-            fail(generateErrorMessage());
-        } catch (WebDriverException wde) {
-            LOGGER.error("****WebDriverException in domElement()****", wde);
-            fail(generateErrorMessage() + "\nException: " + wde.getMessage() + "\nStackTrace: " + Arrays.toString(wde.getStackTrace()));
-        }
-        return null;
+        return getDomElementOrWebDriverException(() -> waitForPresenceOfElementLocatedBy(locator));
     }
 
     protected WebElement domElement(SearchContext searchContext, By locator) {
-        try {
-            return waitForPresenceOfElementLocatedBy(searchContext, locator);
-        } catch (TimeoutException time) {
-            fail(generateErrorMessage());
-        } catch (WebDriverException wde) {
-            LOGGER.error("****WebDriverException in domElement()****", wde);
-            fail(generateErrorMessage() + "\nException: " + wde.getMessage() + "\nStackTrace: " + Arrays.toString(wde.getStackTrace()));
-        }
-        return null;
+        return getDomElementOrWebDriverException(() -> waitForPresenceOfElementLocatedBy(searchContext, locator));
     }
 
     protected List<WebElement> domElements(By locator, SearchStrategy searchStrategy) {
-        List<WebElement> finds = null;
-        try {
+        return getDomElementsOrWebDriverException(() -> {
             switch (searchStrategy) {
                 case FIRST_ELEMENTS:
-                    finds = waitForPresenceOfAllElementsLocatedBy(locator);
-                    break;
+                    return waitForPresenceOfAllElementsLocatedBy(locator);
                 case IN_ALL_FRAMES:
-                    finds = waitForPresenceOfAllElementsLocatedByInFrames(locator);
-                    break;
+                    return waitForPresenceOfAllElementsLocatedByInFrames(locator);
             }
-        } catch (TimeoutException time) {
-            fail(generateErrorMessage());
-        } catch (WebDriverException wde) {
-            LOGGER.error("****WebDriverException in domElements()****", wde);
-            fail(generateErrorMessage() + "\nException: " + wde.getMessage() + "\nStackTrace: " + Arrays.toString(wde.getStackTrace()));
-        }
-        return finds;
+            throw new EnumConstantNotPresentException(searchStrategy.getDeclaringClass(), " enum constant is not recognized");
+        });
     }
 
     protected List<WebElement> domElements(By locator) {
@@ -155,15 +102,7 @@ public class AbstractElementFinder {
     }
 
     protected List<WebElement> domElements(SearchContext searchContext, By locator) {
-        try {
-            return waitForPresenceOfAllElementsLocatedBy(searchContext, locator);
-        } catch (TimeoutException time) {
-            fail(generateErrorMessage());
-        } catch (WebDriverException wde) {
-            LOGGER.error("****WebDriverException in domElements()****", wde);
-            fail(generateErrorMessage() + "\nException: " + wde.getMessage() + "\nStackTrace: " + Arrays.toString(wde.getStackTrace()));
-        }
-        return null;
+        return getDomElementsOrWebDriverException(() -> waitForPresenceOfAllElementsLocatedBy(searchContext, locator));
     }
 
     /**
@@ -383,31 +322,27 @@ public class AbstractElementFinder {
     }
 
     protected <T extends Element> T getElement(Class<T> elementType, By by) {
-        try {
-            return getWebElementWrapper(element(by)).getElement(elementType, by);
-        } catch (Exception e) {
-            return null;
-        }
+        return getElementOrException(() -> getWebElementWrapper(element(by)).getElement(elementType, by));
     }
 
     protected <T extends Element> T getElement(Class<T> elementType, SearchContext searchContext, By by) {
-        try {
-            return getWebElementWrapper(element(searchContext, by)).getElement(elementType, by);
-        } catch (Exception e) {
-            return null;
-        }
+        return getElementOrException(() -> getWebElementWrapper(element(searchContext, by)).getElement(elementType, by));
     }
 
     protected <T extends Element> List<T> getElements(Class<T> elementType, By by) {
-        List<T> result = new ArrayList<>();
-        elements(by).stream().forEach(element -> result.add(getWebElementWrapper(element).getElement(elementType, by)));
-        return result;
+//Revert back if wrong approach
+//        List<T> result = new ArrayList<>();
+//        elements(by).forEach(element -> result.add(getWebElementWrapper(element).getElement(elementType, by)));
+//        return result;
+        return elements(by).stream().map(element -> getWebElementWrapper(element).getElement(elementType, by)).collect(Collectors.toList());
     }
 
     protected <T extends Element> List<T> getElements(Class<T> elementType, SearchContext searchContext, By by) {
-        List<T> result = new ArrayList<>();
-        elements(searchContext, by).stream().forEach(element -> result.add(getWebElementWrapper(element).getElement(elementType, by)));
-        return result;
+        //Revert back if wrong approach
+//        List<T> result = new ArrayList<>();
+//        elements(searchContext, by).forEach(element -> result.add(getWebElementWrapper(element).getElement(elementType, by)));
+//        return result;
+        return elements(searchContext, by).stream().map(element -> getWebElementWrapper(element).getElement(elementType, by)).collect(Collectors.toList());
     }
 
     /**
@@ -509,12 +444,10 @@ public class AbstractElementFinder {
     }
 
     protected final void waitForWindowToBeAppearedAndSwitchToIt(final String title) {
-        try {
+        windowOrWebDriverException(title, () -> {
             waitWindowIsAppearInChrome();
             elementFinder.waitForWindowToBeAppearedAndSwitchToIt(title);
-        } catch (WebDriverException e) {
-            fail("Unable to locate window with title '" + title + "'");
-        }
+        });
     }
 
     protected final void waitForWindowToBeAppearedByPartialUrlAndSwitchToIt(final String url, long timeoutInSec) {
@@ -523,21 +456,18 @@ public class AbstractElementFinder {
     }
 
     protected final void waitForWindowToBeAppearedByPartialUrlAndSwitchToIt(final String url) {
-        try {
+        windowOrWebDriverException(url, () -> {
             waitWindowIsAppearInChrome();
             elementFinder.waitForWindowToBeAppearedByPartialUrlAndSwitchToIt(url);
-        } catch (WebDriverException e) {
-            fail("Unable to locate window with url '" + url + "'");
-        }
+
+        });
     }
 
     protected final void waitForWindowToBeAppearedByPartialTitleAndSwitchToIt(final String partialTitle) {
-        try {
+        windowOrWebDriverException(partialTitle, () -> {
             waitWindowIsAppearInChrome();
             elementFinder.waitForWindowToBeAppearedByPartialTitleAndSwitchToIt(partialTitle);
-        } catch (WebDriverException e) {
-            fail("Unable to locate window with title '" + partialTitle + "'");
-        }
+        });
     }
 
     protected final void clickButtonAndWaitForNewPopUpWindowAndSwitchToIt(WebElement webElement) {
@@ -575,12 +505,7 @@ public class AbstractElementFinder {
      */
     @Deprecated
     protected final WebElement waitForPresenceOfElementLocatedBy(final By locator, final String errorMessage) {
-        try {
-            return waitForPresenceOfElementLocatedBy(locator);
-        } catch (WebDriverException e) {
-            fail(errorMessage);
-        }
-        return null;
+        return getElementOrWebDriverException(() -> waitForPresenceOfElementLocatedBy(locator), errorMessage);
     }
 
     /**
@@ -589,12 +514,7 @@ public class AbstractElementFinder {
      */
     @Deprecated
     protected final WebElement waitForPresenceOfElementLocatedBy(final By locator, long timeout, final String errorMessage) {
-        try {
-            return waitForPresenceOfElementLocatedBy(locator, timeout);
-        } catch (WebDriverException e) {
-            fail(errorMessage);
-        }
-        return null;
+        return getElementOrWebDriverException(() -> waitForPresenceOfElementLocatedBy(locator, timeout), errorMessage);
     }
 
     @Deprecated
@@ -604,12 +524,7 @@ public class AbstractElementFinder {
 
     @Deprecated
     protected final WebElement waitForPresenceOfElementLocatedByLinkText(final String linkText, final String errorMessage) {
-        try {
-            return waitForPresenceOfElementLocatedBy(AbstractPage.getLinkByXpath(linkText));
-        } catch (WebDriverException e) {
-            fail(errorMessage);
-        }
-        return null;
+        return getElementOrWebDriverException(() -> waitForPresenceOfElementLocatedBy(AbstractPage.getLinkByXpath(linkText)), errorMessage);
     }
 
     @Deprecated
@@ -622,7 +537,7 @@ public class AbstractElementFinder {
         try {
             return wrapList(elementFinder.waitForPresenceOfAllElementsLocatedBy(locator, timeoutInSec), locator);
         } catch (TimeoutException ignored) {
-            return new ArrayList<WebElement>();
+            return new ArrayList<>();
         }
     }
 
@@ -651,12 +566,7 @@ public class AbstractElementFinder {
      */
     @Deprecated
     protected final WebElement waitForVisibilityOfElementLocatedBy(final By locator, final String errorMessage) {
-        try {
-            return waitForVisibilityOfElementLocatedBy(locator);
-        } catch (WebDriverException e) {
-            fail(errorMessage);
-            return null;
-        }
+        return getElementOrWebDriverException(() -> waitForVisibilityOfElementLocatedBy(locator), errorMessage);
     }
 
     @Deprecated
@@ -745,12 +655,7 @@ public class AbstractElementFinder {
     }
 
     protected final WebElement waitForElementToBeClickable(final By locator, final String errorMessage) {
-        try {
-            return waitForElementToBeClickable(locator);
-        } catch (WebDriverException e) {
-            fail(errorMessage);
-        }
-        return null;
+        return getElementOrWebDriverException(() -> waitForElementToBeClickable(locator), errorMessage);
     }
 
     private void waitForElementToBeClickable(final WebElement element) {
@@ -877,6 +782,71 @@ public class AbstractElementFinder {
         if (isChrome()) {
             TestUtils.waitForSomeTime(3000, "Wait for window is appear in chrome");
         }
+    }
+
+    private WebElement getElementOrWebDriverException(Supplier<WebElement> webElementSupplier) {
+        return getSupplierObject(webElementSupplier, "****WebDriverException in element()****");
+    }
+
+    private List<WebElement> getElementsOrWebDriverException(Supplier<List<WebElement>> webElementsSupplier) {
+        return getSupplierObjects(webElementsSupplier, "****WebDriverException in elements()****");
+    }
+
+    private WebElement getDomElementOrWebDriverException(Supplier<WebElement> webElementSupplier) {
+        return getSupplierObject(webElementSupplier, "****WebDriverException in domElement()****");
+    }
+
+    private List<WebElement> getDomElementsOrWebDriverException(Supplier<List<WebElement>> webElementsSupplier) {
+        return getSupplierObjects(webElementsSupplier, "****WebDriverException in domElements()****");
+    }
+
+    private void windowOrWebDriverException(String title, Actions action) {
+        try {
+            action.execute();
+        } catch (WebDriverException e) {
+            fail("Unable to locate window with '" + title + "'");
+        }
+    }
+
+    private <T extends Element> T getElementOrException(Supplier<T> elementSupplier) {
+        try {
+            return elementSupplier.get();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private WebElement getSupplierObject(Supplier<WebElement> webElementSupplier, String loggerMessage) {
+        try {
+            return webElementSupplier.get();
+        } catch (TimeoutException time) {
+            fail(generateErrorMessage());
+        } catch (WebDriverException wde) {
+            LOGGER.error(loggerMessage, wde);
+            fail(generateErrorMessage() + "\nException: " + wde.getMessage() + "\nStackTrace: " + Arrays.toString(wde.getStackTrace()));
+        }
+        return null;
+    }
+
+    private List<WebElement> getSupplierObjects(Supplier<List<WebElement>> webElementsSupplier, String loggerMessage) {
+        try {
+            return webElementsSupplier.get();
+        } catch (TimeoutException time) {
+            fail(generateErrorMessage());
+        } catch (WebDriverException wde) {
+            LOGGER.error(loggerMessage, wde);
+            fail(generateErrorMessage() + "\nException: " + wde.getMessage() + "\nStackTrace: " + Arrays.toString(wde.getStackTrace()));
+        }
+        return null;
+    }
+
+    private WebElement getElementOrWebDriverException(Supplier<WebElement> webElementSupplier, String errorMessage) {
+        try {
+            return webElementSupplier.get();
+        } catch (WebDriverException e) {
+            fail(errorMessage);
+        }
+        return null;
     }
 }
 
