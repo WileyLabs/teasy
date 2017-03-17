@@ -434,6 +434,7 @@ public class AbstractElementFinder {
      * use {@link #elementOrNull(By, long)}
      * this method will be removed
      */
+    @Deprecated
     protected final WebElement waitForElementByNoThrow(final By locator, long timeout) {
         try {
             return waitForPresenceOfElementLocatedBy(locator, timeout);

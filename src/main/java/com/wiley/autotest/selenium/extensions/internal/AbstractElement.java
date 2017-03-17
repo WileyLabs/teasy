@@ -22,6 +22,16 @@ abstract class AbstractElement implements Element {
     private static final long SLEEP_IN_MILLISECONDS = 1000;
     protected static final String EXPLANATION_MESSAGE_FOR_WAIT = "Wait for reload element";
 
+    protected AbstractElement(final WebElement element) {
+        this.wrappedElement = element;
+        init(getDriver(), WAIT_TIME_OUT_IN_SECONDS);
+    }
+
+    protected AbstractElement(final WebElement element, final By locator) {
+        this(element);
+        this.locator = locator;
+    }
+
     public void init(final WebDriver driver, Long timeout) {
         elementFinder = new WebDriverAwareElementFinder(driver, new WebDriverWait(driver, timeout, SLEEP_IN_MILLISECONDS));
     }
@@ -32,16 +42,6 @@ abstract class AbstractElement implements Element {
 
     public ErrorSender getErrorSender() {
         return errorSender;
-    }
-
-    protected AbstractElement(final WebElement element) {
-        this.wrappedElement = element;
-        init(getDriver(), WAIT_TIME_OUT_IN_SECONDS);
-    }
-
-    protected AbstractElement(final WebElement element, final By locator) {
-        this(element);
-        this.locator = locator;
     }
 
     @Override
@@ -64,7 +64,7 @@ abstract class AbstractElement implements Element {
         return wrappedElement;
     }
 
-    protected boolean waitForStalenessOf(WebElement element) {
+    boolean waitForStalenessOf(WebElement element) {
         try {
             if (getElementFinder().waitForStalenessOf(element)) {
                 return true;
