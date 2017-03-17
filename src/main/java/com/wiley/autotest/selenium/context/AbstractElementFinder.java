@@ -330,18 +330,10 @@ public class AbstractElementFinder {
     }
 
     protected <T extends Element> List<T> getElements(Class<T> elementType, By by) {
-//Revert back if wrong approach
-//        List<T> result = new ArrayList<>();
-//        elements(by).forEach(element -> result.add(getWebElementWrapper(element).getElement(elementType, by)));
-//        return result;
         return elements(by).stream().map(element -> getWebElementWrapper(element).getElement(elementType, by)).collect(Collectors.toList());
     }
 
     protected <T extends Element> List<T> getElements(Class<T> elementType, SearchContext searchContext, By by) {
-        //Revert back if wrong approach
-//        List<T> result = new ArrayList<>();
-//        elements(searchContext, by).forEach(element -> result.add(getWebElementWrapper(element).getElement(elementType, by)));
-//        return result;
         return elements(searchContext, by).stream().map(element -> getWebElementWrapper(element).getElement(elementType, by)).collect(Collectors.toList());
     }
 
@@ -785,19 +777,41 @@ public class AbstractElementFinder {
     }
 
     private WebElement getElementOrWebDriverException(Supplier<WebElement> webElementSupplier) {
-        return getSupplierObject(webElementSupplier, "****WebDriverException in element()****");
-    }
-
-    private List<WebElement> getElementsOrWebDriverException(Supplier<List<WebElement>> webElementsSupplier) {
-        return getSupplierObjects(webElementsSupplier, "****WebDriverException in elements()****");
+        return (WebElement) getSupplierObject((Supplier) webElementSupplier, (String) "****WebDriverException in element()****");
     }
 
     private WebElement getDomElementOrWebDriverException(Supplier<WebElement> webElementSupplier) {
-        return getSupplierObject(webElementSupplier, "****WebDriverException in domElement()****");
+        return (WebElement) getSupplierObject((Supplier) webElementSupplier, (String) "****WebDriverException in domElement()****");
     }
 
+    @SuppressWarnings("unchecked")
+    private List<WebElement> getElementsOrWebDriverException(Supplier<List<WebElement>> webElementsSupplier) {
+        return (List<WebElement>) getSupplierObject((Supplier) webElementsSupplier, (String) "****WebDriverException in elements()****");
+    }
+
+    @SuppressWarnings("unchecked")
     private List<WebElement> getDomElementsOrWebDriverException(Supplier<List<WebElement>> webElementsSupplier) {
-        return getSupplierObjects(webElementsSupplier, "****WebDriverException in domElements()****");
+        return (List<WebElement>) getSupplierObject((Supplier) webElementsSupplier, (String) "****WebDriverException in domElements()****");
+    }
+
+    private Object getSupplierObject(Supplier webElementSupplier, String loggerMessage) {
+        return getSupplierObject(webElementSupplier, loggerMessage, generateErrorMessage());
+    }
+
+    private WebElement getElementOrWebDriverException(Supplier<WebElement> webElementSupplier, String errorMessage) {
+        return (WebElement) getSupplierObject(webElementSupplier, "", errorMessage);
+    }
+
+    private Object getSupplierObject(Supplier webElementSupplier, String loggerMessage, String errorMessage) {
+        try {
+            return webElementSupplier.get();
+        } catch (TimeoutException time) {
+            fail(generateErrorMessage());
+        } catch (WebDriverException wde) {
+            LOGGER.error(loggerMessage, wde);
+            fail(errorMessage + "\nException: " + wde.getMessage() + "\nStackTrace: " + Arrays.toString(wde.getStackTrace()));
+        }
+        return null;
     }
 
     private void windowOrWebDriverException(String title, Actions action) {
@@ -814,39 +828,6 @@ public class AbstractElementFinder {
         } catch (Exception e) {
             return null;
         }
-    }
-
-    private WebElement getSupplierObject(Supplier<WebElement> webElementSupplier, String loggerMessage) {
-        try {
-            return webElementSupplier.get();
-        } catch (TimeoutException time) {
-            fail(generateErrorMessage());
-        } catch (WebDriverException wde) {
-            LOGGER.error(loggerMessage, wde);
-            fail(generateErrorMessage() + "\nException: " + wde.getMessage() + "\nStackTrace: " + Arrays.toString(wde.getStackTrace()));
-        }
-        return null;
-    }
-
-    private List<WebElement> getSupplierObjects(Supplier<List<WebElement>> webElementsSupplier, String loggerMessage) {
-        try {
-            return webElementsSupplier.get();
-        } catch (TimeoutException time) {
-            fail(generateErrorMessage());
-        } catch (WebDriverException wde) {
-            LOGGER.error(loggerMessage, wde);
-            fail(generateErrorMessage() + "\nException: " + wde.getMessage() + "\nStackTrace: " + Arrays.toString(wde.getStackTrace()));
-        }
-        return null;
-    }
-
-    private WebElement getElementOrWebDriverException(Supplier<WebElement> webElementSupplier, String errorMessage) {
-        try {
-            return webElementSupplier.get();
-        } catch (WebDriverException e) {
-            fail(errorMessage);
-        }
-        return null;
     }
 }
 
