@@ -68,6 +68,10 @@ public class AbstractElementFinder {
         return findElementByNoThrow(locator);
     }
 
+    protected final WebElement elementOrNull(final By locator, long timeOutInSeconds) {
+        return waitForElementByNoThrow(locator, timeOutInSeconds);
+    }
+
     protected final WebElement elementOrNull(final SearchContext searchContext, final By locator) {
         return findElementByNoThrow(searchContext, locator);
     }
@@ -435,6 +439,18 @@ public class AbstractElementFinder {
     }
 
     /**
+     * use {@link #elementOrNull(By, long)}
+     * this method will be removed
+     */
+    protected final WebElement waitForElementByNoThrow(final By locator, long timeout) {
+        try {
+            return waitForPresenceOfElementLocatedBy(locator, timeout);
+        } catch (WebDriverException e) {
+            return null;
+        }
+    }
+
+    /**
      * This method is valid but now it's used in many places incorrectly. All usages should be verified and fixed
      * then deprecated annotation will be removed
      */
@@ -615,14 +631,6 @@ public class AbstractElementFinder {
 
     private void waitForAbsenceOfElementLocatedBy(final By locator) {
         elementFinder.waitForAbsenceOfElementLocatedBy(locator);
-    }
-
-    protected final WebElement waitForElementByNoThrow(final By locator, long timeout) {
-        try {
-            return waitForPresenceOfElementLocatedBy(locator, timeout);
-        } catch (WebDriverException e) {
-            return null;
-        }
     }
 
     protected final Boolean waitForTextToBePresentInElement(final By locator, final String text) {
