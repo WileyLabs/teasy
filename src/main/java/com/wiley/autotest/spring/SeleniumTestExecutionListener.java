@@ -589,7 +589,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         ChromeOptions options = new ChromeOptions();
 //        options.addArguments("test-type");
         //For view pdf in chrome
-        options.setExperimentalOption("excludeSwitches", Arrays.asList("test-type", "ignore-certificate-errors"));
+        options.setExperimentalOption("excludeSwitches", Arrays.asList("test-type", "--ignore-certificate-errors"));
         capabilities.setCapability(ChromeOptions.CAPABILITY, options);
         capabilities.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
         capabilities.setPlatform(Platform.WINDOWS);
