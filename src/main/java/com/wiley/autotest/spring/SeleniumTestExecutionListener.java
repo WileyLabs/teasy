@@ -547,6 +547,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         capabilities.setCapability(FirefoxDriver.MARIONETTE, false);
         capabilities.setCapability(FirefoxDriver.PROFILE, getFirefoxProfile(settings));
         capabilities.setPlatform(Platform.WINDOWS);
+        capabilities.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
         setLoggingPrefs(capabilities);
         setProxy(capabilities);
         return capabilities;
@@ -560,6 +561,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         capabilities.setCapability(InternetExplorerDriver.IE_ENSURE_CLEAN_SESSION, true);
         capabilities.setCapability(CapabilityType.SUPPORTS_ALERTS, true);
         capabilities.setPlatform(Platform.WINDOWS);
+        capabilities.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
         setAlertBehaviorCapabilities(capabilities);
         setProxy(capabilities);
         //Found that setting this capability could increase IE tests speed. Should be checked.
@@ -589,6 +591,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         //For view pdf in chrome
         options.setExperimentalOption("excludeSwitches", Arrays.asList("test-type", "ignore-certificate-errors"));
         capabilities.setCapability(ChromeOptions.CAPABILITY, options);
+        capabilities.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
         capabilities.setPlatform(Platform.WINDOWS);
         setAlertBehaviorCapabilities(capabilities);
         setLoggingPrefs(capabilities);
@@ -643,6 +646,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         profile.setPreference("dom.ipc.plugins.timeoutSecs", -1);
         //Add this to avoid JAVA plugin certificate warnings
         profile.setAcceptUntrustedCertificates(true);
+        profile.setAssumeUntrustedCertificateIssuer(true);
         //   profile.setPreference("security.enable_java", true);
         profile.setPreference("plugin.state.java", 2);
 
