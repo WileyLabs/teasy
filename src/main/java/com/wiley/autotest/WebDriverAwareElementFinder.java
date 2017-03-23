@@ -95,8 +95,18 @@ public class WebDriverAwareElementFinder implements ElementFinder {
     }
 
     @Override
+    public List<WebElement> waitForVisibilityOfAllElementsLocatedByInFrames(final By locator, final long timeout) {
+        return waitFor(ExpectedConditions2.visibilityOfAllElementsLocatedByInFrames(locator), timeout);
+    }
+
+    @Override
     public List<WebElement> waitForPresenceOfAllElementsLocatedByInFrames(final By locator) {
         return waitFor(ExpectedConditions2.presenceOfAllElementsLocatedByInFrames(locator));
+    }
+
+    @Override
+    public List<WebElement> waitForPresenceOfAllElementsLocatedByInFrames(final By locator, final long timeout) {
+        return waitFor(ExpectedConditions2.presenceOfAllElementsLocatedByInFrames(locator), timeout);
     }
 
     @Override
@@ -283,6 +293,11 @@ public class WebDriverAwareElementFinder implements ElementFinder {
     @Override
     public List<WebElement> waitForVisibilityOfAllElementsLocatedBy(final SearchContext searchContext, final By locator) {
         return waitFor(ExpectedConditions2.visibilityOfAllElementsLocatedBy(searchContext, locator));
+    }
+
+    @Override
+    public List<WebElement> waitForVisibilityOfAllElementsLocatedBy(final By locator, long timeOutInSeconds) {
+        return waitFor(ExpectedConditions2.visibilityOfAllElementsLocatedBy(locator), timeOutInSeconds);
     }
 
     @Override

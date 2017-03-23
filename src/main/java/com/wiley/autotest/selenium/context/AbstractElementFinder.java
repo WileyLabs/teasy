@@ -34,12 +34,16 @@ public class AbstractElementFinder {
     //VE added this to avoid No buffer space available exception. To be replaced with default value of 500 if does not work.
     protected static final long SLEEP_IN_MILLISECONDS = 1000;
 
-    protected WebElement element(final By locator) {
-        return getElementOrWebDriverException(() -> waitForVisibilityOfAllElementsLocatedBy(locator).get(0));
-    }
-
-    protected WebElement element(final SearchContext searchContext, final By locator) {
-        return getElementOrWebDriverException(() -> waitForVisibilityOfAllElementsLocatedBy(searchContext, locator).get(0));
+    protected List<WebElement> elements(final By locator, SearchStrategy searchStrategy, final long timeoutInSeconds) {
+        return getElementsOrWebDriverException(() -> {
+            switch (searchStrategy) {
+                case FIRST_ELEMENTS:
+                    return waitForVisibilityOfAllElementsLocatedBy(locator, timeoutInSeconds);
+                case IN_ALL_FRAMES:
+                    return waitForVisibilityOfAllElementsLocatedByInFrames(locator, timeoutInSeconds);
+            }
+            throw new EnumConstantNotPresentException(searchStrategy.getDeclaringClass(), " enum constant is not recognized");
+        });
     }
 
     protected List<WebElement> elements(final By locator, SearchStrategy searchStrategy) {
@@ -54,8 +58,24 @@ public class AbstractElementFinder {
         });
     }
 
+    protected WebElement element(final By locator) {
+        return getElementOrWebDriverException(() -> waitForVisibilityOfAllElementsLocatedBy(locator).get(0));
+    }
+
+    protected WebElement element(final By locator, final long timeoutInSeconds) {
+        return getElementOrWebDriverException(() -> waitForVisibilityOfAllElementsLocatedBy(locator, timeoutInSeconds).get(0));
+    }
+
+    protected WebElement element(final SearchContext searchContext, final By locator) {
+        return getElementOrWebDriverException(() -> waitForVisibilityOfAllElementsLocatedBy(searchContext, locator).get(0));
+    }
+
     protected List<WebElement> elements(final By locator) {
         return elements(locator, SearchStrategy.FIRST_ELEMENTS);
+    }
+
+    protected List<WebElement> elements(final By locator, final long timeoutInSeconds) {
+        return elements(locator, SearchStrategy.FIRST_ELEMENTS, timeoutInSeconds);
     }
 
     protected List<WebElement> elements(final SearchContext searchContext, final By locator) {
@@ -66,8 +86,8 @@ public class AbstractElementFinder {
         return findElementByNoThrow(locator);
     }
 
-    protected final WebElement elementOrNull(final By locator, long timeOutInSeconds) {
-        return waitForElementByNoThrow(locator, timeOutInSeconds);
+    protected final WebElement elementOrNull(final By locator, long timeoutInSeconds) {
+        return waitForElementByNoThrow(locator, timeoutInSeconds);
     }
 
     protected final WebElement elementOrNull(final SearchContext searchContext, final By locator) {
@@ -79,12 +99,16 @@ public class AbstractElementFinder {
      * call it from a private getter method on Page
      * use "inDOM" as a postfix for a method name
      */
-    protected WebElement domElement(By locator) {
-        return getDomElementOrWebDriverException(() -> waitForPresenceOfElementLocatedBy(locator));
-    }
-
-    protected WebElement domElement(SearchContext searchContext, By locator) {
-        return getDomElementOrWebDriverException(() -> waitForPresenceOfElementLocatedBy(searchContext, locator));
+    protected List<WebElement> domElements(By locator, SearchStrategy searchStrategy, long timeoutInSeconds) {
+        return getDomElementsOrWebDriverException(() -> {
+            switch (searchStrategy) {
+                case FIRST_ELEMENTS:
+                    return waitForPresenceOfAllElementsLocatedBy(locator, timeoutInSeconds);
+                case IN_ALL_FRAMES:
+                    return waitForPresenceOfAllElementsLocatedByInFrames(locator, timeoutInSeconds);
+            }
+            throw new EnumConstantNotPresentException(searchStrategy.getDeclaringClass(), " enum constant is not recognized");
+        });
     }
 
     protected List<WebElement> domElements(By locator, SearchStrategy searchStrategy) {
@@ -99,8 +123,24 @@ public class AbstractElementFinder {
         });
     }
 
+    protected WebElement domElement(By locator) {
+        return getDomElementOrWebDriverException(() -> waitForPresenceOfElementLocatedBy(locator));
+    }
+
+    protected WebElement domElement(By locator, final long timeoutInSeconds) {
+        return getDomElementOrWebDriverException(() -> waitForPresenceOfElementLocatedBy(locator, timeoutInSeconds));
+    }
+
+    protected WebElement domElement(SearchContext searchContext, By locator) {
+        return getDomElementOrWebDriverException(() -> waitForPresenceOfElementLocatedBy(searchContext, locator));
+    }
+
     protected List<WebElement> domElements(By locator) {
         return domElements(locator, SearchStrategy.FIRST_ELEMENTS);
+    }
+
+    protected List<WebElement> domElements(By locator, long timeoutInSeconds) {
+        return domElements(locator, SearchStrategy.FIRST_ELEMENTS, timeoutInSeconds);
     }
 
     protected List<WebElement> domElements(SearchContext searchContext, By locator) {
@@ -119,12 +159,20 @@ public class AbstractElementFinder {
         return getElement(Button.class, locator);
     }
 
+    protected Button button(By locator, long timeoutInSeconds) {
+        return getElement(Button.class, locator, timeoutInSeconds);
+    }
+
     protected Button button(SearchContext searchContext, By locator) {
         return getElement(Button.class, searchContext, locator);
     }
 
     protected List<Button> buttons(By locator) {
         return getElements(Button.class, locator);
+    }
+
+    protected List<Button> buttons(By locator, long timeoutInSeconds) {
+        return getElements(Button.class, locator, timeoutInSeconds);
     }
 
     protected List<Button> buttons(SearchContext searchContext, By locator) {
@@ -135,12 +183,20 @@ public class AbstractElementFinder {
         return getElement(Link.class, locator);
     }
 
+    protected Link link(By locator, long timeoutInSeconds) {
+        return getElement(Link.class, locator, timeoutInSeconds);
+    }
+
     protected Link link(SearchContext searchContext, By locator) {
         return getElement(Link.class, searchContext, locator);
     }
 
     protected List<Link> links(By locator) {
         return getElements(Link.class, locator);
+    }
+
+    protected List<Link> links(By locator, long timeoutInSeconds) {
+        return getElements(Link.class, locator, timeoutInSeconds);
     }
 
     protected List<Link> links(SearchContext searchContext, By locator) {
@@ -151,12 +207,20 @@ public class AbstractElementFinder {
         return getElement(CheckBox.class, locator);
     }
 
+    protected CheckBox checkBox(By locator, long timeoutInSeconds) {
+        return getElement(CheckBox.class, locator, timeoutInSeconds);
+    }
+
     protected CheckBox checkBox(SearchContext searchContext, By locator) {
         return getElement(CheckBox.class, searchContext, locator);
     }
 
     protected List<CheckBox> checkBoxes(By locator) {
         return getElements(CheckBox.class, locator);
+    }
+
+    protected List<CheckBox> checkBoxes(By locator, long timeoutInSeconds) {
+        return getElements(CheckBox.class, locator, timeoutInSeconds);
     }
 
     protected List<CheckBox> checkBoxes(SearchContext searchContext, By locator) {
@@ -167,6 +231,10 @@ public class AbstractElementFinder {
         return getElement(RadioButton.class, locator);
     }
 
+    protected RadioButton radioButton(By locator, long timeoutInSeconds) {
+        return getElement(RadioButton.class, locator, timeoutInSeconds);
+    }
+
     protected RadioButton radioButton(SearchContext searchContext, By locator) {
         return getElement(RadioButton.class, searchContext, locator);
     }
@@ -175,12 +243,20 @@ public class AbstractElementFinder {
         return getElements(RadioButton.class, locator);
     }
 
+    protected List<RadioButton> radioButtons(By locator, long timeoutInSeconds) {
+        return getElements(RadioButton.class, locator, timeoutInSeconds);
+    }
+
     protected List<RadioButton> radioButtons(SearchContext searchContext, By locator) {
-        return getElements(RadioButton.class, locator);
+        return getElements(RadioButton.class, searchContext, locator);
     }
 
     protected Select select(By locator) {
         return getElement(Select.class, locator);
+    }
+
+    protected Select select(By locator, long timeoutInSeconds) {
+        return getElement(Select.class, locator, timeoutInSeconds);
     }
 
     protected Select select(SearchContext searchContext, By locator) {
@@ -191,25 +267,36 @@ public class AbstractElementFinder {
         return getElements(Select.class, locator);
     }
 
+    protected List<Select> selects(By locator, long timeoutInSeconds) {
+        return getElements(Select.class, locator, timeoutInSeconds);
+    }
+
     protected List<Select> selects(SearchContext searchContext, By locator) {
-        return getElements(Select.class, locator);
+        return getElements(Select.class, searchContext, locator);
     }
 
     protected TextField textField(By locator) {
         return getElement(TextField.class, locator);
     }
 
+    protected TextField textField(By locator, long timeoutInSeconds) {
+        return getElement(TextField.class, locator, timeoutInSeconds);
+    }
+
     protected TextField textField(SearchContext searchContext, By locator) {
         return getElement(TextField.class, searchContext, locator);
     }
-
 
     protected List<TextField> textFields(By locator) {
         return getElements(TextField.class, locator);
     }
 
+    protected List<TextField> textFields(By locator, long timeoutInSeconds) {
+        return getElements(TextField.class, locator, timeoutInSeconds);
+    }
+
     protected List<TextField> textFields(SearchContext searchContext, By locator) {
-        return getElements(TextField.class, locator);
+        return getElements(TextField.class, searchContext, locator);
     }
 
     /**
@@ -327,12 +414,20 @@ public class AbstractElementFinder {
         return getElementOrException(() -> getWebElementWrapper(element(by)).getElement(elementType, by));
     }
 
+    protected <T extends Element> T getElement(Class<T> elementType, By by, long timeoutInSeconds) {
+        return getElementOrException(() -> getWebElementWrapper(element(by, timeoutInSeconds)).getElement(elementType, by));
+    }
+
     protected <T extends Element> T getElement(Class<T> elementType, SearchContext searchContext, By by) {
         return getElementOrException(() -> getWebElementWrapper(element(searchContext, by)).getElement(elementType, by));
     }
 
     protected <T extends Element> List<T> getElements(Class<T> elementType, By by) {
         return elements(by).stream().map(element -> getWebElementWrapper(element).getElement(elementType, by)).collect(Collectors.toList());
+    }
+
+    protected <T extends Element> List<T> getElements(Class<T> elementType, By by, long timeoutInSeconds) {
+        return elements(by, timeoutInSeconds).stream().map(element -> getWebElementWrapper(element).getElement(elementType, by)).collect(Collectors.toList());
     }
 
     protected <T extends Element> List<T> getElements(Class<T> elementType, SearchContext searchContext, By by) {
@@ -457,9 +552,9 @@ public class AbstractElementFinder {
         });
     }
 
-    protected final void waitForWindowToBeAppearedByPartialUrlAndSwitchToIt(final String url, long timeoutInSec) {
+    protected final void waitForWindowToBeAppearedByPartialUrlAndSwitchToIt(final String url, long timeoutInSeconds) {
         waitWindowIsAppearInChrome();
-        elementFinder.waitForWindowToBeAppearedByPartialUrlAndSwitchToIt(url, timeoutInSec);
+        elementFinder.waitForWindowToBeAppearedByPartialUrlAndSwitchToIt(url, timeoutInSeconds);
     }
 
     protected final void waitForWindowToBeAppearedByPartialUrlAndSwitchToIt(final String url) {
@@ -540,9 +635,9 @@ public class AbstractElementFinder {
     }
 
     @Deprecated
-    protected final List<WebElement> waitForPresenceOfAllElementsLocatedBy(final By locator, long timeoutInSec) {
+    protected final List<WebElement> waitForPresenceOfAllElementsLocatedBy(final By locator, long timeoutInSeconds) {
         try {
-            return elementFinder.waitForPresenceOfAllElementsLocatedBy(locator, timeoutInSec);
+            return elementFinder.waitForPresenceOfAllElementsLocatedBy(locator, timeoutInSeconds);
         } catch (TimeoutException ignored) {
             return new ArrayList<>();
         }
@@ -589,6 +684,10 @@ public class AbstractElementFinder {
         return elementFinder.waitForVisibilityOfAllElementsLocatedBy(locator);
     }
 
+    private List<WebElement> waitForVisibilityOfAllElementsLocatedBy(final By locator, long timeoutInSeconds) {
+        return elementFinder.waitForVisibilityOfAllElementsLocatedBy(locator, timeoutInSeconds);
+    }
+
     private List<WebElement> waitForVisibilityOfAllElementsLocatedBy(final SearchContext searchContext, final By locator) {
         return elementFinder.waitForVisibilityOfAllElementsLocatedBy(searchContext, locator);
     }
@@ -597,8 +696,16 @@ public class AbstractElementFinder {
         return elementFinder.waitForVisibilityOfAllElementsLocatedByInFrames(locator);
     }
 
+    private List<WebElement> waitForVisibilityOfAllElementsLocatedByInFrames(final By locator, long timeout) {
+        return elementFinder.waitForVisibilityOfAllElementsLocatedByInFrames(locator, timeout);
+    }
+
     private List<WebElement> waitForPresenceOfAllElementsLocatedByInFrames(final By locator) {
         return elementFinder.waitForPresenceOfAllElementsLocatedByInFrames(locator);
+    }
+
+    private List<WebElement> waitForPresenceOfAllElementsLocatedByInFrames(final By locator, long timeout) {
+        return elementFinder.waitForPresenceOfAllElementsLocatedByInFrames(locator, timeout);
     }
 
     /**

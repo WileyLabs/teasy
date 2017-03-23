@@ -19,11 +19,14 @@ public interface ElementFinder {
 
     List<WebElement> waitForVisibilityOfAllElementsLocatedBy(final By locator);
     List<WebElement> waitForVisibilityOfAllElementsLocatedBy(final SearchContext searchContext, final By locator);
+    List<WebElement> waitForVisibilityOfAllElementsLocatedBy(final By locator, final long timeOutInSeconds);
     WebElement waitForVisibilityOfElementLocatedBy(final By locator);
     WebElement waitForVisibilityOfElementLocatedBy(final By locator, final long timeout);
     void waitForVisibilityOf(WebElement element);
     List<WebElement> waitForVisibilityOfAllElementsLocatedByInFrames(final By locator);
+    List<WebElement> waitForVisibilityOfAllElementsLocatedByInFrames(final By locator, final long timeout);
     List<WebElement> waitForPresenceOfAllElementsLocatedByInFrames(final By locator);
+    List<WebElement> waitForPresenceOfAllElementsLocatedByInFrames(final By locator, final long timeout);
 
     WebElement waitForPresenceOfElementLocatedBy(By locator);
     WebElement waitForPresenceOfElementLocatedBy(By locator, long timeout);

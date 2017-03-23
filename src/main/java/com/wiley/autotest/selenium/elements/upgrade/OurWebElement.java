@@ -342,7 +342,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
         }
     }
 
-    public WebDriver getDriver() {
+    private WebDriver getDriver() {
         return SeleniumHolder.getWebDriver();
     }
 

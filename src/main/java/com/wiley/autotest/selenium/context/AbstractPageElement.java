@@ -74,11 +74,11 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
 
     private ScreenshotHelper screenshotHelper;
 
-    public WebDriver getDriver() {
+    protected WebDriver getDriver() {
         return driver;
     }
 
-    public HelperRegistry getRegistry() {
+    protected HelperRegistry getRegistry() {
         return registry;
     }
 
@@ -106,7 +106,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         return settings;
     }
 
-    public ScreenshotHelper getScreenshotHelper() {
+    protected ScreenshotHelper getScreenshotHelper() {
         return screenshotHelper;
     }
 
