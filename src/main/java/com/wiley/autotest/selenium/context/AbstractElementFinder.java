@@ -787,10 +787,6 @@ public class AbstractElementFinder {
         }
     }
 
-    protected final void waitForListToLoad() {
-        elementFinder.waitForListToLoad();
-    }
-
     protected final void waitForElementContainsAttributeValue(final WebElement element, final String attributeName, final String attributeValue) {
         elementFinder.waitForElementContainsAttributeValue(element, attributeName, attributeValue);
     }

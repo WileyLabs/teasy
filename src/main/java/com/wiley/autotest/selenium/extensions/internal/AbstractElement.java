@@ -11,7 +11,8 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-abstract class AbstractElement implements Element {
+public abstract class AbstractElement implements Element {
+
     private static final long WAIT_TIME_OUT_IN_SECONDS = 10;
     private WebElement wrappedElement;
     private By locator;

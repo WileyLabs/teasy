@@ -10,8 +10,9 @@ import org.openqa.selenium.WebElement;
  * Date: 14.02.12
  */
 public class WebElementWrapper {
-    private final ElementFactory elementFactory = new DefaultElementFactory();
-    private final WebElement webElement;
+
+    public final ElementFactory elementFactory = new DefaultElementFactory();
+    public final WebElement webElement;
 
     public WebElementWrapper(final WebElement webElement) {
         this.webElement = webElement;
@@ -39,10 +40,6 @@ public class WebElementWrapper {
 
     public CheckBox getCheckBox() {
         return elementFactory.create(CheckBox.class, webElement);
-    }
-
-    public DropDown getDropDown() {
-        return elementFactory.create(DropDown.class, webElement);
     }
 
     public <T extends Element> T getElement(Class<T> elementType, By by) {

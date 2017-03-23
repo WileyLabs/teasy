@@ -71,7 +71,6 @@ public interface ElementFinder {
     void setTimeout(long timeOutInSeconds);
 
     void waitForPageToLoad();
-    void waitForListToLoad();
 
     Boolean waitForElementContainsAttributeValue(final WebElement element, final String attributeName, final String attributeValue);
     Boolean waitForElementContainsAttributeValue(final WebElement element, final String attributeName, final String attributeValue, long timeOutInSeconds);

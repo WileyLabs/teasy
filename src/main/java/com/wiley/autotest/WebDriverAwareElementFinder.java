@@ -197,7 +197,6 @@ public class WebDriverAwareElementFinder implements ElementFinder {
         driver.switchTo().window(window);
     }
 
-
     @Override
     public void waitForWindowToBeAppearedByUrlAndSwitchToIt(final String url) {
         waitFor(appearingOfWindowByUrl(url));
@@ -248,26 +247,6 @@ public class WebDriverAwareElementFinder implements ElementFinder {
             //TODO this catch should be removed by September 1 2014! Adding it to find out the reason of browsers being not closed after test
             LOGGER.error("*****ERROR*****!!!*****ERROR*****Throwable occurred was throws during waiting for page to load!", unexpectedThrowable);
         }
-    }
-
-    //TODO NT extract to E4 project
-    @Override
-    public void waitForListToLoad() {
-//        List<WebElement> loading = findElementsBy(By.cssSelector(".loading"));
-//        try {
-//            if (!loading.isEmpty() && !(loading.size() == 1 && loading.get(0).getText().isEmpty())) {
-//                waitForStalenessOf(loading.get(0), 30);
-//            }
-//        } catch (StaleElementReferenceException ignored) {
-//            LOGGER.info("****StaleElementReferenceException occurs in waitForListToLoad****");
-//        }
-//        try {
-//            if (findElementsBy(By.xpath("//*[text()='Assignment Policies' or text()='Assignment Name & Description']")).isEmpty()) {
-//                waitFor(ExpectedConditions2.isListLoaded(), 30);
-//            }
-//        } catch (WebDriverException ignored) {
-//            LOGGER.error("*****WebDriverException occurs in waitForListToLoad****");
-//        }
     }
 
     @Override

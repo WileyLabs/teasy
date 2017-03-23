@@ -1,6 +1,6 @@
 package com.wiley.autotest.selenium.extensions.internal;
 
-import com.wiley.autotest.selenium.elements.Element;
+import com.wiley.autotest.selenium.elements.*;
 import com.wiley.autotest.selenium.extensions.ElementFactory;
 import com.wiley.autotest.selenium.extensions.ExtendedElementException;
 import org.openqa.selenium.By;
@@ -44,7 +44,16 @@ public class DefaultElementFactory implements ElementFactory {
 
     private <T extends Element> Class<T> findImplementationFor(final Class<T> classOfElement) {
         try {
-            return (Class<T>) Class.forName(format("{0}.{1}Impl", getClass().getPackage().getName(), classOfElement.getSimpleName()));
+            if (classOfElement.equals(Button.class) ||
+                    classOfElement.equals(Link.class) ||
+                    classOfElement.equals(CheckBox.class) ||
+                    classOfElement.equals(RadioButton.class) ||
+                    classOfElement.equals(Select.class) ||
+                    classOfElement.equals(TextField.class)) {
+                return (Class<T>) Class.forName(format("{0}.{1}Impl", getClass().getPackage().getName(), classOfElement.getSimpleName()));
+            } else {
+                return (Class<T>) Class.forName(classOfElement.getName());
+            }
         } catch (ClassNotFoundException e) {
             throw new ExtendedElementException("ClassNotFoundException is happened! " + e);
         }
