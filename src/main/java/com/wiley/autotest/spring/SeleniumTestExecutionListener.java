@@ -7,7 +7,6 @@ import com.wiley.autotest.annotations.UnexpectedAlertCapability;
 import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.context.PageLoadingValidator;
 import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
-import com.wiley.autotest.selenium.driver.events.listeners.PageValidatorEventListener;
 import com.wiley.autotest.utils.TestUtils;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
@@ -41,7 +40,6 @@ import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.remote.*;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
-import org.openqa.selenium.support.events.EventFiringWebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.TestContext;
@@ -157,14 +155,14 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         }
 
         if (getWebDriver() == null || isBrowserDead()) {
-            EventFiringWebDriver driver = null;
+            FramesTransparentWebDriver driver = null;
             try {
                 //TODO VE this should be replaced with the better solution
                 if (settings.getDriverName().equals(SAFARI)) {
                     TestUtils.waitForSomeTime(5000, "Wait for create safari driver");
                 }
 
-                driver = new EventFiringWebDriver(new FramesTransparentWebDriver(initWebDriver(settings)));
+                driver = new FramesTransparentWebDriver(initWebDriver(settings));
 
                 alertCapability.set(UnexpectedAlertBehaviour.ACCEPT);
 
@@ -189,7 +187,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
             }
 
             try {
-                SessionId sessionId = ((RemoteWebDriver) ((FramesTransparentWebDriver) driver.getWrappedDriver()).getDriver()).getSessionId();
+                SessionId sessionId = ((RemoteWebDriver) driver.getDriver()).getSessionId();
                 SeleniumHolder.setSessionId(sessionId);
                 String nodeIp = isRunWithGrid ? getNodeIpBySessionId(sessionId, settings.getGridHubUrl()) : InetAddress.getLocalHost().getHostAddress();
                 SeleniumHolder.setNodeIp(nodeIp);
@@ -205,10 +203,6 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
                 SeleniumHolder.setOurWebElementClass(classFromSettings);
             } else {
                 SeleniumHolder.setOurWebElementClass("com.wiley.autotest.selenium.elements.upgrade.OurWebElement");
-            }
-
-            if (false) {
-                driver.register(new PageValidatorEventListener(getValidator(context)));
             }
         }
     }

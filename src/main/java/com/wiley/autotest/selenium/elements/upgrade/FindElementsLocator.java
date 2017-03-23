@@ -1,6 +1,7 @@
 package com.wiley.autotest.selenium.elements.upgrade;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebElement;
 
@@ -22,7 +23,11 @@ public class FindElementsLocator implements Locator {
 
     @Override
     public WebElement locate() {
-        return searchContext.findElements(by).get(index);
+        try {
+            return searchContext.findElements(by).get(index);
+        } catch (IndexOutOfBoundsException e) {
+            throw new NoSuchElementException("Unable to locate element " + by + ", Exception - " + e);
+        }
     }
 
     @Override

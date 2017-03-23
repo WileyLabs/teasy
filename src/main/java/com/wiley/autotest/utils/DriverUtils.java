@@ -10,7 +10,6 @@ import org.openqa.selenium.firefox.internal.ProfilesIni;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.support.events.EventFiringWebDriver;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -26,7 +25,7 @@ public final class DriverUtils {
         Settings ffSettings = new Settings();
         BeanUtils.copyProperties(SELENIUM_SETTINGS, ffSettings);
         ffSettings.setDriverName("firefox");
-        driverHolder.set(new EventFiringWebDriver(new FramesTransparentWebDriver(new FirefoxDriver(getFireFoxDesiredCapabilities(ffSettings)))));
+        driverHolder.set(new FramesTransparentWebDriver(new FirefoxDriver(getFireFoxDesiredCapabilities(ffSettings))));
         return driverHolder.get();
     }
 

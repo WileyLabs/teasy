@@ -17,8 +17,6 @@ import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrap;
-import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrapList;
 import static com.wiley.autotest.utils.ExecutionUtils.isChrome;
 import static com.wiley.autotest.utils.ExecutionUtils.isSafari;
 
@@ -114,7 +112,7 @@ public class AbstractElementFinder {
      * @return list of webElements or empty list in case no such element were found by given locator
      */
     protected List<WebElement> domElementsOrEmpty(final By locator) {
-        return wrapList(elementFinder.findElementsBy(locator), locator);
+        return elementFinder.findElementsBy(locator);
     }
 
     protected Button button(By locator) {
@@ -393,13 +391,13 @@ public class AbstractElementFinder {
     @Deprecated
     protected final WebElement findElementByNoThrow(final By locator) {
         try {
-            return wrap(elementFinder.findElementBy(locator), locator);
+            return elementFinder.findElementBy(locator);
         } catch (WebDriverException e) {
             //TODO hotfix for safari as it seems that this method does not work correct without timeout
             if (isSafari()) {
                 TestUtils.waitForSafari();
                 try {
-                    return wrap(elementFinder.findElementBy(locator), locator);
+                    return elementFinder.findElementBy(locator);
                 } catch (WebDriverException ignoreSafari) {
                     return null;
                 }
@@ -415,13 +413,13 @@ public class AbstractElementFinder {
     @Deprecated
     protected final WebElement findElementByNoThrow(final SearchContext searchContext, final By locator) {
         try {
-            return wrap(elementFinder.findElementBy(searchContext, locator), locator);
+            return elementFinder.findElementBy(searchContext, locator);
         } catch (Exception e) {
             //TODO hotfix for safari as it seems that this method does not work correct without timeout
             if (isSafari()) {
                 TestUtils.waitForSafari();
                 try {
-                    return wrap(elementFinder.findElementBy(searchContext, locator), locator);
+                    return elementFinder.findElementBy(searchContext, locator);
                 } catch (Exception ignoreSafari) {
                     return null;
                 }
@@ -449,7 +447,7 @@ public class AbstractElementFinder {
      */
     @Deprecated
     protected final List<WebElement> findElementsBy(final By locator) {
-        return wrapList(elementFinder.findElementsBy(locator), locator);
+        return elementFinder.findElementsBy(locator);
     }
 
     protected final void waitForWindowToBeAppearedAndSwitchToIt(final String title) {
@@ -496,16 +494,16 @@ public class AbstractElementFinder {
     }
 
     private WebElement waitForPresenceOfElementLocatedBy(final By locator) {
-        return wrap(elementFinder.waitForPresenceOfElementLocatedBy(locator), locator);
+        return elementFinder.waitForPresenceOfElementLocatedBy(locator);
     }
 
     private WebElement waitForPresenceOfElementLocatedBy(final SearchContext searchContext, final By locator) {
-        return wrap(elementFinder.waitForPresenceOfElementLocatedBy(searchContext, locator), locator);
+        return elementFinder.waitForPresenceOfElementLocatedBy(searchContext, locator);
     }
 
     @Deprecated
     protected final WebElement waitForPresenceOfElementLocatedBy(final By locator, long timeout) {
-        return wrap(elementFinder.waitForPresenceOfElementLocatedBy(locator, timeout), locator);
+        return elementFinder.waitForPresenceOfElementLocatedBy(locator, timeout);
     }
 
     /**
@@ -538,20 +536,20 @@ public class AbstractElementFinder {
 
     @Deprecated
     protected List<WebElement> waitForPresenceOfAllElementsLocatedBy(final By locator) {
-        return wrapList(elementFinder.waitForPresenceOfAllElementsLocatedBy(locator), locator);
+        return elementFinder.waitForPresenceOfAllElementsLocatedBy(locator);
     }
 
     @Deprecated
     protected final List<WebElement> waitForPresenceOfAllElementsLocatedBy(final By locator, long timeoutInSec) {
         try {
-            return wrapList(elementFinder.waitForPresenceOfAllElementsLocatedBy(locator, timeoutInSec), locator);
+            return elementFinder.waitForPresenceOfAllElementsLocatedBy(locator, timeoutInSec);
         } catch (TimeoutException ignored) {
             return new ArrayList<>();
         }
     }
 
     protected List<WebElement> waitForPresenceOfAllElementsLocatedBy(final SearchContext searchContext, final By locator) {
-        return wrapList(elementFinder.waitForPresenceOfAllElementsLocatedBy(searchContext, locator), locator);
+        return elementFinder.waitForPresenceOfAllElementsLocatedBy(searchContext, locator);
     }
 
     /**
@@ -580,27 +578,27 @@ public class AbstractElementFinder {
 
     @Deprecated
     protected final WebElement waitForVisibilityOfElementLocatedBy(final By locator, long timeout) {
-        return wrap(elementFinder.waitForVisibilityOfElementLocatedBy(locator, timeout), locator);
+        return elementFinder.waitForVisibilityOfElementLocatedBy(locator, timeout);
     }
 
     private WebElement waitForVisibilityOfElementLocatedBy(final By locator) {
-        return wrap(elementFinder.waitForVisibilityOfElementLocatedBy(locator), locator);
+        return elementFinder.waitForVisibilityOfElementLocatedBy(locator);
     }
 
     private List<WebElement> waitForVisibilityOfAllElementsLocatedBy(final By locator) {
-        return wrapList(elementFinder.waitForVisibilityOfAllElementsLocatedBy(locator), locator);
+        return elementFinder.waitForVisibilityOfAllElementsLocatedBy(locator);
     }
 
     private List<WebElement> waitForVisibilityOfAllElementsLocatedBy(final SearchContext searchContext, final By locator) {
-        return wrapList(elementFinder.waitForVisibilityOfAllElementsLocatedBy(searchContext, locator), locator);
+        return elementFinder.waitForVisibilityOfAllElementsLocatedBy(searchContext, locator);
     }
 
     private List<WebElement> waitForVisibilityOfAllElementsLocatedByInFrames(final By locator) {
-        return wrapList(elementFinder.waitForVisibilityOfAllElementsLocatedByInFrames(locator), locator);
+        return elementFinder.waitForVisibilityOfAllElementsLocatedByInFrames(locator);
     }
 
     private List<WebElement> waitForPresenceOfAllElementsLocatedByInFrames(final By locator) {
-        return wrapList(elementFinder.waitForPresenceOfAllElementsLocatedByInFrames(locator), locator);
+        return elementFinder.waitForPresenceOfAllElementsLocatedByInFrames(locator);
     }
 
     /**
@@ -652,7 +650,7 @@ public class AbstractElementFinder {
     }
 
     private WebElement waitForElementToBeClickable(final By locator) {
-        return wrap(elementFinder.waitForElementToBeClickable(locator), locator);
+        return elementFinder.waitForElementToBeClickable(locator);
     }
 
     protected final WebElement waitForElementToBeClickable(final By locator, final String errorMessage) {

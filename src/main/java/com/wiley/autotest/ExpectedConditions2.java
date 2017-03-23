@@ -3,7 +3,6 @@ package com.wiley.autotest;
 import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
 import com.wiley.autotest.selenium.elements.TextField;
 import org.openqa.selenium.*;
-import org.openqa.selenium.support.events.EventFiringWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,14 +36,14 @@ public final class ExpectedConditions2 {
 
     public static ExpectedCondition<List<WebElement>> presenceOfAllElementsLocatedByInFrames(final By locator) {
         return driver -> {
-            FramesTransparentWebDriver framesTransparentWebDriver = (FramesTransparentWebDriver) ((EventFiringWebDriver) driver).getWrappedDriver();
+            FramesTransparentWebDriver framesTransparentWebDriver = (FramesTransparentWebDriver) driver;
             return framesTransparentWebDriver.findElementsInFrames(locator);
         };
     }
 
     public static ExpectedCondition<List<WebElement>> visibilityOfAllElementsLocatedByInFrames(final By locator) {
         return driver -> {
-            FramesTransparentWebDriver framesTransparentWebDriver = (FramesTransparentWebDriver) ((EventFiringWebDriver) driver).getWrappedDriver();
+            FramesTransparentWebDriver framesTransparentWebDriver = (FramesTransparentWebDriver) driver;
             List<WebElement> visibleElements = getVisibleWebElements(framesTransparentWebDriver.findElementsInFrames(locator));
             return isNotEmpty(visibleElements) ? visibleElements : null;
         };

@@ -5,12 +5,12 @@
  */
 package com.wiley.autotest.selenium;
 
-import com.wiley.autotest.annotations.Report;
 import com.wiley.autotest.selenium.context.AbstractPageElement;
 import com.wiley.autotest.utils.StringUtils;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
+import ru.yandex.qatools.allure.annotations.Step;
 
 import java.lang.reflect.Method;
 
@@ -42,9 +42,8 @@ public final class ReportAnnotationsWrapperCreator {
 
         @Override
         public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable {
-            if (method.isAnnotationPresent(Report.class) &&
-                    original instanceof AbstractPageElement) {
-                String value = method.getAnnotation(Report.class).value();
+            if (method.isAnnotationPresent(Step.class) && original instanceof AbstractPageElement) {
+                String value = method.getAnnotation(Step.class).value();
                 if (value != null && !value.isEmpty()) {
                     ((AbstractPageElement) original).report(value + "<br/>");
                 } else {

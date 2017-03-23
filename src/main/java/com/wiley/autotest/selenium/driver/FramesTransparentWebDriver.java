@@ -1,6 +1,7 @@
 package com.wiley.autotest.selenium.driver;
 
 import com.google.common.base.Function;
+import com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory;
 import com.wiley.autotest.utils.TestUtils;
 import org.openqa.selenium.*;
 
@@ -39,7 +40,7 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
     public List<WebElement> findElements(final By by) {
         switchToDefaultContext();
         currentFramesPath.clear();
-        return findFirstElements(by);
+        return OurWebElementFactory.wrapList(findFirstElements(by), by);
     }
 
     @Override
@@ -51,7 +52,7 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
                 currentFramesPath.clear();
                 found = findFirstElements(by);
             }
-            return found.get(0);
+            return OurWebElementFactory.wrap(found.get(0), by);
         } catch (IndexOutOfBoundsException e) {
             throw new NoSuchElementException("Unable to locate element " + by + ", Exception - " + e);
         }
@@ -60,7 +61,7 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
     public List<WebElement> findElementsInFrames(final By by) {
         switchToDefaultContext();
         currentFramesPath.clear();
-        return findAllElementsInAllFrames(by);
+        return OurWebElementFactory.wrapList(findAllElementsInAllFrames(by), by);
     }
 
     @Override

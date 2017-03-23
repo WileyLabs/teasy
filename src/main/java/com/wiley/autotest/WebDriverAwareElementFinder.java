@@ -3,7 +3,6 @@ package com.wiley.autotest;
 import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
 import com.wiley.autotest.selenium.elements.TextField;
 import org.openqa.selenium.*;
-import org.openqa.selenium.support.events.EventFiringWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -30,7 +29,7 @@ public class WebDriverAwareElementFinder implements ElementFinder {
     }
 
     private FramesTransparentWebDriver getFrameTransparentWebDriver() {
-        return (FramesTransparentWebDriver) ((EventFiringWebDriver) driver).getWrappedDriver();
+        return (FramesTransparentWebDriver) driver;
     }
 
     @Override
@@ -241,23 +240,24 @@ public class WebDriverAwareElementFinder implements ElementFinder {
         }
     }
 
+    //TODO NT extract to E4 project
     @Override
     public void waitForListToLoad() {
-        List<WebElement> loading = findElementsBy(By.cssSelector(".loading"));
-        try {
-            if (!loading.isEmpty() && !(loading.size() == 1 && loading.get(0).getText().isEmpty())) {
-                waitForStalenessOf(loading.get(0), 30);
-            }
-        } catch (StaleElementReferenceException ignored) {
-            LOGGER.info("****StaleElementReferenceException occurs in waitForListToLoad****");
-        }
-        try {
-            if (findElementsBy(By.xpath("//*[text()='Assignment Policies' or text()='Assignment Name & Description']")).isEmpty()) {
-                waitFor(ExpectedConditions2.isListLoaded(), 30);
-            }
-        } catch (WebDriverException ignored) {
-            LOGGER.error("*****WebDriverException occurs in waitForListToLoad****");
-        }
+//        List<WebElement> loading = findElementsBy(By.cssSelector(".loading"));
+//        try {
+//            if (!loading.isEmpty() && !(loading.size() == 1 && loading.get(0).getText().isEmpty())) {
+//                waitForStalenessOf(loading.get(0), 30);
+//            }
+//        } catch (StaleElementReferenceException ignored) {
+//            LOGGER.info("****StaleElementReferenceException occurs in waitForListToLoad****");
+//        }
+//        try {
+//            if (findElementsBy(By.xpath("//*[text()='Assignment Policies' or text()='Assignment Name & Description']")).isEmpty()) {
+//                waitFor(ExpectedConditions2.isListLoaded(), 30);
+//            }
+//        } catch (WebDriverException ignored) {
+//            LOGGER.error("*****WebDriverException occurs in waitForListToLoad****");
+//        }
     }
 
     @Override
