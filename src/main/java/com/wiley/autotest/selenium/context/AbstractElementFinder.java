@@ -400,8 +400,8 @@ public class AbstractElementFinder {
         }
     }
 
-    protected final void customCondition(final ExpectedCondition<Boolean> condition, long timeout) {
-        elementFinder.waitForCondition(condition, timeout);
+    protected final void customCondition(final ExpectedCondition<Boolean> condition, long timeOutInSeconds) {
+        elementFinder.waitForCondition(condition, timeOutInSeconds);
     }
 
     private class UnsupportedConditionException extends RuntimeException {
@@ -471,8 +471,8 @@ public class AbstractElementFinder {
         return errorMessage.toString() + " failed";
     }
 
-    public void init(final WebDriver driver, Long timeout) {
-        elementFinder = new WebDriverAwareElementFinder(driver, new WebDriverWait(driver, timeout, SLEEP_IN_MILLISECONDS));
+    public void init(final WebDriver driver, Long timeOutInSeconds) {
+        elementFinder = new WebDriverAwareElementFinder(driver, new WebDriverWait(driver, timeOutInSeconds, SLEEP_IN_MILLISECONDS));
     }
 
     protected WebElementWrapper getWebElementWrapper(final WebElement wrappedElement) {
@@ -528,9 +528,9 @@ public class AbstractElementFinder {
      * this method will be removed
      */
     @Deprecated
-    protected final WebElement waitForElementByNoThrow(final By locator, long timeout) {
+    protected final WebElement waitForElementByNoThrow(final By locator, long timeOutInSeconds) {
         try {
-            return waitForPresenceOfElementLocatedBy(locator, timeout);
+            return waitForPresenceOfElementLocatedBy(locator, timeOutInSeconds);
         } catch (WebDriverException e) {
             return null;
         }
@@ -597,8 +597,8 @@ public class AbstractElementFinder {
     }
 
     @Deprecated
-    protected final WebElement waitForPresenceOfElementLocatedBy(final By locator, long timeout) {
-        return elementFinder.waitForPresenceOfElementLocatedBy(locator, timeout);
+    protected final WebElement waitForPresenceOfElementLocatedBy(final By locator, long timeOutInSeconds) {
+        return elementFinder.waitForPresenceOfElementLocatedBy(locator, timeOutInSeconds);
     }
 
     /**
@@ -615,8 +615,8 @@ public class AbstractElementFinder {
      * Use domElement - when you need element which is PRESENT IN DOM
      */
     @Deprecated
-    protected final WebElement waitForPresenceOfElementLocatedBy(final By locator, long timeout, final String errorMessage) {
-        return getElementOrWebDriverException(() -> waitForPresenceOfElementLocatedBy(locator, timeout), errorMessage);
+    protected final WebElement waitForPresenceOfElementLocatedBy(final By locator, long timeOutInSeconds, final String errorMessage) {
+        return getElementOrWebDriverException(() -> waitForPresenceOfElementLocatedBy(locator, timeOutInSeconds), errorMessage);
     }
 
     @Deprecated
@@ -672,8 +672,8 @@ public class AbstractElementFinder {
     }
 
     @Deprecated
-    protected final WebElement waitForVisibilityOfElementLocatedBy(final By locator, long timeout) {
-        return elementFinder.waitForVisibilityOfElementLocatedBy(locator, timeout);
+    protected final WebElement waitForVisibilityOfElementLocatedBy(final By locator, long timeOutInSeconds) {
+        return elementFinder.waitForVisibilityOfElementLocatedBy(locator, timeOutInSeconds);
     }
 
     private WebElement waitForVisibilityOfElementLocatedBy(final By locator) {
@@ -696,16 +696,16 @@ public class AbstractElementFinder {
         return elementFinder.waitForVisibilityOfAllElementsLocatedByInFrames(locator);
     }
 
-    private List<WebElement> waitForVisibilityOfAllElementsLocatedByInFrames(final By locator, long timeout) {
-        return elementFinder.waitForVisibilityOfAllElementsLocatedByInFrames(locator, timeout);
+    private List<WebElement> waitForVisibilityOfAllElementsLocatedByInFrames(final By locator, long timeOutInSeconds) {
+        return elementFinder.waitForVisibilityOfAllElementsLocatedByInFrames(locator, timeOutInSeconds);
     }
 
     private List<WebElement> waitForPresenceOfAllElementsLocatedByInFrames(final By locator) {
         return elementFinder.waitForPresenceOfAllElementsLocatedByInFrames(locator);
     }
 
-    private List<WebElement> waitForPresenceOfAllElementsLocatedByInFrames(final By locator, long timeout) {
-        return elementFinder.waitForPresenceOfAllElementsLocatedByInFrames(locator, timeout);
+    private List<WebElement> waitForPresenceOfAllElementsLocatedByInFrames(final By locator, long timeOutInSeconds) {
+        return elementFinder.waitForPresenceOfAllElementsLocatedByInFrames(locator, timeOutInSeconds);
     }
 
     /**
@@ -776,8 +776,8 @@ public class AbstractElementFinder {
         }
     }
 
-    protected final void waitForPresenceOfElementCount(By locator, int expectedNumberOfElements, long timeout) {
-        elementFinder.waitForPresenceOfElementCount(locator, expectedNumberOfElements, timeout);
+    protected final void waitForPresenceOfElementCount(By locator, int expectedNumberOfElements, long timeOutInSeconds) {
+        elementFinder.waitForPresenceOfElementCount(locator, expectedNumberOfElements, timeOutInSeconds);
     }
 
     protected final void waitForPageToLoad() {
@@ -795,8 +795,8 @@ public class AbstractElementFinder {
         elementFinder.waitForElementContainsAttributeValue(element, attributeName, attributeValue);
     }
 
-    protected final void waitForElementContainsAttributeValue(final WebElement element, final String attributeName, final String attributeValue, long timeout) {
-        elementFinder.waitForElementContainsAttributeValue(element, attributeName, attributeValue, timeout);
+    protected final void waitForElementContainsAttributeValue(final WebElement element, final String attributeName, final String attributeValue, long timeOutInSeconds) {
+        elementFinder.waitForElementContainsAttributeValue(element, attributeName, attributeValue, timeOutInSeconds);
     }
 
     protected final void waitForElementNotContainsAttributeValue(final WebElement element, final String attributeName, final String attributeValue) {
@@ -807,16 +807,16 @@ public class AbstractElementFinder {
         elementFinder.waitForElementContainsAttribute(element, attributeName);
     }
 
-    protected final void waitForElementContainsAttribute(final WebElement element, final String attributeName, long timeout) {
-        elementFinder.waitForElementContainsAttribute(element, attributeName, timeout);
+    protected final void waitForElementContainsAttribute(final WebElement element, final String attributeName, long timeOutInSeconds) {
+        elementFinder.waitForElementContainsAttribute(element, attributeName, timeOutInSeconds);
     }
 
     protected final void waitForElementNotContainsAttribute(final WebElement element, final String attributeName) {
         elementFinder.waitForElementNotContainsAttribute(element, attributeName);
     }
 
-    protected final void waitForElementNotContainsAttribute(final WebElement element, final String attributeName, long timeout) {
-        elementFinder.waitForElementNotContainsAttribute(element, attributeName, timeout);
+    protected final void waitForElementNotContainsAttribute(final WebElement element, final String attributeName, long timeOutInSeconds) {
+        elementFinder.waitForElementNotContainsAttribute(element, attributeName, timeOutInSeconds);
     }
 
     /**
@@ -839,9 +839,9 @@ public class AbstractElementFinder {
      * @param webElement - current element
      * @return - true if element is Stale
      */
-    protected final Boolean waitForStalenessOf(final WebElement webElement, long timeout) {
+    protected final Boolean waitForStalenessOf(final WebElement webElement, long timeOutInSeconds) {
         try {
-            return elementFinder.waitForStalenessOf(webElement, timeout);
+            return elementFinder.waitForStalenessOf(webElement, timeOutInSeconds);
         } catch (UnreachableBrowserException ignored) {
             return true;
         }
@@ -867,8 +867,8 @@ public class AbstractElementFinder {
         //throw new AssertionError(errorMessage + cause.getMessage(), cause);//since 1.7
     }
 
-    protected final void setTimeout(final long timeout) {
-        elementFinder.setTimeout(timeout);
+    protected final void setTimeout(final long timeOutInSeconds) {
+        elementFinder.setTimeout(timeOutInSeconds);
     }
 
     public void switchToLastWindow() {

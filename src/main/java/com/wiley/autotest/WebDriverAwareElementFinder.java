@@ -60,8 +60,8 @@ public class WebDriverAwareElementFinder implements ElementFinder {
     }
 
     @Override
-    public void waitForCondition(ExpectedCondition<Boolean> condition, long timeout) {
-        waitFor(condition, timeout);
+    public void waitForCondition(ExpectedCondition<Boolean> condition, long timeOutInSeconds) {
+        waitFor(condition, timeOutInSeconds);
     }
 
     @Override
@@ -95,8 +95,8 @@ public class WebDriverAwareElementFinder implements ElementFinder {
     }
 
     @Override
-    public List<WebElement> waitForVisibilityOfAllElementsLocatedByInFrames(final By locator, final long timeout) {
-        return waitFor(ExpectedConditions2.visibilityOfAllElementsLocatedByInFrames(locator), timeout);
+    public List<WebElement> waitForVisibilityOfAllElementsLocatedByInFrames(final By locator, final long timeOutInSeconds) {
+        return waitFor(ExpectedConditions2.visibilityOfAllElementsLocatedByInFrames(locator), timeOutInSeconds);
     }
 
     @Override
@@ -105,8 +105,8 @@ public class WebDriverAwareElementFinder implements ElementFinder {
     }
 
     @Override
-    public List<WebElement> waitForPresenceOfAllElementsLocatedByInFrames(final By locator, final long timeout) {
-        return waitFor(ExpectedConditions2.presenceOfAllElementsLocatedByInFrames(locator), timeout);
+    public List<WebElement> waitForPresenceOfAllElementsLocatedByInFrames(final By locator, final long timeOutInSeconds) {
+        return waitFor(ExpectedConditions2.presenceOfAllElementsLocatedByInFrames(locator), timeOutInSeconds);
     }
 
     @Override
@@ -115,8 +115,8 @@ public class WebDriverAwareElementFinder implements ElementFinder {
     }
 
     @Override
-    public List<WebElement> waitForPresenceOfAllElementsLocatedBy(final By locator, long timeoutInSec) {
-        return waitFor(ExpectedConditions2.presenceOfAllElementsLocatedBy(locator), timeoutInSec);
+    public List<WebElement> waitForPresenceOfAllElementsLocatedBy(final By locator, long timeOutInSeconds) {
+        return waitFor(ExpectedConditions2.presenceOfAllElementsLocatedBy(locator), timeOutInSeconds);
     }
 
     @Override
@@ -140,8 +140,8 @@ public class WebDriverAwareElementFinder implements ElementFinder {
     }
 
     @Override
-    public WebElement waitForPresenceOfElementLocatedBy(final By locator, long timeout) {
-        return waitFor(presenceOfElementLocated(locator), timeout);
+    public WebElement waitForPresenceOfElementLocatedBy(final By locator, long timeOutInSeconds) {
+        return waitFor(presenceOfElementLocated(locator), timeOutInSeconds);
     }
 
     @Override
@@ -155,8 +155,8 @@ public class WebDriverAwareElementFinder implements ElementFinder {
     }
 
     @Override
-    public Boolean waitForStalenessOf(final WebElement webElement, final long timeout) {
-        return waitFor(stalenessOf(webElement), timeout);
+    public Boolean waitForStalenessOf(final WebElement webElement, final long timeOutInSeconds) {
+        return waitFor(stalenessOf(webElement), timeOutInSeconds);
     }
 
     @Override
@@ -214,8 +214,8 @@ public class WebDriverAwareElementFinder implements ElementFinder {
     }
 
     @Override
-    public void waitForWindowToBeAppearedByPartialUrlAndSwitchToIt(final String url, long timeoutInSec) {
-        waitFor(appearingOfWindowByPartialUrl(url), timeoutInSec);
+    public void waitForWindowToBeAppearedByPartialUrlAndSwitchToIt(final String url, long timeOutInSeconds) {
+        waitFor(appearingOfWindowByPartialUrl(url), timeOutInSeconds);
     }
 
     @Override
@@ -271,8 +271,8 @@ public class WebDriverAwareElementFinder implements ElementFinder {
     }
 
     @Override
-    public void waitForPresenceOfElementCount(By locator, int expectedNumberOfElements, long timeout) {
-        waitFor(ExpectedConditions2.presenceOfElementCount(locator, expectedNumberOfElements), timeout);
+    public void waitForPresenceOfElementCount(By locator, int expectedNumberOfElements, long timeOutInSeconds) {
+        waitFor(ExpectedConditions2.presenceOfElementCount(locator, expectedNumberOfElements), timeOutInSeconds);
     }
 
     @Override
@@ -301,8 +301,8 @@ public class WebDriverAwareElementFinder implements ElementFinder {
     }
 
     @Override
-    public WebElement waitForVisibilityOfElementLocatedBy(final By locator, long timeout) {
-        return waitFor(visibilityOfElementLocated(locator), timeout);
+    public WebElement waitForVisibilityOfElementLocatedBy(final By locator, long timeOutInSeconds) {
+        return waitFor(visibilityOfElementLocated(locator), timeOutInSeconds);
     }
 
     @Override
@@ -311,8 +311,8 @@ public class WebDriverAwareElementFinder implements ElementFinder {
     }
 
     @Override
-    public Boolean waitForElementContainsAttributeValue(final WebElement element, final String attributeName, final String attributeValue, long timeout) {
-        return waitFor(attributeContainsValue(element, attributeName, attributeValue), timeout);
+    public Boolean waitForElementContainsAttributeValue(final WebElement element, final String attributeName, final String attributeValue, long timeOutInSeconds) {
+        return waitFor(attributeContainsValue(element, attributeName, attributeValue), timeOutInSeconds);
     }
 
     @Override
@@ -326,8 +326,8 @@ public class WebDriverAwareElementFinder implements ElementFinder {
     }
 
     @Override
-    public Boolean waitForElementContainsAttribute(final WebElement element, final String attributeName, long timeout) {
-        return waitFor(elementHasAttribute(element, attributeName), timeout);
+    public Boolean waitForElementContainsAttribute(final WebElement element, final String attributeName, long timeOutInSeconds) {
+        return waitFor(elementHasAttribute(element, attributeName), timeOutInSeconds);
     }
 
     @Override
@@ -336,21 +336,21 @@ public class WebDriverAwareElementFinder implements ElementFinder {
     }
 
     @Override
-    public Boolean waitForElementNotContainsAttribute(final WebElement element, final String attributeName, long timeout) {
-        return waitFor(elementDoesNotHaveAttribute(element, attributeName), timeout);
+    public Boolean waitForElementNotContainsAttribute(final WebElement element, final String attributeName, long timeOutInSeconds) {
+        return waitFor(elementDoesNotHaveAttribute(element, attributeName), timeOutInSeconds);
     }
 
     private <T> T waitFor(final ExpectedCondition<T> condition) {
         return wait.until(condition);
     }
 
-    private <T> T waitFor(final ExpectedCondition<T> condition, final long timeout) {
-        WebDriverWait customWait = new WebDriverWait(driver, timeout);
+    private <T> T waitFor(final ExpectedCondition<T> condition, final long timeOutInSeconds) {
+        WebDriverWait customWait = new WebDriverWait(driver, timeOutInSeconds);
         return customWait.until(condition);
     }
 
     @Override
-    public void setTimeout(final long timeout) {
-        wait = new WebDriverWait(driver, timeout);
+    public void setTimeout(final long timeOutInSeconds) {
+        wait = new WebDriverWait(driver, timeOutInSeconds);
     }
 }
