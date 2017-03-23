@@ -288,7 +288,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
             getWebDriver().getCurrentUrl();
             return false;
         } catch (Throwable t) {
-            LOGGER.error("*****BROWSER IS DEAD ERROR***** " + t.getMessage());
+            LOGGER.error("*****BROWSER IS DEAD ERROR***** ", t);
             return true;
         }
     }

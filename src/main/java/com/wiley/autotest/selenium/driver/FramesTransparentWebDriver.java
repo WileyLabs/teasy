@@ -4,6 +4,8 @@ import com.google.common.base.Function;
 import com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory;
 import com.wiley.autotest.utils.TestUtils;
 import org.openqa.selenium.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +18,8 @@ import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 import static org.testng.collections.Lists.newArrayList;
 
 public class FramesTransparentWebDriver extends WebDriverDecorator {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(FramesTransparentWebDriver.class);
 
     private final Stack<WebElement> currentFramesPath;
     private final Function<WebElement, WebElement> toFrameAwareWebElements;
@@ -54,6 +58,7 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
             }
             return OurWebElementFactory.wrap(found.get(0), by);
         } catch (IndexOutOfBoundsException e) {
+            LOGGER.error("****IndexOutOfBoundsException occurs in findElement****", e);
             throw new NoSuchElementException("Unable to locate element " + by + ", Exception - " + e);
         }
     }
@@ -79,6 +84,7 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
         try {
             getDriver().switchTo().defaultContent();
         } catch (WebDriverException e) {
+            LOGGER.error("****WebDriverException occurs when switchToDefaultContext****", e);
             switchToMainWindow();
             getDriver().switchTo().defaultContent();
         }
@@ -88,6 +94,7 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
         try {
             switchTo().window(mainWindowHandle.get());
         } catch (SwitchToWindowException e) {
+            LOGGER.error("****SwitchToWindowException occurs when switchToMainWindow****", e);
             switchTo().window(getDriver().getWindowHandles().iterator().next());
         }
     }
@@ -206,12 +213,14 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
             try {
                 return targetLocator.window(nameOrHandle);
             } catch (NoSuchWindowException e) {
+                LOGGER.error("****NoSuchWindowException occurs when get window****", e);
                 if (getWindowHandles().size() == 1) {
                     return targetLocator.window(getWindowHandles().iterator().next());
                 } else {
                     throw new SwitchToWindowException(format("Unable to switch to window by handler: '%s'", nameOrHandle), e);
                 }
             } catch (NullPointerException e) {
+                LOGGER.error("****NullPointerException occurs when get window****", e);
                 throw new SwitchToWindowException("Unable to switch to window: handler is null ", e);
             }
         }
