@@ -58,7 +58,6 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
             }
             return OurWebElementFactory.wrap(found.get(0), by);
         } catch (IndexOutOfBoundsException e) {
-            LOGGER.error("****IndexOutOfBoundsException occurs in findElement****", e);
             throw new NoSuchElementException("Unable to locate element " + by + ", Exception - " + e);
         }
     }
