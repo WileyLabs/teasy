@@ -72,7 +72,9 @@ public final class ExpectedConditions2 {
     }
 
     private static List<WebElement> getVisibleWebElements(List<WebElement> elements) {
-        List<WebElement> visibleElements = elements.stream().filter(WebElement::isDisplayed).collect(Collectors.toList());
+        List<WebElement> visibleElements = elements.stream()
+                .filter(element -> element.isDisplayed() || (element.getLocation().getX() > 0 && element.getLocation().getY() > 0))
+                .collect(Collectors.toList());
         return isNotEmpty(visibleElements) ? visibleElements : null;
     }
 
@@ -80,7 +82,7 @@ public final class ExpectedConditions2 {
         return driver -> {
             try {
                 final WebElement foundElement = driver.findElement(locator);
-                return foundElement.isDisplayed() ? foundElement : null;
+                return (foundElement.isDisplayed() || (foundElement.getLocation().getX() > 0 && foundElement.getLocation().getY() > 0)) ? foundElement : null;
             } catch (Exception e) {
                 return null;
             }
@@ -217,19 +219,6 @@ public final class ExpectedConditions2 {
 
     public static ExpectedCondition<Boolean> pageToLoad() {
         return webDriver -> "complete".equals(((JavascriptExecutor) webDriver).executeScript("return document.readyState"));
-    }
-
-    public static ExpectedCondition<Boolean> isListLoaded() {
-        return webDriver -> {
-            Boolean loaded = false;
-            try {
-                loaded = (Boolean) ((JavascriptExecutor) webDriver).executeScript("return $.active==0");
-                Object result = ((JavascriptExecutor) webDriver).executeScript("return portionKey");
-                return (result == null || ((Long) result) == 0) && loaded;
-            } catch (WebDriverException ignored) {
-                return loaded;
-            }
-        };
     }
 
     public static ExpectedCondition<Boolean> presenceOfElementCount(final By locator, final int expectedNumberOfElements) {

@@ -13,7 +13,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Reporter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -445,17 +448,33 @@ public class AbstractElementFinder {
     protected String generateErrorMessage() {
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
 
-        if (stackTrace.length < 4) {
+        if (stackTrace.length < 5) {
             return "***Code issue during generating error message for assert! Check the code at AbstractElementFinder";
         }
 
-        Optional<StackTraceElement> first = Arrays.asList(stackTrace).stream().filter(stackTraceElement -> stackTraceElement.getClassName().toLowerCase().endsWith("page")).findFirst();
+        String nameOfMethodThatCalledMe = "";
+        for (int i = 0; i < stackTrace.length; i++) {
+            StackTraceElement stackTraceElement = stackTrace[i];
+            StackTraceElement nextStackTraceElement;
+            if (i + 1 >= stackTrace.length) {
+                break;
+            }
+            nextStackTraceElement = stackTrace[i + 1];
+            String abstractPageElement = "AbstractPageElement";
+            String abstractElementFinder = "AbstractElementFinder";
+            if ((stackTraceElement.getClassName().endsWith(abstractPageElement)
+                    && !nextStackTraceElement.getClassName().endsWith(abstractPageElement)
+                    && !nextStackTraceElement.getClassName().endsWith(abstractElementFinder)) ||
+                    (stackTraceElement.getClassName().endsWith(abstractElementFinder)
+                            && !nextStackTraceElement.getClassName().endsWith(abstractPageElement)
+                            && !nextStackTraceElement.getClassName().endsWith(abstractElementFinder))) {
+                nameOfMethodThatCalledMe = nextStackTraceElement.getMethodName();
+                break;
+            }
+        }
 
-        String nameOfMethodThatCalledMe;
-        if (first.isPresent()) {
-            nameOfMethodThatCalledMe = first.get().getMethodName();
-        } else {
-            nameOfMethodThatCalledMe = stackTrace[3].getMethodName();
+        if (nameOfMethodThatCalledMe.isEmpty()) {
+            nameOfMethodThatCalledMe = stackTrace[4].getMethodName();
         }
 
         String[] splitName = nameOfMethodThatCalledMe.split("(?<=[a-z])(?=[A-Z])");
@@ -905,7 +924,7 @@ public class AbstractElementFinder {
     }
 
     private Object getSupplierObject(Supplier webElementSupplier, String loggerMessage) {
-        return getSupplierObject(webElementSupplier, loggerMessage, generateErrorMessage());
+        return getSupplierObject(webElementSupplier, loggerMessage, "");
     }
 
     private WebElement getElementOrWebDriverException(Supplier<WebElement> webElementSupplier, String errorMessage) {
@@ -919,7 +938,7 @@ public class AbstractElementFinder {
             fail(generateErrorMessage());
         } catch (WebDriverException wde) {
             LOGGER.error(loggerMessage, wde);
-            fail(errorMessage + "\nException: " + wde.getMessage() + "\nStackTrace: " + Arrays.toString(wde.getStackTrace()));
+            fail((errorMessage.isEmpty() ? generateErrorMessage() : errorMessage) + "\nException: " + wde.getMessage() + "\nStackTrace: " + Arrays.toString(wde.getStackTrace()));
         }
         return null;
     }

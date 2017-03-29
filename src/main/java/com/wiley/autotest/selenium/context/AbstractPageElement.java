@@ -424,7 +424,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         try {
             Assert.assertEquals(actual, expected, errorMessage);
         } catch (AssertionError e) {
-            fail(e.getMessage() + " expected:<" + expected + "> but was:<" + actual + ">");
+            fail(e.getMessage() + ": expected [" + expected + "] but found [" + actual + "]");
         }
     }
 
@@ -432,7 +432,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         try {
             Assert.assertNotEquals(actual, expected, errorMessage);
         } catch (AssertionError e) {
-            fail(e.getMessage() + " expected:<" + expected + "> but was:<" + actual + ">");
+            fail(e.getMessage() + ": expected [" + expected + "] but found [" + actual + "]");
         }
     }
 
@@ -472,7 +472,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         try {
             Assert.assertEquals(actual, expected, errorMessage);
         } catch (AssertionError e) {
-            setPostponedTestFail(e.getMessage() + " expected:<" + expected + "> but was:<" + actual + ">");
+            setPostponedTestFail(e.getMessage() + ": expected [" + expected + "] but found [" + actual + "]");
         }
     }
 
@@ -480,7 +480,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         try {
             Assert.assertNotEquals(actual, expected, errorMessage);
         } catch (AssertionError e) {
-            setPostponedTestFail(e.getMessage() + " expected:<" + expected + "> but was:<" + actual + ">");
+            setPostponedTestFail(e.getMessage() + ": expected [" + expected + "] but found [" + actual + "]");
         }
     }
 
@@ -496,11 +496,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
     }
 
     protected void assertContainsAll(List<? extends Object> actual, List<? extends Object> expected, String errorMessage) {
-        for (Object object : expected) {
-            if (!actual.contains(object)) {
-                fail(errorMessage + " Element '" + object + "' not found in given list");
-            }
-        }
+        expected.stream().filter(object -> !actual.contains(object)).forEach(object -> fail(errorMessage + " Element '" + object + "' not found in given list"));
     }
 
     protected void assertNotNull(Object object) {
