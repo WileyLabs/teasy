@@ -27,17 +27,18 @@ public final class ExpectedConditions2 {
     }
 
     public static ExpectedCondition<List<WebElement>> presenceOfAllElementsLocatedBy(final SearchContext searchContext, final By locator) {
-        return driver -> searchContext.findElements(locator);
+        return driver -> searchContext.findElements(locator).isEmpty() ? null : searchContext.findElements(locator);
     }
 
     public static ExpectedCondition<List<WebElement>> presenceOfAllElementsLocatedBy(final By locator) {
-        return driver -> driver.findElements(locator);
+        return driver -> driver.findElements(locator).isEmpty() ? null : driver.findElements(locator);
     }
 
     public static ExpectedCondition<List<WebElement>> presenceOfAllElementsLocatedByInFrames(final By locator) {
         return driver -> {
             FramesTransparentWebDriver framesTransparentWebDriver = (FramesTransparentWebDriver) driver;
-            return framesTransparentWebDriver.findElementsInFrames(locator);
+            List<WebElement> elementsInFrames = framesTransparentWebDriver.findElementsInFrames(locator);
+            return elementsInFrames.isEmpty() ? null : elementsInFrames;
         };
     }
 
