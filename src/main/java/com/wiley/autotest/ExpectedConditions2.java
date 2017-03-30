@@ -74,7 +74,7 @@ public final class ExpectedConditions2 {
 
     private static List<WebElement> getVisibleWebElements(List<WebElement> elements) {
         List<WebElement> visibleElements = elements.stream()
-                .filter(element -> element.isDisplayed() || (element.getLocation().getX() > 0 && element.getLocation().getY() > 0))
+                .filter(element -> element.isDisplayed() || isElementHiddenUnderScroll(element))
                 .collect(Collectors.toList());
         return isNotEmpty(visibleElements) ? visibleElements : null;
     }
@@ -83,11 +83,15 @@ public final class ExpectedConditions2 {
         return driver -> {
             try {
                 final WebElement foundElement = driver.findElement(locator);
-                return (foundElement.isDisplayed() || (foundElement.getLocation().getX() > 0 && foundElement.getLocation().getY() > 0)) ? foundElement : null;
+                return (foundElement.isDisplayed() || (isElementHiddenUnderScroll(foundElement))) ? foundElement : null;
             } catch (Exception e) {
                 return null;
             }
         };
+    }
+
+    private static boolean isElementHiddenUnderScroll(WebElement element) {
+        return element.getLocation().getX() > 0 && element.getLocation().getY() > 0;
     }
 
     public static ExpectedCondition<WebElement> invisibleOf(final By locator) {

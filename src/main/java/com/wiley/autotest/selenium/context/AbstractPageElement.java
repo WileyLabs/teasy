@@ -496,7 +496,9 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
     }
 
     protected void assertContainsAll(List<? extends Object> actual, List<? extends Object> expected, String errorMessage) {
-        expected.stream().filter(object -> !actual.contains(object)).forEach(object -> fail(errorMessage + " Element '" + object + "' not found in given list"));
+        expected.stream()
+                .filter(object -> !actual.contains(object))
+                .forEach(object -> fail(errorMessage + " Element '" + object + "' not found in given list"));
     }
 
     protected void assertNotNull(Object object) {
