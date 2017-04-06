@@ -86,15 +86,23 @@ public class AbstractElementFinder {
     }
 
     protected final WebElement elementOrNull(final By locator) {
-        return findElementByNoThrow(locator);
+        return elementOrNull(locator, 1);
     }
 
     protected final WebElement elementOrNull(final By locator, long timeoutInSeconds) {
-        return waitForElementByNoThrow(locator, timeoutInSeconds);
+        try {
+            return waitForVisibilityOfAllElementsLocatedBy(locator, timeoutInSeconds).get(0);
+        } catch (WebDriverException ignored) {
+            return null;
+        }
     }
 
     protected final WebElement elementOrNull(final SearchContext searchContext, final By locator) {
-        return findElementByNoThrow(searchContext, locator);
+        try {
+            return waitForVisibilityOfAllElementsLocatedBy(searchContext, locator, 1).get(0);
+        } catch (WebDriverException ignored) {
+            return null;
+        }
     }
 
     /**
@@ -709,6 +717,10 @@ public class AbstractElementFinder {
 
     private List<WebElement> waitForVisibilityOfAllElementsLocatedBy(final SearchContext searchContext, final By locator) {
         return elementFinder.waitForVisibilityOfAllElementsLocatedBy(searchContext, locator);
+    }
+
+    private List<WebElement> waitForVisibilityOfAllElementsLocatedBy(final SearchContext searchContext, final By locator, long timeOutInSeconds) {
+        return elementFinder.waitForVisibilityOfAllElementsLocatedBy(searchContext, locator, timeOutInSeconds);
     }
 
     private List<WebElement> waitForVisibilityOfAllElementsLocatedByInFrames(final By locator) {

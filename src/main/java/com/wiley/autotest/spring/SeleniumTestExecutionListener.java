@@ -7,6 +7,7 @@ import com.wiley.autotest.annotations.UnexpectedAlertCapability;
 import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.context.PageLoadingValidator;
 import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
+import com.wiley.autotest.services.Configuration;
 import com.wiley.autotest.utils.TestUtils;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
@@ -19,9 +20,6 @@ import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
 import org.json.JSONException;
@@ -125,13 +123,12 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
 
     @Override
     public void prepareTestInstance(final TestContext context) throws Exception {
-        final Settings settings = getSeleniumSettings(context);
+        final Settings settings = getBean(context, Settings.class);
         System.setProperty("http.maxConnections", "1000000");
         System.setProperty("http.keepAlive", "false");
         count.set(count.get() + 1);
         driverRestartCount.set(driverRestartCount.get() + 1);
 
-        boolean isFFDriver = settings.getDriverName().equals(FIREFOX);
         boolean isRunWithGrid = settings.isRunTestsWithGrid();
         Integer restartDriverCount = settings.getRestartDriverCount() != null ? settings.getRestartDriverCount() : 0;
 
@@ -195,8 +192,11 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
                 LOGGER.error("*****Throwable occurs when set node id*****", ignored.getMessage());
             }
 
-            addShutdownHook(driver, isFFDriver, isRunWithGrid, SeleniumHolder.getNodeIp());
+            addShutdownHook(driver);
             SeleniumHolder.setWebDriver(driver);
+
+            Configuration configuration = getBean(context, Configuration.class);
+            configuration.getDesiredCapabilities();
 
             String classFromSettings = settings.getProperty("our.webelement.class");
             if (classFromSettings != null && !classFromSettings.isEmpty()) {
@@ -268,9 +268,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
     private void quitWebDriver() {
         count.set(1);
         try {
-            String nodeIp = SeleniumHolder.getNodeIp();
             getWebDriver().quit();
-            killPluginContainer(nodeIp);
         } catch (Throwable t) {
             LOGGER.error("*****ERROR***** TRYING TO QUIT DRIVER " + t.getMessage());
         }
@@ -708,67 +706,17 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         return context.getApplicationContext().getBean(PageLoadingValidator.class);
     }
 
-    private Settings getSeleniumSettings(final TestContext context) {
-        return context.getApplicationContext().getBean(Settings.class);
+    private <T> T getBean(final TestContext context, Class<T> requiredType) {
+        return context.getApplicationContext().getBean(requiredType);
     }
 
-    private void addShutdownHook(final WebDriver driver, final boolean isFFDriver, final boolean isRunWithGrid, final String nodeIp) {
+    private void addShutdownHook(final WebDriver driver) {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
-                if (isFFDriver) {
-                    if (isRunWithGrid) {
-                        killPluginContainer(nodeIp);
-                    }
-                    killOnLocalNode();
-                }
                 driver.quit();
             }
         });
-    }
-
-    /**
-     * https://code.google.com/p/selenium/issues/detail?id=7506
-     * <p>
-     * Special methods to kill plugin-container for FF only.
-     * This error appears when test has flash and browser window was closed.
-     */
-    private void killPluginContainer(String nodeIp) {
-        sendKillPostRequestOnNode(nodeIp);
-    }
-
-    private void sendKillPostRequestOnNode(String nodeUrl) {
-        try {
-            if (InetAddress.getLocalHost().getHostAddress().equals(nodeUrl)) {
-                return;
-            }
-            HttpClient httpclient = new DefaultHttpClient();
-            URI uri = new URIBuilder()
-                    .setScheme("http")
-                    .setHost(nodeUrl)
-                    .setPort(6099)
-                    .setPath("/service/actions/cmd")
-                    .addParameter("commands", "--taskkill /F /IM plugin-container.exe --taskkill /F /IM WerFault.exe")
-                    .build();
-            HttpPost httppost = new HttpPost(uri);
-            HttpResponse response = httpclient.execute(httppost);
-            LOGGER.info("Kill plugin container on '" + nodeUrl + "' with status - " + response.getStatusLine().getStatusCode());
-        } catch (URISyntaxException e) {
-            LOGGER.error("*****URISyntaxException occurs when kill plugin container. NodeUrl - " + nodeUrl + "*****", e);
-        } catch (ClientProtocolException e) {
-            LOGGER.error("*****ClientProtocolException occurs when kill plugin container. NodeUrl - " + nodeUrl + "*****", e);
-        } catch (IOException e) {
-            LOGGER.error("*****IOException occurs when kill plugin container. NodeUrl - " + nodeUrl + "*****", e);
-        }
-    }
-
-    private void killOnLocalNode() {
-        try {
-            Runtime.getRuntime().exec("taskkill /F /IM plugin-container.exe");
-            Runtime.getRuntime().exec("taskkill /F /IM WerFault.exe");
-        } catch (IOException e) {
-            LOGGER.error("*****IOException occurs when kill plugin container.*****", e);
-        }
     }
 
     private static String getNodeIpBySessionId(SessionId sessionId, String gridHubUrl) {
