@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
  * User: ntyukavkin
  * Date: 04.04.2017
  * Time: 14:52
+ *
+ * For provide custom parameters from project.
  */
 @Component
 public class Configuration {

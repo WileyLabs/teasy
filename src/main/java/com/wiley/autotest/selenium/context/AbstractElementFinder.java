@@ -32,6 +32,7 @@ import static com.wiley.autotest.utils.ExecutionUtils.isSafari;
 public class AbstractElementFinder {
 
     private static final String EXPLANATION_MESSAGE_FOR_WAIT = "Wait for retry find element";
+    private static final int MIN_TIME_OUT_FOR_WAIT_IN_SECONDS = 1;
     protected ElementFinder elementFinder;
     public static final Logger LOGGER = LoggerFactory.getLogger(AbstractElementFinder.class);
     //VE added this to avoid No buffer space available exception. To be replaced with default value of 500 if does not work.
@@ -99,7 +100,7 @@ public class AbstractElementFinder {
 
     protected final WebElement elementOrNull(final SearchContext searchContext, final By locator) {
         try {
-            return waitForVisibilityOfAllElementsLocatedBy(searchContext, locator, 1).get(0);
+            return waitForVisibilityOfAllElementsLocatedBy(searchContext, locator, MIN_TIME_OUT_FOR_WAIT_IN_SECONDS).get(0);
         } catch (WebDriverException ignored) {
             return null;
         }
