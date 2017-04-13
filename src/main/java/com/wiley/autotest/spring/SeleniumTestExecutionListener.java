@@ -64,6 +64,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
     private static final String FIREFOX = "firefox";
     private static final String CHROME = "chrome";
     private static final String SAFARI = "safari";
+    private static final String SAFARI_10 = "safari10";
     private static final String IE = "ie";
     private static final String EDGE = "edge";
     private static final String IE11 = "ie11";
@@ -493,6 +494,10 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
                 SeleniumHolder.setDriverName(SAFARI);
                 SeleniumHolder.setPlatform(MAC);
                 return safari();
+            } else if (StringUtils.equalsIgnoreCase(browserName, SAFARI_10)) {
+                SeleniumHolder.setDriverName(SAFARI_10);
+                SeleniumHolder.setPlatform(MAC);
+                return safari10(settings);
             } else {
                 throw new RuntimeException("Not supported browser: " + browserName + ", for platform: " + settings.getPlatform());
             }
@@ -700,6 +705,16 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
 
     private WebDriver safari() {
         return new SafariDriver();
+    }
+
+    private WebDriver safari10(Settings settings) throws MalformedURLException {
+        SafariOptions safariOptions = new SafariOptions();
+        safariOptions.setUseCleanSession(true);
+        DesiredCapabilities desiredCapabilities = DesiredCapabilities.safari();
+        desiredCapabilities.setCapability(SafariOptions.CAPABILITY, safariOptions);
+        RemoteWebDriver remoteWebDriver = new RemoteWebDriver(new URL(settings.getGridHubUrl()), desiredCapabilities);
+        remoteWebDriver.setFileDetector(new LocalFileDetector());
+        return remoteWebDriver;
     }
 
     private PageLoadingValidator getValidator(final TestContext context) {
