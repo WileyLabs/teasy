@@ -495,6 +495,27 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         assertTrue(element.isDisplayed(), errorMessage);
     }
 
+    protected void assertElementsAreDisplayed(By locator, String errorMessage) {
+        try {
+            elementFinder.waitForVisibilityOfAllElementsLocatedBy(locator);
+        } catch (WebDriverException e) {
+            fail(errorMessage);
+        }
+    }
+
+    protected void assertElementIsDisplayed(SearchContext searchContext, By locator, String errorMessage) {
+        try {
+            elementFinder.waitForVisibilityOfAllElementsLocatedBy(searchContext, locator).get(0);
+        } catch (WebDriverException e) {
+            fail(errorMessage);
+        }
+    }
+
+    protected void assertElementsAreAbsent(By locator, String errorMessage) {
+        TestUtils.waitForSomeTime(TIMEOUT_TO_WAIT_FOR_ABSENCE_OF_ELEMENT, "Wait for elements are absent");
+        elementFinder.findElementsBy(locator).forEach(webElement -> assertFalse(webElement.isDisplayed(), errorMessage));
+    }
+
     protected void assertContainsAll(List<? extends Object> actual, List<? extends Object> expected, String errorMessage) {
         expected.stream()
                 .filter(object -> !actual.contains(object))
@@ -555,6 +576,18 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
 
     protected void assertElementIsDisplayed(By locator) {
         assertElementIsDisplayed(locator, generateErrorMessage());
+    }
+
+    protected void assertElementIsDisplayed(SearchContext searchContext, By locator) {
+        assertElementIsDisplayed(searchContext, locator, generateErrorMessage());
+    }
+
+    protected void assertElementsAreDisplayed(By locator) {
+        assertElementsAreDisplayed(locator, generateErrorMessage());
+    }
+
+    protected void assertElementsAreAbsent(By locator) {
+        assertElementsAreAbsent(locator, generateErrorMessage());
     }
 
     protected void postponedAssertDateEquals(DateTime actualDate, DateTime expectedDate, String dateFieldName) {

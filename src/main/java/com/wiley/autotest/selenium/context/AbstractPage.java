@@ -1,9 +1,12 @@
 package com.wiley.autotest.selenium.context;
 
+import com.wiley.autotest.actions.Actions;
+import com.wiley.autotest.actions.Conditions;
 import com.wiley.autotest.screenshots.*;
 import com.wiley.autotest.screenshots.imagecomparison.*;
 import com.wiley.autotest.annotations.Report;
 import com.wiley.autotest.selenium.SeleniumHolder;
+import com.wiley.autotest.utils.TestUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.openqa.selenium.By;
@@ -38,6 +41,8 @@ public abstract class AbstractPage<P extends AbstractPage> extends AbstractPageE
     public static final By INPUT_LOCATOR = By.tagName("input");
     public static final By IMG_LOCATOR = By.tagName("img");
     protected static final String CLASS_ATTRIBUTE = "class";
+
+    private int count = 0;
 
     private final String path;
 
@@ -131,6 +136,33 @@ public abstract class AbstractPage<P extends AbstractPage> extends AbstractPageE
             reportWithStep("The next step will fail because of bug with id '" + bugId + "'!");
         }
         return (P) this;
+    }
+
+    /**
+     * Special method for perform action on element and wait page is changed after action.
+     * <p>
+     * example:
+     * action(element(By.cssSelector("a"))::click, element(By.cssSelector("a"))::isDisplayed);
+     *
+     * @param actions    - function for actions on element like click, sendKeys
+     * @param conditions - function for wait condition after we made action on element
+     * @return current page
+     */
+    public P action(Actions actions, Conditions conditions) {
+        count++;
+        actions.execute();
+
+        if (conditions.isTrue()) {
+            count = 0;
+            return (P) this;
+        } else {
+            if (count > 5) {
+                count = 0;
+                fail("Unable to perform actions after 5 attempts");
+            }
+            TestUtils.waitForSomeTime(3000, "Wait condition is done");
+            return action(actions, conditions);
+        }
     }
 
     @Step

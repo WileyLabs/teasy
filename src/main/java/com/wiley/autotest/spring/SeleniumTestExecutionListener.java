@@ -7,10 +7,12 @@ import com.wiley.autotest.annotations.UnexpectedAlertCapability;
 import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.context.PageLoadingValidator;
 import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
+import com.wiley.autotest.selenium.driver.WebDriverDecorator;
 import com.wiley.autotest.services.Configuration;
 import com.wiley.autotest.utils.TestUtils;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.ios.IOSDriver;
 import io.github.bonigarcia.wdm.ChromeDriverManager;
 import io.github.bonigarcia.wdm.EdgeDriverManager;
 import io.github.bonigarcia.wdm.InternetExplorerDriverManager;
@@ -121,10 +123,17 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
             return false;
         }
     };
+    private String[] activeProfiles;
 
     @Override
     public void prepareTestInstance(final TestContext context) throws Exception {
+        if (activeProfiles == null || activeProfiles.length == 0) {
+            activeProfiles = context.getApplicationContext().getEnvironment().getActiveProfiles();
+            SeleniumHolder.setActiveProfilesList(Arrays.asList(activeProfiles));
+        }
+
         final Settings settings = getBean(context, Settings.class);
+        final Configuration configuration = getBean(context, Configuration.class);
         System.setProperty("http.maxConnections", "1000000");
         System.setProperty("http.keepAlive", "false");
         count.set(count.get() + 1);
@@ -160,7 +169,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
                     TestUtils.waitForSomeTime(5000, "Wait for create safari driver");
                 }
 
-                driver = new FramesTransparentWebDriver(initWebDriver(settings));
+                driver = new FramesTransparentWebDriver(initWebDriver(settings, configuration));
 
                 alertCapability.set(UnexpectedAlertBehaviour.ACCEPT);
 
@@ -196,8 +205,13 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
             addShutdownHook(driver);
             SeleniumHolder.setWebDriver(driver);
 
-            Configuration configuration = getBean(context, Configuration.class);
-            configuration.getDesiredCapabilities();
+            AndroidDriver androidDriver = castToAndroidDriver(driver);
+            IOSDriver iosDriver = castToIOSDriver(driver);
+            if (androidDriver != null || iosDriver != null) {
+                SeleniumHolder.setAppiumDriver((AppiumDriver) castToWebDriverDecorator(driver));
+                SeleniumHolder.setAndroidDriver(androidDriver);
+                SeleniumHolder.setIOSDriver(iosDriver);
+            }
 
             String classFromSettings = settings.getProperty("our.webelement.class");
             if (classFromSettings != null && !classFromSettings.isEmpty()) {
@@ -284,7 +298,11 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
      */
     public static boolean isBrowserDead() {
         try {
-            getWebDriver().getCurrentUrl();
+            if (((FramesTransparentWebDriver) getWebDriver()).getWrappedDriver() instanceof AppiumDriver) {
+                getWebDriver().getPageSource();
+            } else {
+                getWebDriver().getCurrentUrl();
+            }
             return false;
         } catch (Throwable t) {
             LOGGER.error("*****BROWSER IS DEAD ERROR***** ", t);
@@ -360,7 +378,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         return proxy;
     }
 
-    private WebDriver initWebDriver(Settings settings) throws MalformedURLException {
+    private WebDriver initWebDriver(Settings settings, Configuration configuration) throws MalformedURLException {
         String browserName;
         //for set browser from xml parameters
         if (!getParameterBrowserName().equals("browser")) {
@@ -416,10 +434,15 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
                     throw new RuntimeException("Not supported browser: " + browserName + ", for platform: " + platformName);
                 }
             } else if (StringUtils.equalsIgnoreCase(platformName, ANDROID)) {
+                SeleniumHolder.setPlatform(ANDROID);
                 if (StringUtils.equalsIgnoreCase(browserName, CHROME)) {
                     desiredCapabilities = getAndroidChromeDesiredCapabilities();
                     SeleniumHolder.setDriverName(CHROME);
-                    SeleniumHolder.setPlatform(ANDROID);
+                    AppiumDriver remoteWebDriver = new AndroidDriver(new URL(settings.getGridHubUrl()), desiredCapabilities);
+                    remoteWebDriver.setFileDetector(new LocalFileDetector());
+                    return remoteWebDriver;
+                } else if (configuration.getDesiredCapabilities() != null) {
+                    desiredCapabilities = configuration.getDesiredCapabilities();
                     AppiumDriver remoteWebDriver = new AndroidDriver(new URL(settings.getGridHubUrl()), desiredCapabilities);
                     remoteWebDriver.setFileDetector(new LocalFileDetector());
                     return remoteWebDriver;
@@ -435,14 +458,17 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
                     throw new RuntimeException("Not supported browser: " + browserName + ", for platform: " + platformName);
                 }
             } else if (StringUtils.equalsIgnoreCase(platformName, IOS)) {
+                SeleniumHolder.setPlatform(IOS);
                 if (StringUtils.equalsIgnoreCase(browserName, SAFARI)) {
                     desiredCapabilities = getIOSSafariDesiredCapabilities();
                     SeleniumHolder.setDriverName(SAFARI);
-                    SeleniumHolder.setPlatform(IOS);
                 } else if (StringUtils.equalsIgnoreCase(browserName, CHROME)) {
                     desiredCapabilities = getIOSChromeDesiredCapabilities();
                     SeleniumHolder.setDriverName(CHROME);
-                    SeleniumHolder.setPlatform(IOS);
+                } else if (configuration.getDesiredCapabilities() != null) {
+                    AppiumDriver remoteWebDriver = new IOSDriver(new URL(settings.getGridHubUrl()), configuration.getDesiredCapabilities());
+                    remoteWebDriver.setFileDetector(new LocalFileDetector());
+                    return remoteWebDriver;
                 } else {
                     throw new RuntimeException("Not supported browser: " + browserName + ", for platform: " + platformName);
                 }
@@ -723,6 +749,28 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
 
     private <T> T getBean(final TestContext context, Class<T> requiredType) {
         return context.getApplicationContext().getBean(requiredType);
+    }
+
+    private AndroidDriver castToAndroidDriver(WebDriver driver) {
+        WebDriver castToWebDriverDecorator = castToWebDriverDecorator(driver);
+        if (castToWebDriverDecorator instanceof AndroidDriver) {
+            return (AndroidDriver) castToWebDriverDecorator;
+        } else {
+            return null;
+        }
+    }
+
+    private IOSDriver castToIOSDriver(WebDriver driver) {
+        WebDriver castToWebDriverDecorator = castToWebDriverDecorator(driver);
+        if (castToWebDriverDecorator instanceof IOSDriver) {
+            return (IOSDriver) castToWebDriverDecorator;
+        } else {
+            return null;
+        }
+    }
+
+    private WebDriver castToWebDriverDecorator(WebDriver driver) {
+        return ((WebDriverDecorator) driver).getWrappedDriver();
     }
 
     private void addShutdownHook(final WebDriver driver) {

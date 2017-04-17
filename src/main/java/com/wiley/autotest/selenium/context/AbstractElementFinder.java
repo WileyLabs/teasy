@@ -311,6 +311,15 @@ public class AbstractElementFinder {
         return getElements(TextField.class, searchContext, locator);
     }
 
+    protected boolean booleanCondition(Condition condition, ConditionParams params, By locator) {
+        try {
+            condition(condition, params, locator);
+            return true;
+        } catch (Throwable e) {
+            return false;
+        }
+    }
+
     /**
      * This method is to be used for different conditions you want to wait for to happen with element using LOCATOR
      *
@@ -319,7 +328,7 @@ public class AbstractElementFinder {
      * @param locator   - locator for element you would like condition to happen
      */
     protected void condition(Condition condition, By locator) {
-        condition(condition, null, locator);
+        condition(condition, new ConditionParams(), locator);
     }
 
     /**
@@ -353,8 +362,12 @@ public class AbstractElementFinder {
                 waitForStalenessOf(element);
                 break;
             }
+            case LOCATION_NOT_CHANGED: {
+                elementFinder.waitForElementNotChangeXLocation(element);
+                break;
+            }
             case HAS_TEXT: {
-                if (params != null) {
+                if (params.getText() != null) {
                     waitForTextToBePresentIn(element, params.getText());
                 }
                 break;
@@ -365,7 +378,7 @@ public class AbstractElementFinder {
     protected void condition(Condition condition, ConditionParams params, By locator) {
         switch (condition) {
             case VISIBLE: {
-                waitForVisibilityOfElementLocatedBy(locator);
+                waitForVisibilityOfElementLocatedBy(locator, params.getTimeout());
                 break;
             }
             case NOT_VISIBLE: {
@@ -377,7 +390,7 @@ public class AbstractElementFinder {
                 break;
             }
             case ABSENT_IN_DOM: {
-                waitForAbsenceOfElementLocatedBy(locator);
+                waitForAbsenceOfElementLocatedBy(locator, params.getTimeout());
                 break;
             }
             case STALE: {
@@ -392,18 +405,52 @@ public class AbstractElementFinder {
         PRESENT_IN_DOM,
         ABSENT_IN_DOM,
         STALE,
-        HAS_TEXT
+        HAS_TEXT,
+        LOCATION_NOT_CHANGED
     }
 
     public class ConditionParams {
         String text;
+        long timeout = 0;
+
+        public ConditionParams() {
+        }
 
         public ConditionParams(String text) {
             this.text = text;
         }
 
+        public ConditionParams setShortTimeout() {
+            timeout = 3;
+            return this;
+        }
+
+        public ConditionParams setMediumTimeout() {
+            timeout = 10;
+            return this;
+        }
+
+        public ConditionParams setCommonTimeout() {
+            timeout = 30;
+            return this;
+        }
+
+        public ConditionParams setLongTimeout() {
+            timeout = 60;
+            return this;
+        }
+
         public String getText() {
             return text;
+        }
+
+        public long getTimeout() {
+            return timeout;
+        }
+
+        public ConditionParams setTimeout(long timeoutInSec) {
+            this.timeout = timeoutInSec;
+            return this;
         }
 
         public ConditionParams setText(String text) {
@@ -761,6 +808,10 @@ public class AbstractElementFinder {
 
     private void waitForAbsenceOfElementLocatedBy(final By locator) {
         elementFinder.waitForAbsenceOfElementLocatedBy(locator);
+    }
+
+    private void waitForAbsenceOfElementLocatedBy(final By locator, long timeoutInSec) {
+        elementFinder.waitForAbsenceOfElementLocatedBy(locator, timeoutInSec);
     }
 
     protected final Boolean waitForTextToBePresentInElement(final By locator, final String text) {

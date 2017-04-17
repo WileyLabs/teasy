@@ -2,6 +2,7 @@ package com.wiley.autotest;
 
 import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
 import com.wiley.autotest.selenium.elements.TextField;
+import com.wiley.autotest.utils.TestUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.slf4j.Logger;
@@ -110,6 +111,14 @@ public final class ExpectedConditions2 {
             } catch (WebDriverException ignored) {
                 return true;
             }
+        };
+    }
+
+    public static ExpectedCondition<Boolean> xLocationNotChanged(final WebElement webElement) {
+        return driver -> {
+            int startXLocation = webElement.getLocation().getX();
+            TestUtils.waitForSomeTime(100, "Wait for element loaded");
+            return startXLocation == webElement.getLocation().getX();
         };
     }
 

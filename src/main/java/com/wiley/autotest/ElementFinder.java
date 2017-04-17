@@ -37,6 +37,8 @@ public interface ElementFinder {
     List<WebElement> waitForPresenceOfAllElementsLocatedBy(final SearchContext searchContext, final By locator);
     void waitForPresenceOfElementCount(By locator, int expectedNumberOfElements, long timeOutInSeconds);
 
+    Boolean waitForElementNotChangeXLocation(final WebElement webElement);
+
     Boolean waitForTextToBePresentInElement(By locator, String text);
     Boolean waitForTextToBePresentInElement(By locator);
     Boolean waitForTextToBePresentIn(WebElement element, String text);
@@ -44,6 +46,7 @@ public interface ElementFinder {
     Boolean waitForTextToBePresentIn(WebElement element);
 
     Boolean waitForAbsenceOfElementLocatedBy(By locator);
+    Boolean waitForAbsenceOfElementLocatedBy(By locator, long timeoutInSec);
     Boolean waitForInvisibilityOfElementLocatedBy(By locator);
     WebElement waitForInvisibilityOfElement(WebElement element);
 

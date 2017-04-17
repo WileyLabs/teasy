@@ -2,6 +2,7 @@ package com.wiley.autotest;
 
 import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
 import com.wiley.autotest.selenium.elements.TextField;
+import com.wiley.autotest.utils.TestUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import static com.wiley.autotest.ExpectedConditions2.*;
 import static com.wiley.autotest.ExpectedConditions2.textToBePresentInElement;
@@ -20,6 +22,7 @@ import static org.openqa.selenium.support.ui.ExpectedConditions.*;
 public class WebDriverAwareElementFinder implements ElementFinder {
     private WebDriver driver;
     private WebDriverWait wait;
+    private static final long POOLLING_EVERY_DURATION_IN_SEC = 2;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WebDriverAwareElementFinder.class);
 
@@ -137,6 +140,11 @@ public class WebDriverAwareElementFinder implements ElementFinder {
     @Override
     public Boolean waitForAbsenceOfElementLocatedBy(final By locator) {
         return waitFor(absenceElementBy(locator));
+    }
+
+    @Override
+    public Boolean waitForAbsenceOfElementLocatedBy(final By locator, long timeoutInSec) {
+        return waitFor(absenceElementBy(locator), timeoutInSec);
     }
 
     @Override
@@ -290,6 +298,11 @@ public class WebDriverAwareElementFinder implements ElementFinder {
     }
 
     @Override
+    public Boolean waitForElementNotChangeXLocation(final WebElement webElement) {
+        return waitFor(xLocationNotChanged(webElement));
+    }
+
+    @Override
     public Boolean waitForElementContainsAttributeValue(final WebElement element, final String attributeName, final String attributeValue) {
         return waitFor(attributeContainsValue(element, attributeName, attributeValue));
     }
@@ -325,7 +338,9 @@ public class WebDriverAwareElementFinder implements ElementFinder {
     }
 
     private <T> T waitFor(final ExpectedCondition<T> condition) {
-        return wait.until(condition);
+        //TODO workaround for wait to load page
+        TestUtils.waitForSomeTime(3000, "");
+        return wait.pollingEvery(POOLLING_EVERY_DURATION_IN_SEC, TimeUnit.SECONDS).until(condition);
     }
 
     private <T> T waitFor(final ExpectedCondition<T> condition, final long timeOutInSeconds) {

@@ -3,6 +3,7 @@ package com.wiley.autotest.selenium.driver;
 import com.google.common.base.Function;
 import com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory;
 import com.wiley.autotest.utils.TestUtils;
+import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +32,9 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
         super(driver);
         currentFramesPath = new Stack<>();
         toFrameAwareWebElements = new FrameAwareWebElementTransformer(driver, currentFramesPath);
-        mainWindowHandle.set(driver.getWindowHandle());
+        if (!(driver instanceof AppiumDriver)) {
+            mainWindowHandle.set(driver.getWindowHandle());
+        }
     }
 
     @Override
@@ -81,7 +84,9 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
 
     private void switchToDefaultContext() {
         try {
-            getDriver().switchTo().defaultContent();
+            if (!(getDriver() instanceof AppiumDriver)) {
+                getDriver().switchTo().defaultContent();
+            }
         } catch (WebDriverException e) {
             LOGGER.error("****WebDriverException occurs when switchToDefaultContext****", e);
             switchToMainWindow();
@@ -91,7 +96,9 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
 
     private void switchToMainWindow() {
         try {
-            switchTo().window(mainWindowHandle.get());
+            if (!(getDriver() instanceof AppiumDriver)) {
+                switchTo().window(mainWindowHandle.get());
+            }
         } catch (SwitchToWindowException e) {
             LOGGER.error("****SwitchToWindowException occurs when switchToMainWindow****", e);
             switchTo().window(getDriver().getWindowHandles().iterator().next());
