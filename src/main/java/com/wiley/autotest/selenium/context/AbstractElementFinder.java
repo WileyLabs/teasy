@@ -397,13 +397,39 @@ public class AbstractElementFinder {
 
     public class ConditionParams {
         String text;
+        long timeout = 0;
 
-        public ConditionParams(String text) {
-            this.text = text;
+        public ConditionParams setShortTimeout() {
+            timeout = 3;
+            return this;
+        }
+
+        public ConditionParams setMediumTimeout() {
+            timeout = 10;
+            return this;
+        }
+
+        public ConditionParams setCommonTimeout() {
+            timeout = 30;
+            return this;
+        }
+
+        public ConditionParams setLongTimeout() {
+            timeout = 60;
+            return this;
         }
 
         public String getText() {
             return text;
+        }
+
+        public long getTimeout() {
+            return timeout;
+        }
+
+        public ConditionParams setTimeout(long timeoutInSec) {
+            this.timeout = timeoutInSec;
+            return this;
         }
 
         public ConditionParams setText(String text) {
