@@ -11,6 +11,8 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.testng.Reporter;
 
 import java.util.ArrayList;
@@ -31,12 +33,36 @@ import static com.wiley.autotest.utils.ExecutionUtils.isSafari;
  */
 public class AbstractElementFinder {
 
+    @Autowired
+    private Long timeout;
+
+    @Autowired(required = false)
+    @Qualifier("pollingEvery")
+    private Long pollingEvery;
+
+    @Autowired(required = false)
+    private Integer waitTimeout;
+
     private static final String EXPLANATION_MESSAGE_FOR_WAIT = "Wait for retry find element";
     private static final int MIN_TIME_OUT_FOR_WAIT_IN_SECONDS = 1;
     protected ElementFinder elementFinder;
     public static final Logger LOGGER = LoggerFactory.getLogger(AbstractElementFinder.class);
-    //VE added this to avoid No buffer space available exception. To be replaced with default value of 500 if does not work.
-    protected static final long SLEEP_IN_MILLISECONDS = 1000;
+
+    public void init(final WebDriver driver) {
+        elementFinder = new WebDriverAwareElementFinder(driver, new WebDriverWait(driver, getTimeout(), getPollingEvery()), getWaitTimeout());
+    }
+
+    protected Long getTimeout() {
+        return timeout;
+    }
+
+    public Long getPollingEvery() {
+        return pollingEvery == null ? WebDriverWait.DEFAULT_SLEEP_TIMEOUT : pollingEvery;
+    }
+
+    public Integer getWaitTimeout() {
+        return waitTimeout;
+    }
 
     protected List<WebElement> elements(final By locator, SearchStrategy searchStrategy, final long timeoutInSeconds) {
         return getElementsOrWebDriverException(() -> {
@@ -544,10 +570,6 @@ public class AbstractElementFinder {
         }
 
         return errorMessage.toString() + " failed";
-    }
-
-    public void init(final WebDriver driver, Long timeOutInSeconds) {
-        elementFinder = new WebDriverAwareElementFinder(driver, new WebDriverWait(driver, timeOutInSeconds, SLEEP_IN_MILLISECONDS));
     }
 
     protected WebElementWrapper getWebElementWrapper(final WebElement wrappedElement) {

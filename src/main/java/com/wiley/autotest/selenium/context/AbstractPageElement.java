@@ -65,9 +65,6 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
     private PostponedFailureEvent postponeFailureEvent;
 
     @Autowired
-    private Long timeout;
-
-    @Autowired
     private Settings settings;
 
     private DefaultElementFactory elementFactory;
@@ -90,16 +87,12 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
     }
 
     public final void init(WebDriver driver, ScreenshotHelper screenshotHelper) {
-        super.init(driver, timeout);
+        super.init(driver);
         this.driver = driver;
         this.screenshotHelper = screenshotHelper;
         elementFactory = new DefaultElementFactory();
         initFindByAnnotations(this);
         init();
-    }
-
-    protected Long getTimeout() {
-        return timeout;
     }
 
     protected Settings getSettings() {
@@ -663,11 +656,11 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
     }
 
     protected Alert waitForAlertPresence() {
-        return (new WebDriverWait(driver, timeout, SLEEP_IN_MILLISECONDS)).until(ExpectedConditions.alertIsPresent());
+        return (new WebDriverWait(driver, getTimeout(), getPollingEvery())).until(ExpectedConditions.alertIsPresent());
     }
 
     protected Alert waitForAlertPresence(int timeoutForAlert) {
-        return (new WebDriverWait(driver, timeoutForAlert, SLEEP_IN_MILLISECONDS)).until(ExpectedConditions.alertIsPresent());
+        return (new WebDriverWait(driver, timeoutForAlert, getPollingEvery())).until(ExpectedConditions.alertIsPresent());
     }
 
 

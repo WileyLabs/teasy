@@ -14,8 +14,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 public abstract class AbstractWebContainer extends AbstractElementFinder implements WebContainer {
 
-    private static final long WAIT_TIME_OUT_IN_SECONDS = 10;
-
     @DoNotSearch
     private WebElement wrappedElement;
     private ErrorSender errorSender;
@@ -23,7 +21,7 @@ public abstract class AbstractWebContainer extends AbstractElementFinder impleme
     @Override
     public void init(final WebElement wrappedElement) {
         this.wrappedElement = wrappedElement;
-        elementFinder = new WebDriverAwareElementFinder(getDriver(), new WebDriverWait(getDriver(), WAIT_TIME_OUT_IN_SECONDS, SLEEP_IN_MILLISECONDS));
+        elementFinder = new WebDriverAwareElementFinder(getDriver(), new WebDriverWait(getDriver(), getTimeout(), getPollingEvery()), getWaitTimeout());
     }
 
     public WebElement getWrappedElement() {
@@ -35,7 +33,6 @@ public abstract class AbstractWebContainer extends AbstractElementFinder impleme
     }
 
     @Override
-
     public final boolean isVisible() {
         return wrappedElement.isDisplayed();
     }
@@ -81,6 +78,6 @@ public abstract class AbstractWebContainer extends AbstractElementFinder impleme
     }
 
     protected Alert waitForAlertPresence(int timeoutForAlert) {
-        return (new WebDriverWait(getDriver(), timeoutForAlert, SLEEP_IN_MILLISECONDS)).until(ExpectedConditions.alertIsPresent());
+        return (new WebDriverWait(getDriver(), timeoutForAlert, getPollingEvery())).until(ExpectedConditions.alertIsPresent());
     }
 }

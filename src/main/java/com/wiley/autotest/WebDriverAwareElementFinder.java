@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import static com.wiley.autotest.ExpectedConditions2.*;
 import static com.wiley.autotest.ExpectedConditions2.textToBePresentInElement;
@@ -22,9 +21,17 @@ import static org.openqa.selenium.support.ui.ExpectedConditions.*;
 public class WebDriverAwareElementFinder implements ElementFinder {
     private WebDriver driver;
     private WebDriverWait wait;
-    private static final long POOLLING_EVERY_DURATION_IN_SEC = 2;
+    private Integer waitTimeout = 1;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WebDriverAwareElementFinder.class);
+
+    public WebDriverAwareElementFinder(final WebDriver webDriver, final WebDriverWait webDriverWait, Integer waitTimeout) {
+        this.driver = webDriver;
+        this.wait = webDriverWait;
+        if (waitTimeout != null) {
+            this.waitTimeout = waitTimeout;
+        }
+    }
 
     public WebDriverAwareElementFinder(final WebDriver webDriver, final WebDriverWait webDriverWait) {
         this.driver = webDriver;
@@ -338,13 +345,13 @@ public class WebDriverAwareElementFinder implements ElementFinder {
     }
 
     private <T> T waitFor(final ExpectedCondition<T> condition) {
-        //TODO workaround for wait to load page
-        TestUtils.waitForSomeTime(3000, "");
-        return wait.pollingEvery(POOLLING_EVERY_DURATION_IN_SEC, TimeUnit.SECONDS).until(condition);
+        TestUtils.waitForSomeTime(waitTimeout, "");
+        return wait.until(condition);
     }
 
     private <T> T waitFor(final ExpectedCondition<T> condition, final long timeOutInSeconds) {
         WebDriverWait customWait = new WebDriverWait(driver, timeOutInSeconds);
+        TestUtils.waitForSomeTime(waitTimeout, "");
         return customWait.until(condition);
     }
 
