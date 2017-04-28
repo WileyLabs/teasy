@@ -1,5 +1,6 @@
 package com.wiley.autotest;
 
+import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
 import com.wiley.autotest.selenium.elements.TextField;
 import com.wiley.autotest.utils.TestUtils;
@@ -345,13 +346,19 @@ public class WebDriverAwareElementFinder implements ElementFinder {
     }
 
     private <T> T waitFor(final ExpectedCondition<T> condition) {
-        TestUtils.waitForSomeTime(waitTimeout, "");
+        TestUtils.waitForSomeTime(waitTimeout, "Default sleep for all mobile operations. In 2017 it's needed to make appium tests more stable");
+        if (SeleniumHolder.getAppiumDriver() != null) {
+            try {
+                driver.getPageSource();
+            } catch (Exception ignored) {
+            }
+        }
         return wait.until(condition);
     }
 
     private <T> T waitFor(final ExpectedCondition<T> condition, final long timeOutInSeconds) {
         WebDriverWait customWait = new WebDriverWait(driver, timeOutInSeconds);
-        TestUtils.waitForSomeTime(waitTimeout, "");
+        TestUtils.waitForSomeTime(waitTimeout, "Default sleep for all mobile operations. In 2017 it's needed to make appium tests more stable");
         return customWait.until(condition);
     }
 
