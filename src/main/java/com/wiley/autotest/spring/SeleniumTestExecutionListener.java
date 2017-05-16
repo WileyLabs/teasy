@@ -791,7 +791,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         int gridPort = Integer.parseInt(gridHubIpAndPort[1].split("/")[0]);
         try {
             //check if grid hub stared on local host for appium
-            URL obj = new URL("http://192.168.109.60:4444/grid/api/");
+            URL obj = new URL("http://" + gridIp + ":" + gridPort + "/grid/api/");
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
             con.setRequestMethod("GET");
             int responseCode = con.getResponseCode();
