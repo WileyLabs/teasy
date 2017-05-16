@@ -8,7 +8,7 @@
     <artifactId>wiley-selenium-base</artifactId>
     <name>WAT_CORE</name>
     <packaging>jar</packaging>
-    <version>2.1.27-6-beta4</version>
+    <version>2.1.27-6-beta5cls</version>
 
     <properties>
         <selenium-version>3.2.0</selenium-version>
