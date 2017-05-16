@@ -17,6 +17,7 @@ import io.github.bonigarcia.wdm.ChromeDriverManager;
 import io.github.bonigarcia.wdm.EdgeDriverManager;
 import io.github.bonigarcia.wdm.InternetExplorerDriverManager;
 import net.lightbody.bmp.proxy.ProxyServer;
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -789,6 +790,15 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         String gridIp = gridHubIpAndPort[0];
         int gridPort = Integer.parseInt(gridHubIpAndPort[1].split("/")[0]);
         try {
+            //check if grid hub stared on local host for appium
+            URL obj = new URL("http://192.168.109.60:4444/grid/api/");
+            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+            con.setRequestMethod("GET");
+            int responseCode = con.getResponseCode();
+            if (responseCode != HttpStatus.SC_OK) {
+                return gridIp;
+            }
+
             HttpHost host = new HttpHost(gridIp, gridPort);
             HttpClient client = HttpClientBuilder.create().build();
             URL testSessionApi = new URL("http://" + gridIp + ":" + gridPort + "/grid/api/testsession?session=" + sessionId);
@@ -821,5 +831,19 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         }
         rd.close();
         return new JSONObject(stringBuffer.toString());
+    }
+
+    private boolean isRunLocal(String gridHubUrl) {
+        try {
+            InetAddress[] ipList = InetAddress.getAllByName(InetAddress.getLocalHost().getHostName());
+            for (InetAddress ip : ipList) {
+                if (gridHubUrl.contains(ip.getHostAddress())) {
+                    return true;
+                }
+            }
+        } catch (UnknownHostException e) {
+
+        }
+        return false;
     }
 }
