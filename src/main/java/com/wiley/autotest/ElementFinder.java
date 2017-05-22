@@ -1,6 +1,7 @@
 package com.wiley.autotest;
 
 import com.wiley.autotest.selenium.elements.TextField;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebElement;
@@ -16,6 +17,9 @@ public interface ElementFinder {
     WebElement findElementBy(SearchContext searchContext, By locator);
     List<WebElement> findElementsBy(By locator);
     List<WebElement> findElementsBy(SearchContext searchContext, final By locator);
+
+    Alert waitForAlert();
+
 
     List<WebElement> waitForVisibilityOfAllElementsLocatedBy(final By locator);
     List<WebElement> waitForVisibilityOfAllElementsLocatedBy(final SearchContext searchContext, final By locator);

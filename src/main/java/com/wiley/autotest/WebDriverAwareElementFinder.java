@@ -57,6 +57,10 @@ public class WebDriverAwareElementFinder implements ElementFinder {
         return searchContext.findElements(locator);
     }
 
+    public Alert waitForAlert() {
+        return waitFor(ExpectedConditions.alertIsPresent());
+    }
+
     @Override
     public WebElement waitForVisibilityOfElementLocatedBy(final By locator) {
         return waitFor(ExpectedConditions2.visibilityOfElementLocatedBy(locator));

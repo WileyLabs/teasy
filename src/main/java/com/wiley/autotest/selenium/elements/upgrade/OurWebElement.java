@@ -4,6 +4,9 @@ import com.wiley.autotest.ElementFinder;
 import com.wiley.autotest.WebDriverAwareElementFinder;
 import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.context.AbstractElementFinder;
+import com.wiley.autotest.selenium.elements.upgrade.v3.OurShould;
+import com.wiley.autotest.selenium.elements.upgrade.v3.OurWaitFor;
+import com.wiley.autotest.selenium.elements.upgrade.v3.SearchStrategy;
 import com.wiley.autotest.utils.TestUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
@@ -21,6 +24,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrapParent;
 import static com.wiley.autotest.utils.ExecutionUtils.*;
 import static com.wiley.autotest.utils.IETestUtils.*;
 
@@ -74,6 +78,40 @@ public class OurWebElement implements IOurWebElement, Locatable {
         if (elementFinder == null) {
             elementFinder = new WebDriverAwareElementFinder(getDriver(), new WebDriverWait(getDriver(), WAIT_TIME_OUT_IN_SECONDS, SLEEP_IN_MILLISECONDS));
         }
+    }
+
+    @Override
+    public OurShould should() {
+        return new OurShould(this);
+    }
+
+    @Override
+    public OurShould should(SearchStrategy strategy) {
+        return new OurShould(this, strategy);
+    }
+
+    @Override
+    public OurWaitFor waitFor() {
+        return new OurWaitFor(this);
+    }
+
+    @Override
+    public OurWaitFor waitFor(SearchStrategy strategy) {
+        return new OurWaitFor(this, strategy);
+    }
+
+    @Override
+    public IOurWebElement getParent() {
+        return getParent(1);
+    }
+
+    @Override
+    public IOurWebElement getParent(int level) {
+        StringBuilder builder = new StringBuilder(".");
+        for (int i = 0; i < level; i++) {
+            builder.append("/..");
+        }
+        return (IOurWebElement) findElement(By.xpath(builder.toString()));
     }
 
     @Override
