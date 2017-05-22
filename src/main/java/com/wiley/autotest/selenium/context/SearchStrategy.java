@@ -6,6 +6,10 @@ package com.wiley.autotest.selenium.context;
  * Time: 16:47
  * Description:
  */
+@Deprecated
+/**
+ * use {@link com.wiley.autotest.selenium.elements.upgrade.v3.SearchStrategy}
+ */
 public enum SearchStrategy {
     /**
      * Default value.

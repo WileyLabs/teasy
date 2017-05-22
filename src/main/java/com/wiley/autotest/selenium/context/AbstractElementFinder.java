@@ -15,10 +15,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Reporter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import static com.wiley.autotest.selenium.SeleniumHolder.getWebDriver;
 import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrap;
@@ -44,6 +46,11 @@ public class AbstractElementFinder {
     //VE added this to avoid No buffer space available exception. To be replaced with default value of 500 if does not work.
     protected static final long SLEEP_IN_MILLISECONDS = 1000;
 
+
+    @Deprecated
+    /**
+     * Use {@link AbstractElementFinder#elements(By, com.wiley.autotest.selenium.elements.upgrade.v3.SearchStrategy)}
+     */
     protected List<WebElement> elements(final By locator, SearchStrategy searchStrategy, final long timeoutInSeconds) {
         return getElementsOrWebDriverException(() -> {
             switch (searchStrategy) {
@@ -56,6 +63,11 @@ public class AbstractElementFinder {
         });
     }
 
+
+    @Deprecated
+    /**
+     * Use {@link AbstractElementFinder#elements(By, com.wiley.autotest.selenium.elements.upgrade.v3.SearchStrategy)}
+     */
     protected List<WebElement> elements(final By locator, SearchStrategy searchStrategy) {
         return getElementsOrWebDriverException(() -> {
             switch (searchStrategy) {
@@ -68,8 +80,17 @@ public class AbstractElementFinder {
         });
     }
 
+
+    @Deprecated
+    /**
+     * Use {@link AbstractElementFinder#elements(By, com.wiley.autotest.selenium.elements.upgrade.v3.SearchStrategy)}
+     */
+    protected List<WebElement> elements(final By locator, final long timeoutInSeconds) {
+        return elements(locator, SearchStrategy.FIRST_ELEMENTS, timeoutInSeconds);
+    }
+
     protected WebElement element(final By locator) {
-        return getElementOrWebDriverException(() ->  finder.visibleElement(locator));
+        return getElementOrWebDriverException(() -> finder.visibleElement(locator));
     }
 
     protected WebElement element(final By locator, com.wiley.autotest.selenium.elements.upgrade.v3.SearchStrategy strategy) {
@@ -82,10 +103,6 @@ public class AbstractElementFinder {
 
     protected WebElement element(final SearchContext searchContext, final By locator) {
         return getElementOrWebDriverException(() -> waitForVisibilityOfAllElementsLocatedBy(searchContext, locator).get(0));
-    }
-
-    protected List<WebElement> elements(final By locator, final long timeoutInSeconds) {
-        return elements(locator, SearchStrategy.FIRST_ELEMENTS, timeoutInSeconds);
     }
 
     protected List<WebElement> elements(final SearchContext searchContext, final By locator) {
@@ -228,7 +245,9 @@ public class AbstractElementFinder {
         errorMessage.append(Character.toUpperCase(splitName[0].charAt(0))).append(splitName[0].substring(1));
         for (int i = 1; i < splitName.length; i++) {
             //make first letter of each of next words lower cased
-            errorMessage.append(" ").append(Character.toLowerCase(splitName[i].charAt(0))).append(splitName[i].substring(1));
+            errorMessage.append(" ")
+                    .append(Character.toLowerCase(splitName[i].charAt(0)))
+                    .append(splitName[i].substring(1));
         }
 
         return errorMessage.toString() + " failed";
@@ -300,20 +319,28 @@ public class AbstractElementFinder {
         return elementFinder.findElementsBy(locator);
     }
 
-    protected final void waitForWindowToBeAppearedAndSwitchToIt(final String title) {
-        windowOrWebDriverException(title, () -> {
-            waitWindowIsAppearInChrome();
-            elementFinder.waitForWindowToBeAppearedAndSwitchToIt(title);
-        });
-    }
-
     protected final void waitForWindowToBeAppearedByPartialUrlAndSwitchToIt(final String url, long timeoutInSeconds) {
         waitWindowIsAppearInChrome();
         elementFinder.waitForWindowToBeAppearedByPartialUrlAndSwitchToIt(url, timeoutInSeconds);
     }
 
+    private void windowOrFail(String title, Actions action) {
+        try {
+            action.execute();
+        } catch (WebDriverException e) {
+            fail("Unable to locate window with '" + title + "'");
+        }
+    }
+
+    protected final void waitForWindowToBeAppearedAndSwitchToIt(final String title) {
+        windowOrFail(title, () -> {
+            waitWindowIsAppearInChrome();
+            elementFinder.waitForWindowToBeAppearedAndSwitchToIt(title);
+        });
+    }
+
     protected final void waitForWindowToBeAppearedByPartialUrlAndSwitchToIt(final String url) {
-        windowOrWebDriverException(url, () -> {
+        windowOrFail(url, () -> {
             waitWindowIsAppearInChrome();
             elementFinder.waitForWindowToBeAppearedByPartialUrlAndSwitchToIt(url);
 
@@ -321,7 +348,7 @@ public class AbstractElementFinder {
     }
 
     protected final void waitForWindowToBeAppearedByPartialTitleAndSwitchToIt(final String partialTitle) {
-        windowOrWebDriverException(partialTitle, () -> {
+        windowOrFail(partialTitle, () -> {
             waitWindowIsAppearInChrome();
             elementFinder.waitForWindowToBeAppearedByPartialTitleAndSwitchToIt(partialTitle);
         });
@@ -335,6 +362,7 @@ public class AbstractElementFinder {
         return elementFinder.waitForPresenceOfElementLocatedBy(locator, timeOutInSeconds);
     }
 
+    @Deprecated
     /**
      * Use {@link AbstractElementFinder#domElement(By)}
      */
@@ -342,11 +370,11 @@ public class AbstractElementFinder {
         return getElementOrWebDriverException(() -> waitForPresenceOfElementLocatedBy(locator), errorMessage);
     }
 
+    @Deprecated
     /**
      * Use element/select/textField/checkBox - when you need VISIBLE element
      * Use domElement - when you need element which is PRESENT IN DOM
      */
-    @Deprecated
     protected final WebElement waitForPresenceOfElementLocatedBy(final By locator, long timeOutInSeconds, final String errorMessage) {
         return getElementOrWebDriverException(() -> waitForPresenceOfElementLocatedBy(locator, timeOutInSeconds), errorMessage);
     }
@@ -447,18 +475,34 @@ public class AbstractElementFinder {
         }
     }
 
+    @Deprecated
+    /**
+     * Use {@link com.wiley.autotest.selenium.elements.upgrade.v3.OurShould#haveAttribute(String, String)}
+     */
     protected final void waitForElementContainsAttribute(final WebElement element, final String attributeName) {
         elementFinder.waitForElementContainsAttribute(element, attributeName);
     }
 
+    @Deprecated
+    /**
+     * Use {@link com.wiley.autotest.selenium.elements.upgrade.v3.OurShould#haveAttribute(String, String)}
+     */
     protected final void waitForElementContainsAttribute(final WebElement element, final String attributeName, long timeOutInSeconds) {
         elementFinder.waitForElementContainsAttribute(element, attributeName, timeOutInSeconds);
     }
 
+    @Deprecated
+    /**
+     * Use {@link com.wiley.autotest.selenium.elements.upgrade.v3.OurShould#notHaveAttribute(String)}}
+     */
     protected final void waitForElementNotContainsAttribute(final WebElement element, final String attributeName) {
         elementFinder.waitForElementNotContainsAttribute(element, attributeName);
     }
 
+    @Deprecated
+    /**
+     * Use {@link com.wiley.autotest.selenium.elements.upgrade.v3.OurShould#notHaveAttribute(String)}}
+     */
     protected final void waitForElementNotContainsAttribute(final WebElement element, final String attributeName, long timeOutInSeconds) {
         elementFinder.waitForElementNotContainsAttribute(element, attributeName, timeOutInSeconds);
     }
@@ -471,6 +515,8 @@ public class AbstractElementFinder {
         elementFinder.switchToLastWindow();
     }
 
+    @Deprecated
+    //TODO VE: should be removed from framework
     public void waitUntilOnlyOneWindowIsOpen(String errorMessage) {
         try {
             elementFinder.waitUntilOnlyOneWindowIsOpen();
@@ -519,25 +565,11 @@ public class AbstractElementFinder {
             fail(generateErrorMessage());
         } catch (WebDriverException wde) {
             LOGGER.error(loggerMessage, wde);
-            fail((errorMessage.isEmpty() ? generateErrorMessage() : errorMessage) + "\nException: " + wde.getMessage() + "\nStackTrace: " + Arrays.toString(wde.getStackTrace()));
+            fail((errorMessage.isEmpty() ? generateErrorMessage() : errorMessage)
+                    + "\nException: " + wde.getMessage()
+                    + "\nStackTrace: " + Arrays.toString(wde.getStackTrace()));
         }
         return null;
-    }
-
-    private void windowOrWebDriverException(String title, Actions action) {
-        try {
-            action.execute();
-        } catch (WebDriverException e) {
-            fail("Unable to locate window with '" + title + "'");
-        }
-    }
-
-    private <T extends Element> T getElementOrException(Supplier<T> elementSupplier) {
-        try {
-            return elementSupplier.get();
-        } catch (Exception e) {
-            return null;
-        }
     }
 
     private OurElementFinder customFinder(com.wiley.autotest.selenium.elements.upgrade.v3.SearchStrategy strategy) {
@@ -642,17 +674,10 @@ public class AbstractElementFinder {
     }
 
 
-
     protected final Alert alert() {
         return elementFinder.waitForAlert();
     }
 
-
-    private class UnsupportedConditionException extends RuntimeException {
-        public UnsupportedConditionException(String message) {
-            super(message);
-        }
-    }
 
     private <T extends Element> T getElement(Class<T> elementType, By by) {
         try {
@@ -688,22 +713,6 @@ public class AbstractElementFinder {
         elementFinder = new WebDriverAwareElementFinder(driver, new WebDriverWait(driver, timeout, SLEEP_IN_MILLISECONDS));
     }
 
-    private void waitForAbsenceOfElementLocatedBy(final By locator) {
-        elementFinder.waitForAbsenceOfElementLocatedBy(locator);
-    }
-
-    private void waitForAbsenceOfElementLocatedBy(final By locator, long timeoutInSec) {
-        elementFinder.waitForAbsenceOfElementLocatedBy(locator, timeoutInSec);
-    }
-
-    private void waitForElementToBeClickable(final WebElement element) {
-        elementFinder.waitForElementToBeClickable(element);
-    }
-
-
-    protected final String waitForNewPopUpWindow(Set<String> windowHandles) {
-        return elementFinder.waitForNewPopUpWindow(windowHandles);
-    }
 
     protected final void closeBrowserWindow() {
         elementFinder.closeCurrentBrowserWindow();
@@ -713,6 +722,18 @@ public class AbstractElementFinder {
         elementFinder.waitForPageToLoad();
     }
 
+
+    // OLD code that is going to be removed by September 2017.
+    // Currently kept to give users some time to switch to new implementation
+
+
+
+    @Deprecated
+    // Implement in your project if you need it. This method will be deleted
+    // TODO VE: remove from framework
+    protected final String waitForNewPopUpWindow(Set<String> windowHandles) {
+        return elementFinder.waitForNewPopUpWindow(windowHandles);
+    }
 
     @Deprecated
     /**
@@ -772,10 +793,10 @@ public class AbstractElementFinder {
                 break;
             }
             case PRESENT_IN_DOM: {
-                throw new UnsupportedConditionException("PRESENT_IN_DOM condition is not applicable for Element.");
+                throw new RuntimeException("PRESENT_IN_DOM condition is not applicable for Element.");
             }
             case ABSENT_IN_DOM: {
-                throw new UnsupportedConditionException("ABSENT_IN_DOM condition is not applicable for Element. Use STALE instead.");
+                throw new RuntimeException("ABSENT_IN_DOM condition is not applicable for Element. Use STALE instead.");
             }
             case STALE: {
                 waitForStalenessOf(element);
@@ -805,18 +826,18 @@ public class AbstractElementFinder {
                 break;
             }
             case NOT_VISIBLE: {
-                throw new UnsupportedConditionException("Please use different implementation from OurWaitFor");
+                throw new RuntimeException("Please use different implementation from OurWaitFor");
             }
             case PRESENT_IN_DOM: {
                 waitForPresenceOfElementLocatedBy(locator);
                 break;
             }
             case ABSENT_IN_DOM: {
-                waitForAbsenceOfElementLocatedBy(locator, params.getTimeout());
+                elementFinder.waitForAbsenceOfElementLocatedBy(locator, params.getTimeout());
                 break;
             }
             case STALE: {
-                throw new UnsupportedConditionException("STALE condition is not applicable for By. It is only applicable for existing WebElement");
+                throw new RuntimeException("STALE condition is not applicable for By. It is only applicable for existing WebElement");
             }
         }
     }
@@ -934,7 +955,7 @@ public class AbstractElementFinder {
      */
     protected final void waitForElementToBeClickable(final WebElement element, final String errorMessage) {
         try {
-            waitForElementToBeClickable(element);
+            elementFinder.waitForElementToBeClickable(element);
         } catch (WebDriverException e) {
             fail(errorMessage);
         }
@@ -1042,17 +1063,13 @@ public class AbstractElementFinder {
         return elementFinder.waitForTextToBePresentIn(element);
     }
 
-    private WebElement waitForElementToBeClickable(final By locator) {
-        return wrap(elementFinder.waitForElementToBeClickable(locator), locator);
-    }
-
     @Deprecated
     /**
      * use {@link OurWaitFor#clickable()}
      */
     protected final WebElement waitForElementToBeClickable(final By locator, final String errorMessage) {
         try {
-            return waitForElementToBeClickable(locator);
+            return wrap(elementFinder.waitForElementToBeClickable(locator), locator);
         } catch (WebDriverException e) {
             fail(errorMessage);
         }

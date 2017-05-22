@@ -10,7 +10,7 @@ public class SearchStrategy {
     public int timeoutInSeconds;
     public int poolingEvery = 0;
     public TimeUnit unit = TimeUnit.SECONDS;
-    public FrameStrategy frameStrategy;
+    public FrameStrategy frameStrategy = FrameStrategy.FIRST_ELEMENTS;
 
     //flag showing that null should be returned instead of failing
     public boolean nullOnFailure = false;
@@ -31,6 +31,11 @@ public class SearchStrategy {
         return this;
     }
 
+    public SearchStrategy frameStrategy(FrameStrategy frameStrategy) {
+        this.frameStrategy = frameStrategy;
+        return this;
+    }
+
     public SearchStrategy nullOnFailure() {
         this.nullOnFailure = true;
         return this;
@@ -46,6 +51,14 @@ public class SearchStrategy {
 
     public TimeUnit getUnit() {
         return unit;
+    }
+
+    public FrameStrategy getFrameStrategy() {
+        return frameStrategy;
+    }
+
+    public boolean isNullOnFailure() {
+        return nullOnFailure;
     }
 
     public enum FrameStrategy {

@@ -19,39 +19,19 @@ public final class SeleniumHolder {
     private static String browser;
     private static final ThreadLocal<WebDriver> driverHolder = new ThreadLocal<>();
     private static final ThreadLocal<String> driverName = new ThreadLocal<>();
-    private static final ThreadLocal<String> parameterBrowserName = new ThreadLocal<String>() {
-        @Override
-        protected String initialValue() {
-            return "browser";
-        }
-    };
-    private static final ThreadLocal<String> parameterPlatformName = new ThreadLocal<String>() {
-        @Override
-        protected String initialValue() {
-            return "platform";
-        }
-    };
+    private static final ThreadLocal<String> parameterBrowserName = ThreadLocal.withInitial(() -> "browser");
+    private static final ThreadLocal<String> parameterPlatformName = ThreadLocal.withInitial(() -> "platform");
     private static final ThreadLocal<ProxyServer> proxyServer = new ThreadLocal<>();
     private static final ThreadLocal<Proxy> proxy = new ThreadLocal<>();
     private static final ThreadLocal<String> platform = new ThreadLocal<>();
     private static final ThreadLocal<String> mainWindowHandle = new ThreadLocal<>();
-    private static final ThreadLocal<String> nodeIp = new ThreadLocal<String>() {
-        @Override
-        protected String initialValue() {
-            return "localhost";
-        }
-    };
+    private static final ThreadLocal<String> nodeIp = ThreadLocal.withInitial(() -> "localhost");
     private static final ThreadLocal<SessionId> sessionId = new ThreadLocal<>();
     private static String ourWebElementClass;
     private static final ThreadLocal<AppiumDriver> appiumDriver = new ThreadLocal<>();
     private static final ThreadLocal<IOSDriver> iosDriverHolder = new ThreadLocal<>();
     private static final ThreadLocal<AndroidDriver> androidDriverHolder = new ThreadLocal<>();
-    private static final ThreadLocal<List<String>> activeProfilesList = new ThreadLocal<List<String>>() {
-        @Override
-        protected List<String> initialValue() {
-            return new ArrayList<>();
-        }
-    };
+    private static final ThreadLocal<List<String>> activeProfilesList = ThreadLocal.withInitial(() -> new ArrayList<>());
     private static final ThreadLocal<String> platformName = new ThreadLocal<String>();
 
     /**

@@ -45,6 +45,9 @@ public class OurShould {
     public void haveAttribute(String attributeName, String value) {
         waitFor((element) -> element.getAttribute(attributeName).equals(value));
     }
+    public void notHaveAttribute(String attributeName) {
+        waitFor((element) -> element.getAttribute(attributeName).equals(null));
+    }
 
 
     public void customCondition(Function<WebElement, Boolean> condition) {

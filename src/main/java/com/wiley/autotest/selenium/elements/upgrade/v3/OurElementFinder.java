@@ -10,12 +10,16 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrap;
-import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrapList;;
+import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrapList;
+
+;
 
 /**
  * Created by vefimov on 03/05/2017.
  */
 public class OurElementFinder {
+
+    private SearchStrategy strategy;
 
     private FluentWaitFinder fluentWait;
 
@@ -25,6 +29,7 @@ public class OurElementFinder {
 
     public OurElementFinder(WebDriver driver, SearchStrategy strategy) {
         this(driver);
+        this.strategy = strategy;
         fluentWait.withTimeout(strategy.getTimeout(), TimeUnit.SECONDS);
         fluentWait.pollingEvery(strategy.getPoolingEvery(), strategy.getUnit());
     }
@@ -36,7 +41,14 @@ public class OurElementFinder {
 
     public List<WebElement> visibleElements(By locator) {
         //todo name of condition should be different (currently we return as soon as there is at least 1 visible element but not ALL)
-        return wrapList(fluentWait.waitFor(ExpectedConditions2.visibilityOfAllElementsLocatedBy(locator)), locator);
+        switch (strategy.getFrameStrategy()) {
+            case FIRST_ELEMENTS:
+                return wrapList(fluentWait.waitFor(ExpectedConditions2.visibilityOfAllElementsLocatedBy(locator)), locator);
+            case IN_ALL_FRAMES:
+                return wrapList(fluentWait.waitFor(ExpectedConditions2.visibilityOfAllElementsLocatedByInFrames(locator)), locator);
+        }
+        throw new EnumConstantNotPresentException(strategy.getFrameStrategy()
+                .getDeclaringClass(), " enum constant is not recognized. Select from FIRST_ELEMENTS or IN_ALL_FRAMES.");
     }
 
     public WebElement presentInDomElement(By locator) {
@@ -44,7 +56,14 @@ public class OurElementFinder {
     }
 
     public List<WebElement> presentInDomElements(By locator) {
-        return wrapList(fluentWait.waitFor(ExpectedConditions.presenceOfAllElementsLocatedBy(locator)), locator);
+        switch (strategy.getFrameStrategy()) {
+            case FIRST_ELEMENTS:
+                return wrapList(fluentWait.waitFor(ExpectedConditions.presenceOfAllElementsLocatedBy(locator)), locator);
+            case IN_ALL_FRAMES:
+                return wrapList(fluentWait.waitFor(ExpectedConditions2.presenceOfAllElementsLocatedByInFrames(locator)), locator);
+        }
+        throw new EnumConstantNotPresentException(strategy.getFrameStrategy()
+                .getDeclaringClass(), " enum constant is not recognized. Select from FIRST_ELEMENTS or IN_ALL_FRAMES.");
     }
 
 }
