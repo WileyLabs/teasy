@@ -46,7 +46,7 @@ public class OurShould {
         waitFor((element) -> element.getAttribute(attributeName).equals(value));
     }
     public void notHaveAttribute(String attributeName) {
-        waitFor((element) -> element.getAttribute(attributeName).equals(null));
+        waitFor((element) -> element.getAttribute(attributeName) == null);
     }
 
 

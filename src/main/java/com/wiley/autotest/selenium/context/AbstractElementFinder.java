@@ -33,7 +33,7 @@ import static com.wiley.autotest.utils.ExecutionUtils.isSafari;
  * Date: 15.02.12
  * Time: 13:02
  */
-public class AbstractElementFinder {
+public abstract class AbstractElementFinder {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(AbstractElementFinder.class);
 
@@ -45,6 +45,11 @@ public class AbstractElementFinder {
     private static final int MIN_TIME_OUT_FOR_WAIT_IN_SECONDS = 1;
     //VE added this to avoid No buffer space available exception. To be replaced with default value of 500 if does not work.
     protected static final long SLEEP_IN_MILLISECONDS = 1000;
+
+
+    private OurElementFinder customFinder(com.wiley.autotest.selenium.elements.upgrade.v3.SearchStrategy strategy) {
+        return new OurElementFinder(getWebDriver(), strategy);
+    }
 
 
     @Deprecated
@@ -571,11 +576,6 @@ public class AbstractElementFinder {
         }
         return null;
     }
-
-    private OurElementFinder customFinder(com.wiley.autotest.selenium.elements.upgrade.v3.SearchStrategy strategy) {
-        return new OurElementFinder(getWebDriver(), strategy);
-    }
-
 
     protected Button button(By locator) {
         return getElement(Button.class, locator);

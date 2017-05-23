@@ -142,6 +142,13 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         return ReportAnnotationsWrapperCreator.getReportingProxy(target, helper);
     }
 
+    protected final <E extends IComponent> E getHelper(final Class<E> target, final ComponentProvider componentProvider) {
+        final E helper = getRegistry().getComponentHelper(target);
+        helper.init(getDriver(), screenshotHelper);
+        helper.setComponentProvider(componentProvider);
+        return helper;
+    }
+
     protected final <E extends IPage> E navigateTo(final Class<E> target, final String url) {
         getDriver().get(url);
         getDriver().manage().getCookies().forEach(cookie -> reportWithStep(cookie.toString()));
@@ -154,12 +161,6 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         return component;
     }
 
-    protected final <E extends IComponent> E getHelper(final Class<E> target, final ComponentProvider componentProvider) {
-        final E helper = getRegistry().getComponentHelper(target);
-        helper.init(getDriver(), screenshotHelper);
-        helper.setComponentProvider(componentProvider);
-        return helper;
-    }
 
     protected final String getCurrentUrl() {
         return driver.getCurrentUrl();
