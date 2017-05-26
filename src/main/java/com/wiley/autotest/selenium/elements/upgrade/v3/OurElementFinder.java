@@ -1,14 +1,10 @@
 package com.wiley.autotest.selenium.elements.upgrade.v3;
 
-import com.wiley.autotest.ExpectedConditions2;
 import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.OurConditionFactory;
-import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.OurConditionStrategy;
 import org.openqa.selenium.By;
 import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -54,22 +50,26 @@ public class OurElementFinder {
     }
 
     public WebElement visibleElement(By locator) {
-        Function<WebDriver, List<WebElement>> condition = new OurConditionFactory(context).get(strategy.getFrameStrategy()).visibility(locator);
+        Function<WebDriver, List<WebElement>> condition = new OurConditionFactory(context).get(strategy.getFrameStrategy())
+                .visibility(locator);
         return wrap(fluentWait.waitFor(condition).get(0), locator);
     }
 
     public List<WebElement> visibleElements(By locator) {
-        Function<WebDriver, List<WebElement>> condition = new OurConditionFactory(context).get(strategy.getFrameStrategy()).visibility(locator);
+        Function<WebDriver, List<WebElement>> condition = new OurConditionFactory(context).get(strategy.getFrameStrategy())
+                .visibility(locator);
         return wrapList(fluentWait.waitFor(condition), locator);
     }
 
     public WebElement presentInDomElement(By locator) {
-        Function<WebDriver, List<WebElement>> condition = new OurConditionFactory(context).get(strategy.getFrameStrategy()).presence(locator);
+        Function<WebDriver, List<WebElement>> condition = new OurConditionFactory(context).get(strategy.getFrameStrategy())
+                .presence(locator);
         return wrap(fluentWait.waitFor(condition).get(0), locator);
     }
 
     public List<WebElement> presentInDomElements(By locator) {
-        Function<WebDriver, List<WebElement>> condition = new OurConditionFactory(context).get(strategy.getFrameStrategy()).presence(locator);
+        Function<WebDriver, List<WebElement>> condition = new OurConditionFactory(context).get(strategy.getFrameStrategy())
+                .presence(locator);
         return wrapList(fluentWait.waitFor(condition), locator);
 
     }
