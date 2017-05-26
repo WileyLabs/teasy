@@ -3,6 +3,7 @@ package com.wiley.autotest.selenium.elements.upgrade;
 import com.wiley.autotest.ElementFinder;
 import com.wiley.autotest.WebDriverAwareElementFinder;
 import com.wiley.autotest.selenium.SeleniumHolder;
+import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
 import com.wiley.autotest.selenium.elements.upgrade.v3.OurElementFinder;
 import com.wiley.autotest.selenium.elements.upgrade.v3.OurSearchStrategy;
 import com.wiley.autotest.selenium.elements.upgrade.v3.OurShould;
@@ -20,7 +21,6 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrap;
@@ -299,18 +299,12 @@ public class OurWebElement implements IOurWebElement, Locatable {
 
     @Override
     public WebElement findElement(By by) {
-        return wrap(this, find(by), by);
+        return find(by);
     }
 
     @Override
     public List<WebElement> findElements(By by) {
-        List<WebElement> elements = finds(by);
-        List<WebElement> result = new ArrayList<>(elements.size());
-        for (int i = 0; i < elements.size(); i++) {
-            WebElement element = elements.get(i);
-            result.add(wrap(this, element, by, i));
-        }
-        return result;
+        return finds(by);
     }
 
     @Override
@@ -509,7 +503,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
         try {
             //for catch stale element
             isEnabled();
-            return wrappedElement.findElements(by);
+            return (getFrameTransparentDriver()).findElements(this, by);
         } catch (StaleElementReferenceException e) {
             againLocate();
             return finds(by);
@@ -517,10 +511,9 @@ public class OurWebElement implements IOurWebElement, Locatable {
             //This checks for findElementByNoThrow, otherwise we call againLocate
             if (((InvocationTargetException) e.getUndeclaredThrowable()).getTargetException() instanceof NoSuchElementException) {
                 try {
-                    return wrappedElement.findElements(by);
+                    return (getFrameTransparentDriver()).findElements(this, by);
                 } catch (UndeclaredThrowableException noSuchElementException) {
-                    throw new NoSuchElementException("Unable to find elements " + by.toString() + ", Exception - " + ((InvocationTargetException) noSuchElementException
-                            .getUndeclaredThrowable()).getTargetException().getMessage());
+                    throw new NoSuchElementException("Unable to find elements " + by.toString() + ", Exception - " + ((InvocationTargetException) noSuchElementException.getUndeclaredThrowable()).getTargetException().getMessage());
                 }
             }
             againLocate();
@@ -532,7 +525,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
         try {
             //for catch stale element
             isEnabled();
-            return wrappedElement.findElement(by);
+            return (getFrameTransparentDriver()).findElement(this, by);
         } catch (StaleElementReferenceException e) {
             againLocate();
             return find(by);
@@ -540,16 +533,15 @@ public class OurWebElement implements IOurWebElement, Locatable {
             //This checks for findElementByNoThrow, otherwise we call againLocate
             if (((InvocationTargetException) e.getUndeclaredThrowable()).getTargetException() instanceof NoSuchElementException) {
                 try {
-                    return wrappedElement.findElement(by);
+                    return getFrameTransparentDriver().findElement(this, by);
                 } catch (UndeclaredThrowableException noSuchElementException) {
-                    throw new NoSuchElementException("Unable to find element " + by.toString() + ", Exception - " + ((InvocationTargetException) noSuchElementException
-                            .getUndeclaredThrowable()).getTargetException().getMessage());
+                    throw new NoSuchElementException("Unable to find element " + by.toString() + ", Exception - " + ((InvocationTargetException) noSuchElementException.getUndeclaredThrowable()).getTargetException().getMessage());
                 }
             }
             againLocate();
             return find(by);
         } catch (NoSuchElementException e) {
-            return wrappedElement.findElement(by);
+            return (getFrameTransparentDriver()).findElement(this, by);
         } catch (WebDriverException e) {
             againLocate();
             return find(by);
@@ -562,5 +554,9 @@ public class OurWebElement implements IOurWebElement, Locatable {
         } else {
             return (WebElement) ((JavascriptExecutor) getDriver()).executeScript("return arguments[0].parentNode", element);
         }
+    }
+
+    private FramesTransparentWebDriver getFrameTransparentDriver() {
+        return (FramesTransparentWebDriver) getDriver();
     }
 }

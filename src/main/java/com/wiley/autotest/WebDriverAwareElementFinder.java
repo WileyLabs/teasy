@@ -2,7 +2,6 @@ package com.wiley.autotest;
 
 import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
 import com.wiley.autotest.selenium.elements.TextField;
-import com.wiley.autotest.utils.TestUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -342,8 +341,6 @@ public class WebDriverAwareElementFinder implements ElementFinder {
     }
 
     private <T> T waitFor(final ExpectedCondition<T> condition) {
-        //TODO workaround for wait to load page
-        TestUtils.waitForSomeTime(3000, "");
         return wait.pollingEvery(POOLLING_EVERY_DURATION_IN_SEC, TimeUnit.SECONDS).until(condition);
     }
 
