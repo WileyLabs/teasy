@@ -17,7 +17,23 @@ public class OurWebElementData {
     private Integer index;
     private Locator locator;
 
-    public OurWebElementData() {
+    public OurWebElementData(WebElement element) {
+        this.element = element;
+    }
+
+    public OurWebElementData(WebElement element, By by) {
+        this(element);
+        this.by = by;
+    }
+
+    public OurWebElementData(SearchContext context, WebElement element, By by) {
+        this(element, by);
+        this.searchContext = context;
+    }
+
+    public OurWebElementData(SearchContext context, WebElement element, By by, int index) {
+        this(context, element, by);
+        this.index = index;
     }
 
     public WebElement getElement() {

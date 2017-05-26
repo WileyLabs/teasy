@@ -75,7 +75,7 @@ public class FindOrWaitElementLocator implements ElementLocator {
     }
 
     private NoSuchElementException noSuchElementException() {
-        return new NoSuchElementException("Unable to locate element using " + by);
+        return new NoSuchElementException("Unable to find element using " + by);
     }
 
     private void initConditionForWaitAnnotations(final Field field) {

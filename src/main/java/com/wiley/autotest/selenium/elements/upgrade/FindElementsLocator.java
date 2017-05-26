@@ -22,16 +22,16 @@ public class FindElementsLocator implements Locator {
     }
 
     @Override
-    public WebElement locate() {
+    public WebElement find() {
         try {
             return searchContext.findElements(by).get(index);
         } catch (IndexOutOfBoundsException e) {
-            throw new NoSuchElementException("Unable to locate element " + by + ", Exception - " + e);
+            throw new NoSuchElementException("Unable to find element " + by + ", Exception - " + e);
         }
     }
 
     @Override
-    public By getByLocator() {
+    public By getLocator() {
         return by;
     }
 }

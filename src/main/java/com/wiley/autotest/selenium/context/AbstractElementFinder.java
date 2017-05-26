@@ -5,6 +5,7 @@ import com.wiley.autotest.WebDriverAwareElementFinder;
 import com.wiley.autotest.actions.Actions;
 import com.wiley.autotest.selenium.elements.*;
 import com.wiley.autotest.selenium.elements.upgrade.v3.OurElementFinder;
+import com.wiley.autotest.selenium.elements.upgrade.v3.OurSearchStrategy;
 import com.wiley.autotest.selenium.elements.upgrade.v3.OurWaitFor;
 import com.wiley.autotest.utils.TestUtils;
 import org.openqa.selenium.*;
@@ -47,91 +48,48 @@ public abstract class AbstractElementFinder {
     protected static final long SLEEP_IN_MILLISECONDS = 1000;
 
 
-    private OurElementFinder customFinder(com.wiley.autotest.selenium.elements.upgrade.v3.SearchStrategy strategy) {
+    private OurElementFinder customFinder(OurSearchStrategy strategy) {
         return new OurElementFinder(getWebDriver(), strategy);
-    }
-
-
-    @Deprecated
-    /**
-     * Use {@link AbstractElementFinder#elements(By, com.wiley.autotest.selenium.elements.upgrade.v3.SearchStrategy)}
-     */
-    protected List<WebElement> elements(final By locator, SearchStrategy searchStrategy, final long timeoutInSeconds) {
-        return getElementsOrWebDriverException(() -> {
-            switch (searchStrategy) {
-                case FIRST_ELEMENTS:
-                    return waitForVisibilityOfAllElementsLocatedBy(locator, timeoutInSeconds);
-                case IN_ALL_FRAMES:
-                    return waitForVisibilityOfAllElementsLocatedByInFrames(locator, timeoutInSeconds);
-            }
-            throw new EnumConstantNotPresentException(searchStrategy.getDeclaringClass(), " enum constant is not recognized");
-        });
-    }
-
-
-    @Deprecated
-    /**
-     * Use {@link AbstractElementFinder#elements(By, com.wiley.autotest.selenium.elements.upgrade.v3.SearchStrategy)}
-     */
-    protected List<WebElement> elements(final By locator, SearchStrategy searchStrategy) {
-        return getElementsOrWebDriverException(() -> {
-            switch (searchStrategy) {
-                case FIRST_ELEMENTS:
-                    return waitForVisibilityOfAllElementsLocatedBy(locator);
-                case IN_ALL_FRAMES:
-                    return waitForVisibilityOfAllElementsLocatedByInFrames(locator);
-            }
-            throw new EnumConstantNotPresentException(searchStrategy.getDeclaringClass(), " enum constant is not recognized");
-        });
-    }
-
-
-    @Deprecated
-    /**
-     * Use {@link AbstractElementFinder#elements(By, com.wiley.autotest.selenium.elements.upgrade.v3.SearchStrategy)}
-     */
-    protected List<WebElement> elements(final By locator, final long timeoutInSeconds) {
-        return elements(locator, SearchStrategy.FIRST_ELEMENTS, timeoutInSeconds);
     }
 
     protected WebElement element(final By locator) {
         return getElementOrWebDriverException(() -> finder.visibleElement(locator));
     }
 
-    protected WebElement element(final By locator, com.wiley.autotest.selenium.elements.upgrade.v3.SearchStrategy strategy) {
+    protected WebElement element(final By locator, OurSearchStrategy strategy) {
         return customFinder(strategy).visibleElement(locator);
     }
 
-    protected WebElement element(final By locator, final long timeoutInSeconds) {
-        return getElementOrWebDriverException(() -> waitForVisibilityOfAllElementsLocatedBy(locator, timeoutInSeconds).get(0));
-    }
-
+    @Deprecated
+    /**
+     * use element().element() methods call chain
+     */
     protected WebElement element(final SearchContext searchContext, final By locator) {
         return getElementOrWebDriverException(() -> waitForVisibilityOfAllElementsLocatedBy(searchContext, locator).get(0));
-    }
-
-    protected List<WebElement> elements(final SearchContext searchContext, final By locator) {
-        return getElementsOrWebDriverException(() -> waitForVisibilityOfAllElementsLocatedBy(searchContext, locator));
     }
 
     protected List<WebElement> elements(final By locator) {
         return finder.visibleElements(locator);
     }
 
-    protected List<WebElement> elements(final By locator, com.wiley.autotest.selenium.elements.upgrade.v3.SearchStrategy strategy) {
+    protected List<WebElement> elements(final By locator, OurSearchStrategy strategy) {
         return customFinder(strategy).visibleElements(locator);
     }
 
-    protected final WebElement elementOrNull(final By locator) {
-        return elementOrNull(locator, 1);
+    @Deprecated
+    /**
+     * use element().elements() methods call chain
+     */
+    protected List<WebElement> elements(final SearchContext searchContext, final By locator) {
+        return getElementsOrWebDriverException(() -> waitForVisibilityOfAllElementsLocatedBy(searchContext, locator));
     }
 
-    protected final WebElement elementOrNull(final By locator, long timeoutInSeconds) {
-        try {
-            return waitForVisibilityOfAllElementsLocatedBy(locator, timeoutInSeconds).get(0);
-        } catch (WebDriverException ignored) {
-            return null;
-        }
+    protected final WebElement elementOrNull(final By locator) {
+        return elementOrNull(locator, new OurSearchStrategy().withTimeout(1).nullOnFailure());
+    }
+
+    protected final WebElement elementOrNull(final By locator, OurSearchStrategy strategy) {
+        return customFinder(strategy).visibleElements(locator).get(0);
     }
 
     protected final WebElement elementOrNull(final SearchContext searchContext, final By locator) {
@@ -142,53 +100,24 @@ public abstract class AbstractElementFinder {
         }
     }
 
-    /**
-     * Use this method when you need element which is present in DOM but you are not sure if it's visible or not
-     * call it from a private getter method on Page
-     * use "inDOM" as a postfix for a method name
-     */
-    protected List<WebElement> domElements(By locator, SearchStrategy searchStrategy, long timeoutInSeconds) {
-        return getDomElementsOrWebDriverException(() -> {
-            switch (searchStrategy) {
-                case FIRST_ELEMENTS:
-                    return waitForPresenceOfAllElementsLocatedBy(locator, timeoutInSeconds);
-                case IN_ALL_FRAMES:
-                    return waitForPresenceOfAllElementsLocatedByInFrames(locator, timeoutInSeconds);
-            }
-            throw new EnumConstantNotPresentException(searchStrategy.getDeclaringClass(), " enum constant is not recognized");
-        });
-    }
-
-    protected List<WebElement> domElements(By locator, SearchStrategy searchStrategy) {
-        return getDomElementsOrWebDriverException(() -> {
-            switch (searchStrategy) {
-                case FIRST_ELEMENTS:
-                    return waitForPresenceOfAllElementsLocatedBy(locator);
-                case IN_ALL_FRAMES:
-                    return waitForPresenceOfAllElementsLocatedByInFrames(locator);
-            }
-            throw new EnumConstantNotPresentException(searchStrategy.getDeclaringClass(), " enum constant is not recognized");
-        });
-    }
-
     protected WebElement domElement(By locator) {
-        return getDomElementOrWebDriverException(() -> finder.presentInDomElement(locator));
+        return finder.presentInDomElement(locator);
     }
 
-    protected WebElement domElement(By locator, final long timeoutInSeconds) {
-        return getDomElementOrWebDriverException(() -> waitForPresenceOfElementLocatedBy(locator, timeoutInSeconds));
+    protected WebElement domElement(By locator, OurSearchStrategy strategy) {
+        return customFinder(strategy).presentInDomElement(locator);
     }
 
     protected WebElement domElement(SearchContext searchContext, By locator) {
-        return getDomElementOrWebDriverException(() -> waitForPresenceOfElementLocatedBy(searchContext, locator));
+        return (WebElement) getSupplierObject(() -> waitForPresenceOfElementLocatedBy(searchContext, locator), "****WebDriverException in domElement()****");
     }
 
     protected List<WebElement> domElements(By locator) {
-        return domElements(locator, SearchStrategy.FIRST_ELEMENTS);
+        return finder.presentInDomElements(locator);
     }
 
-    protected List<WebElement> domElements(By locator, long timeoutInSeconds) {
-        return domElements(locator, SearchStrategy.FIRST_ELEMENTS, timeoutInSeconds);
+    protected List<WebElement> domElements(By locator, OurSearchStrategy strategy) {
+        return customFinder(strategy).presentInDomElements(locator);
     }
 
     protected List<WebElement> domElements(SearchContext searchContext, By locator) {
@@ -258,72 +187,6 @@ public abstract class AbstractElementFinder {
         return errorMessage.toString() + " failed";
     }
 
-    /**
-     * use {@link #elementOrNull(By)}
-     * this method will be removed
-     */
-    @Deprecated
-    protected final WebElement findElementByNoThrow(final By locator) {
-        try {
-            return elementFinder.findElementBy(locator);
-        } catch (WebDriverException e) {
-            //TODO hotfix for safari as it seems that this method does not work correct without timeout
-            if (isSafari()) {
-                TestUtils.waitForSafari();
-                try {
-                    return elementFinder.findElementBy(locator);
-                } catch (WebDriverException ignoreSafari) {
-                    return null;
-                }
-            }
-            return null;
-        }
-    }
-
-    /**
-     * use {@link #elementOrNull(SearchContext, By)}
-     * this method will be removed
-     */
-    @Deprecated
-    protected final WebElement findElementByNoThrow(final SearchContext searchContext, final By locator) {
-        try {
-            return elementFinder.findElementBy(searchContext, locator);
-        } catch (Exception e) {
-            //TODO hotfix for safari as it seems that this method does not work correct without timeout
-            if (isSafari()) {
-                TestUtils.waitForSafari();
-                try {
-                    return elementFinder.findElementBy(searchContext, locator);
-                } catch (Exception ignoreSafari) {
-                    return null;
-                }
-            }
-            return null;
-        }
-    }
-
-    /**
-     * use {@link #elementOrNull(By, long)}
-     * this method will be removed
-     */
-    @Deprecated
-    protected final WebElement waitForElementByNoThrow(final By locator, long timeOutInSeconds) {
-        try {
-            return waitForPresenceOfElementLocatedBy(locator, timeOutInSeconds);
-        } catch (WebDriverException e) {
-            return null;
-        }
-    }
-
-    /**
-     * This method is valid but now it's used in many places incorrectly. All usages should be verified and fixed
-     * then deprecated annotation will be removed
-     */
-    @Deprecated
-    protected final List<WebElement> findElementsBy(final By locator) {
-        return elementFinder.findElementsBy(locator);
-    }
-
     protected final void waitForWindowToBeAppearedByPartialUrlAndSwitchToIt(final String url, long timeoutInSeconds) {
         waitWindowIsAppearInChrome();
         elementFinder.waitForWindowToBeAppearedByPartialUrlAndSwitchToIt(url, timeoutInSeconds);
@@ -333,7 +196,7 @@ public abstract class AbstractElementFinder {
         try {
             action.execute();
         } catch (WebDriverException e) {
-            fail("Unable to locate window with '" + title + "'");
+            fail("Unable to find window with '" + title + "'");
         }
     }
 
@@ -357,76 +220,6 @@ public abstract class AbstractElementFinder {
             waitWindowIsAppearInChrome();
             elementFinder.waitForWindowToBeAppearedByPartialTitleAndSwitchToIt(partialTitle);
         });
-    }
-
-    @Deprecated
-    /**
-     * Use {@link AbstractElementFinder#domElement(By, SearchStrategy)}
-     */
-    protected final WebElement waitForPresenceOfElementLocatedBy(final By locator, long timeOutInSeconds) {
-        return elementFinder.waitForPresenceOfElementLocatedBy(locator, timeOutInSeconds);
-    }
-
-    @Deprecated
-    /**
-     * Use {@link AbstractElementFinder#domElement(By)}
-     */
-    protected final WebElement waitForPresenceOfElementLocatedBy(final By locator, final String errorMessage) {
-        return getElementOrWebDriverException(() -> waitForPresenceOfElementLocatedBy(locator), errorMessage);
-    }
-
-    @Deprecated
-    /**
-     * Use element/select/textField/checkBox - when you need VISIBLE element
-     * Use domElement - when you need element which is PRESENT IN DOM
-     */
-    protected final WebElement waitForPresenceOfElementLocatedBy(final By locator, long timeOutInSeconds, final String errorMessage) {
-        return getElementOrWebDriverException(() -> waitForPresenceOfElementLocatedBy(locator, timeOutInSeconds), errorMessage);
-    }
-
-
-    @Deprecated
-    protected List<WebElement> waitForPresenceOfAllElementsLocatedBy(final By locator) {
-        return elementFinder.waitForPresenceOfAllElementsLocatedBy(locator);
-    }
-
-    @Deprecated
-    protected final List<WebElement> waitForPresenceOfAllElementsLocatedBy(final By locator, long timeoutInSeconds) {
-        try {
-            return elementFinder.waitForPresenceOfAllElementsLocatedBy(locator, timeoutInSeconds);
-        } catch (TimeoutException ignored) {
-            return new ArrayList<>();
-        }
-    }
-
-
-    /**
-     * Use elements/selects/textFields/checkBoxes - when you need VISIBLE element
-     * Use domElement - when you need element which is PRESENT IN DOM
-     */
-    @Deprecated
-    protected final List<WebElement> waitForPresenceOfAllElementsLocatedBy(final By locator, String errorMessage) {
-        try {
-            return waitForPresenceOfAllElementsLocatedBy(locator);
-        } catch (TimeoutException e) {
-            fail(errorMessage);
-        }
-        return null;
-    }
-
-    /**
-     * Instead of this method create a 1 line private getter with meaningful name in Page
-     * and call element(By locator) instead of this method. Error message will be automatically generated based on this.
-     * This method will be removed by Jan 2017.
-     */
-    @Deprecated
-    protected final WebElement waitForVisibilityOfElementLocatedBy(final By locator, final String errorMessage) {
-        return getElementOrWebDriverException(() -> waitForVisibilityOfElementLocatedBy(locator), errorMessage);
-    }
-
-    @Deprecated
-    protected final WebElement waitForVisibilityOfElementLocatedBy(final By locator, long timeOutInSeconds) {
-        return elementFinder.waitForVisibilityOfElementLocatedBy(locator, timeOutInSeconds);
     }
 
     private WebElement waitForVisibilityOfElementLocatedBy(final By locator) {
@@ -465,69 +258,12 @@ public abstract class AbstractElementFinder {
         return elementFinder.waitForPresenceOfAllElementsLocatedByInFrames(locator, timeOutInSeconds);
     }
 
-    /**
-     * Instead of this method create a 1 line private getter with meaningful name in Page
-     * and call elements(By locator) instead of this method. Error message will be automatically generated based on this.
-     * This method will be removed by Jan 2017.
-     */
-    @Deprecated
-    protected final List<WebElement> waitForVisibilityOfAllElementsLocatedBy(final By locator, final String errorMessage) {
-        try {
-            return waitForVisibilityOfAllElementsLocatedBy(locator);
-        } catch (WebDriverException e) {
-            fail(errorMessage);
-            return null;
-        }
-    }
-
-    @Deprecated
-    /**
-     * Use {@link com.wiley.autotest.selenium.elements.upgrade.v3.OurShould#haveAttribute(String, String)}
-     */
-    protected final void waitForElementContainsAttribute(final WebElement element, final String attributeName) {
-        elementFinder.waitForElementContainsAttribute(element, attributeName);
-    }
-
-    @Deprecated
-    /**
-     * Use {@link com.wiley.autotest.selenium.elements.upgrade.v3.OurShould#haveAttribute(String, String)}
-     */
-    protected final void waitForElementContainsAttribute(final WebElement element, final String attributeName, long timeOutInSeconds) {
-        elementFinder.waitForElementContainsAttribute(element, attributeName, timeOutInSeconds);
-    }
-
-    @Deprecated
-    /**
-     * Use {@link com.wiley.autotest.selenium.elements.upgrade.v3.OurShould#notHaveAttribute(String)}}
-     */
-    protected final void waitForElementNotContainsAttribute(final WebElement element, final String attributeName) {
-        elementFinder.waitForElementNotContainsAttribute(element, attributeName);
-    }
-
-    @Deprecated
-    /**
-     * Use {@link com.wiley.autotest.selenium.elements.upgrade.v3.OurShould#notHaveAttribute(String)}}
-     */
-    protected final void waitForElementNotContainsAttribute(final WebElement element, final String attributeName, long timeOutInSeconds) {
-        elementFinder.waitForElementNotContainsAttribute(element, attributeName, timeOutInSeconds);
-    }
-
     protected final void setTimeout(final long timeOutInSeconds) {
         elementFinder.setTimeout(timeOutInSeconds);
     }
 
     public void switchToLastWindow() {
         elementFinder.switchToLastWindow();
-    }
-
-    @Deprecated
-    //TODO VE: should be removed from framework
-    public void waitUntilOnlyOneWindowIsOpen(String errorMessage) {
-        try {
-            elementFinder.waitUntilOnlyOneWindowIsOpen();
-        } catch (TimeoutException e) {
-            fail(errorMessage);
-        }
     }
 
     //TODO NT: In chrome test hangs before switch to new window, to avoid this add timeout
@@ -538,21 +274,17 @@ public abstract class AbstractElementFinder {
     }
 
     private WebElement getElementOrWebDriverException(Supplier<WebElement> webElementSupplier) {
-        return (WebElement) getSupplierObject((Supplier) webElementSupplier, (String) "****WebDriverException in element()****");
-    }
-
-    private WebElement getDomElementOrWebDriverException(Supplier<WebElement> webElementSupplier) {
-        return (WebElement) getSupplierObject((Supplier) webElementSupplier, (String) "****WebDriverException in domElement()****");
+        return (WebElement) getSupplierObject(webElementSupplier, "****WebDriverException in element()****");
     }
 
     @SuppressWarnings("unchecked")
     private List<WebElement> getElementsOrWebDriverException(Supplier<List<WebElement>> webElementsSupplier) {
-        return (List<WebElement>) getSupplierObject((Supplier) webElementsSupplier, (String) "****WebDriverException in elements()****");
+        return (List<WebElement>) getSupplierObject(webElementsSupplier, "****WebDriverException in elements()****");
     }
 
     @SuppressWarnings("unchecked")
     private List<WebElement> getDomElementsOrWebDriverException(Supplier<List<WebElement>> webElementsSupplier) {
-        return (List<WebElement>) getSupplierObject((Supplier) webElementsSupplier, (String) "****WebDriverException in domElements()****");
+        return (List<WebElement>) getSupplierObject(webElementsSupplier, "****WebDriverException in domElements()****");
     }
 
     private Object getSupplierObject(Supplier webElementSupplier, String loggerMessage) {
@@ -727,6 +459,284 @@ public abstract class AbstractElementFinder {
     // Currently kept to give users some time to switch to new implementation
 
 
+    @Deprecated
+    /**
+     * Use {@link AbstractElementFinder#domElement(By, OurSearchStrategy)}
+     */
+    protected WebElement domElement(By locator, final long timeoutInSeconds) {
+        return (WebElement) getSupplierObject(() -> waitForPresenceOfElementLocatedBy(locator, timeoutInSeconds), "****WebDriverException in domElement()****");
+    }
+
+    @Deprecated
+    /**
+     * Use {@link AbstractElementFinder#element(By, OurSearchStrategy)}
+     */
+    protected final WebElement elementOrNull(final By locator, long timeoutInSeconds) {
+        try {
+            return waitForVisibilityOfAllElementsLocatedBy(locator, timeoutInSeconds).get(0);
+        } catch (WebDriverException ignored) {
+            return null;
+        }
+    }
+
+    @Deprecated
+    /**
+     * Use {@link AbstractElementFinder#domElements(By, OurSearchStrategy)}
+     */
+    protected List<WebElement> domElements(By locator, long timeoutInSeconds) {
+        return domElements(locator, SearchStrategy.FIRST_ELEMENTS, timeoutInSeconds);
+    }
+
+    @Deprecated
+    /**
+     * Use {@link AbstractElementFinder#domElements(By, OurSearchStrategy)}
+     */
+    protected List<WebElement> domElements(By locator, SearchStrategy searchStrategy, long timeoutInSeconds) {
+        return getDomElementsOrWebDriverException(() -> {
+            switch (searchStrategy) {
+                case FIRST_ELEMENTS:
+                    return waitForPresenceOfAllElementsLocatedBy(locator, timeoutInSeconds);
+                case IN_ALL_FRAMES:
+                    return waitForPresenceOfAllElementsLocatedByInFrames(locator, timeoutInSeconds);
+            }
+            throw new EnumConstantNotPresentException(searchStrategy.getDeclaringClass(), " enum constant is not recognized");
+        });
+    }
+
+    @Deprecated
+    /**
+     * Use {@link AbstractElementFinder#domElements(By)}
+     */
+    protected List<WebElement> domElements(By locator, SearchStrategy searchStrategy) {
+        return getDomElementsOrWebDriverException(() -> {
+            switch (searchStrategy) {
+                case FIRST_ELEMENTS:
+                    return waitForPresenceOfAllElementsLocatedBy(locator);
+                case IN_ALL_FRAMES:
+                    return waitForPresenceOfAllElementsLocatedByInFrames(locator);
+            }
+            throw new EnumConstantNotPresentException(searchStrategy.getDeclaringClass(), " enum constant is not recognized");
+        });
+    }
+
+    @Deprecated
+    /**
+     * Use {@link AbstractElementFinder#domElement(By, SearchStrategy)}
+     */
+    protected final WebElement waitForPresenceOfElementLocatedBy(final By locator, long timeOutInSeconds) {
+        return elementFinder.waitForPresenceOfElementLocatedBy(locator, timeOutInSeconds);
+    }
+
+    @Deprecated
+    /**
+     * Use {@link AbstractElementFinder#domElement(By)}
+     */
+    protected final WebElement waitForPresenceOfElementLocatedBy(final By locator, final String errorMessage) {
+        return getElementOrWebDriverException(() -> waitForPresenceOfElementLocatedBy(locator), errorMessage);
+    }
+
+    @Deprecated
+    /**
+     * Use element/select/textField/checkBox - when you need VISIBLE element
+     * Use domElement - when you need element which is PRESENT IN DOM
+     */
+    protected final WebElement waitForPresenceOfElementLocatedBy(final By locator, long timeOutInSeconds, final String errorMessage) {
+        return getElementOrWebDriverException(() -> waitForPresenceOfElementLocatedBy(locator, timeOutInSeconds), errorMessage);
+    }
+
+
+    @Deprecated
+    protected List<WebElement> waitForPresenceOfAllElementsLocatedBy(final By locator) {
+        return elementFinder.waitForPresenceOfAllElementsLocatedBy(locator);
+    }
+
+    @Deprecated
+    protected final List<WebElement> waitForPresenceOfAllElementsLocatedBy(final By locator, long timeoutInSeconds) {
+        try {
+            return elementFinder.waitForPresenceOfAllElementsLocatedBy(locator, timeoutInSeconds);
+        } catch (TimeoutException ignored) {
+            return new ArrayList<>();
+        }
+    }
+
+
+    /**
+     * Use elements/selects/textFields/checkBoxes - when you need VISIBLE element
+     * Use domElement - when you need element which is PRESENT IN DOM
+     */
+    @Deprecated
+    protected final List<WebElement> waitForPresenceOfAllElementsLocatedBy(final By locator, String errorMessage) {
+        try {
+            return waitForPresenceOfAllElementsLocatedBy(locator);
+        } catch (TimeoutException e) {
+            fail(errorMessage);
+        }
+        return null;
+    }
+
+    /**
+     * Instead of this method create a 1 line private getter with meaningful name in Page
+     * and call element(By locator) instead of this method. Error message will be automatically generated based on this.
+     * This method will be removed by Jan 2017.
+     */
+    @Deprecated
+    protected final WebElement waitForVisibilityOfElementLocatedBy(final By locator, final String errorMessage) {
+        return getElementOrWebDriverException(() -> waitForVisibilityOfElementLocatedBy(locator), errorMessage);
+    }
+
+    @Deprecated
+    protected final WebElement waitForVisibilityOfElementLocatedBy(final By locator, long timeOutInSeconds) {
+        return elementFinder.waitForVisibilityOfElementLocatedBy(locator, timeOutInSeconds);
+    }
+
+    @Deprecated
+    //TODO VE: should be removed from framework
+    public void waitUntilOnlyOneWindowIsOpen(String errorMessage) {
+        try {
+            elementFinder.waitUntilOnlyOneWindowIsOpen();
+        } catch (TimeoutException e) {
+            fail(errorMessage);
+        }
+    }
+
+    /**
+     * use {@link #elementOrNull(By)}
+     * this method will be removed
+     */
+    @Deprecated
+    protected final WebElement findElementByNoThrow(final By locator) {
+        try {
+            return elementFinder.findElementBy(locator);
+        } catch (WebDriverException e) {
+            //TODO hotfix for safari as it seems that this method does not work correct without timeout
+            if (isSafari()) {
+                TestUtils.waitForSafari();
+                try {
+                    return elementFinder.findElementBy(locator);
+                } catch (WebDriverException ignoreSafari) {
+                    return null;
+                }
+            }
+            return null;
+        }
+    }
+
+    /**
+     * use {@link #elementOrNull(SearchContext, By)}
+     * this method will be removed
+     */
+    @Deprecated
+    protected final WebElement findElementByNoThrow(final SearchContext searchContext, final By locator) {
+        try {
+            return elementFinder.findElementBy(searchContext, locator);
+        } catch (Exception e) {
+            //TODO hotfix for safari as it seems that this method does not work correct without timeout
+            if (isSafari()) {
+                TestUtils.waitForSafari();
+                try {
+                    return elementFinder.findElementBy(searchContext, locator);
+                } catch (Exception ignoreSafari) {
+                    return null;
+                }
+            }
+            return null;
+        }
+    }
+
+    /**
+     * use {@link #elementOrNull(By, long)}
+     * this method will be removed
+     */
+    @Deprecated
+    protected final WebElement waitForElementByNoThrow(final By locator, long timeOutInSeconds) {
+        try {
+            return waitForPresenceOfElementLocatedBy(locator, timeOutInSeconds);
+        } catch (WebDriverException e) {
+            return null;
+        }
+    }
+
+    @Deprecated
+    /**
+     * Use {@link AbstractElementFinder#element(By, OurSearchStrategy)}
+     */
+    protected WebElement element(final By locator, final long timeoutInSeconds) {
+        return getElementOrWebDriverException(() -> waitForVisibilityOfAllElementsLocatedBy(locator, timeoutInSeconds).get(0));
+    }
+
+    @Deprecated
+    /**
+     * Use {@link com.wiley.autotest.selenium.elements.upgrade.v3.OurShould#haveAttribute(String, String)}
+     */
+    protected final void waitForElementContainsAttribute(final WebElement element, final String attributeName) {
+        elementFinder.waitForElementContainsAttribute(element, attributeName);
+    }
+
+    @Deprecated
+    /**
+     * Use {@link com.wiley.autotest.selenium.elements.upgrade.v3.OurShould#haveAttribute(String, String)}
+     */
+    protected final void waitForElementContainsAttribute(final WebElement element, final String attributeName, long timeOutInSeconds) {
+        elementFinder.waitForElementContainsAttribute(element, attributeName, timeOutInSeconds);
+    }
+
+    @Deprecated
+    /**
+     * Use {@link com.wiley.autotest.selenium.elements.upgrade.v3.OurShould#notHaveAttribute(String)}}
+     */
+    protected final void waitForElementNotContainsAttribute(final WebElement element, final String attributeName) {
+        elementFinder.waitForElementNotContainsAttribute(element, attributeName);
+    }
+
+    @Deprecated
+    /**
+     * Use {@link com.wiley.autotest.selenium.elements.upgrade.v3.OurShould#notHaveAttribute(String)}}
+     */
+    protected final void waitForElementNotContainsAttribute(final WebElement element, final String attributeName, long timeOutInSeconds) {
+        elementFinder.waitForElementNotContainsAttribute(element, attributeName, timeOutInSeconds);
+    }
+
+    @Deprecated
+    /**
+     * Use {@link AbstractElementFinder#elements(By, OurSearchStrategy)}
+     */
+    protected List<WebElement> elements(final By locator, SearchStrategy searchStrategy, final long timeoutInSeconds) {
+        return getElementsOrWebDriverException(() -> {
+            switch (searchStrategy) {
+                case FIRST_ELEMENTS:
+                    return waitForVisibilityOfAllElementsLocatedBy(locator, timeoutInSeconds);
+                case IN_ALL_FRAMES:
+                    return waitForVisibilityOfAllElementsLocatedByInFrames(locator, timeoutInSeconds);
+            }
+            throw new EnumConstantNotPresentException(searchStrategy.getDeclaringClass(), " enum constant is not recognized");
+        });
+    }
+
+
+    @Deprecated
+    /**
+     * Use {@link AbstractElementFinder#elements(By, OurSearchStrategy)}
+     */
+    protected List<WebElement> elements(final By locator, SearchStrategy searchStrategy) {
+        return getElementsOrWebDriverException(() -> {
+            switch (searchStrategy) {
+                case FIRST_ELEMENTS:
+                    return waitForVisibilityOfAllElementsLocatedBy(locator);
+                case IN_ALL_FRAMES:
+                    return waitForVisibilityOfAllElementsLocatedByInFrames(locator);
+            }
+            throw new EnumConstantNotPresentException(searchStrategy.getDeclaringClass(), " enum constant is not recognized");
+        });
+    }
+
+
+    @Deprecated
+    /**
+     * Use {@link AbstractElementFinder#elements(By, OurSearchStrategy)}
+     */
+    protected List<WebElement> elements(final By locator, final long timeoutInSeconds) {
+        return elements(locator, SearchStrategy.FIRST_ELEMENTS, timeoutInSeconds);
+    }
 
     @Deprecated
     // Implement in your project if you need it. This method will be deleted
@@ -737,7 +747,7 @@ public abstract class AbstractElementFinder {
 
     @Deprecated
     /**
-     * use methods of {@link OurWaitFor} with {@link com.wiley.autotest.selenium.elements.upgrade.v3.SearchStrategy#nullOnFailure()}
+     * use methods of {@link OurWaitFor} with {@link OurSearchStrategy#nullOnFailure()}
      */
     protected boolean booleanCondition(Condition condition, ConditionParams params, By locator) {
         try {

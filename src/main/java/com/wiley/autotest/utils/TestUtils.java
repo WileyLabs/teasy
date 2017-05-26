@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.ITest;
 import org.testng.ITestResult;
+import org.testng.Reporter;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,6 +17,11 @@ public final class TestUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(SeleniumTestExecutionListener.class);
 
     private TestUtils() {
+    }
+
+    public static void fail(final String errorMessage) {
+        Reporter.log("ERROR: " + errorMessage);
+        throw new AssertionError(errorMessage);
     }
 
     public static String getTestName(final ITestResult test) {

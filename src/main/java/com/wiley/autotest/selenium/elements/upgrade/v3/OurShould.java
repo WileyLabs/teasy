@@ -17,7 +17,7 @@ public class OurShould {
         fluentWait = new FluentWaitCondition<>(element);
     }
 
-    public OurShould(OurWebElement element, SearchStrategy strategy) {
+    public OurShould(OurWebElement element, OurSearchStrategy strategy) {
         this(element);
         fluentWait.withTimeout(strategy.getTimeout(), TimeUnit.SECONDS);
         fluentWait.pollingEvery(strategy.getPoolingEvery(), strategy.getUnit());

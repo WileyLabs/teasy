@@ -19,12 +19,12 @@ public class FindElementLocator implements Locator {
     }
 
     @Override
-    public WebElement locate() {
+    public WebElement find() {
         return searchContext.findElement(by);
     }
 
     @Override
-    public By getByLocator() {
+    public By getLocator() {
         return by;
     }
 }

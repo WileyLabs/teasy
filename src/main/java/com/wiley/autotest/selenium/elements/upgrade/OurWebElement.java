@@ -3,11 +3,10 @@ package com.wiley.autotest.selenium.elements.upgrade;
 import com.wiley.autotest.ElementFinder;
 import com.wiley.autotest.WebDriverAwareElementFinder;
 import com.wiley.autotest.selenium.SeleniumHolder;
-import com.wiley.autotest.selenium.context.AbstractElementFinder;
+import com.wiley.autotest.selenium.elements.upgrade.v3.OurElementFinder;
+import com.wiley.autotest.selenium.elements.upgrade.v3.OurSearchStrategy;
 import com.wiley.autotest.selenium.elements.upgrade.v3.OurShould;
 import com.wiley.autotest.selenium.elements.upgrade.v3.OurWaitFor;
-import com.wiley.autotest.selenium.elements.upgrade.v3.SearchStrategy;
-import com.wiley.autotest.utils.TestUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.interactions.internal.Coordinates;
@@ -24,9 +23,11 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrapParent;
+import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrap;
+import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrapList;
 import static com.wiley.autotest.utils.ExecutionUtils.*;
 import static com.wiley.autotest.utils.IETestUtils.*;
+import static com.wiley.autotest.utils.TestUtils.*;
 
 
 /**
@@ -36,15 +37,16 @@ import static com.wiley.autotest.utils.IETestUtils.*;
  */
 public class OurWebElement implements IOurWebElement, Locatable {
 
-    public WebElement wrappedElement;
-    public Locator locator;
-    public ElementFinder elementFinder;
+    private WebElement wrappedElement;
+    private Locator locator;
+    private ElementFinder elementFinder_TO_BE_REMOVED;
+    private OurElementFinder contextFinder;
     public static final Logger LOGGER = LoggerFactory.getLogger(OurWebElement.class);
     //The duration in milliseconds to sleep between polls. (default value in selenium is 500)
-    public static final long SLEEP_IN_MILLISECONDS = 1000;
-    public static final long WAIT_TIME_OUT_IN_SECONDS = 5;
-    public int repeatLocateElementCounter;
-    public static final int MAX_NUMBER_OF_REPEAT_LOCATE_ELEMENT = 20;
+    private static final long SLEEP_IN_MILLISECONDS = 1000;
+    private static final long WAIT_TIME_OUT_IN_SECONDS = 5;
+    private int repeatLocateElementCounter;
+    private static final int MAX_NUMBER_OF_REPEAT_LOCATE_ELEMENT = 20;
 
     public OurWebElement(OurWebElementData ourWebElementData) {
         WebElement element = ourWebElementData.getElement();
@@ -66,7 +68,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
         } else {
             IOurWebElement ourWebElement = (IOurWebElement) element;
             element = getParentElement(ourWebElement.getWrappedWebElement());
-            this.locator = new FindParentElementLocator(getDriver(), ourWebElement.getLocator().getByLocator());
+            this.locator = new FindParentElementLocator(getDriver(), ourWebElement.getLocator().getLocator());
         }
 
         init(element);
@@ -75,8 +77,12 @@ public class OurWebElement implements IOurWebElement, Locatable {
     public void init(WebElement element) {
         this.wrappedElement = element instanceof IOurWebElement ? ((IOurWebElement) element).getWrappedWebElement() : element;
         this.repeatLocateElementCounter = 0;
-        if (elementFinder == null) {
-            elementFinder = new WebDriverAwareElementFinder(getDriver(), new WebDriverWait(getDriver(), WAIT_TIME_OUT_IN_SECONDS, SLEEP_IN_MILLISECONDS));
+        if (elementFinder_TO_BE_REMOVED == null) {
+            elementFinder_TO_BE_REMOVED = new WebDriverAwareElementFinder(getDriver(), new WebDriverWait(getDriver(), WAIT_TIME_OUT_IN_SECONDS, SLEEP_IN_MILLISECONDS));
+        }
+
+        if (contextFinder == null) {
+            contextFinder = new OurElementFinder(getDriver(), wrappedElement);
         }
     }
 
@@ -86,7 +92,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
     }
 
     @Override
-    public OurShould should(SearchStrategy strategy) {
+    public OurShould should(OurSearchStrategy strategy) {
         return new OurShould(this, strategy);
     }
 
@@ -96,7 +102,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
     }
 
     @Override
-    public OurWaitFor waitFor(SearchStrategy strategy) {
+    public OurWaitFor waitFor(OurSearchStrategy strategy) {
         return new OurWaitFor(this, strategy);
     }
 
@@ -115,6 +121,16 @@ public class OurWebElement implements IOurWebElement, Locatable {
     }
 
     @Override
+    public WebElement element(By by) {
+        return wrap(this, contextFinder.visibleElement(by), by);
+    }
+
+    @Override
+    public List<WebElement> elements(By by) {
+        return wrapList(this, contextFinder.visibleElements(by), by);
+    }
+
+    @Override
     public void click() {
         try {
             try {
@@ -122,19 +138,22 @@ public class OurWebElement implements IOurWebElement, Locatable {
             } catch (StaleElementReferenceException e) {
                 clickForStaleElement();
             } catch (UnhandledAlertException ignored) {
-                LOGGER.error("*****ERROR*****UnhandledAlertException***** during click! Doing nothing just trying to continue the test. ---Locator=" + locator.getByLocator());
+                LOGGER.error("*****ERROR*****UnhandledAlertException***** during click! Doing nothing just trying to continue the test. ---Locator=" + locator
+                        .getLocator());
             } catch (UnreachableBrowserException ignored) {
                 //doing this because for FireFox for some reason browser becomes unresponsive after click
                 //but actually it is alive so it worth to try to continue test
                 //it will fail on the next method after click if some real error happened
-                LOGGER.error("*****ERROR*****UnreachableBrowserException***** during click! Doing nothing just trying to continue the test. ---Locator=" + locator.getByLocator());
+                LOGGER.error("*****ERROR*****UnreachableBrowserException***** during click! Doing nothing just trying to continue the test. ---Locator=" + locator
+                        .getLocator());
             } catch (ElementNotVisibleException needToScroll) {
                 clickForNeedToScroll();
             } catch (WebDriverException ignoredOrNeedToScroll) {
                 clickForIgnoredScroll(ignoredOrNeedToScroll);
             }
         } catch (Exception e) {
-            LOGGER.error("*****FATAL ERROR*****Exception***** DURING CLICK LOGIC. SHOULD BE REFACTORED!!!! -----Locator=" + locator.getByLocator(), e);
+            LOGGER.error("*****FATAL ERROR*****Exception***** DURING CLICK LOGIC. SHOULD BE REFACTORED!!!! -----Locator=" + locator
+                    .getLocator(), e);
         }
     }
 
@@ -154,7 +173,8 @@ public class OurWebElement implements IOurWebElement, Locatable {
     }
 
     public void clickForNeedToScroll() {
-        LOGGER.error("*****ERROR*****ElementNotVisibleException***** during click! Scrolling to element and trying again ---Locator=" + locator.getByLocator());
+        LOGGER.error("*****ERROR*****ElementNotVisibleException***** during click! Scrolling to element and trying again ---Locator=" + locator
+                .getLocator());
         increment();
         scrollIntoView(wrappedElement);
         scrollToElementLocation(wrappedElement);
@@ -162,12 +182,13 @@ public class OurWebElement implements IOurWebElement, Locatable {
     }
 
     public void clickForIgnoredScroll(WebDriverException ignoredOrNeedToScroll) {
-        LOGGER.error("*****ERROR*****WebDriverException***** during click!-----Locator=" + locator.getByLocator());
+        LOGGER.error("*****ERROR*****WebDriverException***** during click!-----Locator=" + locator.getLocator());
         increment();
         //For Android error text is different and does not have any information related to clickable issue
         String ignoredOrNeedToScrollMessage = ignoredOrNeedToScroll.getMessage();
         if (isAndroid() || ignoredOrNeedToScrollMessage.contains("is not clickable at point")) {
-            LOGGER.error("*****ERROR*****Element is not clickable at point***** during click! Scrolling to element and trying again. ---Locator=" + locator.getByLocator());
+            LOGGER.error("*****ERROR*****Element is not clickable at point***** during click! Scrolling to element and trying again. ---Locator=" + locator
+                    .getLocator());
             if (isAndroid()) {
                 //set size of page to 80%
                 executeScript("document.body.style.transform='scale(0.8)'");
@@ -179,7 +200,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
                 maximizeWindow();
                 if (isChrome()) {
                     //Some pages (e.g. in Administration Workspace) are reloaded after maximize window in Chrome
-                    TestUtils.waitForSomeTime(3000, "Wait for window maximized");
+                    waitForSomeTime(3000, "Wait for window maximized");
                     againLocate();
                 }
             }
@@ -278,7 +299,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
 
     @Override
     public WebElement findElement(By by) {
-        return OurWebElementFactory.wrap(this, find(by), by);
+        return wrap(this, find(by), by);
     }
 
     @Override
@@ -287,7 +308,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
         List<WebElement> result = new ArrayList<>(elements.size());
         for (int i = 0; i < elements.size(); i++) {
             WebElement element = elements.get(i);
-            result.add(OurWebElementFactory.wrap(this, element, by, i));
+            result.add(wrap(this, element, by, i));
         }
         return result;
     }
@@ -350,7 +371,8 @@ public class OurWebElement implements IOurWebElement, Locatable {
     @Override
     public boolean equals(Object o) {
         return this == o || o != null && wrappedElement != null && wrappedElement.equals(o) ||
-                this == o || o != null && wrappedElement != null && (o instanceof IOurWebElement) && wrappedElement.equals(((IOurWebElement) o).getWrappedWebElement());
+                this == o || o != null && wrappedElement != null && (o instanceof IOurWebElement) && wrappedElement.equals(((IOurWebElement) o)
+                .getWrappedWebElement());
     }
 
     @Override
@@ -363,18 +385,27 @@ public class OurWebElement implements IOurWebElement, Locatable {
         return wrappedElement;
     }
 
+    public ElementFinder getElementFinder() {
+        return elementFinder_TO_BE_REMOVED;
+    }
+
+    public int getRepeatLocateElementCounter() {
+        return repeatLocateElementCounter;
+    }
+
     public void againLocate() {
         if (isSafari()) {
-            TestUtils.waitForSafari();
+            waitForSafari();
         }
-        WebElement againLocateElement = locator.locate();
+        WebElement againLocateElement = locator.find();
         wrappedElement = againLocateElement instanceof IOurWebElement ? ((IOurWebElement) againLocateElement).getWrappedWebElement() : againLocateElement;
         increment();
     }
 
     public void increment() {
         if (repeatLocateElementCounter > MAX_NUMBER_OF_REPEAT_LOCATE_ELEMENT) {
-            AbstractElementFinder.fail("Cannot interact properly with element with locator '" + locator.getByLocator() + "'" + (!wrappedElement.isDisplayed() ? "Element was not displayed!" : ""));
+            fail("Cannot interact properly with element with locator '" + locator.getLocator() + "'"
+                    + (!wrappedElement.isDisplayed() ? "Element was not displayed!" : ""));
         } else {
             repeatLocateElementCounter++;
         }
@@ -386,13 +417,13 @@ public class OurWebElement implements IOurWebElement, Locatable {
 
     public void clickInSafari() {
         int iterationCount = 0;
-        TestUtils.waitForSomeTime(1000, "Wait for click for Safari");
+        waitForSomeTime(1000, "Wait for click for Safari");
         wrappedElement.click();
         try {
             if (!isInputOrSelectOrCheckboxElement(wrappedElement) && !isClickWithReload()) {
                 while (iterationCount < 5) {
                     try {
-                        elementFinder.waitForStalenessOf(wrappedElement, 1);
+                        elementFinder_TO_BE_REMOVED.waitForStalenessOf(wrappedElement, 1);
                         return;
                     } catch (TimeoutException ignored) {
                     }
@@ -404,29 +435,29 @@ public class OurWebElement implements IOurWebElement, Locatable {
     }
 
     public void clickInIE() {
-        TestUtils.waitForSomeTime(500, "Wait for click for IE");
+        waitForSomeTime(500, "Wait for click for IE");
         if (isDisabledElement(wrappedElement)) {
             wrappedElement.click();
-            elementFinder.waitForPageToLoad();
+            elementFinder_TO_BE_REMOVED.waitForPageToLoad();
         } else if (isActionElements(wrappedElement)) {
             final boolean isSelected = wrappedElement.isSelected();
             wrappedElement.click();
-            elementFinder.waitForPageToLoad();
+            elementFinder_TO_BE_REMOVED.waitForPageToLoad();
             //Check the checkbox is selected then click one more time if is not.
             checkElementIsSelected(isSelected, wrappedElement);
         } else if (isNotOptionInput(wrappedElement) && isNotCheckBoxLiSpan(wrappedElement) && isNotLink(wrappedElement) && isNotTable(wrappedElement) && isNotTd(wrappedElement)) {
             wrappedElement.sendKeys(Keys.ENTER);
-            elementFinder.waitForPageToLoad();
+            elementFinder_TO_BE_REMOVED.waitForPageToLoad();
         } else if (isLiTag(wrappedElement) || isTdTag(wrappedElement) || isDivTag(wrappedElement) || !isNotTable(wrappedElement)) {
             executeScript("arguments[0].click();", wrappedElement);
-            elementFinder.waitForPageToLoad();
+            elementFinder_TO_BE_REMOVED.waitForPageToLoad();
         } else if (isLink(wrappedElement)) {
             wrappedElement.sendKeys(Keys.ENTER);
         } else {
             wrappedElement.click();
-            elementFinder.waitForPageToLoad();
+            elementFinder_TO_BE_REMOVED.waitForPageToLoad();
         }
-        TestUtils.waitForSomeTime(500, "");
+        waitForSomeTime(500, "");
     }
 
     public void scrollIntoView(WebElement element) {
@@ -434,7 +465,8 @@ public class OurWebElement implements IOurWebElement, Locatable {
     }
 
     public void scrollToElementLocation(WebElement element) {
-        executeScript("scroll(" + (element.getLocation().getX() + element.getSize().getWidth()) + "," + element.getLocation().getY() + ");");
+        executeScript("scroll(" + (element.getLocation().getX() + element.getSize()
+                .getWidth()) + "," + element.getLocation().getY() + ");");
     }
 
     public void maximizeWindow() {
@@ -455,7 +487,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
         try {
             if (wasElementSelectedByDefault == element.isSelected()) {
                 element.click();
-                elementFinder.waitForPageToLoad();
+                elementFinder_TO_BE_REMOVED.waitForPageToLoad();
             }
         } catch (StaleElementReferenceException ignored) {
             //If the element changed its state after click it's an expected behavior
@@ -487,7 +519,8 @@ public class OurWebElement implements IOurWebElement, Locatable {
                 try {
                     return wrappedElement.findElements(by);
                 } catch (UndeclaredThrowableException noSuchElementException) {
-                    throw new NoSuchElementException("Unable to locate elements " + by.toString() + ", Exception - " + ((InvocationTargetException) noSuchElementException.getUndeclaredThrowable()).getTargetException().getMessage());
+                    throw new NoSuchElementException("Unable to find elements " + by.toString() + ", Exception - " + ((InvocationTargetException) noSuchElementException
+                            .getUndeclaredThrowable()).getTargetException().getMessage());
                 }
             }
             againLocate();
@@ -509,7 +542,8 @@ public class OurWebElement implements IOurWebElement, Locatable {
                 try {
                     return wrappedElement.findElement(by);
                 } catch (UndeclaredThrowableException noSuchElementException) {
-                    throw new NoSuchElementException("Unable to locate element " + by.toString() + ", Exception - " + ((InvocationTargetException) noSuchElementException.getUndeclaredThrowable()).getTargetException().getMessage());
+                    throw new NoSuchElementException("Unable to find element " + by.toString() + ", Exception - " + ((InvocationTargetException) noSuchElementException
+                            .getUndeclaredThrowable()).getTargetException().getMessage());
                 }
             }
             againLocate();

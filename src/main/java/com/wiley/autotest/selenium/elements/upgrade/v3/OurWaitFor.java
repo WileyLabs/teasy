@@ -17,7 +17,7 @@ public class OurWaitFor {
         fluentWait = new FluentWaitCondition<>(element);
     }
 
-    public OurWaitFor(WebElement element, SearchStrategy strategy) {
+    public OurWaitFor(WebElement element, OurSearchStrategy strategy) {
         this(element);
         fluentWait.withTimeout(strategy.getTimeout(), TimeUnit.SECONDS);
         fluentWait.pollingEvery(strategy.getPoolingEvery(), strategy.getUnit());

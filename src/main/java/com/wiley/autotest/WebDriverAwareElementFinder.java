@@ -98,22 +98,22 @@ public class WebDriverAwareElementFinder implements ElementFinder {
 
     @Override
     public List<WebElement> waitForVisibilityOfAllElementsLocatedByInFrames(final By locator) {
-        return waitFor(ExpectedConditions2.visibilityOfAllElementsLocatedByInFrames(locator));
+        return waitFor(ExpectedConditions2.visibilityOfFirstElementsInAllFrames(locator));
     }
 
     @Override
     public List<WebElement> waitForVisibilityOfAllElementsLocatedByInFrames(final By locator, final long timeOutInSeconds) {
-        return waitFor(ExpectedConditions2.visibilityOfAllElementsLocatedByInFrames(locator), timeOutInSeconds);
+        return waitFor(ExpectedConditions2.visibilityOfFirstElementsInAllFrames(locator), timeOutInSeconds);
     }
 
     @Override
     public List<WebElement> waitForPresenceOfAllElementsLocatedByInFrames(final By locator) {
-        return waitFor(ExpectedConditions2.presenceOfAllElementsLocatedByInFrames(locator));
+        return waitFor(ExpectedConditions2.presenceOfAllElementsInAllFrames(locator));
     }
 
     @Override
     public List<WebElement> waitForPresenceOfAllElementsLocatedByInFrames(final By locator, final long timeOutInSeconds) {
-        return waitFor(ExpectedConditions2.presenceOfAllElementsLocatedByInFrames(locator), timeOutInSeconds);
+        return waitFor(ExpectedConditions2.presenceOfAllElementsInAllFrames(locator), timeOutInSeconds);
     }
 
     @Override
@@ -278,22 +278,22 @@ public class WebDriverAwareElementFinder implements ElementFinder {
 
     @Override
     public List<WebElement> waitForVisibilityOfAllElementsLocatedBy(final By locator) {
-        return waitFor(ExpectedConditions2.visibilityOfAllElementsLocatedBy(locator));
+        return waitFor(ExpectedConditions2.visibilityOfFirstElements(locator));
     }
 
     @Override
     public List<WebElement> waitForVisibilityOfAllElementsLocatedBy(final SearchContext searchContext, final By locator) {
-        return waitFor(ExpectedConditions2.visibilityOfAllElementsLocatedBy(searchContext, locator));
+        return waitFor(ExpectedConditions2.visibilityOfFirstElements(searchContext, locator));
     }
 
     @Override
     public List<WebElement> waitForVisibilityOfAllElementsLocatedBy(final SearchContext searchContext, final By locator, long timeOutInSeconds) {
-        return waitFor(ExpectedConditions2.visibilityOfAllElementsLocatedBy(searchContext, locator), timeOutInSeconds);
+        return waitFor(ExpectedConditions2.visibilityOfFirstElements(searchContext, locator), timeOutInSeconds);
     }
 
     @Override
     public List<WebElement> waitForVisibilityOfAllElementsLocatedBy(final By locator, long timeOutInSeconds) {
-        return waitFor(ExpectedConditions2.visibilityOfAllElementsLocatedBy(locator), timeOutInSeconds);
+        return waitFor(ExpectedConditions2.visibilityOfFirstElements(locator), timeOutInSeconds);
     }
 
     @Override

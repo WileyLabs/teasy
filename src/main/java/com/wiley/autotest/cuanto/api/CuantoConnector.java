@@ -654,7 +654,7 @@ public class CuantoConnector {
 	 *                    be the fully qualified class name, e.g. org.myorg.MyTestClass
 	 * @param testName    The name of the test, in JUnit or TestNG this would be the method name.
 	 * @param parameters  A string representing the parameters for this test, if it is a parameterized test. Otherwise this
-	 *                    should be null. The server will attempt to locate the TestCase that has these parameters. If the
+	 *                    should be null. The server will attempt to find the TestCase that has these parameters. If the
 	 *                    parameters don't match, a TestCase will not be returned.
 	 * @return The found TestCase or null if no match is found.
 	 */

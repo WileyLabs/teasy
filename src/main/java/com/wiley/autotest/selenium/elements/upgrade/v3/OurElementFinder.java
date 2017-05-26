@@ -1,13 +1,18 @@
 package com.wiley.autotest.selenium.elements.upgrade.v3;
 
 import com.wiley.autotest.ExpectedConditions2;
+import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.OurConditionFactory;
+import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.OurConditionStrategy;
 import org.openqa.selenium.By;
+import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrap;
 import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrapList;
@@ -19,7 +24,9 @@ import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.
  */
 public class OurElementFinder {
 
-    private SearchStrategy strategy;
+    private OurSearchStrategy strategy;
+
+    private SearchContext context;
 
     private FluentWaitFinder fluentWait;
 
@@ -27,43 +34,44 @@ public class OurElementFinder {
         this.fluentWait = new FluentWaitFinder(driver);
     }
 
-    public OurElementFinder(WebDriver driver, SearchStrategy strategy) {
+    public OurElementFinder(WebDriver driver, SearchContext context) {
+        this.fluentWait = new FluentWaitFinder(driver);
+        this.context = context;
+    }
+
+    public OurElementFinder(WebDriver driver, OurSearchStrategy strategy) {
         this(driver);
         this.strategy = strategy;
         fluentWait.withTimeout(strategy.getTimeout(), TimeUnit.SECONDS);
         fluentWait.pollingEvery(strategy.getPoolingEvery(), strategy.getUnit());
     }
 
+    public OurElementFinder(WebDriver driver, SearchContext context, OurSearchStrategy strategy) {
+        this(driver, context);
+        this.strategy = strategy;
+        fluentWait.withTimeout(strategy.getTimeout(), TimeUnit.SECONDS);
+        fluentWait.pollingEvery(strategy.getPoolingEvery(), strategy.getUnit());
+    }
+
     public WebElement visibleElement(By locator) {
-        //todo name of condition should be different (currently we return as soon as there is at least 1 visible element but not ALL)
-        return wrap(fluentWait.waitFor(ExpectedConditions2.visibilityOfAllElementsLocatedBy(locator)).get(0), locator);
+        Function<WebDriver, List<WebElement>> condition = new OurConditionFactory(context).get(strategy.getFrameStrategy()).visibility(locator);
+        return wrap(fluentWait.waitFor(condition).get(0), locator);
     }
 
     public List<WebElement> visibleElements(By locator) {
-        //todo name of condition should be different (currently we return as soon as there is at least 1 visible element but not ALL)
-        switch (strategy.getFrameStrategy()) {
-            case FIRST_ELEMENTS:
-                return wrapList(fluentWait.waitFor(ExpectedConditions2.visibilityOfAllElementsLocatedBy(locator)), locator);
-            case IN_ALL_FRAMES:
-                return wrapList(fluentWait.waitFor(ExpectedConditions2.visibilityOfAllElementsLocatedByInFrames(locator)), locator);
-        }
-        throw new EnumConstantNotPresentException(strategy.getFrameStrategy()
-                .getDeclaringClass(), " enum constant is not recognized. Select from FIRST_ELEMENTS or IN_ALL_FRAMES.");
+        Function<WebDriver, List<WebElement>> condition = new OurConditionFactory(context).get(strategy.getFrameStrategy()).visibility(locator);
+        return wrapList(fluentWait.waitFor(condition), locator);
     }
 
     public WebElement presentInDomElement(By locator) {
-        return wrap(fluentWait.waitFor(ExpectedConditions.presenceOfElementLocated(locator)), locator);
+        Function<WebDriver, List<WebElement>> condition = new OurConditionFactory(context).get(strategy.getFrameStrategy()).presence(locator);
+        return wrap(fluentWait.waitFor(condition).get(0), locator);
     }
 
     public List<WebElement> presentInDomElements(By locator) {
-        switch (strategy.getFrameStrategy()) {
-            case FIRST_ELEMENTS:
-                return wrapList(fluentWait.waitFor(ExpectedConditions.presenceOfAllElementsLocatedBy(locator)), locator);
-            case IN_ALL_FRAMES:
-                return wrapList(fluentWait.waitFor(ExpectedConditions2.presenceOfAllElementsLocatedByInFrames(locator)), locator);
-        }
-        throw new EnumConstantNotPresentException(strategy.getFrameStrategy()
-                .getDeclaringClass(), " enum constant is not recognized. Select from FIRST_ELEMENTS or IN_ALL_FRAMES.");
+        Function<WebDriver, List<WebElement>> condition = new OurConditionFactory(context).get(strategy.getFrameStrategy()).presence(locator);
+        return wrapList(fluentWait.waitFor(condition), locator);
+
     }
 
 }

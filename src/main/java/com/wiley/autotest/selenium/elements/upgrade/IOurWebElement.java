@@ -2,8 +2,11 @@ package com.wiley.autotest.selenium.elements.upgrade;
 
 import com.wiley.autotest.selenium.elements.upgrade.v3.OurShould;
 import com.wiley.autotest.selenium.elements.upgrade.v3.OurWaitFor;
-import com.wiley.autotest.selenium.elements.upgrade.v3.SearchStrategy;
+import com.wiley.autotest.selenium.elements.upgrade.v3.OurSearchStrategy;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+
+import java.util.List;
 
 /**
  * User: vefimov
@@ -18,18 +21,18 @@ public interface IOurWebElement extends WebElement {
 
     public OurShould should();
 
-    public OurShould should(SearchStrategy strategy);
+    public OurShould should(OurSearchStrategy strategy);
 
     public OurWaitFor waitFor();
 
-    public OurWaitFor waitFor(SearchStrategy strategy);
+    public OurWaitFor waitFor(OurSearchStrategy strategy);
 
     public IOurWebElement getParent();
 
     public IOurWebElement getParent(int level);
 
     //discuss the necessity of these methods
-//    public OurWebElement element(By locator);
-//
-//    public OurWebElement elements(By locator);
+    public WebElement element(By by);
+
+    public List<WebElement> elements(By by);
 }

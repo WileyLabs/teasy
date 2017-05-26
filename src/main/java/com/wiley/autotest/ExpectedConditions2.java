@@ -35,19 +35,19 @@ public final class ExpectedConditions2 {
         return driver -> driver.findElements(locator).isEmpty() ? null : driver.findElements(locator);
     }
 
-    public static ExpectedCondition<List<WebElement>> presenceOfAllElementsLocatedByInFrames(final By locator) {
+    public static ExpectedCondition<List<WebElement>> presenceOfAllElementsInAllFrames(final By locator) {
         return driver -> {
             FramesTransparentWebDriver framesTransparentWebDriver = (FramesTransparentWebDriver) driver;
-            List<WebElement> elementsInFrames = framesTransparentWebDriver.findElementsInFrames(locator);
+            List<WebElement> elementsInFrames = framesTransparentWebDriver.findAllElementsInFrames(locator);
             return elementsInFrames.isEmpty() ? null : elementsInFrames;
         };
     }
 
-    public static ExpectedCondition<List<WebElement>> visibilityOfAllElementsLocatedByInFrames(final By locator) {
+    public static ExpectedCondition<List<WebElement>> presenceOfAllElementsInAllFrames(SearchContext context, final By locator) {
         return driver -> {
             FramesTransparentWebDriver framesTransparentWebDriver = (FramesTransparentWebDriver) driver;
-            List<WebElement> visibleElements = getVisibleWebElements(framesTransparentWebDriver.findElementsInFrames(locator));
-            return isNotEmpty(visibleElements) ? visibleElements : null;
+            List<WebElement> elementsInFrames = framesTransparentWebDriver.findAllElementsInFrames(context, locator);
+            return elementsInFrames.isEmpty() ? null : elementsInFrames;
         };
     }
 
@@ -55,25 +55,65 @@ public final class ExpectedConditions2 {
         return driver -> element.isDisplayed();
     }
 
-    public static ExpectedCondition<List<WebElement>> visibilityOfAllElementsLocatedBy(final By locator) {
-        return new ExpectedCondition<List<WebElement>>() {
-            @Override
-            public List<WebElement> apply(final WebDriver driver) {
-                return getVisibleWebElements(driver.findElements(locator));
-            }
+    /**
+     * Expected condition to look for elements in frames that will return as soon as elements are found in any frame
+     *
+     * @param locator
+     * @return
+     */
+    public static ExpectedCondition<List<WebElement>> visibilityOfFirstElements(final By locator) {
+        return driver -> getFirstVisibleWebElements(driver.findElements(locator));
+    }
+
+    /**
+     * Expected condition to look for elements inside given Context (inside element) in frames that will return as soon as elements are found in any frame
+     *
+     * @param searchContext
+     * @param locator
+     * @return
+     */
+    public static ExpectedCondition<List<WebElement>> visibilityOfFirstElements(final SearchContext searchContext, final By locator) {
+        return driver -> {
+            FramesTransparentWebDriver framesTransparentWebDriver = (FramesTransparentWebDriver) driver;
+            List<WebElement> visibleElements = getFirstVisibleWebElements(framesTransparentWebDriver.findElements(searchContext, locator));
+            return isNotEmpty(visibleElements) ? visibleElements : null;
         };
     }
 
-    public static ExpectedCondition<List<WebElement>> visibilityOfAllElementsLocatedBy(final SearchContext searchContext, final By locator) {
-        return new ExpectedCondition<List<WebElement>>() {
-            @Override
-            public List<WebElement> apply(final WebDriver driver) {
-                return getVisibleWebElements(searchContext.findElements(locator));
-            }
+    /**
+     * Expected condition to look for elements in ALL frames that will loop through ALL frames
+     * waiting until there is at least 1 visible element in frame (then it will go to next frame)
+     *
+     * @param locator
+     * @return
+     */
+    public static ExpectedCondition<List<WebElement>> visibilityOfFirstElementsInAllFrames(final By locator) {
+        return driver -> {
+            FramesTransparentWebDriver framesTransparentWebDriver = (FramesTransparentWebDriver) driver;
+            List<WebElement> visibleElements = getFirstVisibleWebElements(framesTransparentWebDriver.findAllElementsInFrames(locator));
+            return isNotEmpty(visibleElements) ? visibleElements : null;
         };
     }
 
-    private static List<WebElement> getVisibleWebElements(List<WebElement> elements) {
+    /**
+     * Expected condition to look for elements inside given Context (inside element) in ALL frames
+     * that will loop through ALL frames inside given context
+     * waiting until there is at least 1 visible element in frame (then it will go to next frame)
+     *
+     * @param searchContext
+     * @param locator
+     * @return
+     */
+    public static ExpectedCondition<List<WebElement>> visibilityOfFirstElementsInAllFrames(final SearchContext searchContext, final By locator) {
+        return driver -> {
+            FramesTransparentWebDriver framesTransparentWebDriver = (FramesTransparentWebDriver) driver;
+            List<WebElement> visibleElements = getFirstVisibleWebElements(framesTransparentWebDriver.findAllElementsInFrames(searchContext, locator));
+            return isNotEmpty(visibleElements) ? visibleElements : null;
+        };
+    }
+
+
+    private static List<WebElement> getFirstVisibleWebElements(List<WebElement> elements) {
         List<WebElement> visibleElements = elements.stream()
                 .filter(element -> element.isDisplayed() || isElementHiddenUnderScroll(element))
                 .collect(Collectors.toList());
@@ -228,7 +268,8 @@ public final class ExpectedConditions2 {
     }
 
     public static ExpectedCondition<Boolean> textToBePresentInElement(final WebElement element) {
-        return driver -> !element.getText().isEmpty() || (element.getAttribute("value") != null && !element.getAttribute("value").isEmpty());
+        return driver -> !element.getText()
+                .isEmpty() || (element.getAttribute("value") != null && !element.getAttribute("value").isEmpty());
     }
 
     public static ExpectedCondition<Boolean> pageToLoad() {
