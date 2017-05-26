@@ -259,6 +259,7 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
         if (firstCallInContext.get()) {
             currentFrames = ((OurWebElement) context).getWrappedWebElement().findElements(By.tagName("iframe"));
             currentFrames.addAll(((OurWebElement) context).getWrappedWebElement().findElements(By.tagName("frame")));
+            firstCallInContext.set(false);
         } else {
             currentFrames = driverFindElements(By.tagName("iframe"));
             currentFrames.addAll(driverFindElements(By.tagName("frame")));

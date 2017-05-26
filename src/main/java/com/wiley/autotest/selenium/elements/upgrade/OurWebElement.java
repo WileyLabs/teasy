@@ -299,11 +299,13 @@ public class OurWebElement implements IOurWebElement, Locatable {
 
     @Override
     public WebElement findElement(By by) {
+        this.repeatLocateElementCounter = 0;
         return find(by);
     }
 
     @Override
     public List<WebElement> findElements(By by) {
+        this.repeatLocateElementCounter = 0;
         return finds(by);
     }
 
