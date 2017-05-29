@@ -41,7 +41,7 @@ public abstract class AbstractElementFinder {
     //will be replaced with OurElementFinder
     protected ElementFinder elementFinder;
     //default finder that uses timeout from pom
-    private final OurElementFinder finder = new OurElementFinder(getWebDriver());
+    private OurElementFinder finder;
 
     private static final int MIN_TIME_OUT_FOR_WAIT_IN_SECONDS = 1;
     //VE added this to avoid No buffer space available exception. To be replaced with default value of 500 if does not work.
@@ -52,8 +52,15 @@ public abstract class AbstractElementFinder {
         return new OurElementFinder(getWebDriver(), strategy);
     }
 
+    private OurElementFinder finder() {
+        if (finder == null) {
+            finder = new OurElementFinder(getWebDriver());
+        }
+        return finder;
+    }
+
     protected WebElement element(final By locator) {
-        return getElementOrWebDriverException(() -> finder.visibleElement(locator));
+        return getElementOrWebDriverException(() -> finder().visibleElement(locator));
     }
 
     protected WebElement element(final By locator, OurSearchStrategy strategy) {
@@ -69,7 +76,7 @@ public abstract class AbstractElementFinder {
     }
 
     protected List<WebElement> elements(final By locator) {
-        return finder.visibleElements(locator);
+        return finder().visibleElements(locator);
     }
 
     protected List<WebElement> elements(final By locator, OurSearchStrategy strategy) {
@@ -101,7 +108,7 @@ public abstract class AbstractElementFinder {
     }
 
     protected WebElement domElement(By locator) {
-        return finder.presentInDomElement(locator);
+        return finder().presentInDomElement(locator);
     }
 
     protected WebElement domElement(By locator, OurSearchStrategy strategy) {
@@ -113,7 +120,7 @@ public abstract class AbstractElementFinder {
     }
 
     protected List<WebElement> domElements(By locator) {
-        return finder.presentInDomElements(locator);
+        return finder().presentInDomElements(locator);
     }
 
     protected List<WebElement> domElements(By locator, OurSearchStrategy strategy) {
