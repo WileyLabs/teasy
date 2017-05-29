@@ -64,9 +64,7 @@ public class OurWebElementFactory {
             return classOfOurWebElement.getDeclaredConstructor(OurWebElementData.class).newInstance(ourWebElementData);
         } catch (InstantiationException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             LOGGER.error("Cannot create instance of OurWebElement." + e.getClass().getName() + " occurred. ", e);
-            throw new WrapElementException("Cannot create instance of OurWebElement. " + e.getClass()
-                    .getName() + " occurred. ", e);
+            throw new WrapElementException("Cannot create instance of OurWebElement. " + e.getClass().getName() + " occurred. ", e);
         }
     }
-
 }
