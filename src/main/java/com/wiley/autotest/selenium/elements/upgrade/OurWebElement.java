@@ -41,6 +41,9 @@ public class OurWebElement implements IOurWebElement, Locatable {
     private Locator locator;
     private ElementFinder elementFinder_TO_BE_REMOVED;
     private OurElementFinder contextFinder;
+
+    //specific element finder which will return null or emptyList in case element is not found
+    private OurElementFinder allowNullContextFinder;
     public static final Logger LOGGER = LoggerFactory.getLogger(OurWebElement.class);
     //The duration in milliseconds to sleep between polls. (default value in selenium is 500)
     private static final long SLEEP_IN_MILLISECONDS = 1000;
@@ -83,6 +86,9 @@ public class OurWebElement implements IOurWebElement, Locatable {
 
         if (contextFinder == null) {
             contextFinder = new OurElementFinder(getDriver(), wrappedElement);
+        }
+        if (allowNullContextFinder == null) {
+            allowNullContextFinder = new OurElementFinder(getDriver(), wrappedElement, new OurSearchStrategy().nullOnFailure());
         }
     }
 
@@ -128,6 +134,26 @@ public class OurWebElement implements IOurWebElement, Locatable {
     @Override
     public List<WebElement> elements(By by) {
         return wrapList(this, contextFinder.visibleElements(by), by);
+    }
+
+    @Override
+    public WebElement elementOrNull(By by) {
+        return wrap(this, allowNullContextFinder.visibleElement(by), by);
+    }
+
+    @Override
+    public List<WebElement> elementsOrEmpty(By by) {
+        return wrapList(this, allowNullContextFinder.visibleElements(by), by);
+    }
+
+    @Override
+    public WebElement domElement(By by) {
+        return wrap(this, contextFinder.presentInDomElement(by), by);
+    }
+
+    @Override
+    public List<WebElement> domElements(By by) {
+        return wrapList(this, contextFinder.presentInDomElements(by), by);
     }
 
     @Override
@@ -417,6 +443,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
         wrappedElement.click();
         try {
             if (!isInputOrSelectOrCheckboxElement(wrappedElement) && !isClickWithReload()) {
+                //TODO looks like some outdated logic. To be removed or replaced by a better solution
                 while (iterationCount < 5) {
                     try {
                         elementFinder_TO_BE_REMOVED.waitForStalenessOf(wrappedElement, 1);
@@ -515,7 +542,8 @@ public class OurWebElement implements IOurWebElement, Locatable {
                 try {
                     return (getFrameTransparentDriver()).findElements(this, by);
                 } catch (UndeclaredThrowableException noSuchElementException) {
-                    throw new NoSuchElementException("Unable to find elements " + by.toString() + ", Exception - " + ((InvocationTargetException) noSuchElementException.getUndeclaredThrowable()).getTargetException().getMessage());
+                    throw new NoSuchElementException("Unable to find elements " + by.toString() + ", Exception - " + ((InvocationTargetException) noSuchElementException
+                            .getUndeclaredThrowable()).getTargetException().getMessage());
                 }
             }
             againLocate();
@@ -537,7 +565,8 @@ public class OurWebElement implements IOurWebElement, Locatable {
                 try {
                     return getFrameTransparentDriver().findElement(this, by);
                 } catch (UndeclaredThrowableException noSuchElementException) {
-                    throw new NoSuchElementException("Unable to find element " + by.toString() + ", Exception - " + ((InvocationTargetException) noSuchElementException.getUndeclaredThrowable()).getTargetException().getMessage());
+                    throw new NoSuchElementException("Unable to find element " + by.toString() + ", Exception - " + ((InvocationTargetException) noSuchElementException
+                            .getUndeclaredThrowable()).getTargetException().getMessage());
                 }
             }
             againLocate();

@@ -10,18 +10,18 @@ import java.util.function.Function;
 class FluentWaitCondition<T> extends FluentWait<T> {
 
     //default condition should stop execution in case of failure
-    private boolean continueOnFailure = false;
+    private boolean nullOnFailure = false;
 
     FluentWaitCondition(T input) {
         super(input);
     }
 
-    void continueOnFailure() {
-        continueOnFailure = true;
+    void setNullOnFailure(boolean nullOnFailure) {
+        this.nullOnFailure = nullOnFailure;
     }
 
     void waitFor(Function<T, Boolean> condition) {
-        if (continueOnFailure) {
+        if (nullOnFailure) {
             try {
                 until(condition);
             } catch (Throwable ignoredAndContinue) {

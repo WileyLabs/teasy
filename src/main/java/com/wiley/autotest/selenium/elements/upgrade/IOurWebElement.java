@@ -35,4 +35,12 @@ public interface IOurWebElement extends WebElement {
     public WebElement element(By by);
 
     public List<WebElement> elements(By by);
+
+    public WebElement elementOrNull(By by);
+
+    public List<WebElement> elementsOrEmpty(By by);
+
+    public WebElement domElement(By by);
+
+    public List<WebElement> domElements(By by);
 }

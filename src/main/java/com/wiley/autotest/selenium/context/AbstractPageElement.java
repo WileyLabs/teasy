@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrapParent;
 import static com.wiley.autotest.utils.ExecutionUtils.isIE;
 
 /**
@@ -41,7 +40,7 @@ import static com.wiley.autotest.utils.ExecutionUtils.isIE;
  * Date: 07.02.12
  * Time: 18:46
  */
-public abstract class AbstractPageElement<P extends AbstractPageElement> extends AbstractElementFinder implements IPageElement, ErrorSender {
+public abstract class AbstractPageElement<P extends AbstractPageElement> extends OurElementProvider implements IPageElement, ErrorSender {
 
     public static final int TIMEOUT_TO_WAIT_FOR_WINDOW = 2;
     public static final int TIMEOUT_TO_WAIT_FOR_ABSENCE_OF_ELEMENT = 2000;

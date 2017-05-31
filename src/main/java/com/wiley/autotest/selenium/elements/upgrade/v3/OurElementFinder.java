@@ -1,10 +1,8 @@
 package com.wiley.autotest.selenium.elements.upgrade.v3;
 
 import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.OurConditionFactory;
-import org.openqa.selenium.By;
-import org.openqa.selenium.SearchContext;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -40,6 +38,7 @@ public class OurElementFinder {
         this.strategy = strategy;
         fluentWait.withTimeout(strategy.getTimeout(), TimeUnit.SECONDS);
         fluentWait.pollingEvery(strategy.getPoolingEvery(), strategy.getUnit());
+        fluentWait.setNullOnFailure(strategy.isNullOnFailure());
     }
 
     public OurElementFinder(WebDriver driver, SearchContext context, OurSearchStrategy strategy) {
@@ -47,6 +46,7 @@ public class OurElementFinder {
         this.strategy = strategy;
         fluentWait.withTimeout(strategy.getTimeout(), TimeUnit.SECONDS);
         fluentWait.pollingEvery(strategy.getPoolingEvery(), strategy.getUnit());
+        fluentWait.setNullOnFailure(strategy.isNullOnFailure());
     }
 
     public WebElement visibleElement(By locator) {
@@ -71,7 +71,11 @@ public class OurElementFinder {
         Function<WebDriver, List<WebElement>> condition = new OurConditionFactory(context).get(strategy.getFrameStrategy())
                 .presence(locator);
         return wrapList(fluentWait.waitFor(condition), locator);
+    }
 
+    //this is not "OUR" alert yet, so should probably become "OUR"
+    public Alert alert() {
+        return fluentWait.waitFor(ExpectedConditions.alertIsPresent());
     }
 
 }

@@ -8,23 +8,22 @@ import java.util.function.Function;
 /**
  * Created by vefimov on 18/04/2017.
  */
-class FluentWaitFinder extends FluentWait<WebDriver> {
+public class FluentWaitFinder extends FluentWait<WebDriver> {
 
     //default condition should stop execution in case of failure
-    private boolean continueOnFailure = false;
+    private boolean nullOnFailure = false;
 
-    FluentWaitFinder(WebDriver input) {
+    public FluentWaitFinder(WebDriver input) {
         super(input);
     }
 
-    void continueOnFailure() {
-        continueOnFailure = true;
+    public void setNullOnFailure(boolean nullOnFailure) {
+        this.nullOnFailure = nullOnFailure;
     }
 
-
     //todo proper error message should be automatically generated here and in FluentWaitCondition as well
-    <T> T waitFor(Function<WebDriver, T> condition) {
-        if (continueOnFailure) {
+    public <T> T waitFor(Function<WebDriver, T> condition) {
+        if (nullOnFailure) {
             try {
                 return until(condition);
             } catch (Throwable ignoredAndContinue) {

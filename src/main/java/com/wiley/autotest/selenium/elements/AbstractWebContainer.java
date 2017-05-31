@@ -2,7 +2,7 @@ package com.wiley.autotest.selenium.elements;
 
 import com.wiley.autotest.WebDriverAwareElementFinder;
 import com.wiley.autotest.selenium.SeleniumHolder;
-import com.wiley.autotest.selenium.context.AbstractElementFinder;
+import com.wiley.autotest.selenium.context.OurElementProvider;
 import com.wiley.autotest.selenium.context.ErrorSender;
 import com.wiley.autotest.selenium.elements.upgrade.IOurWebElement;
 import org.openqa.selenium.Alert;
@@ -12,7 +12,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public abstract class AbstractWebContainer extends AbstractElementFinder implements WebContainer {
+public abstract class AbstractWebContainer extends OurElementProvider implements WebContainer {
 
     private static final long WAIT_TIME_OUT_IN_SECONDS = 10;
 
