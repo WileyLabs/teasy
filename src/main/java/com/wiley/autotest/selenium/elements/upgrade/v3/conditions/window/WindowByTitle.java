@@ -8,7 +8,7 @@ import java.util.function.Function;
 /**
  * Created by vefimov on 30/05/2017.
  */
-public class WindowByTitle extends WindowCondition {
+public class WindowByTitle extends WindowFinder {
 
     public WindowByTitle(String title){
         super(title);
@@ -16,6 +16,6 @@ public class WindowByTitle extends WindowCondition {
 
     @Override
     public Function<WebDriver, String> findAndSwitch() {
-        return ExpectedConditions2.appearingOfWindowAndSwitchToIt(getValue());
+        return ExpectedConditions2.appearingOfWindowAndSwitchToIt(locatedBy());
     }
 }

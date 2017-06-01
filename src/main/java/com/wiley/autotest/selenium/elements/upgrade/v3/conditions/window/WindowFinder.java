@@ -7,16 +7,16 @@ import java.util.function.Function;
 /**
  * Created by vefimov on 30/05/2017.
  */
-public abstract class WindowCondition {
+public abstract class WindowFinder {
 
-    private String value;
+    private String locatedBy;
 
-    public WindowCondition(String value) {
-        this.value = value;
+    public WindowFinder(String locatedBy) {
+        this.locatedBy = locatedBy;
     }
 
-    public String getValue() {
-        return value;
+    public String locatedBy() {
+        return locatedBy;
     }
 
     public abstract Function<WebDriver, String> findAndSwitch();

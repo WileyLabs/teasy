@@ -5,14 +5,14 @@ package com.wiley.autotest.selenium.elements.upgrade.v3.conditions.window;
  */
 public class WindowMatcher {
 
-    private WindowCondition condition;
+    private WindowFinder finder;
 
-    private WindowMatcher(WindowCondition condition) {
-        this.condition = condition;
+    private WindowMatcher(WindowFinder finder) {
+        this.finder = finder;
     }
 
-    public WindowCondition get() {
-        return condition;
+    public WindowFinder get() {
+        return finder;
     }
 
     public static WindowMatcher byTitle(String title) {
