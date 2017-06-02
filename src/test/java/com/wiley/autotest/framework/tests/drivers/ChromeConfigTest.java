@@ -1,5 +1,6 @@
-package com.wiley.autotest.framework.tests;
+package com.wiley.autotest.framework.tests.drivers;
 
+import com.wiley.autotest.annotations.OurAfterMethod;
 import com.wiley.autotest.framework.config.BaseTest;
 import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
@@ -35,5 +36,10 @@ public class ChromeConfigTest extends BaseTest {
         Assert.assertTrue(webDriver instanceof ChromeDriver);
 
         Assert.assertEquals(((RemoteWebDriver) webDriver).getCapabilities().getCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR), UnexpectedAlertBehaviour.IGNORE.toString());
+    }
+
+    @OurAfterMethod
+    public void after() {
+        SeleniumHolder.getWebDriver().quit();
     }
 }

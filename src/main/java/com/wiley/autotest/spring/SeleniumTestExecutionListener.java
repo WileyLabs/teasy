@@ -17,6 +17,7 @@ import io.appium.java_client.ios.IOSDriver;
 import io.github.bonigarcia.wdm.ChromeDriverManager;
 import io.github.bonigarcia.wdm.EdgeDriverManager;
 import io.github.bonigarcia.wdm.InternetExplorerDriverManager;
+import io.github.bonigarcia.wdm.PhantomJsDriverManager;
 import net.lightbody.bmp.proxy.ProxyServer;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.lang.StringUtils;
@@ -36,9 +37,11 @@ import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.firefox.internal.ProfilesIni;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.LoggingPreferences;
+import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.remote.*;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
@@ -72,6 +75,8 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
     private static final String CHROME = "chrome";
     private static final String SAFARI = "safari";
     private static final String SAFARI_10 = "safari10";
+    private static final String HTML_UNIT = "htmlunit";
+    private static final String PHANTOM_JS = "phantomjs";
     private static final String IE = "ie";
     private static final String EDGE = "edge";
     private static final String IE11 = "ie11";
@@ -401,6 +406,14 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
                     desiredCapabilities = getEdgeDesiredCapabilities();
                     SeleniumHolder.setDriverName(EDGE);
                     SeleniumHolder.setPlatform(WINDOWS);
+                } else if (StringUtils.equalsIgnoreCase(browserName, HTML_UNIT)) {
+                    desiredCapabilities = getHtmlUnitDesiredCapabilities();
+                    SeleniumHolder.setDriverName(HTML_UNIT);
+                    SeleniumHolder.setPlatform(WINDOWS);
+                } else if (StringUtils.equalsIgnoreCase(browserName, PHANTOM_JS)) {
+                    desiredCapabilities = getPhantomJsDesiredCapabilities();
+                    SeleniumHolder.setDriverName(PHANTOM_JS);
+                    SeleniumHolder.setPlatform(WINDOWS);
                 } else if (StringUtils.equalsIgnoreCase(browserName, FIREFOX)) {
                     desiredCapabilities = getFireFoxDesiredCapabilities(settings);
                     SeleniumHolder.setDriverName(FIREFOX);
@@ -503,6 +516,12 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
                 SeleniumHolder.setDriverName(SAFARI_10);
                 SeleniumHolder.setPlatform(MAC);
                 return safari10(settings, customDesiredCapabilities);
+            } else if (StringUtils.equalsIgnoreCase(browserName, HTML_UNIT)) {
+                SeleniumHolder.setDriverName(HTML_UNIT);
+                return htmlUnit(customDesiredCapabilities);
+            } else if (StringUtils.equalsIgnoreCase(browserName, PHANTOM_JS)) {
+                SeleniumHolder.setDriverName(PHANTOM_JS);
+                return phantomJs(customDesiredCapabilities);
             } else {
                 throw new RuntimeException("Not supported browser: " + browserName + ", for platform: " + settings.getPlatform());
             }
@@ -569,6 +588,23 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         RemoteWebDriver remoteWebDriver = new RemoteWebDriver(new URL(settings.getGridHubUrl()), desiredCapabilities);
         remoteWebDriver.setFileDetector(new LocalFileDetector());
         return remoteWebDriver;
+    }
+
+    private WebDriver htmlUnit(DesiredCapabilities customDesiredCapabilities) {
+        DesiredCapabilities desiredCapabilities = getHtmlUnitDesiredCapabilities();
+        if (!customDesiredCapabilities.asMap().isEmpty()) {
+            desiredCapabilities.merge(customDesiredCapabilities);
+        }
+        return new HtmlUnitDriver(desiredCapabilities);
+    }
+
+    private WebDriver phantomJs(DesiredCapabilities customDesiredCapabilities) {
+        PhantomJsDriverManager.getInstance().setup();
+        DesiredCapabilities desiredCapabilities = getPhantomJsDesiredCapabilities();
+        if (!customDesiredCapabilities.asMap().isEmpty()) {
+            desiredCapabilities.merge(customDesiredCapabilities);
+        }
+        return new PhantomJSDriver(desiredCapabilities);
     }
 
     public DesiredCapabilities getCustomDesiredCapabilities(Configuration configuration) {
@@ -661,6 +697,16 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         desiredCapabilities.setPlatform(Platform.MAC);
         setProxy(desiredCapabilities);
         return desiredCapabilities;
+    }
+
+    private DesiredCapabilities getHtmlUnitDesiredCapabilities() {
+        DesiredCapabilities desiredCapabilities = DesiredCapabilities.htmlUnitWithJs();
+        desiredCapabilities.setJavascriptEnabled(true);
+        return desiredCapabilities;
+    }
+
+    private DesiredCapabilities getPhantomJsDesiredCapabilities() {
+        return DesiredCapabilities.phantomjs();
     }
 
     private DesiredCapabilities getAndroidChromeDesiredCapabilities() {
