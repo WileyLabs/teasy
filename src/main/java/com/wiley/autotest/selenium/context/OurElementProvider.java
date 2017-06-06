@@ -177,110 +177,6 @@ public abstract class OurElementProvider {
         return new OurWindow();
     }
 
-    //TODO VE not sure of we need this method or its fine to have window().switchTo() ? Nick what do you think?
-    protected void switchToWindow() {
-
-    }
-
-    @Deprecated
-    /**
-     * Use {@link OurElementProvider#window()} and call {@link OurWindow#switchTo(WindowMatcher)}
-     */
-    protected final void waitForWindowToBeAppearedByPartialUrlAndSwitchToIt(final String url, long timeoutInSeconds) {
-        waitWindowIsAppearInChrome();
-        elementFinder.waitForWindowToBeAppearedByPartialUrlAndSwitchToIt(url, timeoutInSeconds);
-    }
-
-    @Deprecated
-    /**
-     * Use {@link OurElementProvider#window()} and call {@link OurWindow#switchTo(WindowMatcher)}
-     */
-    protected final void waitForWindowToBeAppearedAndSwitchToIt(final String title) {
-        windowOrFail(title, () -> {
-            waitWindowIsAppearInChrome();
-            elementFinder.waitForWindowToBeAppearedAndSwitchToIt(title);
-        });
-    }
-
-    @Deprecated
-    /**
-     * Use {@link OurElementProvider#window()} and call {@link OurWindow#switchTo(WindowMatcher)}
-     */
-    protected final void waitForWindowToBeAppearedByPartialUrlAndSwitchToIt(final String url) {
-        windowOrFail(url, () -> {
-            waitWindowIsAppearInChrome();
-            elementFinder.waitForWindowToBeAppearedByPartialUrlAndSwitchToIt(url);
-
-        });
-    }
-    @Deprecated
-    /**
-     * Use {@link OurElementProvider#window()} and call {@link OurWindow#switchTo(WindowMatcher)}
-     */
-    protected final void waitForWindowToBeAppearedByPartialTitleAndSwitchToIt(final String partialTitle) {
-        windowOrFail(partialTitle, () -> {
-            waitWindowIsAppearInChrome();
-            elementFinder.waitForWindowToBeAppearedByPartialTitleAndSwitchToIt(partialTitle);
-        });
-    }
-
-    //
-    //
-    //TODO VE Nick do you know if this is still actual?
-    //
-    //
-    //TODO NT: In chrome test hangs before switch to new window, to avoid this add timeout
-    private void waitWindowIsAppearInChrome() {
-        if (isChrome()) {
-            TestUtils.waitForSomeTime(3000, "Wait for window is appear in chrome");
-        }
-    }
-
-    private void windowOrFail(String title, Actions action) {
-        try {
-            action.execute();
-        } catch (WebDriverException e) {
-            fail("Unable to find window with '" + title + "'");
-        }
-    }
-
-
-    private WebElement getElementOrWebDriverException(Supplier<WebElement> webElementSupplier) {
-        return (WebElement) getSupplierObject(webElementSupplier, "****WebDriverException in element()****");
-    }
-
-    @SuppressWarnings("unchecked")
-    private List<WebElement> getElementsOrWebDriverException(Supplier<List<WebElement>> webElementsSupplier) {
-        return (List<WebElement>) getSupplierObject(webElementsSupplier, "****WebDriverException in elements()****");
-    }
-
-    @SuppressWarnings("unchecked")
-    private List<WebElement> getDomElementsOrWebDriverException(Supplier<List<WebElement>> webElementsSupplier) {
-        return (List<WebElement>) getSupplierObject(webElementsSupplier, "****WebDriverException in domElements()****");
-    }
-
-    private Object getSupplierObject(Supplier webElementSupplier, String loggerMessage) {
-        return getSupplierObject(webElementSupplier, loggerMessage, "");
-    }
-
-    private WebElement getElementOrWebDriverException(Supplier<WebElement> webElementSupplier, String errorMessage) {
-        return (WebElement) getSupplierObject(webElementSupplier, "", errorMessage);
-    }
-
-    private Object getSupplierObject(Supplier webElementSupplier, String loggerMessage, String errorMessage) {
-        try {
-            return webElementSupplier.get();
-        } catch (TimeoutException time) {
-            fail(generateErrorMessage());
-        } catch (WebDriverException wde) {
-            LOGGER.error(loggerMessage, wde);
-            fail((errorMessage.isEmpty() ? generateErrorMessage() : errorMessage)
-                    + "\nException: " + wde.getMessage()
-                    + "\nStackTrace: " + Arrays.toString(wde.getStackTrace()));
-        }
-        return null;
-    }
-
     protected Button button(By locator) {
         return getElement(Button.class, locator);
     }
@@ -428,13 +324,94 @@ public abstract class OurElementProvider {
     // OLD code that is going to be removed by September 2017.
     // Currently kept to give users some time to switch to new implementation
 
+    @Deprecated
+    //Outdated method - used only inside deprected methods. Will be removed in future.
+    private Object getSupplierObject(Supplier webElementSupplier, String loggerMessage, String errorMessage) {
+        try {
+            return webElementSupplier.get();
+        } catch (TimeoutException time) {
+            fail(generateErrorMessage());
+        } catch (WebDriverException wde) {
+            LOGGER.error(loggerMessage, wde);
+            fail((errorMessage.isEmpty() ? generateErrorMessage() : errorMessage)
+                    + "\nException: " + wde.getMessage()
+                    + "\nStackTrace: " + Arrays.toString(wde.getStackTrace()));
+        }
+        return null;
+    }
+
+    @Deprecated
+    /**
+     * Use {@link OurElementProvider#window()} and call {@link OurWindow#switchTo(WindowMatcher)}
+     */
+    protected final void waitForWindowToBeAppearedByPartialUrlAndSwitchToIt(final String url, long timeoutInSeconds) {
+        if (isChrome()) {
+            TestUtils.waitForSomeTime(3000, "Wait for window is appear in chrome");
+        }
+        elementFinder.waitForWindowToBeAppearedByPartialUrlAndSwitchToIt(url, timeoutInSeconds);
+    }
+
+    @Deprecated
+    /**
+     * Use {@link OurElementProvider#window()} and call {@link OurWindow#switchTo(WindowMatcher)}
+     */
+    protected final void waitForWindowToBeAppearedAndSwitchToIt(final String title) {
+        Actions action = () -> {
+            if (isChrome()) {
+                TestUtils.waitForSomeTime(3000, "Wait for window is appear in chrome");
+            }
+            elementFinder.waitForWindowToBeAppearedAndSwitchToIt(title);
+        };
+        try {
+            action.execute();
+        } catch (WebDriverException e) {
+            fail("Unable to find window with '" + title + "'");
+        }
+    }
+
+    @Deprecated
+    /**
+     * Use {@link OurElementProvider#window()} and call {@link OurWindow#switchTo(WindowMatcher)}
+     */
+    protected final void waitForWindowToBeAppearedByPartialUrlAndSwitchToIt(final String url) {
+        Actions action = () -> {
+            if (isChrome()) {
+                TestUtils.waitForSomeTime(3000, "Wait for window is appear in chrome");
+            }
+            elementFinder.waitForWindowToBeAppearedByPartialUrlAndSwitchToIt(url);
+
+        };
+        try {
+            action.execute();
+        } catch (WebDriverException e) {
+            fail("Unable to find window with '" + url + "'");
+        }
+    }
+    @Deprecated
+    /**
+     * Use {@link OurElementProvider#window()} and call {@link OurWindow#switchTo(WindowMatcher)}
+     */
+    protected final void waitForWindowToBeAppearedByPartialTitleAndSwitchToIt(final String partialTitle) {
+        Actions action = () -> {
+            if (isChrome()) {
+                TestUtils.waitForSomeTime(3000, "Wait for window is appear in chrome");
+            }
+            elementFinder.waitForWindowToBeAppearedByPartialTitleAndSwitchToIt(partialTitle);
+        };
+        try {
+            action.execute();
+        } catch (WebDriverException e) {
+            fail("Unable to find window with '" + partialTitle + "'");
+        }
+    }
 
     @Deprecated
     /**
      * Use element().domElements() or domElement().domeElements()
      */
     protected List<WebElement> domElements(SearchContext searchContext, By locator) {
-        return getDomElementsOrWebDriverException(() -> waitForPresenceOfAllElementsLocatedBy(searchContext, locator));
+        Supplier<List<WebElement>> webElementsSupplier = () -> waitForPresenceOfAllElementsLocatedBy(searchContext, locator);
+        return (List<WebElement>) getSupplierObject(webElementsSupplier, "****WebDriverException in domElements()****", "");
     }
 
     @Deprecated
@@ -455,7 +432,8 @@ public abstract class OurElementProvider {
      * Use element().domElement() or domElement().domeElement()
      */
     protected WebElement domElement(SearchContext searchContext, By locator) {
-        return (WebElement) getSupplierObject(() -> waitForPresenceOfElementLocatedBy(searchContext, locator), "****WebDriverException in domElement()****");
+        Supplier webElementSupplier = () -> waitForPresenceOfElementLocatedBy(searchContext, locator);
+        return (WebElement) getSupplierObject(webElementSupplier, "****WebDriverException in domElement()****", "");
     }
 
     @Deprecated
@@ -472,8 +450,9 @@ public abstract class OurElementProvider {
      * use element().element() methods call chain
      */
     protected WebElement element(final SearchContext searchContext, final By locator) {
-        return getElementOrWebDriverException(() -> elementFinder.waitForVisibilityOfAllElementsLocatedBy(searchContext, locator)
-                .get(0));
+        Supplier<WebElement> webElementSupplier = () -> elementFinder.waitForVisibilityOfAllElementsLocatedBy(searchContext, locator)
+                .get(0);
+        return (WebElement) getSupplierObject(webElementSupplier, "****WebDriverException in element()****", "");
     }
 
     @Deprecated
@@ -481,7 +460,8 @@ public abstract class OurElementProvider {
      * use element().elements() methods call chain
      */
     protected List<WebElement> elements(final SearchContext searchContext, final By locator) {
-        return getElementsOrWebDriverException(() -> elementFinder.waitForVisibilityOfAllElementsLocatedBy(searchContext, locator));
+        Supplier<List<WebElement>> webElementsSupplier = () -> elementFinder.waitForVisibilityOfAllElementsLocatedBy(searchContext, locator);
+        return (List<WebElement>) getSupplierObject(webElementsSupplier, "****WebDriverException in elements()****", "");
     }
 
     @Deprecated
@@ -489,7 +469,8 @@ public abstract class OurElementProvider {
      * Use {@link OurElementProvider#domElement(By, OurSearchStrategy)}
      */
     protected WebElement domElement(By locator, final long timeoutInSeconds) {
-        return (WebElement) getSupplierObject(() -> waitForPresenceOfElementLocatedBy(locator, timeoutInSeconds), "****WebDriverException in domElement()****");
+        Supplier webElementSupplier = () -> waitForPresenceOfElementLocatedBy(locator, timeoutInSeconds);
+        return (WebElement) getSupplierObject(webElementSupplier, "****WebDriverException in domElement()****", "");
     }
 
     @Deprecated
@@ -517,7 +498,7 @@ public abstract class OurElementProvider {
      * Use {@link OurElementProvider#domElements(By, OurSearchStrategy)}
      */
     protected List<WebElement> domElements(By locator, SearchStrategy searchStrategy, long timeoutInSeconds) {
-        return getDomElementsOrWebDriverException(() -> {
+        Supplier<List<WebElement>> webElementsSupplier = () -> {
             switch (searchStrategy) {
                 case FIRST_ELEMENTS:
                     return waitForPresenceOfAllElementsLocatedBy(locator, timeoutInSeconds);
@@ -525,7 +506,8 @@ public abstract class OurElementProvider {
                     return elementFinder.waitForPresenceOfAllElementsLocatedByInFrames(locator, timeoutInSeconds);
             }
             throw new EnumConstantNotPresentException(searchStrategy.getDeclaringClass(), " enum constant is not recognized");
-        });
+        };
+        return (List<WebElement>) getSupplierObject(webElementsSupplier, "****WebDriverException in domElements()****", "");
     }
 
     @Deprecated
@@ -533,7 +515,7 @@ public abstract class OurElementProvider {
      * Use {@link OurElementProvider#domElements(By)}
      */
     protected List<WebElement> domElements(By locator, SearchStrategy searchStrategy) {
-        return getDomElementsOrWebDriverException(() -> {
+        Supplier<List<WebElement>> webElementsSupplier = () -> {
             switch (searchStrategy) {
                 case FIRST_ELEMENTS:
                     return waitForPresenceOfAllElementsLocatedBy(locator);
@@ -541,7 +523,8 @@ public abstract class OurElementProvider {
                     return elementFinder.waitForPresenceOfAllElementsLocatedByInFrames(locator);
             }
             throw new EnumConstantNotPresentException(searchStrategy.getDeclaringClass(), " enum constant is not recognized");
-        });
+        };
+        return (List<WebElement>) getSupplierObject(webElementsSupplier, "****WebDriverException in domElements()****", "");
     }
 
     @Deprecated
@@ -557,7 +540,8 @@ public abstract class OurElementProvider {
      * Use {@link OurElementProvider#domElement(By)}
      */
     protected final WebElement waitForPresenceOfElementLocatedBy(final By locator, final String errorMessage) {
-        return getElementOrWebDriverException(() -> waitForPresenceOfElementLocatedBy(locator), errorMessage);
+        Supplier<WebElement> webElementSupplier = () -> waitForPresenceOfElementLocatedBy(locator);
+        return (WebElement) getSupplierObject(webElementSupplier, "", errorMessage);
     }
 
     @Deprecated
@@ -566,7 +550,8 @@ public abstract class OurElementProvider {
      * Use domElement - when you need element which is PRESENT IN DOM
      */
     protected final WebElement waitForPresenceOfElementLocatedBy(final By locator, long timeOutInSeconds, final String errorMessage) {
-        return getElementOrWebDriverException(() -> waitForPresenceOfElementLocatedBy(locator, timeOutInSeconds), errorMessage);
+        Supplier<WebElement> webElementSupplier = () -> waitForPresenceOfElementLocatedBy(locator, timeOutInSeconds);
+        return (WebElement) getSupplierObject(webElementSupplier, "", errorMessage);
     }
 
 
@@ -606,7 +591,8 @@ public abstract class OurElementProvider {
      */
     @Deprecated
     protected final WebElement waitForVisibilityOfElementLocatedBy(final By locator, final String errorMessage) {
-        return getElementOrWebDriverException(() -> elementFinder.waitForVisibilityOfElementLocatedBy(locator), errorMessage);
+        Supplier<WebElement> webElementSupplier = () -> elementFinder.waitForVisibilityOfElementLocatedBy(locator);
+        return (WebElement) getSupplierObject(webElementSupplier, "", errorMessage);
     }
 
     @Deprecated
@@ -686,8 +672,9 @@ public abstract class OurElementProvider {
      * Use {@link OurElementProvider#element(By, OurSearchStrategy)}
      */
     protected WebElement element(final By locator, final long timeoutInSeconds) {
-        return getElementOrWebDriverException(() -> elementFinder.waitForVisibilityOfAllElementsLocatedBy(locator, timeoutInSeconds)
-                .get(0));
+        Supplier<WebElement> webElementSupplier = () -> elementFinder.waitForVisibilityOfAllElementsLocatedBy(locator, timeoutInSeconds)
+                .get(0);
+        return (WebElement) getSupplierObject(webElementSupplier, "****WebDriverException in element()****", "");
     }
 
     @Deprecated
@@ -727,7 +714,7 @@ public abstract class OurElementProvider {
      * Use {@link OurElementProvider#elements(By, OurSearchStrategy)}
      */
     protected List<WebElement> elements(final By locator, SearchStrategy searchStrategy, final long timeoutInSeconds) {
-        return getElementsOrWebDriverException(() -> {
+        Supplier<List<WebElement>> webElementsSupplier = () -> {
             switch (searchStrategy) {
                 case FIRST_ELEMENTS:
                     return elementFinder.waitForVisibilityOfAllElementsLocatedBy(locator, timeoutInSeconds);
@@ -735,7 +722,8 @@ public abstract class OurElementProvider {
                     return elementFinder.waitForVisibilityOfAllElementsLocatedByInFrames(locator, timeoutInSeconds);
             }
             throw new EnumConstantNotPresentException(searchStrategy.getDeclaringClass(), " enum constant is not recognized");
-        });
+        };
+        return (List<WebElement>) getSupplierObject(webElementsSupplier, "****WebDriverException in elements()****", "");
     }
 
 
@@ -744,7 +732,7 @@ public abstract class OurElementProvider {
      * Use {@link OurElementProvider#elements(By, OurSearchStrategy)}
      */
     protected List<WebElement> elements(final By locator, SearchStrategy searchStrategy) {
-        return getElementsOrWebDriverException(() -> {
+        Supplier<List<WebElement>> webElementsSupplier = () -> {
             switch (searchStrategy) {
                 case FIRST_ELEMENTS:
                     return elementFinder.waitForVisibilityOfAllElementsLocatedBy(locator);
@@ -752,7 +740,8 @@ public abstract class OurElementProvider {
                     return elementFinder.waitForVisibilityOfAllElementsLocatedByInFrames(locator);
             }
             throw new EnumConstantNotPresentException(searchStrategy.getDeclaringClass(), " enum constant is not recognized");
-        });
+        };
+        return (List<WebElement>) getSupplierObject(webElementsSupplier, "****WebDriverException in elements()****", "");
     }
 
 

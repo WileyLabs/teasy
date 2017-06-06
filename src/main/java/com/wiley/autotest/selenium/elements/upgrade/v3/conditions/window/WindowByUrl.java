@@ -16,6 +16,7 @@ public class WindowByUrl extends WindowFinder {
 
     @Override
     public Function<WebDriver, String> findAndSwitch() {
+        waitForChrome();
         return ExpectedConditions2.appearingOfWindowByUrl(locatedBy());
     }
 }
