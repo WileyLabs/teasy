@@ -17,6 +17,7 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.Reporter;
 
 import java.util.ArrayList;
@@ -41,6 +42,9 @@ public abstract class OurElementProvider {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(OurElementProvider.class);
 
+    @Autowired
+    private Long timeout;
+
     //will be replaced with OurElementFinder
     protected ElementFinder elementFinder;
     //default finder that uses timeout from pom
@@ -57,7 +61,7 @@ public abstract class OurElementProvider {
 
     private OurElementFinder finder() {
         if (finder == null) {
-            finder = new OurElementFinder(getWebDriver());
+            finder = new OurElementFinder(getWebDriver(), timeout);
         }
         return finder;
     }

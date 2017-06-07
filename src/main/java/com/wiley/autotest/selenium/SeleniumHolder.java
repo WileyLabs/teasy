@@ -31,7 +31,7 @@ public final class SeleniumHolder {
     private static final ThreadLocal<AppiumDriver> appiumDriver = new ThreadLocal<>();
     private static final ThreadLocal<IOSDriver> iosDriverHolder = new ThreadLocal<>();
     private static final ThreadLocal<AndroidDriver> androidDriverHolder = new ThreadLocal<>();
-    private static final ThreadLocal<List<String>> activeProfilesList = ThreadLocal.withInitial(() -> new ArrayList<>());
+    private static final ThreadLocal<List<String>> activeProfilesList = ThreadLocal.withInitial(ArrayList::new);
     private static final ThreadLocal<String> platformName = new ThreadLocal<String>();
 
     /**

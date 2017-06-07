@@ -361,7 +361,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         if (!getParameterBrowserName().equals("browser")) {
             browserName = getParameterBrowserName();
             setParameterBrowserName("browser");
-        } else if (!getDriverName().isEmpty()) {
+        } else if (getDriverName() != null) {
             browserName = getDriverName();
         } else {
             browserName = settings.getDriverName();
@@ -374,7 +374,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
             if (!getParameterPlatformName().equals("platform")) {
                 platformName = getParameterPlatformName();
                 setParameterPlatformName("platform");
-            } else if (!getPlatform().isEmpty()) {
+            } else if (getPlatform() != null) {
                 platformName = getPlatform();
             } else {
                 platformName = settings.getPlatform();
