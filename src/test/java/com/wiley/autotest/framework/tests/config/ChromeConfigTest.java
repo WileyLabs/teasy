@@ -1,4 +1,4 @@
-package com.wiley.autotest.framework.tests;
+package com.wiley.autotest.framework.tests.config;
 
 /**
  * User: ntyukavkin
