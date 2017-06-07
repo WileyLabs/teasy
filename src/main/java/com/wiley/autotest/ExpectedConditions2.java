@@ -2,6 +2,7 @@ package com.wiley.autotest;
 
 import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
 import com.wiley.autotest.selenium.elements.TextField;
+import com.wiley.autotest.utils.ExecutionUtils;
 import com.wiley.autotest.utils.TestUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedCondition;
@@ -62,7 +63,7 @@ public final class ExpectedConditions2 {
      * @return
      */
     public static ExpectedCondition<List<WebElement>> visibilityOfFirstElements(final By locator) {
-        return driver -> getFirstVisibleWebElements(driver.findElements(locator));
+        return driver -> getFirstVisibleWebElements(driver, null, locator);
     }
 
     /**
@@ -74,8 +75,7 @@ public final class ExpectedConditions2 {
      */
     public static ExpectedCondition<List<WebElement>> visibilityOfFirstElements(final SearchContext searchContext, final By locator) {
         return driver -> {
-            FramesTransparentWebDriver framesTransparentWebDriver = (FramesTransparentWebDriver) driver;
-            List<WebElement> visibleElements = getFirstVisibleWebElements(framesTransparentWebDriver.findElements(searchContext, locator));
+            List<WebElement> visibleElements = getFirstVisibleWebElements(driver, searchContext, locator);
             return isNotEmpty(visibleElements) ? visibleElements : null;
         };
     }
@@ -89,8 +89,7 @@ public final class ExpectedConditions2 {
      */
     public static ExpectedCondition<List<WebElement>> visibilityOfFirstElementsInAllFrames(final By locator) {
         return driver -> {
-            FramesTransparentWebDriver framesTransparentWebDriver = (FramesTransparentWebDriver) driver;
-            List<WebElement> visibleElements = getFirstVisibleWebElements(framesTransparentWebDriver.findAllElementsInFrames(locator));
+            List<WebElement> visibleElements = getFirstVisibleWebElements(driver, null, locator);
             return isNotEmpty(visibleElements) ? visibleElements : null;
         };
     }
@@ -106,17 +105,38 @@ public final class ExpectedConditions2 {
      */
     public static ExpectedCondition<List<WebElement>> visibilityOfFirstElementsInAllFrames(final SearchContext searchContext, final By locator) {
         return driver -> {
-            FramesTransparentWebDriver framesTransparentWebDriver = (FramesTransparentWebDriver) driver;
-            List<WebElement> visibleElements = getFirstVisibleWebElements(framesTransparentWebDriver.findAllElementsInFrames(searchContext, locator));
+            List<WebElement> visibleElements = getFirstVisibleWebElements(driver, searchContext, locator);
             return isNotEmpty(visibleElements) ? visibleElements : null;
         };
     }
 
+    private static List<WebElement> getFirstVisibleWebElements(WebDriver driver, SearchContext searchContext, By locator) {
+        List<WebElement> elements;
+        if (searchContext == null) {
+            elements = driver.findElements(locator);
+        } else {
+            elements = searchContext.findElements(locator);
+        }
 
-    private static List<WebElement> getFirstVisibleWebElements(List<WebElement> elements) {
         List<WebElement> visibleElements = elements.stream()
                 .filter(element -> element.isDisplayed() || isElementHiddenUnderScroll(element))
                 .collect(Collectors.toList());
+
+        if (visibleElements.isEmpty() && searchContext == null) {
+            visibleElements = ((FramesTransparentWebDriver) driver)
+                    .findAllElementsInFrames(locator)
+                    .stream()
+                    .filter(element -> element.isDisplayed() || isElementHiddenUnderScroll(element))
+                    .collect(Collectors.toList());
+        }
+
+        if (visibleElements.isEmpty() && searchContext != null) {
+            visibleElements = ((FramesTransparentWebDriver) driver)
+                    .findAllElementsInFrames(searchContext, locator)
+                    .stream()
+                    .filter(element -> element.isDisplayed() || isElementHiddenUnderScroll(element))
+                    .collect(Collectors.toList());
+        }
         return isNotEmpty(visibleElements) ? visibleElements : null;
     }
 
@@ -124,7 +144,7 @@ public final class ExpectedConditions2 {
         return driver -> {
             try {
                 final WebElement foundElement = driver.findElement(locator);
-                return (foundElement.isDisplayed() || (isElementHiddenUnderScroll(foundElement))) ? foundElement : null;
+                return (foundElement.isDisplayed() || isElementHiddenUnderScroll(foundElement)) ? foundElement : null;
             } catch (Exception e) {
                 return null;
             }
@@ -132,7 +152,7 @@ public final class ExpectedConditions2 {
     }
 
     private static boolean isElementHiddenUnderScroll(WebElement element) {
-        return element.getLocation().getX() > 0 && element.getLocation().getY() > 0;
+        return ExecutionUtils.isFF() && element.getLocation().getX() > 0 && element.getLocation().getY() > 0;
     }
 
     public static ExpectedCondition<WebElement> invisibleOf(final By locator) {

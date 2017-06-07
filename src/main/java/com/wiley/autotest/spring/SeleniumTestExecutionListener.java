@@ -4,6 +4,7 @@ import com.wiley.autotest.annotations.BrowserMobProxy;
 import com.wiley.autotest.annotations.FireBug;
 import com.wiley.autotest.annotations.NeedRestartDriver;
 import com.wiley.autotest.annotations.UnexpectedAlertCapability;
+import com.wiley.autotest.selenium.DeviceHolder;
 import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.context.PageLoadingValidator;
 import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
@@ -16,7 +17,9 @@ import io.appium.java_client.ios.IOSDriver;
 import io.github.bonigarcia.wdm.ChromeDriverManager;
 import io.github.bonigarcia.wdm.EdgeDriverManager;
 import io.github.bonigarcia.wdm.InternetExplorerDriverManager;
+import io.github.bonigarcia.wdm.PhantomJsDriverManager;
 import net.lightbody.bmp.proxy.ProxyServer;
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -34,9 +37,11 @@ import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.firefox.internal.ProfilesIni;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.LoggingPreferences;
+import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.remote.*;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
@@ -44,6 +49,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
+import org.testng.Reporter;
+import ru.yandex.qatools.allure.annotations.Step;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -51,6 +58,7 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.net.*;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.logging.Level;
 
 import static com.wiley.autotest.selenium.SeleniumHolder.*;
@@ -67,6 +75,8 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
     private static final String CHROME = "chrome";
     private static final String SAFARI = "safari";
     private static final String SAFARI_10 = "safari10";
+    private static final String HTML_UNIT = "htmlunit";
+    private static final String PHANTOM_JS = "phantomjs";
     private static final String IE = "ie";
     private static final String EDGE = "edge";
     private static final String IE11 = "ie11";
@@ -81,48 +91,13 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
     private static ProxyServer proxyServer;
     private static final Object SYNC_OBJECT = new Object();
 
-    private static ThreadLocal<Integer> count = new ThreadLocal<Integer>() {
-        @Override
-        protected Integer initialValue() {
-            return 0;
-        }
-    };
-    private static ThreadLocal<Integer> driverRestartCount = new ThreadLocal<Integer>() {
-        @Override
-        protected Integer initialValue() {
-            return 0;
-        }
-    };
-    private static ThreadLocal<Boolean> useProxy = new ThreadLocal<Boolean>() {
-        @Override
-        protected Boolean initialValue() {
-            return false;
-        }
-    };
-    private static ThreadLocal<UnexpectedAlertBehaviour> alertCapability = new ThreadLocal<UnexpectedAlertBehaviour>() {
-        @Override
-        protected UnexpectedAlertBehaviour initialValue() {
-            return UnexpectedAlertBehaviour.ACCEPT;
-        }
-    };
-    private static ThreadLocal<UnexpectedAlertBehaviour> currentAlertCapability = new ThreadLocal<UnexpectedAlertBehaviour>() {
-        @Override
-        protected UnexpectedAlertBehaviour initialValue() {
-            return UnexpectedAlertBehaviour.ACCEPT;
-        }
-    };
-    private static ThreadLocal<Boolean> isNeedToRestart = new ThreadLocal<Boolean>() {
-        @Override
-        protected Boolean initialValue() {
-            return false;
-        }
-    };
-    private static ThreadLocal<Boolean> isUseFireBug = new ThreadLocal<Boolean>() {
-        @Override
-        protected Boolean initialValue() {
-            return false;
-        }
-    };
+    private static ThreadLocal<Integer> count = ThreadLocal.withInitial(() -> 0);
+    private static ThreadLocal<Integer> driverRestartCount = ThreadLocal.withInitial(() -> 0);
+    private static ThreadLocal<Boolean> useProxy = ThreadLocal.withInitial(() -> false);
+    private static ThreadLocal<UnexpectedAlertBehaviour> alertCapability = ThreadLocal.withInitial(() -> UnexpectedAlertBehaviour.ACCEPT);
+    private static ThreadLocal<UnexpectedAlertBehaviour> currentAlertCapability = ThreadLocal.withInitial(() -> UnexpectedAlertBehaviour.ACCEPT);
+    private static ThreadLocal<Boolean> isNeedToRestart = ThreadLocal.withInitial(() -> false);
+    private static ThreadLocal<Boolean> isUseFireBug = ThreadLocal.withInitial(() -> false);
     private String[] activeProfiles;
 
     @Override
@@ -216,6 +191,8 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
             String classFromSettings = settings.getProperty("our.webelement.class");
             if (classFromSettings != null && !classFromSettings.isEmpty()) {
                 SeleniumHolder.setOurWebElementClass(classFromSettings);
+            } else if (configuration.getClassOfElement() != null) {
+                SeleniumHolder.setOurWebElementClass(configuration.getClassOfElement().getName());
             } else {
                 SeleniumHolder.setOurWebElementClass("com.wiley.autotest.selenium.elements.upgrade.OurWebElement");
             }
@@ -384,17 +361,20 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         if (!getParameterBrowserName().equals("browser")) {
             browserName = getParameterBrowserName();
             setParameterBrowserName("browser");
-        } else if (getDriverName() != null) {
+        } else if (!getDriverName().isEmpty()) {
             browserName = getDriverName();
         } else {
             browserName = settings.getDriverName();
         }
+
+        DesiredCapabilities customDesiredCapabilities = getCustomDesiredCapabilities(configuration);
+
         if (settings.isRunTestsWithGrid()) {
             String platformName;
             if (!getParameterPlatformName().equals("platform")) {
                 platformName = getParameterPlatformName();
                 setParameterPlatformName("platform");
-            } else if (getPlatform() != null) {
+            } else if (!getPlatform().isEmpty()) {
                 platformName = getPlatform();
             } else {
                 platformName = settings.getPlatform();
@@ -426,6 +406,14 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
                     desiredCapabilities = getEdgeDesiredCapabilities();
                     SeleniumHolder.setDriverName(EDGE);
                     SeleniumHolder.setPlatform(WINDOWS);
+                } else if (StringUtils.equalsIgnoreCase(browserName, HTML_UNIT)) {
+                    desiredCapabilities = getHtmlUnitDesiredCapabilities();
+                    SeleniumHolder.setDriverName(HTML_UNIT);
+                    SeleniumHolder.setPlatform(WINDOWS);
+                } else if (StringUtils.equalsIgnoreCase(browserName, PHANTOM_JS)) {
+                    desiredCapabilities = getPhantomJsDesiredCapabilities();
+                    SeleniumHolder.setDriverName(PHANTOM_JS);
+                    SeleniumHolder.setPlatform(WINDOWS);
                 } else if (StringUtils.equalsIgnoreCase(browserName, FIREFOX)) {
                     desiredCapabilities = getFireFoxDesiredCapabilities(settings);
                     SeleniumHolder.setDriverName(FIREFOX);
@@ -441,9 +429,8 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
                     AppiumDriver remoteWebDriver = new AndroidDriver(new URL(settings.getGridHubUrl()), desiredCapabilities);
                     remoteWebDriver.setFileDetector(new LocalFileDetector());
                     return remoteWebDriver;
-                } else if (configuration.getDesiredCapabilities() != null) {
-                    desiredCapabilities = configuration.getDesiredCapabilities();
-                    AppiumDriver remoteWebDriver = new AndroidDriver(new URL(settings.getGridHubUrl()), desiredCapabilities);
+                } else if (customDesiredCapabilities != null && !customDesiredCapabilities.asMap().isEmpty()) {
+                    AppiumDriver remoteWebDriver = new AndroidDriver(new URL(settings.getGridHubUrl()), customDesiredCapabilities);
                     remoteWebDriver.setFileDetector(new LocalFileDetector());
                     return remoteWebDriver;
                 } else {
@@ -454,6 +441,10 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
                     desiredCapabilities = getSafariDesiredCapabilities();
                     SeleniumHolder.setDriverName(SAFARI);
                     SeleniumHolder.setPlatform(MAC);
+                } else if (StringUtils.equalsIgnoreCase(browserName, SAFARI_10)) {
+                    desiredCapabilities = getSafari10DesiredCapabilities();
+                    SeleniumHolder.setDriverName(SAFARI_10);
+                    SeleniumHolder.setPlatform(MAC);
                 } else {
                     throw new RuntimeException("Not supported browser: " + browserName + ", for platform: " + platformName);
                 }
@@ -462,11 +453,8 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
                 if (StringUtils.equalsIgnoreCase(browserName, SAFARI)) {
                     desiredCapabilities = getIOSSafariDesiredCapabilities();
                     SeleniumHolder.setDriverName(SAFARI);
-                } else if (StringUtils.equalsIgnoreCase(browserName, CHROME)) {
-                    desiredCapabilities = getIOSChromeDesiredCapabilities();
-                    SeleniumHolder.setDriverName(CHROME);
-                } else if (configuration.getDesiredCapabilities() != null) {
-                    AppiumDriver remoteWebDriver = new IOSDriver(new URL(settings.getGridHubUrl()), configuration.getDesiredCapabilities());
+                } else if (customDesiredCapabilities != null && !customDesiredCapabilities.asMap().isEmpty()) {
+                    AppiumDriver remoteWebDriver = new IOSDriver(new URL(settings.getGridHubUrl()), customDesiredCapabilities);
                     remoteWebDriver.setFileDetector(new LocalFileDetector());
                     return remoteWebDriver;
                 } else {
@@ -488,6 +476,10 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
                 throw new RuntimeException("Not supported platform: " + platformName);
             }
 
+            if (!customDesiredCapabilities.asMap().isEmpty()) {
+                desiredCapabilities.merge(customDesiredCapabilities);
+            }
+
             RemoteWebDriver remoteWebDriver = new RemoteWebDriver(new URL(settings.getGridHubUrl()), desiredCapabilities);
             remoteWebDriver.setFileDetector(new LocalFileDetector());
             return remoteWebDriver;
@@ -495,73 +487,137 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
             if (StringUtils.equalsIgnoreCase(browserName, FIREFOX)) {
                 SeleniumHolder.setDriverName(FIREFOX);
                 SeleniumHolder.setPlatform(WINDOWS);
-                return firefox(settings);
+                return firefox(settings, customDesiredCapabilities);
             } else if (StringUtils.equalsIgnoreCase(browserName, CHROME)) {
                 SeleniumHolder.setDriverName(CHROME);
                 SeleniumHolder.setPlatform(WINDOWS);
-                return chrome();
+                return chrome(customDesiredCapabilities);
             } else if (StringUtils.equalsIgnoreCase(browserName, IE)) {
                 SeleniumHolder.setDriverName(IE);
                 SeleniumHolder.setPlatform(WINDOWS);
-                return explorer();
+                return explorer(customDesiredCapabilities);
             } else if (StringUtils.equalsIgnoreCase(browserName, EDGE)) {
                 SeleniumHolder.setDriverName(EDGE);
                 SeleniumHolder.setPlatform(WINDOWS);
-                return edge();
+                return edge(customDesiredCapabilities);
             } else if (StringUtils.equalsIgnoreCase(browserName, IE10)) {
                 SeleniumHolder.setDriverName(IE10);
                 SeleniumHolder.setPlatform(WINDOWS);
-                return explorer("10");
+                return explorer("10", customDesiredCapabilities);
             } else if (StringUtils.equalsIgnoreCase(browserName, IE9)) {
                 SeleniumHolder.setDriverName(IE9);
                 SeleniumHolder.setPlatform(WINDOWS);
-                return explorer("9");
+                return explorer("9", customDesiredCapabilities);
             } else if (StringUtils.equalsIgnoreCase(browserName, SAFARI)) {
                 SeleniumHolder.setDriverName(SAFARI);
                 SeleniumHolder.setPlatform(MAC);
-                return safari();
+                return safari(customDesiredCapabilities);
             } else if (StringUtils.equalsIgnoreCase(browserName, SAFARI_10)) {
                 SeleniumHolder.setDriverName(SAFARI_10);
                 SeleniumHolder.setPlatform(MAC);
-                return safari10(settings);
+                return safari10(settings, customDesiredCapabilities);
+            } else if (StringUtils.equalsIgnoreCase(browserName, HTML_UNIT)) {
+                SeleniumHolder.setDriverName(HTML_UNIT);
+                return htmlUnit(customDesiredCapabilities);
+            } else if (StringUtils.equalsIgnoreCase(browserName, PHANTOM_JS)) {
+                SeleniumHolder.setDriverName(PHANTOM_JS);
+                return phantomJs(customDesiredCapabilities);
             } else {
                 throw new RuntimeException("Not supported browser: " + browserName + ", for platform: " + settings.getPlatform());
             }
         }
     }
 
-    private DesiredCapabilities getAndroidChromeDesiredCapabilities() {
-        DesiredCapabilities capabilities = new DesiredCapabilities();
-        capabilities.setCapability("deviceName", "Android");
-        capabilities.setCapability("platformName", "Android");
-        capabilities.setCapability("newCommandTimeout", "900");
-        capabilities.setPlatform(Platform.ANDROID);
-        capabilities.setCapability(CapabilityType.BROWSER_NAME, CHROME);
-        return capabilities;
+    private WebDriver firefox(final Settings settings, DesiredCapabilities customDesiredCapabilities) {
+        DesiredCapabilities desiredCapabilities = getFireFoxDesiredCapabilities(settings);
+        if (!customDesiredCapabilities.asMap().isEmpty()) {
+            desiredCapabilities.merge(customDesiredCapabilities);
+        }
+        return new FirefoxDriver(desiredCapabilities);
     }
 
-    private DesiredCapabilities getIOSSafariDesiredCapabilities() {
-        DesiredCapabilities capabilities = new DesiredCapabilities();
-        capabilities.setCapability("deviceName", "Wiley_SQA_iPad_AM");
-        capabilities.setCapability("udid", "17ea71ec1700dde72a474b4e215d5aecd6172acd");
-        capabilities.setCapability("app", "Safari");
-        capabilities.setCapability("platformName", "iOS");
-        capabilities.setCapability("platformVersion", "8.3");
-        capabilities.setCapability("newCommandTimeout", "900");
-        return capabilities;
+    private WebDriver chrome(DesiredCapabilities customDesiredCapabilities) {
+        ChromeDriverManager.getInstance().setup();
+        DesiredCapabilities desiredCapabilities = getChromeDesiredCapabilities();
+        if (!customDesiredCapabilities.asMap().isEmpty()) {
+            desiredCapabilities.merge(customDesiredCapabilities);
+        }
+        return new ChromeDriver(desiredCapabilities);
     }
 
-    private DesiredCapabilities getIOSChromeDesiredCapabilities() {
-        DesiredCapabilities capabilities = new DesiredCapabilities();
-        capabilities.setCapability("deviceName", "iPad");
-        capabilities.setCapability("platformName", "iOS");
-        capabilities.setCapability("platformVersion", "7.1");
-        capabilities.setCapability("browserName", CHROME);
-        return capabilities;
+    private WebDriver explorer(DesiredCapabilities customDesiredCapabilities) {
+        InternetExplorerDriverManager.getInstance().setup();
+        DesiredCapabilities desiredCapabilities = getIEDesiredCapabilities();
+        if (!customDesiredCapabilities.asMap().isEmpty()) {
+            desiredCapabilities.merge(customDesiredCapabilities);
+        }
+        return new InternetExplorerDriver(desiredCapabilities);
     }
 
-    private WebDriver firefox(final Settings settings) {
-        return new FirefoxDriver(getFireFoxDesiredCapabilities(settings));
+    private WebDriver explorer(String version, DesiredCapabilities customDesiredCapabilities) {
+        InternetExplorerDriverManager.getInstance().setup();
+        DesiredCapabilities desiredCapabilities = getIEDesiredCapabilities(version);
+        if (!customDesiredCapabilities.asMap().isEmpty()) {
+            desiredCapabilities.merge(customDesiredCapabilities);
+        }
+        return new InternetExplorerDriver(desiredCapabilities);
+    }
+
+    private WebDriver edge(DesiredCapabilities customDesiredCapabilities) {
+        EdgeDriverManager.getInstance().setup();
+        DesiredCapabilities desiredCapabilities = getEdgeDesiredCapabilities();
+        if (!customDesiredCapabilities.asMap().isEmpty()) {
+            desiredCapabilities.merge(customDesiredCapabilities);
+        }
+        return new EdgeDriver(desiredCapabilities);
+    }
+
+    private WebDriver safari(DesiredCapabilities customDesiredCapabilities) {
+        DesiredCapabilities desiredCapabilities = getSafariDesiredCapabilities();
+        if (!customDesiredCapabilities.asMap().isEmpty()) {
+            desiredCapabilities.merge(customDesiredCapabilities);
+        }
+        return new SafariDriver(desiredCapabilities);
+    }
+
+    private WebDriver safari10(Settings settings, DesiredCapabilities customDesiredCapabilities) throws MalformedURLException {
+        DesiredCapabilities desiredCapabilities = getSafari10DesiredCapabilities();
+        if (!customDesiredCapabilities.asMap().isEmpty()) {
+            desiredCapabilities.merge(customDesiredCapabilities);
+        }
+        RemoteWebDriver remoteWebDriver = new RemoteWebDriver(new URL(settings.getGridHubUrl()), desiredCapabilities);
+        remoteWebDriver.setFileDetector(new LocalFileDetector());
+        return remoteWebDriver;
+    }
+
+    private WebDriver htmlUnit(DesiredCapabilities customDesiredCapabilities) {
+        DesiredCapabilities desiredCapabilities = getHtmlUnitDesiredCapabilities();
+        if (!customDesiredCapabilities.asMap().isEmpty()) {
+            desiredCapabilities.merge(customDesiredCapabilities);
+        }
+        return new HtmlUnitDriver(desiredCapabilities);
+    }
+
+    private WebDriver phantomJs(DesiredCapabilities customDesiredCapabilities) {
+        PhantomJsDriverManager.getInstance().setup();
+        DesiredCapabilities desiredCapabilities = getPhantomJsDesiredCapabilities();
+        if (!customDesiredCapabilities.asMap().isEmpty()) {
+            desiredCapabilities.merge(customDesiredCapabilities);
+        }
+        return new PhantomJSDriver(desiredCapabilities);
+    }
+
+    public DesiredCapabilities getCustomDesiredCapabilities(Configuration configuration) {
+        DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
+        if (configuration.getDesiredCapabilities() != null) {
+            desiredCapabilities.merge(configuration.getDesiredCapabilities());
+        } else if (!configuration.getCapabilities().isEmpty()) {
+            desiredCapabilities = new DesiredCapabilities();
+            for (Map.Entry<String, Object> capability : configuration.getCapabilities().entrySet()) {
+                desiredCapabilities.setCapability(capability.getKey(), capability.getValue());
+            }
+        }
+        return desiredCapabilities;
     }
 
     private DesiredCapabilities getFireFoxDesiredCapabilities(Settings settings) {
@@ -629,6 +685,43 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         capabilities.setCapability(SafariOptions.CAPABILITY, safariOptions);
         capabilities.setPlatform(Platform.MAC);
         setProxy(capabilities);
+        return capabilities;
+    }
+
+    private DesiredCapabilities getSafari10DesiredCapabilities() {
+        SafariOptions safariOptions = new SafariOptions();
+        safariOptions.setUseCleanSession(true);
+        DesiredCapabilities desiredCapabilities = DesiredCapabilities.safari();
+        desiredCapabilities.setCapability(SafariOptions.CAPABILITY, safariOptions);
+        desiredCapabilities.setCapability(SafariOptions.CAPABILITY, safariOptions);
+        desiredCapabilities.setPlatform(Platform.MAC);
+        setProxy(desiredCapabilities);
+        return desiredCapabilities;
+    }
+
+    private DesiredCapabilities getHtmlUnitDesiredCapabilities() {
+        DesiredCapabilities desiredCapabilities = DesiredCapabilities.htmlUnitWithJs();
+        desiredCapabilities.setJavascriptEnabled(true);
+        return desiredCapabilities;
+    }
+
+    private DesiredCapabilities getPhantomJsDesiredCapabilities() {
+        return DesiredCapabilities.phantomjs();
+    }
+
+    private DesiredCapabilities getAndroidChromeDesiredCapabilities() {
+        DesiredCapabilities capabilities = new DesiredCapabilities();
+        capabilities.setCapability("newCommandTimeout", "900");
+        capabilities.setPlatform(Platform.ANDROID);
+        capabilities.setCapability(CapabilityType.BROWSER_NAME, CHROME);
+        return capabilities;
+    }
+
+    private DesiredCapabilities getIOSSafariDesiredCapabilities() {
+        DesiredCapabilities capabilities = new DesiredCapabilities();
+        capabilities.setCapability("app", "Safari");
+        capabilities.setCapability("platformName", "iOS");
+        capabilities.setCapability("newCommandTimeout", "900");
         return capabilities;
     }
 
@@ -709,40 +802,6 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         return profile;
     }
 
-    private WebDriver chrome() {
-        ChromeDriverManager.getInstance().setup();
-        return new ChromeDriver(getChromeDesiredCapabilities());
-    }
-
-    private WebDriver explorer() {
-        InternetExplorerDriverManager.getInstance().setup();
-        return new InternetExplorerDriver(getIEDesiredCapabilities());
-    }
-
-    private WebDriver explorer(String version) {
-        InternetExplorerDriverManager.getInstance().setup();
-        return new InternetExplorerDriver(getIEDesiredCapabilities(version));
-    }
-
-    private WebDriver edge() {
-        EdgeDriverManager.getInstance().setup();
-        return new EdgeDriver(getEdgeDesiredCapabilities());
-    }
-
-    private WebDriver safari() {
-        return new SafariDriver();
-    }
-
-    private WebDriver safari10(Settings settings) throws MalformedURLException {
-        SafariOptions safariOptions = new SafariOptions();
-        safariOptions.setUseCleanSession(true);
-        DesiredCapabilities desiredCapabilities = DesiredCapabilities.safari();
-        desiredCapabilities.setCapability(SafariOptions.CAPABILITY, safariOptions);
-        RemoteWebDriver remoteWebDriver = new RemoteWebDriver(new URL(settings.getGridHubUrl()), desiredCapabilities);
-        remoteWebDriver.setFileDetector(new LocalFileDetector());
-        return remoteWebDriver;
-    }
-
     private PageLoadingValidator getValidator(final TestContext context) {
         return context.getApplicationContext().getBean(PageLoadingValidator.class);
     }
@@ -782,11 +841,76 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         });
     }
 
+    @Step
+    private void configuration() {
+        AppiumDriver appiumDriver = SeleniumHolder.getAppiumDriver();
+        if (appiumDriver != null) {
+            for (Object entry : appiumDriver.getSessionDetails().entrySet()) {
+                report(entry.toString());
+            }
+            String platformName = String.valueOf(appiumDriver.getSessionDetails().get("platformName"));
+            String platformVersion = String.valueOf(appiumDriver.getSessionDetails().get("platformVersion"));
+            String deviceName = String.valueOf(appiumDriver.getSessionDetails().get("deviceName"));
+            Object device = appiumDriver.getSessionDetails().get("device");
+            String deviceType = String.valueOf(device);
+            Object orientation = appiumDriver.getSessionDetails().get("orientation");
+            String orientationName = String.valueOf(orientation);
+
+            if (platformName != null) {
+                DeviceHolder.setPlatformVersion(platformVersion);
+            }
+            if (platformVersion != null) {
+                DeviceHolder.setPlatformName(platformName);
+            }
+            if (deviceName != null) {
+                DeviceHolder.setDeviceName(deviceName);
+            }
+            if (device != null) {
+                DeviceHolder.setDeviceType(getDeviceTypeFromCapabilities(deviceType));
+            }
+            if (deviceName != null && device == null) {
+                DeviceHolder.setDeviceType(getDeviceTypeFromCapabilities(deviceName));
+            }
+            if (orientation != null) {
+                DeviceHolder.setOrientation(orientationName);
+            } else {
+                DeviceHolder.setOrientation(ScreenOrientation.PORTRAIT.toString());
+            }
+        }
+    }
+
+    private String getDeviceTypeFromCapabilities(String deviceName) {
+        String deviceType;
+        if (deviceName.toLowerCase().contains("phone")) {
+            deviceType = "phone";
+        } else if (deviceName.toLowerCase().contains("pad")) {
+            deviceType = "tablet";
+        } else {
+            deviceType = null;
+        }
+        return deviceType;
+    }
+
+    @Step("{0}")
+    private void report(String report) {
+        LOGGER.info(report);
+        Reporter.log(report);
+    }
+
     private static String getNodeIpBySessionId(SessionId sessionId, String gridHubUrl) {
         String[] gridHubIpAndPort = gridHubUrl.split("//")[1].split(":");
         String gridIp = gridHubIpAndPort[0];
         int gridPort = Integer.parseInt(gridHubIpAndPort[1].split("/")[0]);
         try {
+            //check if grid hub stared on local host for appium
+            URL obj = new URL("http://" + gridIp + ":" + gridPort + "/grid/api/");
+            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+            con.setRequestMethod("GET");
+            int responseCode = con.getResponseCode();
+            if (responseCode != HttpStatus.SC_OK) {
+                return gridIp;
+            }
+
             HttpHost host = new HttpHost(gridIp, gridPort);
             HttpClient client = HttpClientBuilder.create().build();
             URL testSessionApi = new URL("http://" + gridIp + ":" + gridPort + "/grid/api/testsession?session=" + sessionId);
@@ -819,5 +943,19 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         }
         rd.close();
         return new JSONObject(stringBuffer.toString());
+    }
+
+    private boolean isRunLocal(String gridHubUrl) {
+        try {
+            InetAddress[] ipList = InetAddress.getAllByName(InetAddress.getLocalHost().getHostName());
+            for (InetAddress ip : ipList) {
+                if (gridHubUrl.contains(ip.getHostAddress())) {
+                    return true;
+                }
+            }
+        } catch (UnknownHostException e) {
+
+        }
+        return false;
     }
 }
