@@ -151,6 +151,9 @@ public final class ExpectedConditions2 {
         };
     }
 
+    /**
+     * Trick with zero coordinates for not-displayed element works only in FF
+     */
     private static boolean isElementHiddenUnderScroll(WebElement element) {
         return ExecutionUtils.isFF() && element.getLocation().getX() > 0 && element.getLocation().getY() > 0;
     }
