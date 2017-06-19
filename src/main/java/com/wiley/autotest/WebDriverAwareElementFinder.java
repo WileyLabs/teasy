@@ -1,7 +1,9 @@
 package com.wiley.autotest;
 
+import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
 import com.wiley.autotest.selenium.elements.TextField;
+import com.wiley.autotest.utils.TestUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -21,9 +23,18 @@ import static org.openqa.selenium.support.ui.ExpectedConditions.*;
 public class WebDriverAwareElementFinder implements ElementFinder {
     private WebDriver driver;
     private WebDriverWait wait;
+    private Integer waitTimeout = 1;
     private static final long POOLLING_EVERY_DURATION_IN_SEC = 2;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WebDriverAwareElementFinder.class);
+
+    public WebDriverAwareElementFinder(final WebDriver webDriver, final WebDriverWait webDriverWait, Integer waitTimeout) {
+        this.driver = webDriver;
+        this.wait = webDriverWait;
+        if (waitTimeout != null) {
+            this.waitTimeout = waitTimeout;
+        }
+    }
 
     public WebDriverAwareElementFinder(final WebDriver webDriver, final WebDriverWait webDriverWait) {
         this.driver = webDriver;
@@ -252,7 +263,10 @@ public class WebDriverAwareElementFinder implements ElementFinder {
                 String readyState = ((JavascriptExecutor) driver).executeScript("return document.readyState").toString();
                 LOGGER.error("*****ERROR***** TimeoutException occurred while waiting for page to load! return document.readyState value is '" + readyState + "' But expected to be 'complete'");
             } catch (WebDriverException e) {
-                LOGGER.error("*****ERROR***** WebDriverException occurred while waiting for page to load!");
+                //to avoid extra logs for mobile
+                if (!e.getMessage().contains("Method is not implemented")) {
+                    LOGGER.error("*****ERROR***** WebDriverException occurred while waiting for page to load!");
+                }
             }
         } catch (Throwable unexpectedThrowable) {
             //TODO this catch should be removed by September 1 2014! Adding it to find out the reason of browsers being not closed after test
@@ -340,17 +354,29 @@ public class WebDriverAwareElementFinder implements ElementFinder {
         return waitFor(elementDoesNotHaveAttribute(element, attributeName), timeOutInSeconds);
     }
 
+    @Override
+    public void setTimeout(final long timeOutInSeconds) {
+        wait = new WebDriverWait(driver, timeOutInSeconds);
+    }
+
     private <T> T waitFor(final ExpectedCondition<T> condition) {
+        waitForMobile();
         return wait.pollingEvery(POOLLING_EVERY_DURATION_IN_SEC, TimeUnit.SECONDS).until(condition);
     }
 
     private <T> T waitFor(final ExpectedCondition<T> condition, final long timeOutInSeconds) {
         WebDriverWait customWait = new WebDriverWait(driver, timeOutInSeconds);
+        waitForMobile();
         return customWait.until(condition);
     }
 
-    @Override
-    public void setTimeout(final long timeOutInSeconds) {
-        wait = new WebDriverWait(driver, timeOutInSeconds);
+    private void waitForMobile() {
+        if (SeleniumHolder.getAppiumDriver() != null) {
+            TestUtils.waitForSomeTime(waitTimeout, "Default sleep for all mobile operations. In 2017 it's needed to make appium tests more stable");
+            try {
+                driver.getPageSource();
+            } catch (Exception ignored) {
+            }
+        }
     }
 }

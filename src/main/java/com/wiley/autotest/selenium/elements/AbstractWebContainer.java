@@ -35,7 +35,6 @@ public abstract class AbstractWebContainer extends OurElementProvider implements
     }
 
     @Override
-
     public final boolean isVisible() {
         return wrappedElement.isDisplayed();
     }

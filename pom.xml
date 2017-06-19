@@ -370,7 +370,7 @@
         <dependency>
             <groupId>io.github.bonigarcia</groupId>
             <artifactId>webdrivermanager</artifactId>
-            <version>1.4.10</version>
+            <version>1.6.2</version>
         </dependency>
 
     </dependencies>
