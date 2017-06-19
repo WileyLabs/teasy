@@ -264,7 +264,7 @@ public class WebDriverAwareElementFinder implements ElementFinder {
                 LOGGER.error("*****ERROR***** TimeoutException occurred while waiting for page to load! return document.readyState value is '" + readyState + "' But expected to be 'complete'");
             } catch (WebDriverException e) {
                 //to avoid extra logs for mobile
-                if (!e.getMessage().contains("Method is not implemented")) {
+                if (!e.getMessage().contains("Method has not yet been implemented")) {
                     LOGGER.error("*****ERROR***** WebDriverException occurred while waiting for page to load!");
                 }
             }
