@@ -374,7 +374,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
             if (!getParameterPlatformName().equals("platform")) {
                 platformName = getParameterPlatformName();
                 setParameterPlatformName("platform");
-            } else if (!getPlatform().isEmpty()) {
+            } else if (!getPlatform().isEmpty() && !getPlatform().equals("platform")) {
                 platformName = getPlatform();
             } else {
                 platformName = settings.getPlatform();
