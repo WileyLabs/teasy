@@ -43,10 +43,12 @@ public abstract class OurElementProvider {
     public static final Logger LOGGER = LoggerFactory.getLogger(OurElementProvider.class);
 
     @Autowired
-    private Long timeout;
+    private long timeout;
 
+    @Deprecated
     //will be replaced with OurElementFinder
     protected ElementFinder elementFinder;
+
     //default finder that uses timeout from pom
     private OurElementFinder finder;
 
@@ -61,7 +63,7 @@ public abstract class OurElementProvider {
 
     private OurElementFinder finder() {
         if (finder == null) {
-            finder = new OurElementFinder(getWebDriver(), timeout);
+            finder = new OurElementFinder(getWebDriver(), new OurSearchStrategy(timeout));
         }
         return finder;
     }
@@ -83,7 +85,7 @@ public abstract class OurElementProvider {
     }
 
     protected final WebElement elementOrNull(final By locator) {
-        return elementOrNull(locator, new OurSearchStrategy().withTimeout(1).nullOnFailure());
+        return elementOrNull(locator, new OurSearchStrategy(1).nullOnFailure());
     }
 
     protected final WebElement elementOrNull(final By locator, OurSearchStrategy strategy) {
@@ -111,7 +113,7 @@ public abstract class OurElementProvider {
      * @return list of webElements or empty list in case no such element were found by given locator
      */
     protected List<WebElement> domElementsOrEmpty(final By locator) {
-        return customFinder(new OurSearchStrategy().nullOnFailure()).presentInDomElements(locator);
+        return customFinder(new OurSearchStrategy(timeout).nullOnFailure()).presentInDomElements(locator);
     }
 
     /**

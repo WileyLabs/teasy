@@ -276,7 +276,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         return null;
     }
 
-     @Deprecated
+    @Deprecated
     //TODO: VE - should be moved to utils
     protected static <T> List<T> getRandomElementsInList(final List<T> sourceList, final int itemNumberToSelect) {
         final ArrayList<T> resultArray = new ArrayList<T>(sourceList.size());
@@ -510,10 +510,6 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
     }
 
 
-
-
-
-
 // ============ ASSERTIONS ===========
 
     protected <T> void assertThat(T actual, Matcher<? super T> matcher, String errorMessage) {
@@ -536,7 +532,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         try {
             Assert.assertNotNull(object, errorMessage);
         } catch (AssertionError e) {
-            fail(e.getMessage());
+            TestUtils.fail(e.getMessage());
         }
     }
 
@@ -544,7 +540,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         try {
             Assert.assertNull(object, errorMessage);
         } catch (AssertionError e) {
-            fail(e.getMessage());
+            TestUtils.fail(e.getMessage());
         }
     }
 
@@ -552,7 +548,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         try {
             Assert.assertTrue(condition, errorMessage);
         } catch (AssertionError e) {
-            fail(e.getMessage());
+            TestUtils.fail(e.getMessage());
         }
     }
 
@@ -560,7 +556,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         try {
             Assert.assertFalse(condition, errorMessage);
         } catch (AssertionError e) {
-            fail(e.getMessage());
+            TestUtils.fail(e.getMessage());
         }
     }
 
@@ -568,7 +564,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         try {
             Assert.assertEquals(actual, expected, errorMessage);
         } catch (AssertionError e) {
-            fail(e.getMessage() + ": expected [" + expected + "] but found [" + actual + "]");
+            TestUtils.fail(e.getMessage() + ": expected [" + expected + "] but found [" + actual + "]");
         }
     }
 
@@ -576,7 +572,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         try {
             Assert.assertNotEquals(actual, expected, errorMessage);
         } catch (AssertionError e) {
-            fail(e.getMessage() + ": expected [" + expected + "] but found [" + actual + "]");
+            TestUtils.fail(e.getMessage() + ": expected [" + expected + "] but found [" + actual + "]");
         }
     }
 
@@ -643,7 +639,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         try {
             elementFinder.waitForVisibilityOfAllElementsLocatedBy(locator);
         } catch (WebDriverException e) {
-            fail(errorMessage);
+            TestUtils.fail(errorMessage);
         }
     }
 
@@ -651,13 +647,14 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         try {
             elementFinder.waitForVisibilityOfAllElementsLocatedBy(searchContext, locator).get(0);
         } catch (WebDriverException e) {
-            fail(errorMessage);
+            TestUtils.fail(errorMessage);
         }
     }
 
     protected void assertElementsAreAbsent(By locator, String errorMessage) {
         TestUtils.waitForSomeTime(TIMEOUT_TO_WAIT_FOR_ABSENCE_OF_ELEMENT, "Wait for elements are absent");
-        elementFinder.findElementsBy(locator).forEach(webElement -> assertFalse(webElement.isDisplayed(), errorMessage));
+        elementFinder.findElementsBy(locator)
+                .forEach(webElement -> assertFalse(webElement.isDisplayed(), errorMessage));
     }
 
     protected void assertContainsAll(List<? extends Object> actual, List<? extends Object> expected, String errorMessage) {

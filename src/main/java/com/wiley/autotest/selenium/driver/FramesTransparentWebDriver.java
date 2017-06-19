@@ -26,7 +26,6 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
     private final Stack<WebElement> currentFramesPath;
     private final Function<WebElement, WebElement> toFrameAwareWebElements;
 
-    //VE Do we really need a ThreadLocal here? Seems that this is an extra one
     private ThreadLocal<String> mainWindowHandle = new ThreadLocal<>();
     private ThreadLocal<Boolean> firstCallInContext = ThreadLocal.withInitial(() -> true);
 

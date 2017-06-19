@@ -44,10 +44,13 @@ public class OurWebElement implements IOurWebElement, Locatable {
 
     //specific element finder which will return null or emptyList in case element is not found
     private OurElementFinder allowNullContextFinder;
+
     public static final Logger LOGGER = LoggerFactory.getLogger(OurWebElement.class);
     //The duration in milliseconds to sleep between polls. (default value in selenium is 500)
     private static final long SLEEP_IN_MILLISECONDS = 1000;
-    private static final long WAIT_TIME_OUT_IN_SECONDS = 5;
+
+    //TODO think about making this value configurable
+    private static final long TIMEOUT_FOR_AGAIN_LOCATE_IN_SECONDS = 5;
     private int repeatLocateElementCounter;
     private static final int MAX_NUMBER_OF_REPEAT_LOCATE_ELEMENT = 20;
 
@@ -81,14 +84,14 @@ public class OurWebElement implements IOurWebElement, Locatable {
         this.wrappedElement = element instanceof IOurWebElement ? ((IOurWebElement) element).getWrappedWebElement() : element;
         this.repeatLocateElementCounter = 0;
         if (elementFinder_TO_BE_REMOVED == null) {
-            elementFinder_TO_BE_REMOVED = new WebDriverAwareElementFinder(getDriver(), new WebDriverWait(getDriver(), WAIT_TIME_OUT_IN_SECONDS, SLEEP_IN_MILLISECONDS));
+            elementFinder_TO_BE_REMOVED = new WebDriverAwareElementFinder(getDriver(), new WebDriverWait(getDriver(), TIMEOUT_FOR_AGAIN_LOCATE_IN_SECONDS, SLEEP_IN_MILLISECONDS));
         }
 
         if (contextFinder == null) {
-            contextFinder = new OurElementFinder(getDriver(), wrappedElement);
+            contextFinder = new OurElementFinder(getDriver(), new OurSearchStrategy(TIMEOUT_FOR_AGAIN_LOCATE_IN_SECONDS), wrappedElement);
         }
         if (allowNullContextFinder == null) {
-            allowNullContextFinder = new OurElementFinder(getDriver(), wrappedElement, new OurSearchStrategy().nullOnFailure());
+            allowNullContextFinder = new OurElementFinder(getDriver(), new OurSearchStrategy(TIMEOUT_FOR_AGAIN_LOCATE_IN_SECONDS).nullOnFailure(), wrappedElement);
         }
     }
 
@@ -183,12 +186,12 @@ public class OurWebElement implements IOurWebElement, Locatable {
         }
     }
 
-    public void clickForStaleElement() {
+    private void clickForStaleElement() {
         againLocate();
         click();
     }
 
-    public void clickByBrowser() {
+    private void clickByBrowser() {
         if (isIE()) {
             clickInIE();
         } else if (isSafari()) {
@@ -198,7 +201,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
         }
     }
 
-    public void clickForNeedToScroll() {
+    private void clickForNeedToScroll() {
         LOGGER.error("*****ERROR*****ElementNotVisibleException***** during click! Scrolling to element and trying again ---Locator=" + locator
                 .getLocator());
         increment();
@@ -207,7 +210,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
         click();
     }
 
-    public void clickForIgnoredScroll(WebDriverException ignoredOrNeedToScroll) {
+    private void clickForIgnoredScroll(WebDriverException ignoredOrNeedToScroll) {
         LOGGER.error("*****ERROR*****WebDriverException***** during click!-----Locator=" + locator.getLocator());
         increment();
         //For Android error text is different and does not have any information related to clickable issue
@@ -308,10 +311,15 @@ public class OurWebElement implements IOurWebElement, Locatable {
         }
     }
 
+    /**
+     * This method *should not* catch StaleElementReferenceException
+     * as it is used to define staleness of element
+     */
     @Override
     public boolean isEnabled() {
         return wrappedElement.isEnabled();
     }
+
 
     @Override
     public String getText() {
@@ -407,14 +415,18 @@ public class OurWebElement implements IOurWebElement, Locatable {
         return wrappedElement;
     }
 
-    public ElementFinder getElementFinder() {
+    private ElementFinder getElementFinder() {
         return elementFinder_TO_BE_REMOVED;
     }
 
-    public int getRepeatLocateElementCounter() {
+    private int getRepeatLocateElementCounter() {
         return repeatLocateElementCounter;
     }
 
+    /**
+     * TODO VE: So far this method is public only because it's needed for some "logic" in FrameTransparentWebDriver
+     * it should be made private after better solution is found
+     */
     public void againLocate() {
         if (isSafari()) {
             waitForSafari();
@@ -424,7 +436,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
         increment();
     }
 
-    public void increment() {
+    private void increment() {
         if (repeatLocateElementCounter > MAX_NUMBER_OF_REPEAT_LOCATE_ELEMENT) {
             fail("Cannot interact properly with element with locator '" + locator.getLocator() + "'"
                     + (!wrappedElement.isDisplayed() ? "Element was not displayed!" : ""));
@@ -433,11 +445,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
         }
     }
 
-    private WebDriver getDriver() {
-        return SeleniumHolder.getWebDriver();
-    }
-
-    public void clickInSafari() {
+    private void clickInSafari() {
         int iterationCount = 0;
         waitForSomeTime(1000, "Wait for click for Safari");
         wrappedElement.click();
@@ -457,7 +465,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
         }
     }
 
-    public void clickInIE() {
+    private void clickInIE() {
         waitForSomeTime(500, "Wait for click for IE");
         if (isDisabledElement(wrappedElement)) {
             wrappedElement.click();
@@ -483,16 +491,16 @@ public class OurWebElement implements IOurWebElement, Locatable {
         waitForSomeTime(500, "");
     }
 
-    public void scrollIntoView(WebElement element) {
+    private void scrollIntoView(WebElement element) {
         executeScript("arguments[0].scrollIntoView(true);", element);
     }
 
-    public void scrollToElementLocation(WebElement element) {
+    private void scrollToElementLocation(WebElement element) {
         executeScript("scroll(" + (element.getLocation().getX() + element.getSize()
                 .getWidth()) + "," + element.getLocation().getY() + ");");
     }
 
-    public void maximizeWindow() {
+    private void maximizeWindow() {
         try {
             getDriver().manage().window().maximize();
         } catch (WebDriverException ignored) {
@@ -501,12 +509,14 @@ public class OurWebElement implements IOurWebElement, Locatable {
         }
     }
 
-    public Object executeScript(String script, Object... args) {
+    private Object executeScript(String script, Object... args) {
         return ((JavascriptExecutor) getDriver()).executeScript(script, args);
     }
 
+    @Deprecated
+    //tobe removed from the framework
     //The method checks the checkbox is selected after click and click one more time if not.
-    public void checkElementIsSelected(boolean wasElementSelectedByDefault, WebElement element) {
+    private void checkElementIsSelected(boolean wasElementSelectedByDefault, WebElement element) {
         try {
             if (wasElementSelectedByDefault == element.isSelected()) {
                 element.click();
@@ -517,7 +527,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
         }
     }
 
-    public boolean isClickWithReload() {
+    private boolean isClickWithReload() {
         StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
         for (int i = 0; i < 10; i++) {
             String methodName = stackTraceElements[i].getMethodName();
@@ -528,7 +538,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
         return false;
     }
 
-    public List<WebElement> finds(By by) {
+    private List<WebElement> finds(By by) {
         try {
             //for catch stale element
             isEnabled();
@@ -551,7 +561,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
         }
     }
 
-    public WebElement find(By by) {
+    private WebElement find(By by) {
         try {
             //for catch stale element
             isEnabled();
@@ -579,7 +589,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
         }
     }
 
-    public WebElement getParentElement(WebElement element) {
+    private WebElement getParentElement(WebElement element) {
         if (isSafari()) {
             return element.findElement(By.xpath("./.."));
         } else {
@@ -589,5 +599,9 @@ public class OurWebElement implements IOurWebElement, Locatable {
 
     private FramesTransparentWebDriver getFrameTransparentDriver() {
         return (FramesTransparentWebDriver) getDriver();
+    }
+
+    private WebDriver getDriver() {
+        return SeleniumHolder.getWebDriver();
     }
 }

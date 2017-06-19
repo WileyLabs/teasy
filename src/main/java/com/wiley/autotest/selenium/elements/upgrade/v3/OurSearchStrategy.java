@@ -7,18 +7,16 @@ import java.util.concurrent.TimeUnit;
  */
 public class OurSearchStrategy {
 
-    public int timeoutInSeconds;
-    public int poolingEvery = 0;
-    public TimeUnit unit = TimeUnit.SECONDS;
-    public FrameStrategy frameStrategy = FrameStrategy.FIRST_FOUND;
-
+    private long timeout;
+    private int poolingEvery = 0;
+    private TimeUnit unit = TimeUnit.SECONDS;
+    private FrameStrategy frameStrategy = FrameStrategy.FIRST_FOUND;
 
     //flag showing that null should be returned instead of failing
-    public boolean nullOnFailure = false;
+    private boolean nullOnFailure = false;
 
-    public OurSearchStrategy withTimeout(int timeoutInSeconds) {
-        this.timeoutInSeconds = timeoutInSeconds;
-        return this;
+    public OurSearchStrategy(long timeoutInSeconds) {
+        this.timeout = timeoutInSeconds;
     }
 
     public OurSearchStrategy pollingEvery(int timeInSeconds) {
@@ -42,8 +40,8 @@ public class OurSearchStrategy {
         return this;
     }
 
-    public int getTimeout() {
-        return timeoutInSeconds;
+    public long getTimeout() {
+        return timeout;
     }
 
     public int getPoolingEvery() {
