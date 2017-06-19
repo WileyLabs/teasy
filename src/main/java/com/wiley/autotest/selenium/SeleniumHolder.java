@@ -18,12 +18,12 @@ public final class SeleniumHolder {
 
     private static String browser;
     private static final ThreadLocal<WebDriver> driverHolder = new ThreadLocal<>();
-    private static final ThreadLocal<String> driverName = new ThreadLocal<>();
+    private static final ThreadLocal<String> driverName = ThreadLocal.withInitial(() -> "");
     private static final ThreadLocal<String> parameterBrowserName = ThreadLocal.withInitial(() -> "browser");
     private static final ThreadLocal<String> parameterPlatformName = ThreadLocal.withInitial(() -> "platform");
     private static final ThreadLocal<ProxyServer> proxyServer = new ThreadLocal<>();
     private static final ThreadLocal<Proxy> proxy = new ThreadLocal<>();
-    private static final ThreadLocal<String> platform = new ThreadLocal<>();
+    private static final ThreadLocal<String> platform = ThreadLocal.withInitial(() -> "platform");
     private static final ThreadLocal<String> mainWindowHandle = new ThreadLocal<>();
     private static final ThreadLocal<String> nodeIp = ThreadLocal.withInitial(() -> "localhost");
     private static final ThreadLocal<SessionId> sessionId = new ThreadLocal<>();
