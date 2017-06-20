@@ -282,12 +282,16 @@ public class WebDriverAwareElementFinder implements ElementFinder {
 
     @Override
     public List<WebElement> waitForVisibilityOfAllElementsLocatedBy(final SearchContext searchContext, final By locator) {
-        return waitFor(ExpectedConditions2.visibilityOfFirstElements(searchContext, locator));
+        throw new RuntimeException("REPLACE WITH NEW APPROACH IMMEDIATELY! METHOD IMPLEMENTATION WAD DELETED! CONTACT Vladimir Efimov vefimov@wiley.com");
+
+//        return waitFor(ExpectedConditions2.visibilityOfFirstElements(searchContext, locator));
     }
 
     @Override
     public List<WebElement> waitForVisibilityOfAllElementsLocatedBy(final SearchContext searchContext, final By locator, long timeOutInSeconds) {
-        return waitFor(ExpectedConditions2.visibilityOfFirstElements(searchContext, locator), timeOutInSeconds);
+        throw new RuntimeException("REPLACE WITH NEW APPROACH IMMEDIATELY! METHOD IMPLEMENTATION WAD DELETED! CONTACT Vladimir Efimov vefimov@wiley.com");
+
+        //        return waitFor(ExpectedConditions2.visibilityOfFirstElements(searchContext, locator), timeOutInSeconds);
     }
 
     @Override

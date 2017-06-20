@@ -4,6 +4,7 @@ import com.wiley.autotest.ElementFinder;
 import com.wiley.autotest.WebDriverAwareElementFinder;
 import com.wiley.autotest.actions.Actions;
 import com.wiley.autotest.selenium.elements.*;
+import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
 import com.wiley.autotest.selenium.elements.upgrade.OurWindow;
 import com.wiley.autotest.selenium.elements.upgrade.Window;
 import com.wiley.autotest.selenium.elements.upgrade.v3.OurElementFinder;
@@ -68,43 +69,43 @@ public abstract class OurElementProvider {
         return finder;
     }
 
-    protected WebElement element(final By locator) {
+    protected OurWebElement element(final By locator) {
         return finder().visibleElement(locator);
     }
 
-    protected WebElement element(final By locator, OurSearchStrategy strategy) {
+    protected OurWebElement element(final By locator, OurSearchStrategy strategy) {
         return customFinder(strategy).visibleElement(locator);
     }
 
-    protected List<WebElement> elements(final By locator) {
+    protected List<OurWebElement> elements(final By locator) {
         return finder().visibleElements(locator);
     }
 
-    protected List<WebElement> elements(final By locator, OurSearchStrategy strategy) {
+    protected List<OurWebElement> elements(final By locator, OurSearchStrategy strategy) {
         return customFinder(strategy).visibleElements(locator);
     }
 
-    protected final WebElement elementOrNull(final By locator) {
+    protected final OurWebElement elementOrNull(final By locator) {
         return elementOrNull(locator, new OurSearchStrategy(1).nullOnFailure());
     }
 
-    protected final WebElement elementOrNull(final By locator, OurSearchStrategy strategy) {
+    protected final OurWebElement elementOrNull(final By locator, OurSearchStrategy strategy) {
         return customFinder(strategy.nullOnFailure()).visibleElements(locator).get(0);
     }
 
-    protected WebElement domElement(By locator) {
+    protected OurWebElement domElement(By locator) {
         return finder().presentInDomElement(locator);
     }
 
-    protected WebElement domElement(By locator, OurSearchStrategy strategy) {
+    protected OurWebElement domElement(By locator, OurSearchStrategy strategy) {
         return customFinder(strategy).presentInDomElement(locator);
     }
 
-    protected List<WebElement> domElements(By locator) {
+    protected List<OurWebElement> domElements(By locator) {
         return finder().presentInDomElements(locator);
     }
 
-    protected List<WebElement> domElements(By locator, OurSearchStrategy strategy) {
+    protected List<OurWebElement> domElements(By locator, OurSearchStrategy strategy) {
         return customFinder(strategy).presentInDomElements(locator);
     }
 
@@ -112,7 +113,7 @@ public abstract class OurElementProvider {
      * @param locator- locator for element you would like to find
      * @return list of webElements or empty list in case no such element were found by given locator
      */
-    protected List<WebElement> domElementsOrEmpty(final By locator) {
+    protected List<OurWebElement> domElementsOrEmpty(final By locator) {
         return customFinder(new OurSearchStrategy(timeout).nullOnFailure()).presentInDomElements(locator);
     }
 
@@ -425,12 +426,14 @@ public abstract class OurElementProvider {
      * Use element().elementOrNull()
      */
     protected final WebElement elementOrNull(final SearchContext searchContext, final By locator) {
-        try {
-            return elementFinder.waitForVisibilityOfAllElementsLocatedBy(searchContext, locator, (long) MIN_TIME_OUT_FOR_WAIT_IN_SECONDS)
-                    .get(0);
-        } catch (WebDriverException ignored) {
-            return null;
-        }
+
+        throw new RuntimeException("REPLACE WITH NEW APPROACH IMMEDIATELY! METHOD IMPLEMENTATION WAD DELETED! CONTACT Vladimir Efimov vefimov@wiley.com");
+//        try {
+//            return elementFinder.waitForVisibilityOfAllElementsLocatedBy(searchContext, locator, (long) MIN_TIME_OUT_FOR_WAIT_IN_SECONDS)
+//                    .get(0);
+//        } catch (WebDriverException ignored) {
+//            return null;
+//        }
     }
 
     @Deprecated
@@ -949,6 +952,10 @@ public abstract class OurElementProvider {
      * This method will be made private
      */
     protected WebElementWrapper getWebElementWrapper(final WebElement wrappedElement) {
+        return new WebElementWrapper(wrappedElement);
+    }
+
+    private WebElementWrapper getWebElementWrapper(OurWebElement wrappedElement) {
         return new WebElementWrapper(wrappedElement);
     }
 

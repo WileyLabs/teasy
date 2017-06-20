@@ -11,7 +11,7 @@ import java.util.function.Function;
  */
 public class OurShould {
 
-    private FluentWaitCondition<WebElement> fluentWait;
+    private FluentWaitCondition<OurWebElement> fluentWait;
 
     public OurShould(OurWebElement element) {
         fluentWait = new FluentWaitCondition<>(element);
@@ -24,7 +24,7 @@ public class OurShould {
     }
 
     public void beDisplayed() {
-        fluentWait.waitFor(WebElement::isDisplayed);
+        fluentWait.waitFor(OurWebElement::isDisplayed);
     }
 
     public void beAbsent() {
@@ -50,11 +50,11 @@ public class OurShould {
     }
 
 
-    public void customCondition(Function<WebElement, Boolean> condition) {
+    public void customCondition(Function<OurWebElement, Boolean> condition) {
         waitFor(condition);
     }
 
-    private void waitFor(Function<WebElement, Boolean> condition) {
+    private void waitFor(Function<OurWebElement, Boolean> condition) {
         fluentWait.waitFor(condition);
     }
 

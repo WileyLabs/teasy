@@ -1,6 +1,7 @@
 package com.wiley.autotest.selenium.elements.upgrade.v3.conditions;
 
 import com.wiley.autotest.ExpectedConditions2;
+import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
 import org.openqa.selenium.By;
 import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebDriver;
@@ -14,9 +15,9 @@ import java.util.function.Function;
  */
 public class FirstFoundInAllFramesInContext implements OurCondition {
 
-    private SearchContext context;
+    private OurWebElement context;
 
-    public FirstFoundInAllFramesInContext(SearchContext context) {
+    public FirstFoundInAllFramesInContext(OurWebElement context) {
         this.context = context;
     }
     @Override

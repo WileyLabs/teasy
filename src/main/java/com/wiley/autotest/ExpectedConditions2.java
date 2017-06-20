@@ -2,6 +2,7 @@ package com.wiley.autotest;
 
 import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
 import com.wiley.autotest.selenium.elements.TextField;
+import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
 import com.wiley.autotest.utils.ExecutionUtils;
 import com.wiley.autotest.utils.TestUtils;
 import org.openqa.selenium.*;
@@ -28,6 +29,11 @@ public final class ExpectedConditions2 {
         return driver -> searchContext.findElement(locator);
     }
 
+    public static ExpectedCondition<List<WebElement>> presenceOfAllElementsLocatedBy(final OurWebElement searchContext, final By locator) {
+        return driver -> searchContext.findElements(locator).isEmpty() ? null : searchContext.findElements(locator);
+    }
+    @Deprecated
+    //use presenceOfAllElementsLocatedBy(final OurWebElement searchContext, final By locator)
     public static ExpectedCondition<List<WebElement>> presenceOfAllElementsLocatedBy(final SearchContext searchContext, final By locator) {
         return driver -> searchContext.findElements(locator).isEmpty() ? null : searchContext.findElements(locator);
     }
@@ -44,7 +50,7 @@ public final class ExpectedConditions2 {
         };
     }
 
-    public static ExpectedCondition<List<WebElement>> presenceOfAllElementsInAllFrames(SearchContext context, final By locator) {
+    public static ExpectedCondition<List<WebElement>> presenceOfAllElementsInAllFrames(OurWebElement context, final By locator) {
         return driver -> {
             FramesTransparentWebDriver framesTransparentWebDriver = (FramesTransparentWebDriver) driver;
             List<WebElement> elementsInFrames = framesTransparentWebDriver.findAllElementsInFrames(context, locator);
@@ -73,7 +79,7 @@ public final class ExpectedConditions2 {
      * @param locator
      * @return
      */
-    public static ExpectedCondition<List<WebElement>> visibilityOfFirstElements(final SearchContext searchContext, final By locator) {
+    public static ExpectedCondition<List<WebElement>> visibilityOfFirstElements(final OurWebElement searchContext, final By locator) {
         return driver -> {
             List<WebElement> visibleElements = getFirstVisibleWebElements(driver, searchContext, locator);
             return isNotEmpty(visibleElements) ? visibleElements : null;
@@ -103,14 +109,14 @@ public final class ExpectedConditions2 {
      * @param locator
      * @return
      */
-    public static ExpectedCondition<List<WebElement>> visibilityOfFirstElementsInAllFrames(final SearchContext searchContext, final By locator) {
+    public static ExpectedCondition<List<WebElement>> visibilityOfFirstElementsInAllFrames(final OurWebElement searchContext, final By locator) {
         return driver -> {
             List<WebElement> visibleElements = getFirstVisibleWebElements(driver, searchContext, locator);
             return isNotEmpty(visibleElements) ? visibleElements : null;
         };
     }
 
-    private static List<WebElement> getFirstVisibleWebElements(WebDriver driver, SearchContext searchContext, By locator) {
+    private static List<WebElement> getFirstVisibleWebElements(WebDriver driver, OurWebElement searchContext, By locator) {
         List<WebElement> elements;
         if (searchContext == null) {
             elements = driver.findElements(locator);

@@ -1,7 +1,7 @@
 package com.wiley.autotest.selenium.elements.upgrade;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.SearchContext;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 /**
@@ -10,17 +10,23 @@ import org.openqa.selenium.WebElement;
  * Time: 15:50
  */
 public class FindElementLocator implements Locator {
-    private SearchContext searchContext;
+    private OurWebElement searchContext;
+    private WebDriver driver;
     private By by;
 
-    public FindElementLocator(SearchContext searchContext, By by) {
+    public FindElementLocator(OurWebElement searchContext, By by) {
         this.searchContext = searchContext;
+        this.by = by;
+    }
+
+    public FindElementLocator(WebDriver driver, By by) {
+        this.driver = driver;
         this.by = by;
     }
 
     @Override
     public WebElement find() {
-        return searchContext.findElement(by);
+        return driver != null ? driver.findElement(by) : searchContext.findElement(by);
     }
 
     @Override

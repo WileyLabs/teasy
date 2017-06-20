@@ -10,6 +10,8 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import java.util.List;
 import java.util.Set;
 
+@Deprecated
+//Use different approach with OurElementProvider
 public interface ElementFinder {
     void waitForCondition(ExpectedCondition<Boolean> condition, long timeOutInSeconds);
 

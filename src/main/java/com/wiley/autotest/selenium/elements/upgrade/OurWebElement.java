@@ -56,7 +56,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
 
     public OurWebElement(OurWebElementData ourWebElementData) {
         WebElement element = ourWebElementData.getElement();
-        SearchContext searchContext = ourWebElementData.getSearchContext();
+        OurWebElement searchContext = ourWebElementData.getSearchContext();
         By by = ourWebElementData.getBy();
         Integer index = ourWebElementData.getIndex();
         Locator locator = ourWebElementData.getLocator();
@@ -88,10 +88,10 @@ public class OurWebElement implements IOurWebElement, Locatable {
         }
 
         if (contextFinder == null) {
-            contextFinder = new OurElementFinder(getDriver(), new OurSearchStrategy(TIMEOUT_FOR_AGAIN_LOCATE_IN_SECONDS), wrappedElement);
+            contextFinder = new OurElementFinder(getDriver(), new OurSearchStrategy(TIMEOUT_FOR_AGAIN_LOCATE_IN_SECONDS), this);
         }
         if (allowNullContextFinder == null) {
-            allowNullContextFinder = new OurElementFinder(getDriver(), new OurSearchStrategy(TIMEOUT_FOR_AGAIN_LOCATE_IN_SECONDS).nullOnFailure(), wrappedElement);
+            allowNullContextFinder = new OurElementFinder(getDriver(), new OurSearchStrategy(TIMEOUT_FOR_AGAIN_LOCATE_IN_SECONDS).nullOnFailure(), this);
         }
     }
 
@@ -130,33 +130,33 @@ public class OurWebElement implements IOurWebElement, Locatable {
     }
 
     @Override
-    public WebElement element(By by) {
-        return wrap(this, contextFinder.visibleElement(by), by);
+    public OurWebElement element(By by) {
+        return contextFinder.visibleElement(by);
     }
 
     @Override
-    public List<WebElement> elements(By by) {
-        return wrapList(this, contextFinder.visibleElements(by), by);
+    public List<OurWebElement> elements(By by) {
+        return contextFinder.visibleElements(by);
     }
 
     @Override
-    public WebElement elementOrNull(By by) {
-        return wrap(this, allowNullContextFinder.visibleElement(by), by);
+    public OurWebElement elementOrNull(By by) {
+        return allowNullContextFinder.visibleElement(by);
     }
 
     @Override
-    public List<WebElement> elementsOrEmpty(By by) {
-        return wrapList(this, allowNullContextFinder.visibleElements(by), by);
+    public List<OurWebElement> elementsOrEmpty(By by) {
+        return allowNullContextFinder.visibleElements(by);
     }
 
     @Override
-    public WebElement domElement(By by) {
-        return wrap(this, contextFinder.presentInDomElement(by), by);
+    public OurWebElement domElement(By by) {
+        return contextFinder.presentInDomElement(by);
     }
 
     @Override
-    public List<WebElement> domElements(By by) {
-        return wrapList(this, contextFinder.presentInDomElements(by), by);
+    public List<OurWebElement> domElements(By by) {
+        return contextFinder.presentInDomElements(by);
     }
 
     @Override
@@ -331,13 +331,11 @@ public class OurWebElement implements IOurWebElement, Locatable {
         }
     }
 
-    @Override
     public WebElement findElement(By by) {
         this.repeatLocateElementCounter = 0;
         return find(by);
-    }
+}
 
-    @Override
     public List<WebElement> findElements(By by) {
         this.repeatLocateElementCounter = 0;
         return finds(by);

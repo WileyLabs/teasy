@@ -1,5 +1,6 @@
 package com.wiley.autotest.selenium.elements;
 
+import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
 import com.wiley.autotest.selenium.extensions.ElementFactory;
 import com.wiley.autotest.selenium.extensions.internal.DefaultElementFactory;
 import org.openqa.selenium.By;
@@ -11,11 +12,19 @@ import org.openqa.selenium.WebElement;
  */
 public class WebElementWrapper {
 
+
+    //TODO VE refactor this to keep only OurWebElement!
+
     public final ElementFactory elementFactory = new DefaultElementFactory();
-    public final WebElement webElement;
+    public WebElement webElement;
+    public OurWebElement element;
 
     public WebElementWrapper(final WebElement webElement) {
         this.webElement = webElement;
+    }
+
+    public WebElementWrapper(final OurWebElement element) {
+        this.element = element;
     }
 
     public Select getSelect() {
@@ -45,4 +54,5 @@ public class WebElementWrapper {
     public <T extends Element> T getElement(Class<T> elementType, By by) {
         return elementFactory.create(elementType, webElement, by);
     }
+
 }

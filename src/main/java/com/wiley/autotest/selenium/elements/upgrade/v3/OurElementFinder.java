@@ -1,5 +1,6 @@
 package com.wiley.autotest.selenium.elements.upgrade.v3;
 
+import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
 import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.OurConditionFactory;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -19,7 +20,7 @@ public class OurElementFinder {
 
     private OurSearchStrategy strategy;
 
-    private SearchContext context;
+    private OurWebElement context;
 
     private FluentWaitFinder fluentWait;
 
@@ -31,33 +32,49 @@ public class OurElementFinder {
         fluentWait.setNullOnFailure(strategy.isNullOnFailure());
     }
 
-    public OurElementFinder(WebDriver driver, OurSearchStrategy strategy, SearchContext context) {
+    public OurElementFinder(WebDriver driver, OurSearchStrategy strategy, OurWebElement context) {
         this(driver, strategy);
         this.context = context;
     }
 
-    public WebElement visibleElement(By locator) {
+    public OurWebElement visibleElement(By locator) {
         Function<WebDriver, List<WebElement>> condition = new OurConditionFactory(context).get(strategy.getFrameStrategy())
                 .visibility(locator);
-        return wrap(fluentWait.waitFor(condition).get(0), locator);
+        if (context == null) {
+            return wrap(fluentWait.waitFor(condition).get(0), locator);
+        } else {
+            return wrap(context, fluentWait.waitFor(condition).get(0), locator);
+        }
     }
 
-    public List<WebElement> visibleElements(By locator) {
+    public List<OurWebElement> visibleElements(By locator) {
         Function<WebDriver, List<WebElement>> condition = new OurConditionFactory(context).get(strategy.getFrameStrategy())
                 .visibility(locator);
-        return wrapList(fluentWait.waitFor(condition), locator);
+        if (context == null) {
+            return wrapList(fluentWait.waitFor(condition), locator);
+        } else {
+            return wrapList(context, fluentWait.waitFor(condition), locator);
+        }
     }
 
-    public WebElement presentInDomElement(By locator) {
+    public OurWebElement presentInDomElement(By locator) {
         Function<WebDriver, List<WebElement>> condition = new OurConditionFactory(context).get(strategy.getFrameStrategy())
                 .presence(locator);
-        return wrap(fluentWait.waitFor(condition).get(0), locator);
+        if (context == null) {
+            return wrap(fluentWait.waitFor(condition).get(0), locator);
+        } else {
+            return wrap(context, fluentWait.waitFor(condition).get(0), locator);
+        }
     }
 
-    public List<WebElement> presentInDomElements(By locator) {
+    public List<OurWebElement> presentInDomElements(By locator) {
         Function<WebDriver, List<WebElement>> condition = new OurConditionFactory(context).get(strategy.getFrameStrategy())
                 .presence(locator);
-        return wrapList(fluentWait.waitFor(condition), locator);
+        if (context == null) {
+            return wrapList(fluentWait.waitFor(condition), locator);
+        } else {
+            return wrapList(context, fluentWait.waitFor(condition), locator);
+        }
     }
 
     //this is not "OUR" alert yet, so should probably become "OUR"

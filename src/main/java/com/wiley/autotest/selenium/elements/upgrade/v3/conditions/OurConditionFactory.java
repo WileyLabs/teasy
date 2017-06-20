@@ -1,5 +1,6 @@
 package com.wiley.autotest.selenium.elements.upgrade.v3.conditions;
 
+import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
 import com.wiley.autotest.selenium.elements.upgrade.v3.OurSearchStrategy;
 import org.openqa.selenium.SearchContext;
 
@@ -8,9 +9,9 @@ import org.openqa.selenium.SearchContext;
  */
 public class OurConditionFactory {
 
-    private SearchContext context;
+    private OurWebElement context;
 
-    public OurConditionFactory(SearchContext context) {
+    public OurConditionFactory(OurWebElement context) {
         this.context = context;
     }
 

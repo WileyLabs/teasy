@@ -643,12 +643,17 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         }
     }
 
+    @Deprecated
+    //use element().should().beDisplayed();
     protected void assertElementIsDisplayed(SearchContext searchContext, By locator, String errorMessage) {
-        try {
-            elementFinder.waitForVisibilityOfAllElementsLocatedBy(searchContext, locator).get(0);
-        } catch (WebDriverException e) {
-            TestUtils.fail(errorMessage);
-        }
+        throw new RuntimeException("REPLACE WITH NEW APPROACH IMMEDIATELY! METHOD IMPLEMENTATION WAD DELETED! CONTACT Vladimir Efimov vefimov@wiley.com");
+//
+//
+//        try {
+//            elementFinder.waitForVisibilityOfAllElementsLocatedBy(searchContext, locator).get(0);
+//        } catch (WebDriverException e) {
+//            TestUtils.fail(errorMessage);
+//        }
     }
 
     protected void assertElementsAreAbsent(By locator, String errorMessage) {
@@ -719,6 +724,8 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         assertElementIsDisplayed(locator, generateErrorMessage());
     }
 
+    @Deprecated
+    //Use element().should().beVisible()
     protected void assertElementIsDisplayed(SearchContext searchContext, By locator) {
         assertElementIsDisplayed(searchContext, locator, generateErrorMessage());
     }

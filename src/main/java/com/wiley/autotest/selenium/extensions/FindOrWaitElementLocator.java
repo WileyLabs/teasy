@@ -68,7 +68,7 @@ public class FindOrWaitElementLocator implements ElementLocator {
     @Override
     public List<WebElement> findElements() {
         try {
-            return wrapList(wait.until(condition), by);
+            return wait.until(condition);
         } catch (TimeoutException e) {
             return emptyList();
         }

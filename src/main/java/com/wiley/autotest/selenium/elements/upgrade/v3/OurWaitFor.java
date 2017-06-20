@@ -1,5 +1,6 @@
 package com.wiley.autotest.selenium.elements.upgrade.v3;
 
+import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 
@@ -11,20 +12,20 @@ import java.util.function.Function;
  */
 public class OurWaitFor {
 
-    private FluentWaitCondition<WebElement> fluentWait;
+    private FluentWaitCondition<OurWebElement> fluentWait;
 
-    public OurWaitFor(WebElement element) {
+    public OurWaitFor(OurWebElement element) {
         fluentWait = new FluentWaitCondition<>(element);
     }
 
-    public OurWaitFor(WebElement element, OurSearchStrategy strategy) {
+    public OurWaitFor(OurWebElement element, OurSearchStrategy strategy) {
         this(element);
         fluentWait.withTimeout(strategy.getTimeout(), TimeUnit.SECONDS);
         fluentWait.pollingEvery(strategy.getPoolingEvery(), strategy.getUnit());
     }
 
     public void displayed() {
-        waitFor(WebElement::isDisplayed);
+        waitFor(OurWebElement::isDisplayed);
     }
 
     public void absent() {
@@ -69,11 +70,11 @@ public class OurWaitFor {
     /**
      * TODO: ve consider making this method to accept Function<?, Boolean>
      */
-    public void customCondition(Function<WebElement, Boolean> condition) {
+    public void customCondition(Function<OurWebElement, Boolean> condition) {
         waitFor(condition);
     }
 
-    private void waitFor(Function<WebElement, Boolean> condition) {
+    private void waitFor(Function<OurWebElement, Boolean> condition) {
         fluentWait.waitFor(condition);
     }
 

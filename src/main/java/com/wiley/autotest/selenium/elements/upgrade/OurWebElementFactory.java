@@ -23,7 +23,7 @@ public class OurWebElementFactory {
         return wrapBase(new OurWebElementData(webElement, by));
     }
 
-    public static <T extends IOurWebElement> T wrap(SearchContext searchContext, WebElement webElement, By by) {
+    public static <T extends IOurWebElement> T wrap(OurWebElement searchContext, WebElement webElement, By by) {
         return wrapBase(new OurWebElementData(searchContext, webElement, by));
     }
 
@@ -33,7 +33,7 @@ public class OurWebElementFactory {
         return wrapBase(ourWebElementData);
     }
 
-    public static <T extends IOurWebElement> T wrap(SearchContext searchContext, WebElement webElement, By by, int index) {
+    public static <T extends IOurWebElement> T wrap(OurWebElement searchContext, WebElement webElement, By by, int index) {
         return wrapBase(new OurWebElementData(searchContext, webElement, by, index));
     }
 
@@ -42,16 +42,16 @@ public class OurWebElementFactory {
         return wrapBase(ourWebElementData);
     }
 
-    public static List<WebElement> wrapList(List<WebElement> webElementList, By by) {
-        List<WebElement> list = new ArrayList<>(webElementList.size());
+    public static <T extends IOurWebElement> List<T> wrapList(List<WebElement> webElementList, By by) {
+        List<T> list = new ArrayList<>(webElementList.size());
         for (int i = 0; i < webElementList.size(); i++) {
             list.add(wrap(webElementList.get(i), by, i));
         }
         return list;
     }
 
-    public static List<WebElement> wrapList(SearchContext searchContext, List<WebElement> webElementList, By by) {
-        List<WebElement> list = new ArrayList<>(webElementList.size());
+    public static <T extends IOurWebElement> List<T> wrapList(OurWebElement searchContext, List<WebElement> webElementList, By by) {
+        List<T> list = new ArrayList<>(webElementList.size());
         for (int i = 0; i < webElementList.size(); i++) {
             list.add(wrap(searchContext, webElementList.get(i), by, i));
         }

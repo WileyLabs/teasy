@@ -2,7 +2,6 @@ package com.wiley.autotest.selenium.driver;
 
 import com.google.common.base.Function;
 import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
-import com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory;
 import com.wiley.autotest.utils.TestUtils;
 import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.*;
@@ -48,13 +47,13 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
     public List<WebElement> findElements(final By by) {
         switchToDefaultContext();
         currentFramesPath.clear();
-        return OurWebElementFactory.wrapList(findFirstElements(by), by);
+        return findFirstElements(by);
     }
 
-    public List<WebElement> findElements(SearchContext context, final By by) {
+    public List<WebElement> findElements(OurWebElement context, final By by) {
         firstCallInContext.set(true);
         Stack<WebElement> currentFramesPath = new Stack<>();
-        return OurWebElementFactory.wrapList(context, findFirstElements(context, by, currentFramesPath), by);
+        return findFirstElements(context, by, currentFramesPath);
     }
 
     @Override
@@ -66,18 +65,18 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
                 currentFramesPath.clear();
                 found = findFirstElements(by);
             }
-            return OurWebElementFactory.wrap(found.get(0), by);
+            return found.get(0);
         } catch (IndexOutOfBoundsException e) {
             throw new NoSuchElementException("Unable to find element " + by + ", Exception - " + e);
         }
     }
 
-    public WebElement findElement(SearchContext context, final By by) {
+    public WebElement findElement(OurWebElement context, final By by) {
         try {
             firstCallInContext.set(true);
             Stack<WebElement> currentFramesPath = new Stack<>();
             List<WebElement> found = findFirstElements(context, by, currentFramesPath);
-            return OurWebElementFactory.wrap(context, found.get(0), by);
+            return found.get(0);
         } catch (IndexOutOfBoundsException e) {
             throw new NoSuchElementException("Unable to locate element " + by + ", Exception - " + e);
         }
@@ -86,13 +85,13 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
     public List<WebElement> findAllElementsInFrames(final By by) {
         switchToDefaultContext();
         currentFramesPath.clear();
-        return OurWebElementFactory.wrapList(getAllElementsInFrames(by), by);
+        return getAllElementsInFrames(by);
     }
 
-    public List<WebElement> findAllElementsInFrames(SearchContext context, final By by) {
+    public List<WebElement> findAllElementsInFrames(OurWebElement context, final By by) {
         Stack<WebElement> currentFramesPath = new Stack<>();
         firstCallInContext.set(true);
-        return OurWebElementFactory.wrapList(context, getAllElementsInFrames(context, by, currentFramesPath), by);
+        return getAllElementsInFrames(context, by, currentFramesPath);
     }
 
     @Override
@@ -155,14 +154,14 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
         return emptyList();
     }
 
-    private List<WebElement> findFirstElements(SearchContext context, final By by, Stack<WebElement> currentFramesPath) {
+    private List<WebElement> findFirstElements(OurWebElement context, final By by, Stack<WebElement> currentFramesPath) {
         if (firstCallInContext.get()) {
             try {
-                ((OurWebElement) context).isEnabled();
+                context.isEnabled();
             } catch (StaleElementReferenceException e) {
-                ((OurWebElement) context).againLocate();
+                context.againLocate();
             }
-            List<WebElement> elements = ((OurWebElement) context).getWrappedWebElement().findElements(by);
+            List<WebElement> elements = context.getWrappedWebElement().findElements(by);
             if (!elements.isEmpty()) {
                 return elements;
             }
@@ -216,15 +215,15 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
         return foundInCurrentFrame;
     }
 
-    private List<WebElement> getAllElementsInFrames(SearchContext context, final By by, Stack<WebElement> currentFramesPath) {
+    private List<WebElement> getAllElementsInFrames(OurWebElement context, final By by, Stack<WebElement> currentFramesPath) {
         List<WebElement> foundInCurrentFrame = newArrayList();
         if (firstCallInContext.get()) {
             try {
-                ((OurWebElement) context).isEnabled();
+                context.isEnabled();
             } catch (StaleElementReferenceException e) {
-                ((OurWebElement) context).againLocate();
+                context.againLocate();
             }
-            List<WebElement> elements = ((OurWebElement) context).getWrappedWebElement().findElements(by);
+            List<WebElement> elements = context.getWrappedWebElement().findElements(by);
             if (!elements.isEmpty()) {
                 foundInCurrentFrame.addAll(elements);
             }
@@ -253,11 +252,11 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
         return foundInCurrentFrame;
     }
 
-    private List<WebElement> getFramesForContext(SearchContext context) {
+    private List<WebElement> getFramesForContext(OurWebElement context) {
         List<WebElement> currentFrames;
         if (firstCallInContext.get()) {
-            currentFrames = ((OurWebElement) context).getWrappedWebElement().findElements(By.tagName("iframe"));
-            currentFrames.addAll(((OurWebElement) context).getWrappedWebElement().findElements(By.tagName("frame")));
+            currentFrames = context.getWrappedWebElement().findElements(By.tagName("iframe"));
+            currentFrames.addAll(context.getWrappedWebElement().findElements(By.tagName("frame")));
             firstCallInContext.set(false);
         } else {
             currentFrames = driverFindElements(By.tagName("iframe"));
