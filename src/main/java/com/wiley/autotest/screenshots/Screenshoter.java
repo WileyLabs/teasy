@@ -2,6 +2,7 @@ package com.wiley.autotest.screenshots;
 
 //import net.jsourcerer.webdriver.jserrorcollector.JavaScriptError;
 
+import com.wiley.autotest.selenium.SeleniumHolder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.*;
@@ -68,8 +69,10 @@ public class Screenshoter {
 //            int jsErrorNumber = JavaScriptError.readErrors(getWebDriver()).size();
 //            printStrings(image, removeNL(testName, errorMessage, "The following number of JS errors appeared during the test: " + jsErrorNumber));
             List<String> lines = new ArrayList<>();
-            lines.add("Url: " + getWebDriver().getCurrentUrl());
-            lines.add("Browser: " + getDriverName());
+            if (SeleniumHolder.getAppiumDriver() == null) {
+                lines.add("Url: " + getWebDriver().getCurrentUrl());
+                lines.add("Browser: " + getDriverName());
+            }
             lines.addAll(removeNL(testName, errorMessage));
             printStrings(image, lines);
 

@@ -309,11 +309,9 @@ public abstract class OurElementProvider {
         return result;
     }
 
-
     public void init(final WebDriver driver, Long timeout) {
         elementFinder = new WebDriverAwareElementFinder(driver, new WebDriverWait(driver, timeout, SLEEP_IN_MILLISECONDS));
     }
-
 
     protected final void closeBrowserWindow() {
         elementFinder.closeCurrentBrowserWindow();
