@@ -90,7 +90,12 @@ public abstract class OurElementProvider {
     }
 
     protected final OurWebElement elementOrNull(final By locator, OurSearchStrategy strategy) {
-        return customFinder(strategy.nullOnFailure()).visibleElements(locator).get(0);
+        List<OurWebElement> ourWebElements = customFinder(strategy.nullOnFailure()).visibleElements(locator);
+        if (ourWebElements.isEmpty()) {
+            return null;
+        } else {
+            return ourWebElements.get(0);
+        }
     }
 
     protected OurWebElement domElement(By locator) {
@@ -392,6 +397,7 @@ public abstract class OurElementProvider {
             fail("Unable to find window with '" + url + "'");
         }
     }
+
     @Deprecated
     /**
      * Use {@link OurElementProvider#window()} and call {@link OurWindow#switchTo(WindowMatcher)}

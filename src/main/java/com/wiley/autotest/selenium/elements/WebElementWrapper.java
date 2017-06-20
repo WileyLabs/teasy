@@ -28,31 +28,54 @@ public class WebElementWrapper {
     }
 
     public Select getSelect() {
-        return elementFactory.create(Select.class, webElement);
+        if (element != null) {
+            return elementFactory.create(Select.class, element);
+        } else {
+            return elementFactory.create(Select.class, webElement);
+        }
     }
 
     public Button getButton() {
-        return elementFactory.create(Button.class, webElement);
+        if (element != null) {
+            return elementFactory.create(Button.class, element);
+        } else {
+            return elementFactory.create(Button.class, webElement);
+        }
     }
 
     public Link getLink() {
-        return elementFactory.create(Link.class, webElement);
+        if (element != null) {
+            return elementFactory.create(Link.class, element);
+        } else {
+            return elementFactory.create(Link.class, webElement);
+        }
     }
 
     public TextField getTextField() {
-        return elementFactory.create(TextField.class, webElement);
+        if (element != null) {
+            return elementFactory.create(TextField.class, element);
+        } else {
+            return elementFactory.create(TextField.class, webElement);
+        }
     }
 
     public RadioButton getRadioButton() {
-        return elementFactory.create(RadioButton.class, webElement);
+        if (element != null) {
+            return elementFactory.create(RadioButton.class, element);
+        } else {
+            return elementFactory.create(RadioButton.class, webElement);
+        }
     }
 
     public CheckBox getCheckBox() {
-        return elementFactory.create(CheckBox.class, webElement);
+        if (element != null) {
+            return elementFactory.create(CheckBox.class, element);
+        } else {
+            return elementFactory.create(CheckBox.class, webElement);
+        }
     }
 
     public <T extends Element> T getElement(Class<T> elementType, By by) {
-        return elementFactory.create(elementType, webElement, by);
+        return elementFactory.create(elementType, element, by);
     }
-
 }

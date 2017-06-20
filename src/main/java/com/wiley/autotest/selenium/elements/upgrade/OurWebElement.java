@@ -115,17 +115,17 @@ public class OurWebElement implements IOurWebElement, Locatable {
     }
 
     @Override
-    public IOurWebElement getParent() {
+    public OurWebElement getParent() {
         return getParent(1);
     }
 
     @Override
-    public IOurWebElement getParent(int level) {
+    public OurWebElement getParent(int level) {
         StringBuilder builder = new StringBuilder(".");
         for (int i = 0; i < level; i++) {
             builder.append("/..");
         }
-        return (IOurWebElement) findElement(By.xpath(builder.toString()));
+        return OurWebElementFactory.wrap(this, find(By.xpath(builder.toString())), By.xpath(builder.toString()));
     }
 
     @Override

@@ -57,9 +57,9 @@ public interface IOurWebElement {
 
     public OurWaitFor waitFor(OurSearchStrategy strategy);
 
-    public IOurWebElement getParent();
+    public OurWebElement getParent();
 
-    public IOurWebElement getParent(int level);
+    public OurWebElement getParent(int level);
 
     //discuss the necessity of these methods
     public OurWebElement element(By by);
