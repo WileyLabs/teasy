@@ -1,6 +1,7 @@
 package com.wiley.autotest.selenium.extensions.internal;
 
 import com.wiley.autotest.selenium.elements.RadioButton;
+import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
@@ -10,11 +11,11 @@ import java.util.List;
 import static com.wiley.autotest.utils.ExecutionUtils.isIE;
 
 public class RadioButtonImpl extends AbstractEnabledElement implements RadioButton {
-    protected RadioButtonImpl(final WebElement wrappedElement) {
+    protected RadioButtonImpl(final OurWebElement wrappedElement) {
         super(wrappedElement);
     }
 
-    protected RadioButtonImpl(final WebElement wrappedElement, By by) {
+    protected RadioButtonImpl(final OurWebElement wrappedElement, By by) {
         super(wrappedElement, by);
     }
 
@@ -69,7 +70,7 @@ public class RadioButtonImpl extends AbstractEnabledElement implements RadioButt
     }
 
     @Override
-    public WebElement getWrappedWebElement() {
+    public OurWebElement getWrappedWebElement() {
         return getWrappedElement();
     }
 }

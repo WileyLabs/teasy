@@ -23,8 +23,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.List;
 
-import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrap;
-import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrapList;
 import static com.wiley.autotest.utils.ExecutionUtils.*;
 import static com.wiley.autotest.utils.IETestUtils.*;
 import static com.wiley.autotest.utils.TestUtils.*;
@@ -91,7 +89,8 @@ public class OurWebElement implements IOurWebElement, Locatable {
             contextFinder = new OurElementFinder(getDriver(), new OurSearchStrategy(TIMEOUT_FOR_AGAIN_LOCATE_IN_SECONDS), this);
         }
         if (allowNullContextFinder == null) {
-            allowNullContextFinder = new OurElementFinder(getDriver(), new OurSearchStrategy(TIMEOUT_FOR_AGAIN_LOCATE_IN_SECONDS).nullOnFailure(), this);
+            allowNullContextFinder = new OurElementFinder(getDriver(), new OurSearchStrategy(TIMEOUT_FOR_AGAIN_LOCATE_IN_SECONDS)
+                    .nullOnFailure(), this);
         }
     }
 
@@ -320,6 +319,15 @@ public class OurWebElement implements IOurWebElement, Locatable {
         return wrappedElement.isEnabled();
     }
 
+    @Override
+    public boolean isStale() {
+        try {
+            isEnabled();
+            return false;
+        } catch (StaleElementReferenceException elementIsStale) {
+            return true;
+        }
+    }
 
     @Override
     public String getText() {
@@ -334,7 +342,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
     public WebElement findElement(By by) {
         this.repeatLocateElementCounter = 0;
         return find(by);
-}
+    }
 
     public List<WebElement> findElements(By by) {
         this.repeatLocateElementCounter = 0;

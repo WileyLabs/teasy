@@ -188,7 +188,7 @@ public abstract class OurElementProvider {
         return getElement(Button.class, locator);
     }
 
-    protected Button button(SearchContext searchContext, By locator) {
+    protected Button button(OurWebElement searchContext, By locator) {
         return getElement(Button.class, searchContext, locator);
     }
 
@@ -196,7 +196,7 @@ public abstract class OurElementProvider {
         return getElements(Button.class, locator);
     }
 
-    protected List<Button> buttons(SearchContext searchContext, By locator) {
+    protected List<Button> buttons(OurWebElement searchContext, By locator) {
         return getElements(Button.class, searchContext, locator);
     }
 
@@ -204,7 +204,7 @@ public abstract class OurElementProvider {
         return getElement(Link.class, locator);
     }
 
-    protected Link link(SearchContext searchContext, By locator) {
+    protected Link link(OurWebElement searchContext, By locator) {
         return getElement(Link.class, searchContext, locator);
     }
 
@@ -212,7 +212,7 @@ public abstract class OurElementProvider {
         return getElements(Link.class, locator);
     }
 
-    protected List<Link> links(SearchContext searchContext, By locator) {
+    protected List<Link> links(OurWebElement searchContext, By locator) {
         return getElements(Link.class, searchContext, locator);
     }
 
@@ -220,7 +220,7 @@ public abstract class OurElementProvider {
         return getElement(CheckBox.class, locator);
     }
 
-    protected CheckBox checkBox(SearchContext searchContext, By locator) {
+    protected CheckBox checkBox(OurWebElement searchContext, By locator) {
         return getElement(CheckBox.class, searchContext, locator);
     }
 
@@ -228,7 +228,7 @@ public abstract class OurElementProvider {
         return getElements(CheckBox.class, locator);
     }
 
-    protected List<CheckBox> checkBoxes(SearchContext searchContext, By locator) {
+    protected List<CheckBox> checkBoxes(OurWebElement searchContext, By locator) {
         return getElements(CheckBox.class, searchContext, locator);
     }
 
@@ -236,7 +236,7 @@ public abstract class OurElementProvider {
         return getElement(RadioButton.class, locator);
     }
 
-    protected RadioButton radioButton(SearchContext searchContext, By locator) {
+    protected RadioButton radioButton(OurWebElement searchContext, By locator) {
         return getElement(RadioButton.class, searchContext, locator);
     }
 
@@ -244,7 +244,7 @@ public abstract class OurElementProvider {
         return getElements(RadioButton.class, locator);
     }
 
-    protected List<RadioButton> radioButtons(SearchContext searchContext, By locator) {
+    protected List<RadioButton> radioButtons(OurWebElement searchContext, By locator) {
         return getElements(RadioButton.class, locator);
     }
 
@@ -252,7 +252,7 @@ public abstract class OurElementProvider {
         return getElement(Select.class, locator);
     }
 
-    protected Select select(SearchContext searchContext, By locator) {
+    protected Select select(OurWebElement searchContext, By locator) {
         return getElement(Select.class, searchContext, locator);
     }
 
@@ -260,7 +260,7 @@ public abstract class OurElementProvider {
         return getElements(Select.class, locator);
     }
 
-    protected List<Select> selects(SearchContext searchContext, By locator) {
+    protected List<Select> selects(OurWebElement searchContext, By locator) {
         return getElements(Select.class, locator);
     }
 
@@ -268,7 +268,7 @@ public abstract class OurElementProvider {
         return getElement(TextField.class, locator);
     }
 
-    protected TextField textField(SearchContext searchContext, By locator) {
+    protected TextField textField(OurWebElement searchContext, By locator) {
         return getElement(TextField.class, searchContext, locator);
     }
 
@@ -276,8 +276,8 @@ public abstract class OurElementProvider {
         return getElements(TextField.class, locator);
     }
 
-    protected List<TextField> textFields(SearchContext searchContext, By locator) {
-        return getElements(TextField.class, locator);
+    protected List<TextField> textFields(OurWebElement searchContext, By locator) {
+        return getElements(TextField.class, searchContext, locator);
     }
 
     private <T extends Element> T getElement(Class<T> elementType, By by) {
@@ -288,9 +288,9 @@ public abstract class OurElementProvider {
         }
     }
 
-    private <T extends Element> T getElement(Class<T> elementType, SearchContext searchContext, By by) {
+    private <T extends Element> T getElement(Class<T> elementType, OurWebElement searchContext, By by) {
         try {
-            return getWebElementWrapper(element(searchContext, by)).getElement(elementType, by);
+            return getWebElementWrapper(searchContext.element(by)).getElement(elementType, by);
         } catch (Exception e) {
             return null;
         }
@@ -302,9 +302,9 @@ public abstract class OurElementProvider {
         return result;
     }
 
-    private <T extends Element> List<T> getElements(Class<T> elementType, SearchContext searchContext, By by) {
+    private <T extends Element> List<T> getElements(Class<T> elementType, OurWebElement searchContext, By by) {
         List<T> result = new ArrayList<>();
-        elements(searchContext, by).stream()
+        searchContext.elements(by).stream()
                 .forEach(element -> result.add(getWebElementWrapper(element).getElement(elementType, by)));
         return result;
     }
@@ -953,7 +953,11 @@ public abstract class OurElementProvider {
         return new WebElementWrapper(wrappedElement);
     }
 
-    private WebElementWrapper getWebElementWrapper(OurWebElement wrappedElement) {
+    @Deprecated
+    /**
+     * will be made privatemi
+     */
+    protected WebElementWrapper getWebElementWrapper(OurWebElement wrappedElement) {
         return new WebElementWrapper(wrappedElement);
     }
 

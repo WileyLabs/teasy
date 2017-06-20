@@ -1,7 +1,7 @@
 package com.wiley.autotest.selenium.elements;
 
-import org.openqa.selenium.WebElement;
+import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
 
 public interface WebContainer extends Element {
-    void init(WebElement wrappedElement);
+    void init(OurWebElement wrappedElement);
 }

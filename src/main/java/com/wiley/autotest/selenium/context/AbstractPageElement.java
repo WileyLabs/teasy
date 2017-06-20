@@ -9,7 +9,6 @@ import com.wiley.autotest.selenium.ParamsProvider;
 import com.wiley.autotest.selenium.ReportAnnotationsWrapperCreator;
 import com.wiley.autotest.selenium.elements.CheckBox;
 import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
-import com.wiley.autotest.selenium.extensions.ExtendedFieldDecorator;
 import com.wiley.autotest.selenium.extensions.internal.DefaultElementFactory;
 import com.wiley.autotest.spring.Settings;
 import com.wiley.autotest.utils.DriverUtils;
@@ -92,7 +91,6 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         this.driver = driver;
         this.screenshotHelper = screenshotHelper;
         elementFactory = new DefaultElementFactory();
-        initFindByAnnotations(this);
         init();
     }
 
@@ -109,11 +107,6 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
     }
 
     protected void init() {
-    }
-
-    protected final <E> E initFindByAnnotations(final E abstractPageElement) {
-        PageFactory.initElements(new ExtendedFieldDecorator(driver, elementFactory, this), abstractPageElement);
-        return abstractPageElement;
     }
 
     protected <E extends IPage> E redirectTo(final Class<E> target) {
@@ -324,9 +317,9 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
 
     @Deprecated
     //TODO: VE - should be moved to utils
-    public List<String> getTextFromWebElementList(final List<WebElement> webElementList) {
+    public List<String> getTextFromWebElementList(final List<OurWebElement> webElementList) {
         final List<String> resultList = new ArrayList<String>();
-        for (WebElement eachElement : webElementList) {
+        for (OurWebElement eachElement : webElementList) {
             scrollIntoView(eachElement);
             resultList.add(eachElement.getText().trim());
         }
@@ -493,7 +486,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         return driver.getTitle();
     }
 
-    public void scrollIntoView(WebElement element) {
+    public void scrollIntoView(OurWebElement element) {
         ((JavascriptExecutor) getDriver()).executeScript("arguments[0].scrollIntoView(true);", element);
     }
 

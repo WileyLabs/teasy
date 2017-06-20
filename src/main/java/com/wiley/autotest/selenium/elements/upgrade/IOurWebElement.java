@@ -33,6 +33,8 @@ public interface IOurWebElement {
 
     boolean isEnabled();
 
+    boolean isStale();
+
     String getText();
 
     boolean isDisplayed();

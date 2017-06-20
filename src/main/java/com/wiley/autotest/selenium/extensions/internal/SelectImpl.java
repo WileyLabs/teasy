@@ -1,6 +1,7 @@
 package com.wiley.autotest.selenium.extensions.internal;
 
 import com.wiley.autotest.selenium.elements.Select;
+import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
 import com.wiley.autotest.utils.TestUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -16,11 +17,11 @@ import static com.wiley.autotest.utils.ExecutionUtils.isIE;
 import static org.apache.commons.lang.math.RandomUtils.nextInt;
 
 class SelectImpl extends AbstractEnabledElement implements Select {
-    protected SelectImpl(final WebElement wrappedElement) {
+    protected SelectImpl(final OurWebElement wrappedElement) {
         super(wrappedElement);
     }
 
-    protected SelectImpl(final WebElement wrappedElement, By by) {
+    protected SelectImpl(final OurWebElement wrappedElement, By by) {
         super(wrappedElement, by);
     }
 
@@ -95,7 +96,7 @@ class SelectImpl extends AbstractEnabledElement implements Select {
     }
 
     @Override
-    public WebElement getWrappedWebElement() {
+    public OurWebElement getWrappedWebElement() {
         return getWrappedElement();
     }
 
@@ -158,7 +159,7 @@ class SelectImpl extends AbstractEnabledElement implements Select {
     }
 
     private org.openqa.selenium.support.ui.Select wrappedSelect() {
-        return new org.openqa.selenium.support.ui.Select(getWrappedElement());
+        return new org.openqa.selenium.support.ui.Select(getWrappedElement().getWrappedWebElement());
     }
 
     @Override
