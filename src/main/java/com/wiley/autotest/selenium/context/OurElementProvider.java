@@ -286,19 +286,11 @@ public abstract class OurElementProvider {
     }
 
     private <T extends Element> T getElement(Class<T> elementType, By by) {
-        try {
-            return getWebElementWrapper(element(by)).getElement(elementType, by);
-        } catch (Exception e) {
-            return null;
-        }
+        return getWebElementWrapper(element(by)).getElement(elementType, by);
     }
 
     private <T extends Element> T getElement(Class<T> elementType, OurWebElement searchContext, By by) {
-        try {
-            return getWebElementWrapper(searchContext.element(by)).getElement(elementType, by);
-        } catch (Exception e) {
-            return null;
-        }
+        return getWebElementWrapper(searchContext.element(by)).getElement(elementType, by);
     }
 
     private <T extends Element> List<T> getElements(Class<T> elementType, By by) {

@@ -4,6 +4,7 @@ import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
 import com.wiley.autotest.selenium.elements.TextField;
 import com.wiley.autotest.utils.TestUtils;
+import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -256,6 +257,9 @@ public class WebDriverAwareElementFinder implements ElementFinder {
 
     @Override
     public void waitForPageToLoad() {
+        if (((FramesTransparentWebDriver) driver).getWrappedDriver() instanceof AppiumDriver) {
+            return;
+        }
         try {
             try {
                 waitFor(ExpectedConditions2.pageToLoad());
@@ -263,10 +267,7 @@ public class WebDriverAwareElementFinder implements ElementFinder {
                 String readyState = ((JavascriptExecutor) driver).executeScript("return document.readyState").toString();
                 LOGGER.error("*****ERROR***** TimeoutException occurred while waiting for page to load! return document.readyState value is '" + readyState + "' But expected to be 'complete'");
             } catch (WebDriverException e) {
-                //to avoid extra logs for mobile
-                if (!e.getMessage().contains("Method has not yet been implemented")) {
-                    LOGGER.error("*****ERROR***** WebDriverException occurred while waiting for page to load!");
-                }
+                LOGGER.error("*****ERROR***** WebDriverException occurred while waiting for page to load!");
             }
         } catch (Throwable unexpectedThrowable) {
             //TODO this catch should be removed by September 1 2014! Adding it to find out the reason of browsers being not closed after test
