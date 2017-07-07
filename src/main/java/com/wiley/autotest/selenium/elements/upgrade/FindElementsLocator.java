@@ -1,7 +1,8 @@
 package com.wiley.autotest.selenium.elements.upgrade;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.SearchContext;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 /**
@@ -10,23 +11,35 @@ import org.openqa.selenium.WebElement;
  * Time: 15:51
  */
 public class FindElementsLocator implements Locator {
-    private SearchContext searchContext;
+    private OurWebElement searchContext;
+    private WebDriver driver;
     private By by;
     private int index;
 
-    public FindElementsLocator(SearchContext searchContext, By by, int index) {
+    public FindElementsLocator(OurWebElement searchContext, By by, int index) {
         this.searchContext = searchContext;
         this.by = by;
         this.index = index;
     }
 
+    public FindElementsLocator(WebDriver driver, By by, int index) {
+        this.driver = driver;
+        this.by = by;
+        this.index = index;
+    }
+
+
     @Override
-    public WebElement locate() {
-        return searchContext.findElements(by).get(index);
+    public WebElement find() {
+        try {
+            return driver != null ? driver.findElements(by).get(index) : searchContext.findElements(by).get(index);
+        } catch (IndexOutOfBoundsException e) {
+            throw new NoSuchElementException("Unable to find element " + by + ", Exception - " + e);
+        }
     }
 
     @Override
-    public By getByLocator() {
+    public By getLocator() {
         return by;
     }
 }

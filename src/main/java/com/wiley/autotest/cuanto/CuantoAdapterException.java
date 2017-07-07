@@ -1,6 +1,7 @@
 package com.wiley.autotest.cuanto;
 
 public class CuantoAdapterException extends Exception {
+
 	public CuantoAdapterException() {
 		super();
 	}

@@ -78,6 +78,7 @@ public class SeleniumMethodsInvoker extends MethodsInvoker {
     void invokeMethod(AbstractTest instance, Method method, TestClassContext context, boolean isBeforeAfterGroup) {
         final WebDriver mainDriver = SeleniumHolder.getWebDriver();
         final String mainDriverName = SeleniumHolder.getDriverName();
+        String platformName = SeleniumHolder.getPlatform();
 
         AbstractSeleniumTest abstractSeleniumTest = (AbstractSeleniumTest) instance;
 
@@ -86,9 +87,9 @@ public class SeleniumMethodsInvoker extends MethodsInvoker {
         }
 
         //For IE and Safari browser and @FireFoxOnly annotation setting specifically prepared FF driver
-        if ((SeleniumHolder.getDriverName().contains(IE) ||
-                SeleniumHolder.getDriverName().equals(SAFARI) ||
-                SeleniumHolder.getPlatform().equals(ANDROID))
+        if ((mainDriverName.contains(IE) ||
+                mainDriverName.equals(SAFARI) ||
+                platformName.equals(ANDROID))
                 && method.getAnnotation(FireFoxOnly.class) != null) {
             SeleniumHolder.setWebDriver(DriverUtils.getFFDriver());
             SeleniumHolder.setDriverName(FIREFOX);
@@ -96,9 +97,9 @@ public class SeleniumMethodsInvoker extends MethodsInvoker {
         }
 
         //Set FirefoxOnly for all after methods in safari, ie, android
-        if ((SeleniumHolder.getDriverName().equals(SAFARI) ||
-                SeleniumHolder.getDriverName().contains(IE) ||
-                SeleniumHolder.getPlatform().equals(ANDROID)) &&
+        if ((mainDriverName.equals(SAFARI) ||
+                mainDriverName.contains(IE) ||
+                platformName.equals(ANDROID)) &&
                 (method.getAnnotation(OurAfterMethod.class) != null ||
                         method.getAnnotation(OurAfterClass.class) != null ||
                         method.getAnnotation(OurAfterGroups.class) != null ||
@@ -137,7 +138,7 @@ public class SeleniumMethodsInvoker extends MethodsInvoker {
                 throw new StopTestExecutionException(errorMessage, e);
             }
         } finally {
-            if (isFFDriver.get() && SeleniumHolder.getDriverName().equals(FIREFOX)) {
+            if (isFFDriver.get() && mainDriverName.equals(FIREFOX)) {
                 SeleniumHolder.getWebDriver().quit();
             }
             SeleniumHolder.setDriverName(mainDriverName);
@@ -149,19 +150,20 @@ public class SeleniumMethodsInvoker extends MethodsInvoker {
         Method method = instance.getTestMethod();
         String platform = SeleniumHolder.getPlatform();
         String driverName = SeleniumHolder.getDriverName();
-        if (((platform != null && platform.equals(ANDROID)) || (platform == null && platform.equals(ANDROID))) && isNoGroupTest(method, Group.noAndroid)) {
+
+        if (platform.equals(ANDROID) && isNoGroupTest(method, Group.noAndroid)) {
             return true;
         }
 
-        if (((platform != null && platform.equals(IOS)) || (platform == null && platform.equals(IOS))) && isNoGroupTest(method, Group.noIos)) {
+        if (platform.equals(IOS) && isNoGroupTest(method, Group.noIos)) {
             return true;
         }
 
-        if (((platform != null && platform.equals(WINDOWS)) || (platform == null && platform.equals(WINDOWS))) && isNoGroupTest(method, Group.noWindows)) {
+        if (platform.equals(WINDOWS) && isNoGroupTest(method, Group.noWindows)) {
             return true;
         }
 
-        if (((platform != null && platform.equals(MAC)) || (platform == null && platform.equals(MAC))) && isNoGroupTest(method, Group.noMac)) {
+        if (platform.equals(MAC) && isNoGroupTest(method, Group.noMac)) {
             return true;
         }
 

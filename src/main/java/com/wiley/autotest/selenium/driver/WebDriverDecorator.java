@@ -7,15 +7,17 @@ import org.openqa.selenium.interactions.Keyboard;
 import org.openqa.selenium.interactions.Mouse;
 import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.events.EventFiringWebDriver;
 
 import java.util.List;
 import java.util.Set;
 
-public abstract class WebDriverDecorator implements WebDriver, JavascriptExecutor, TakesScreenshot, HasInputDevices {
+public abstract class WebDriverDecorator extends EventFiringWebDriver implements WebDriver, JavascriptExecutor, TakesScreenshot, HasInputDevices {
 
     private final WebDriver driver;
 
     public WebDriverDecorator(final WebDriver driver) {
+        super(driver);
         this.driver = driver;
     }
 

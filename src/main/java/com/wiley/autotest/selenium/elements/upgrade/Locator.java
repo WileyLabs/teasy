@@ -9,7 +9,7 @@ import org.openqa.selenium.WebElement;
  * Time: 15:48
  */
 public interface Locator {
-    WebElement locate();
+    WebElement find();
 
-    By getByLocator();
+    By getLocator();
 }

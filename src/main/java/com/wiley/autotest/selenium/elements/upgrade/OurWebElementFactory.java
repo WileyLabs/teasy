@@ -20,74 +20,51 @@ public class OurWebElementFactory {
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(OurWebElementFactory.class);
 
     public static <T extends IOurWebElement> T wrap(WebElement webElement, By by) {
-        OurWebElementData ourWebElementData = new OurWebElementData();
-        ourWebElementData.setElement(webElement);
-        ourWebElementData.setBy(by);
-        return wrapBase(ourWebElementData);
+        return wrapBase(new OurWebElementData(webElement, by));
     }
 
-    public static <T extends IOurWebElement> T wrap(SearchContext searchContext, WebElement webElement, By by) {
-        OurWebElementData ourWebElementData = new OurWebElementData();
-        ourWebElementData.setSearchContext(searchContext);
-        ourWebElementData.setElement(webElement);
-        ourWebElementData.setBy(by);
-        return wrapBase(ourWebElementData);
+    public static <T extends IOurWebElement> T wrap(OurWebElement searchContext, WebElement webElement, By by) {
+        return wrapBase(new OurWebElementData(searchContext, webElement, by));
     }
 
     public static <T extends IOurWebElement> T wrap(WebElement webElement, By by, int index) {
-        OurWebElementData ourWebElementData = new OurWebElementData();
-        ourWebElementData.setElement(webElement);
-        ourWebElementData.setBy(by);
+        OurWebElementData ourWebElementData = new OurWebElementData(webElement, by);
         ourWebElementData.setIndex(index);
         return wrapBase(ourWebElementData);
     }
 
-    public static <T extends IOurWebElement> T wrap(SearchContext searchContext, WebElement webElement, By by, int index) {
-        OurWebElementData ourWebElementData = new OurWebElementData();
-        ourWebElementData.setSearchContext(searchContext);
-        ourWebElementData.setElement(webElement);
-        ourWebElementData.setBy(by);
-        ourWebElementData.setIndex(index);
-        return wrapBase(ourWebElementData);
+    public static <T extends IOurWebElement> T wrap(OurWebElement searchContext, WebElement webElement, By by, int index) {
+        return wrapBase(new OurWebElementData(searchContext, webElement, by, index));
     }
 
     public static <T extends IOurWebElement> T wrapParent(WebElement webElement) {
-        OurWebElementData ourWebElementData = new OurWebElementData();
-        ourWebElementData.setElement(webElement);
+        OurWebElementData ourWebElementData = new OurWebElementData(webElement);
         return wrapBase(ourWebElementData);
     }
 
-    public static List<WebElement> wrapList(List<WebElement> webElementList, By by) {
-        List<WebElement> list = new ArrayList<>(webElementList.size());
+    public static <T extends IOurWebElement> List<T> wrapList(List<WebElement> webElementList, By by) {
+        List<T> list = new ArrayList<>(webElementList.size());
         for (int i = 0; i < webElementList.size(); i++) {
             list.add(wrap(webElementList.get(i), by, i));
         }
         return list;
     }
 
-    private static <T extends IOurWebElement> T wrapBase(OurWebElementData ourWebElementData) {
-        try {
-            Class<T> classOfOurWebElement = getOurWebElementClass();
-            return classOfOurWebElement.getDeclaredConstructor(OurWebElementData.class).newInstance(ourWebElementData);
-        } catch (InstantiationException e) {
-            LOGGER.error("Cannot create instance of OurWebElement. InstantiationException occurs", e);
-            throw new WrapElementException("Cannot create instance of OurWebElement. InstantiationException occurs", e);
-        } catch (IllegalAccessException e) {
-            LOGGER.error("Cannot create instance of OurWebElement. IllegalAccessException occurs", e);
-            throw new WrapElementException("Cannot create instance of OurWebElement. IllegalAccessException occurs", e);
-        } catch (InvocationTargetException e) {
-            LOGGER.error("Cannot create instance of OurWebElement. InvocationTargetException occurs", e);
-            throw new WrapElementException("Cannot create instance of OurWebElement. InvocationTargetException occurs", e);
-        } catch (NoSuchMethodException e) {
-            LOGGER.error("Cannot create instance of OurWebElement. NoSuchMethodException occurs", e);
-            throw new WrapElementException("Cannot create instance of OurWebElement. NoSuchMethodException occurs", e);
-        } catch (ClassNotFoundException e) {
-            LOGGER.error("Cannot create instance of OurWebElement. ClassNotFoundException occurs", e);
-            throw new WrapElementException("Cannot create instance of OurWebElement. ClassNotFoundException occurs", e);
+    public static <T extends IOurWebElement> List<T> wrapList(OurWebElement searchContext, List<WebElement> webElementList, By by) {
+        List<T> list = new ArrayList<>(webElementList.size());
+        for (int i = 0; i < webElementList.size(); i++) {
+            list.add(wrap(searchContext, webElementList.get(i), by, i));
         }
+        return list;
     }
 
-    private static <T extends IOurWebElement> Class<T> getOurWebElementClass() throws ClassNotFoundException {
-        return (Class<T>) Class.forName(SeleniumHolder.getOurWebElementClass());
+    private static <T extends IOurWebElement> T wrapBase(OurWebElementData ourWebElementData) {
+        try {
+            Class<T> classOfOurWebElement = (Class<T>) Class.forName(SeleniumHolder.getOurWebElementClass());
+            return classOfOurWebElement.getDeclaredConstructor(OurWebElementData.class).newInstance(ourWebElementData);
+        } catch (InstantiationException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            LOGGER.error("Cannot create instance of OurWebElement." + e.getClass().getName() + " occurred. ", e);
+            throw new WrapElementException("Cannot create instance of OurWebElement. " + e.getClass().getName() + " occurred. ", e);
+        }
     }
 }

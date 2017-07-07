@@ -2,6 +2,7 @@ package com.wiley.autotest.screenshots;
 
 //import net.jsourcerer.webdriver.jserrorcollector.JavaScriptError;
 
+import com.wiley.autotest.selenium.SeleniumHolder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.*;
@@ -13,6 +14,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -25,6 +27,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.wiley.autotest.screenshots.ScreenShotsPathsHolder.addScreenShotPathForTest;
+import static com.wiley.autotest.selenium.SeleniumHolder.getDriverName;
 import static com.wiley.autotest.selenium.SeleniumHolder.getWebDriver;
 import static com.wiley.autotest.utils.TestUtils.getTestName;
 
@@ -65,7 +68,13 @@ public class Screenshoter {
 //This probably could be used someday (do not delete)
 //            int jsErrorNumber = JavaScriptError.readErrors(getWebDriver()).size();
 //            printStrings(image, removeNL(testName, errorMessage, "The following number of JS errors appeared during the test: " + jsErrorNumber));
-            printStrings(image, removeNL(testName, errorMessage));
+            List<String> lines = new ArrayList<>();
+            if (SeleniumHolder.getAppiumDriver() == null) {
+                lines.add("Url: " + getWebDriver().getCurrentUrl());
+                lines.add("Browser: " + getDriverName());
+            }
+            lines.addAll(removeNL(testName, errorMessage));
+            printStrings(image, lines);
 
             final String pathName = getFilenameFor(testName);
             final File screenShotWithProjectPath = new File(pathName);

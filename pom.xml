@@ -5,19 +5,64 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.wiley</groupId>
-    <artifactId>wiley-selenium-base</artifactId>
-    <name>WAT_CORE</name>
+    <artifactId>teasy</artifactId>
     <packaging>jar</packaging>
-    <version>2.0.48</version>
+    <version>1.0.0-beta</version>
+
+    <name>Teasy</name>
+    <description>Automation framework to make testing easy</description>
+    <url>http://www.example.com/example-application</url>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>http://www.opensource.org/licenses/mit-license.php</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Nikolay Tyukavkin</name>
+            <email>tyukavkin@wiley.com</email>
+            <organization>Wiley</organization>
+            <organizationUrl>http://www.wiley.com</organizationUrl>
+        </developer>
+        <developer>
+            <name>Vladimir Efimov</name>
+            <email>vefimov@wiley.com</email>
+            <organization>Wiley</organization>
+            <organizationUrl>http://www.wiley.com</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/WileyLabs/teasy.git</connection>
+        <developerConnection>scm:git:ssh://github.com/WileyLabs/teasy.git</developerConnection>
+        <url>http://github.com/WileyLabs/teasy</url>
+    </scm>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
 
     <properties>
-        <selenium-version>2.48.2</selenium-version>
+        <selenium-version>3.2.0</selenium-version>
         <testng-version>6.8.21</testng-version>
         <org.slf4j.version>1.6.2</org.slf4j.version>
         <org.springframework-version>4.2.4.RELEASE</org.springframework-version>
         <allure.version>1.4.14</allure.version>
         <aspectj.version>1.8.5</aspectj.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
 
     <build>
         <plugins>
@@ -49,35 +94,48 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
-                <groupId>org.jfrog.buildinfo</groupId>
-                <artifactId>artifactory-maven-plugin</artifactId>
-                <version>2.2.1</version>
-                <inherited>false</inherited>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.4</version>
                 <executions>
                     <execution>
-                        <id>build-info</id>
+                        <id>attach-javadocs</id>
                         <goals>
-                            <goal>publish</goal>
+                            <goal>jar</goal>
                         </goals>
                         <configuration>
-                            <deployProperties>
-                                <groupId>${project.groupId}</groupId>
-                                <artifactId>${project.artifactId}</artifactId>
-                                <version>${project.version}</version>
-                            </deployProperties>
-                            <publisher>
-                                <username>admin</username>
-                                <password>\{DESede\}wkXcAhnLLeE1syf/B/sJKw==</password>
-                                <contextUrl>http://192.168.108.200:8081/artifactory/</contextUrl>
-                                <repoKey>ext-releases-local</repoKey>
-                                <snapshotRepoKey>ext-snapshots-local</snapshotRepoKey>
-                            </publisher>
+                            <additionalparam>-Xdoclint:none</additionalparam>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.7</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
+
         </plugins>
 
         <resources>
@@ -284,13 +342,13 @@
             <artifactId>guava</artifactId>
             <groupId>com.google.guava</groupId>
             <type>jar</type>
-            <version>15.0</version>
+            <version>21.0</version>
         </dependency>
 
         <dependency>
             <groupId>io.appium</groupId>
             <artifactId>java-client</artifactId>
-            <version>4.1.2</version>
+            <version>5.0.0-BETA6</version>
             <exclusions>
                 <exclusion>
                     <artifactId>hamcrest-core</artifactId>
@@ -370,17 +428,9 @@
         <dependency>
             <groupId>io.github.bonigarcia</groupId>
             <artifactId>webdrivermanager</artifactId>
-            <version>1.4.10</version>
+            <version>1.6.2</version>
         </dependency>
 
     </dependencies>
-
-    <distributionManagement>
-        <repository>
-            <id>jira4test.tes-rus.net</id>
-            <name>jira4test.tes-rus.net-releases</name>
-            <url>http://192.168.108.200:8081/artifactory/ext-releases-local</url>
-        </repository>
-    </distributionManagement>
 
 </project>

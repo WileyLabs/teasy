@@ -140,6 +140,7 @@ public abstract class AbstractSeleniumTest extends AbstractTest implements ITest
 
     @AfterMethod(alwaysRun = true)
     public void doAfterMethods() {
+        //TODO VE: sometimes cookies may be needed so it's worth to make it optional/configurable
         cookiesService.deleteAllCookies();
         methodsInvoker.invokeMethodsByAnnotation(this, OurAfterMethod.class);
     }

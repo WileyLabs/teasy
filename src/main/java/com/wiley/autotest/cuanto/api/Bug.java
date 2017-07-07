@@ -9,10 +9,8 @@ public class Bug {
 	private String url;
 	private Long id;
 
-
 	Bug() {
 	}
-
 
 	/**
 	 * Instantiate a new Bug for this title and URL.
@@ -24,12 +22,10 @@ public class Bug {
 		this.url = url;
 	}
 
-
 	Bug(String title, String url, Long id) {
 		this.title = title;
 		this.url = url;
 	}
-
 
 	/**
 	 * @return The title of the bug.
@@ -38,11 +34,9 @@ public class Bug {
 		return title;
 	}
 
-
 	void setTitle(String title) {
 		this.title = title;
 	}
-
 
 	/**
 	 *
@@ -52,11 +46,9 @@ public class Bug {
 		return url;
 	}
 
-
 	void setUrl(String url) {
 		this.url = url;
 	}
-
 
 	/**
 	 * @return The ID of the bug. This is only populated if the Bug was retrieved from the Cuanto server (as part of a TestOutcome).
@@ -64,7 +56,6 @@ public class Bug {
 	public Long getId() {
 		return id;
 	}
-
 
 	void setId(Long id) {
 		this.id = id;

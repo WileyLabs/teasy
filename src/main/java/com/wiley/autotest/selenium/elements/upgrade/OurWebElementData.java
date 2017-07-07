@@ -12,12 +12,28 @@ import org.openqa.selenium.WebElement;
 public class OurWebElementData {
 
     private WebElement element;
-    private SearchContext searchContext;
+    private OurWebElement searchContext;
     private By by;
     private Integer index;
     private Locator locator;
 
-    public OurWebElementData() {
+    public OurWebElementData(WebElement element) {
+        this.element = element;
+    }
+
+    public OurWebElementData(WebElement element, By by) {
+        this(element);
+        this.by = by;
+    }
+
+    public OurWebElementData(OurWebElement context, WebElement element, By by) {
+        this(element, by);
+        this.searchContext = context;
+    }
+
+    public OurWebElementData(OurWebElement context, WebElement element, By by, int index) {
+        this(context, element, by);
+        this.index = index;
     }
 
     public WebElement getElement() {
@@ -28,11 +44,11 @@ public class OurWebElementData {
         this.element = element;
     }
 
-    public SearchContext getSearchContext() {
+    public OurWebElement getSearchContext() {
         return searchContext;
     }
 
-    public void setSearchContext(SearchContext searchContext) {
+    public void setSearchContext(OurWebElement searchContext) {
         this.searchContext = searchContext;
     }
 

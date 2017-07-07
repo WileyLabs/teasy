@@ -2,9 +2,9 @@ package com.wiley.autotest.screenshots;
 
 import com.wiley.autotest.selenium.driver.WebDriverDecorator;
 import com.wiley.autotest.selenium.driver.events.listeners.ScreenshotWebDriverEventListener;
+import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
 import com.wiley.autotest.utils.ExecutionUtils;
 import org.openqa.selenium.*;
-import org.openqa.selenium.support.events.EventFiringWebDriver;
 
 import java.awt.image.BufferedImage;
 import java.util.List;
@@ -117,8 +117,12 @@ public class DefaultScreenshotProvider implements ScreenshotProvider {
     private int getModalMaxHeight(WebDriver driver) {
         int maxHeight = getModalMaxHeightInFrame(driver);
         try {
-            WebDriver decoratedDriver = (((WebDriverDecorator) (((EventFiringWebDriver) driver).getWrappedDriver())).getDriver());
-            decoratedDriver.switchTo().frame(driver.findElement(By.cssSelector("iframe[name='container']")));
+            WebDriver decoratedDriver = ((WebDriverDecorator) driver).getDriver();
+            WebElement frame = driver.findElement(By.cssSelector("iframe[name='container']"));
+            if (frame instanceof OurWebElement) {
+                frame = ((OurWebElement) frame).getWrappedWebElement();
+            }
+            decoratedDriver.switchTo().frame(frame);
             maxHeight = Math.max(maxHeight, getModalMaxHeightInFrame(driver));
             decoratedDriver.switchTo().defaultContent();
         } catch (NoSuchElementException e) {

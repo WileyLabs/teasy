@@ -1,8 +1,12 @@
 package com.wiley.autotest.selenium.driver;
 
 import com.google.common.base.Function;
+import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
 import com.wiley.autotest.utils.TestUtils;
+import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,17 +20,21 @@ import static org.testng.collections.Lists.newArrayList;
 
 public class FramesTransparentWebDriver extends WebDriverDecorator {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(FramesTransparentWebDriver.class);
+
     private final Stack<WebElement> currentFramesPath;
     private final Function<WebElement, WebElement> toFrameAwareWebElements;
 
-    //VE Do we really need a ThreadLocal here? Seems that this is an extra one
     private ThreadLocal<String> mainWindowHandle = new ThreadLocal<>();
+    private ThreadLocal<Boolean> firstCallInContext = ThreadLocal.withInitial(() -> true);
 
     public FramesTransparentWebDriver(final WebDriver driver) {
         super(driver);
         currentFramesPath = new Stack<>();
         toFrameAwareWebElements = new FrameAwareWebElementTransformer(driver, currentFramesPath);
-        mainWindowHandle.set(driver.getWindowHandle());
+        if (!(driver instanceof AppiumDriver)) {
+            mainWindowHandle.set(driver.getWindowHandle());
+        }
     }
 
     @Override
@@ -42,6 +50,12 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
         return findFirstElements(by);
     }
 
+    public List<WebElement> findElements(OurWebElement context, final By by) {
+        firstCallInContext.set(true);
+        Stack<WebElement> currentFramesPath = new Stack<>();
+        return findFirstElements(context, by, currentFramesPath);
+    }
+
     @Override
     public WebElement findElement(final By by) {
         try {
@@ -53,14 +67,31 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
             }
             return found.get(0);
         } catch (IndexOutOfBoundsException e) {
+            throw new NoSuchElementException("Unable to find element " + by + ", Exception - " + e);
+        }
+    }
+
+    public WebElement findElement(OurWebElement context, final By by) {
+        try {
+            firstCallInContext.set(true);
+            Stack<WebElement> currentFramesPath = new Stack<>();
+            List<WebElement> found = findFirstElements(context, by, currentFramesPath);
+            return found.get(0);
+        } catch (IndexOutOfBoundsException e) {
             throw new NoSuchElementException("Unable to locate element " + by + ", Exception - " + e);
         }
     }
 
-    public List<WebElement> findElementsInFrames(final By by) {
+    public List<WebElement> findAllElementsInFrames(final By by) {
         switchToDefaultContext();
         currentFramesPath.clear();
-        return findAllElementsInAllFrames(by);
+        return getAllElementsInFrames(by);
+    }
+
+    public List<WebElement> findAllElementsInFrames(OurWebElement context, final By by) {
+        Stack<WebElement> currentFramesPath = new Stack<>();
+        firstCallInContext.set(true);
+        return getAllElementsInFrames(context, by, currentFramesPath);
     }
 
     @Override
@@ -76,8 +107,11 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
 
     private void switchToDefaultContext() {
         try {
-            getDriver().switchTo().defaultContent();
+            if (!(getDriver() instanceof AppiumDriver)) {
+                getDriver().switchTo().defaultContent();
+            }
         } catch (WebDriverException e) {
+            LOGGER.error("****WebDriverException occurs when switchToDefaultContext****", e);
             switchToMainWindow();
             getDriver().switchTo().defaultContent();
         }
@@ -85,8 +119,11 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
 
     private void switchToMainWindow() {
         try {
-            switchTo().window(mainWindowHandle.get());
+            if (!(getDriver() instanceof AppiumDriver)) {
+                switchTo().window(mainWindowHandle.get());
+            }
         } catch (SwitchToWindowException e) {
+            LOGGER.error("****SwitchToWindowException occurs when switchToMainWindow****", e);
             switchTo().window(getDriver().getWindowHandles().iterator().next());
         }
     }
@@ -112,14 +149,50 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
 
             currentFramesPath.pop();
             getDriver().switchTo().defaultContent();
-            for (final WebElement each : currentFramesPath) {
-                switchToFrame(each);
-            }
+            currentFramesPath.forEach(this::switchToFrame);
         }
         return emptyList();
     }
 
-    private List<WebElement> findAllElementsInAllFrames(final By by) {
+    private List<WebElement> findFirstElements(OurWebElement context, final By by, Stack<WebElement> currentFramesPath) {
+        if (firstCallInContext.get()) {
+            try {
+                context.isEnabled();
+            } catch (StaleElementReferenceException e) {
+                context.againLocate();
+            }
+            List<WebElement> elements = context.getWrappedWebElement().findElements(by);
+            if (!elements.isEmpty()) {
+                return elements;
+            }
+        }
+        if (!firstCallInContext.get()) {
+            final List<WebElement> foundInCurrentFrame = newArrayList(transform(driverFindElements(by), toFrameAwareWebElements));
+            if (isNotEmpty(foundInCurrentFrame)) {
+                return foundInCurrentFrame;
+            }
+        }
+
+        List<WebElement> currentFrames = getFramesForContext(context);
+        for (final WebElement frame : currentFrames) {
+            if (!switchToFrame(frame)) {
+                continue;
+            }
+
+            currentFramesPath.push(frame);
+            final List<WebElement> foundInFrames = findFirstElements(context, by, currentFramesPath);
+            if (isNotEmpty(foundInFrames)) {
+                return foundInFrames;
+            }
+
+            currentFramesPath.pop();
+            getDriver().switchTo().defaultContent();
+            currentFramesPath.forEach(this::switchToFrame);
+        }
+        return emptyList();
+    }
+
+    private List<WebElement> getAllElementsInFrames(final By by) {
         List<WebElement> foundInCurrentFrame = newArrayList(transform(driverFindElements(by), toFrameAwareWebElements));
         List<WebElement> listOfFramesInCurrentFrame = driverFindElements(By.tagName("iframe"));
         listOfFramesInCurrentFrame.addAll(driverFindElements(By.tagName("frame")));
@@ -133,15 +206,63 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
             //For resolve UnreachableBrowserException due to - java.net.SocketException: No buffer space available (maximum connections reached?): connect
             //http://stackoverflow.com/questions/1226155/hunt-down-java-net-socketexception-no-buffer-space-available
             TestUtils.waitForSomeTime(50, "Wait for resolve UnreachableBrowserException, due to - SocketException: No buffer space available");
-            foundInCurrentFrame.addAll(findAllElementsInAllFrames(by));
+            foundInCurrentFrame.addAll(getAllElementsInFrames(by));
 
             currentFramesPath.pop();
             switchToDefaultContext();
-            for (final WebElement each : currentFramesPath) {
-                switchToFrame(each);
-            }
+            currentFramesPath.forEach(this::switchToFrame);
         }
         return foundInCurrentFrame;
+    }
+
+    private List<WebElement> getAllElementsInFrames(OurWebElement context, final By by, Stack<WebElement> currentFramesPath) {
+        List<WebElement> foundInCurrentFrame = newArrayList();
+        if (firstCallInContext.get()) {
+            try {
+                context.isEnabled();
+            } catch (StaleElementReferenceException e) {
+                context.againLocate();
+            }
+            List<WebElement> elements = context.getWrappedWebElement().findElements(by);
+            if (!elements.isEmpty()) {
+                foundInCurrentFrame.addAll(elements);
+            }
+        }
+        if (!firstCallInContext.get()) {
+            foundInCurrentFrame.addAll(newArrayList(transform(driverFindElements(by), toFrameAwareWebElements)));
+        }
+
+        List<WebElement> currentFrames = getFramesForContext(context);
+        for (WebElement frame : currentFrames) {
+            if (!switchToFrame(frame)) {
+                continue;
+            }
+
+            currentFramesPath.push(frame);
+
+            //For resolve UnreachableBrowserException due to - java.net.SocketException: No buffer space available (maximum connections reached?): connect
+            //http://stackoverflow.com/questions/1226155/hunt-down-java-net-socketexception-no-buffer-space-available
+            TestUtils.waitForSomeTime(50, "Wait for resolve UnreachableBrowserException, due to - SocketException: No buffer space available");
+            foundInCurrentFrame.addAll(getAllElementsInFrames(context, by, currentFramesPath));
+
+            currentFramesPath.pop();
+            switchToDefaultContext();
+            currentFramesPath.forEach(this::switchToFrame);
+        }
+        return foundInCurrentFrame;
+    }
+
+    private List<WebElement> getFramesForContext(OurWebElement context) {
+        List<WebElement> currentFrames;
+        if (firstCallInContext.get()) {
+            currentFrames = context.getWrappedWebElement().findElements(By.tagName("iframe"));
+            currentFrames.addAll(context.getWrappedWebElement().findElements(By.tagName("frame")));
+            firstCallInContext.set(false);
+        } else {
+            currentFrames = driverFindElements(By.tagName("iframe"));
+            currentFrames.addAll(driverFindElements(By.tagName("frame")));
+        }
+        return currentFrames;
     }
 
     private List<WebElement> driverFindElements(By by) {
@@ -205,12 +326,14 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
             try {
                 return targetLocator.window(nameOrHandle);
             } catch (NoSuchWindowException e) {
+                LOGGER.error("****NoSuchWindowException occurs when get window****", e);
                 if (getWindowHandles().size() == 1) {
                     return targetLocator.window(getWindowHandles().iterator().next());
                 } else {
                     throw new SwitchToWindowException(format("Unable to switch to window by handler: '%s'", nameOrHandle), e);
                 }
             } catch (NullPointerException e) {
+                LOGGER.error("****NullPointerException occurs when get window****", e);
                 throw new SwitchToWindowException("Unable to switch to window: handler is null ", e);
             }
         }

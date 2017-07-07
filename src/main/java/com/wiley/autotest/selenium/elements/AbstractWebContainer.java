@@ -2,9 +2,10 @@ package com.wiley.autotest.selenium.elements;
 
 import com.wiley.autotest.WebDriverAwareElementFinder;
 import com.wiley.autotest.selenium.SeleniumHolder;
-import com.wiley.autotest.selenium.context.AbstractElementFinder;
+import com.wiley.autotest.selenium.context.OurElementProvider;
 import com.wiley.autotest.selenium.context.ErrorSender;
 import com.wiley.autotest.selenium.elements.upgrade.IOurWebElement;
+import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -12,21 +13,21 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public abstract class AbstractWebContainer extends AbstractElementFinder implements WebContainer {
+public abstract class AbstractWebContainer extends OurElementProvider implements WebContainer {
 
     private static final long WAIT_TIME_OUT_IN_SECONDS = 10;
 
     @DoNotSearch
-    private WebElement wrappedElement;
+    private OurWebElement wrappedElement;
     private ErrorSender errorSender;
 
     @Override
-    public void init(final WebElement wrappedElement) {
+    public void init(final OurWebElement wrappedElement) {
         this.wrappedElement = wrappedElement;
         elementFinder = new WebDriverAwareElementFinder(getDriver(), new WebDriverWait(getDriver(), WAIT_TIME_OUT_IN_SECONDS, SLEEP_IN_MILLISECONDS));
     }
 
-    public WebElement getWrappedElement() {
+    public OurWebElement getWrappedElement() {
         return wrappedElement;
     }
 
@@ -35,7 +36,6 @@ public abstract class AbstractWebContainer extends AbstractElementFinder impleme
     }
 
     @Override
-
     public final boolean isVisible() {
         return wrappedElement.isDisplayed();
     }
@@ -51,7 +51,7 @@ public abstract class AbstractWebContainer extends AbstractElementFinder impleme
     }
 
     @Override
-    public WebElement getWrappedWebElement() {
+    public OurWebElement getWrappedWebElement() {
         return wrappedElement;
     }
 

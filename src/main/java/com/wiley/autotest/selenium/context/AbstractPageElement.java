@@ -8,7 +8,7 @@ import com.wiley.autotest.event.postpone.failure.ScreenshotOnPostponeFailureSubs
 import com.wiley.autotest.selenium.ParamsProvider;
 import com.wiley.autotest.selenium.ReportAnnotationsWrapperCreator;
 import com.wiley.autotest.selenium.elements.CheckBox;
-import com.wiley.autotest.selenium.extensions.ExtendedFieldDecorator;
+import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
 import com.wiley.autotest.selenium.extensions.internal.DefaultElementFactory;
 import com.wiley.autotest.spring.Settings;
 import com.wiley.autotest.utils.DriverUtils;
@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrapParent;
 import static com.wiley.autotest.utils.ExecutionUtils.isIE;
 
 /**
@@ -40,15 +39,13 @@ import static com.wiley.autotest.utils.ExecutionUtils.isIE;
  * Date: 07.02.12
  * Time: 18:46
  */
-public abstract class AbstractPageElement<P extends AbstractPageElement> extends AbstractElementFinder implements IPageElement, ErrorSender {
+public abstract class AbstractPageElement<P extends AbstractPageElement> extends OurElementProvider implements IPageElement, ErrorSender {
 
     public static final int TIMEOUT_TO_WAIT_FOR_WINDOW = 2;
     public static final int TIMEOUT_TO_WAIT_FOR_ABSENCE_OF_ELEMENT = 2000;
     //VE added this to avoid No buffer space available exception. To be replaced with default value of 500 if does not work.
     private static final long SLEEP_IN_MILLISECONDS = 1000;
     private static final String DIGITS_WITHIN_PARENTHESIS = "\\(\\d+";
-    private static final String TITLE_ATTRIBUTE_NAME = "title";
-    protected static final String STYLE_ATTRIBUTE_NAME = "style";
 
     private WebDriver driver;
 
@@ -74,11 +71,11 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
 
     private ScreenshotHelper screenshotHelper;
 
-    public WebDriver getDriver() {
+    protected WebDriver getDriver() {
         return driver;
     }
 
-    public HelperRegistry getRegistry() {
+    protected HelperRegistry getRegistry() {
         return registry;
     }
 
@@ -94,7 +91,6 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         this.driver = driver;
         this.screenshotHelper = screenshotHelper;
         elementFactory = new DefaultElementFactory();
-        initFindByAnnotations(this);
         init();
     }
 
@@ -106,16 +102,11 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         return settings;
     }
 
-    public ScreenshotHelper getScreenshotHelper() {
+    protected ScreenshotHelper getScreenshotHelper() {
         return screenshotHelper;
     }
 
     protected void init() {
-    }
-
-    protected final <E> E initFindByAnnotations(final E abstractPageElement) {
-        PageFactory.initElements(new ExtendedFieldDecorator(driver, elementFactory, this), abstractPageElement);
-        return abstractPageElement;
     }
 
     protected <E extends IPage> E redirectTo(final Class<E> target) {
@@ -143,6 +134,13 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         return ReportAnnotationsWrapperCreator.getReportingProxy(target, helper);
     }
 
+    protected final <E extends IComponent> E getHelper(final Class<E> target, final ComponentProvider componentProvider) {
+        final E helper = getRegistry().getComponentHelper(target);
+        helper.init(getDriver(), screenshotHelper);
+        helper.setComponentProvider(componentProvider);
+        return helper;
+    }
+
     protected final <E extends IPage> E navigateTo(final Class<E> target, final String url) {
         getDriver().get(url);
         getDriver().manage().getCookies().forEach(cookie -> reportWithStep(cookie.toString()));
@@ -155,12 +153,6 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         return component;
     }
 
-    protected final <E extends IComponent> E getHelper(final Class<E> target, final ComponentProvider componentProvider) {
-        final E helper = getRegistry().getComponentHelper(target);
-        helper.init(getDriver(), screenshotHelper);
-        helper.setComponentProvider(componentProvider);
-        return helper;
-    }
 
     protected final String getCurrentUrl() {
         return driver.getCurrentUrl();
@@ -194,10 +186,18 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         }
     }
 
+    @Deprecated
+    /**
+     * use {@link OurWebElement#getParent()}
+     */
     public WebElement getParentElement(final WebElement webElement) {
-        return wrapParent(webElement);
+        return getParentElement(webElement, 1);
     }
 
+    @Deprecated
+    /**
+     * use {@link OurWebElement#getParent()}
+     */
     public WebElement getParentElement(final WebElement webElement, int level) {
         StringBuilder builder = new StringBuilder(".");
         for (int i = 0; i < level; i++) {
@@ -205,22 +205,6 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
                     .append("/..");
         }
         return webElement.findElement(By.xpath(builder.toString()));
-    }
-
-    protected <T> void assertThat(T actual, Matcher<? super T> matcher, String errorMessage) {
-        try {
-            MatcherAssert.assertThat(actual, matcher);
-        } catch (AssertionError e) {
-            fail(errorMessage, e);
-        }
-    }
-
-    protected <T> void postponedAssertThat(T actual, Matcher<? super T> matcher, String errorMessage) {
-        try {
-            MatcherAssert.assertThat(actual, matcher);
-        } catch (AssertionError e) {
-            setPostponedTestFail(errorMessage);
-        }
     }
 
     protected final Object getParameterForGroup(final String key) {
@@ -269,10 +253,14 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         return this;
     }
 
+    @Deprecated
+    //TODO: VE - should be deleted
     protected void clickRandomElementInList(final List<WebElement> list) {
         getRandomElementInList(list).click();
     }
 
+    @Deprecated
+    //TODO: VE - should be moved to utils
     public static <T> T getRandomElementInList(final List<T> list) {
         if (list != null && !list.isEmpty()) {
             return getRandomElementsInList(list, 1).get(0);
@@ -281,6 +269,8 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         return null;
     }
 
+    @Deprecated
+    //TODO: VE - should be moved to utils
     protected static <T> List<T> getRandomElementsInList(final List<T> sourceList, final int itemNumberToSelect) {
         final ArrayList<T> resultArray = new ArrayList<T>(sourceList.size());
         resultArray.addAll(sourceList);
@@ -325,24 +315,19 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         return (P) this;
     }
 
-    public List<String> getTextFromWebElementList(final List<WebElement> webElementList) {
+    @Deprecated
+    //TODO: VE - should be moved to utils
+    public List<String> getTextFromWebElementList(final List<OurWebElement> webElementList) {
         final List<String> resultList = new ArrayList<String>();
-        for (WebElement eachElement : webElementList) {
+        for (OurWebElement eachElement : webElementList) {
             scrollIntoView(eachElement);
             resultList.add(eachElement.getText().trim());
         }
         return resultList;
     }
 
-    public List<String> getTitlesFromSelectOptionList(final List<WebElement> optionList) {
-        final List<String> resultList = new ArrayList<String>();
-        for (WebElement option : optionList) {
-            scrollIntoView(option);
-            resultList.add(option.getAttribute(TITLE_ATTRIBUTE_NAME).trim());
-        }
-        return resultList;
-    }
-
+    @Deprecated
+    //TODO: VE - should be moved to utils
     public List<String> getTextWithoutQuestionsCountFromFilterOptionList(final List<CheckBox> checkBoxList) {
         final List<String> resultList = new ArrayList<String>();
         for (CheckBox checkBox : checkBoxList) {
@@ -352,6 +337,8 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         return resultList;
     }
 
+    @Deprecated
+    //TODO: VE - should be moved to utils
     // Method is similar to getTextFromWebElementList except for scrolling into view when iterating elements
     public List<String> getTextFromWebElementListWithoutScroll(final List<WebElement> webElementList) {
         final List<String> resultList = new ArrayList<String>();
@@ -361,6 +348,8 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         return resultList;
     }
 
+    @Deprecated
+    //TODO: VE - should be moved to utils
     protected List<String> getTextFromWebElementListWithoutSpaces(final List<WebElement> webElementList) {
         final List<String> resultList = new ArrayList<String>();
         for (WebElement eachElement : webElementList) {
@@ -369,6 +358,8 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         return resultList;
     }
 
+    @Deprecated
+    //TODO: VE - should be moved to utils
     protected List<String> getTextFromWebElementListWithoutEmptyString(final List<WebElement> webElementList) {
         final List<String> resultList = new ArrayList<String>();
         for (WebElement eachElement : webElementList) {
@@ -379,6 +370,8 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         return resultList;
     }
 
+    @Deprecated
+    //TODO: VE - should be moved to utils
     protected boolean isWindowDisplayedByPartialUrl(String partialUrl) {
         try {
             waitForWindowToBeAppearedByPartialUrlAndSwitchToIt(partialUrl, TIMEOUT_TO_WAIT_FOR_WINDOW);
@@ -388,11 +381,151 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         }
     }
 
+    @Deprecated
+    //TODO: VE - will be removed from framework
+    protected void clickOkButtonInConfirm() {
+        Alert alert = waitForAlertPresence();
+        alert.accept();
+        //For some reason in Chrome v.30 alerts are not properly interacted with the first try
+        //We are trying to interact with it once more to avoid failures
+        if (getAlert() != null) {
+            alert.accept();
+        }
+    }
+
+    @Deprecated
+    //TODO: VE - will be removed from framework
+    protected void clickOkButtonInConfirm(int timeoutForConfirm) {
+        try {
+            Alert alert = waitForAlertPresence(timeoutForConfirm);
+            alert.accept();
+            //For some reason in Chrome v.30 alerts are not properly interacted with the first try
+            //We are trying to interact with it once more to avoid failures
+            if (getAlert() != null) {
+                alert.accept();
+            }
+        } catch (Exception ignored) {
+        }
+    }
+
+    @Deprecated
+    //TODO: VE - will be removed from framework
+    protected void clickCancelButtonInConfirm() {
+        try {
+            Alert alert = waitForAlertPresence();
+            alert.dismiss();
+
+            //For some reason in Chrome v.30 alerts are not properly interacted with the first try
+            //We are trying to interact with it once more to avoid failures
+            if (getAlert() != null) {
+                alert.dismiss();
+            }
+        } catch (Exception ignored) {
+        }
+    }
+
+    protected Alert getAlert() {
+        try {
+            return getDriver().switchTo().alert();
+        } catch (NoAlertPresentException e) {
+            return null;
+        }
+    }
+
+    protected Alert getAlert(int timeoutForWait) {
+        try {
+            Alert alert = waitForAlertPresence(timeoutForWait);
+
+            //For some reason in Chrome v.30 alerts are not properly interacted with the first try
+            //We are trying to interact with it once more to avoid failures
+            if (getAlert() != null) {
+                return alert;
+            }
+        } catch (Exception ignored) {
+        }
+        return null;
+    }
+
+    @Deprecated
+    //TODO: VE - will be removed from framework
+    protected void checkConfirmText(String confirmText) {
+        postponedAssertEquals(waitForAlertPresence().getText().trim(), confirmText.trim(), "Alert text is incorrect.");
+    }
+
+    @Deprecated
+    //TODO: VE - will be removed from framework
+    protected Alert waitForAlertPresence() {
+        return (new WebDriverWait(driver, timeout, SLEEP_IN_MILLISECONDS)).until(ExpectedConditions.alertIsPresent());
+    }
+
+    @Deprecated
+    //TODO: VE - will be removed from framework
+    protected Alert waitForAlertPresence(int timeoutForAlert) {
+        return (new WebDriverWait(driver, timeoutForAlert, SLEEP_IN_MILLISECONDS)).until(ExpectedConditions.alertIsPresent());
+    }
+
+    @Deprecated
+    //TODO: VE - will be removed from framework
+    protected boolean compareStringLists(List<String> list1, List<String> list2) {
+        return compareStringListsAndGetDifferent(list1, list2).isEmpty();
+    }
+
+    @Deprecated
+    //TODO: VE - will be removed from framework
+    protected List<String> compareStringListsAndGetDifferent(List<String> list1, List<String> list2) {
+        List<String> similar = new ArrayList<String>(list1);
+        List<String> different = new ArrayList<String>();
+        different.addAll(list1);
+        different.addAll(list2);
+        similar.retainAll(list2);
+        different.removeAll(similar);
+        return different;
+    }
+
+    protected String getCurrentWindowTitle() {
+        return driver.getTitle();
+    }
+
+    public void scrollIntoView(OurWebElement element) {
+        ((JavascriptExecutor) getDriver()).executeScript("arguments[0].scrollIntoView(true);", element);
+    }
+
+    @Deprecated
+    //TODO: VE - will be removed from framework
+    @Step
+    @Report("Get Attributes list from Web element list by attribute name")
+    protected List<String> getAttributesFromListWebElement(List<WebElement> elements, String attributeName) {
+        List<String> result = new ArrayList<String>();
+        for (WebElement element : elements) {
+            result.add(element.getAttribute(attributeName));
+        }
+        return result;
+    }
+
+
+// ============ ASSERTIONS ===========
+
+    protected <T> void assertThat(T actual, Matcher<? super T> matcher, String errorMessage) {
+        try {
+            MatcherAssert.assertThat(actual, matcher);
+        } catch (AssertionError e) {
+            fail(errorMessage, e);
+        }
+    }
+
+    protected <T> void postponedAssertThat(T actual, Matcher<? super T> matcher, String errorMessage) {
+        try {
+            MatcherAssert.assertThat(actual, matcher);
+        } catch (AssertionError e) {
+            setPostponedTestFail(errorMessage);
+        }
+    }
+
     protected void assertNotNull(Object object, String errorMessage) {
         try {
             Assert.assertNotNull(object, errorMessage);
         } catch (AssertionError e) {
-            fail(e.getMessage());
+            TestUtils.fail(e.getMessage());
         }
     }
 
@@ -400,7 +533,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         try {
             Assert.assertNull(object, errorMessage);
         } catch (AssertionError e) {
-            fail(e.getMessage());
+            TestUtils.fail(e.getMessage());
         }
     }
 
@@ -408,7 +541,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         try {
             Assert.assertTrue(condition, errorMessage);
         } catch (AssertionError e) {
-            fail(e.getMessage());
+            TestUtils.fail(e.getMessage());
         }
     }
 
@@ -416,7 +549,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         try {
             Assert.assertFalse(condition, errorMessage);
         } catch (AssertionError e) {
-            fail(e.getMessage());
+            TestUtils.fail(e.getMessage());
         }
     }
 
@@ -424,7 +557,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         try {
             Assert.assertEquals(actual, expected, errorMessage);
         } catch (AssertionError e) {
-            fail(e.getMessage() + " expected:<" + expected + "> but was:<" + actual + ">");
+            TestUtils.fail(e.getMessage() + ": expected [" + expected + "] but found [" + actual + "]");
         }
     }
 
@@ -432,7 +565,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         try {
             Assert.assertNotEquals(actual, expected, errorMessage);
         } catch (AssertionError e) {
-            fail(e.getMessage() + " expected:<" + expected + "> but was:<" + actual + ">");
+            TestUtils.fail(e.getMessage() + ": expected [" + expected + "] but found [" + actual + "]");
         }
     }
 
@@ -472,7 +605,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         try {
             Assert.assertEquals(actual, expected, errorMessage);
         } catch (AssertionError e) {
-            setPostponedTestFail(e.getMessage() + " expected:<" + expected + "> but was:<" + actual + ">");
+            setPostponedTestFail(e.getMessage() + ": expected [" + expected + "] but found [" + actual + "]");
         }
     }
 
@@ -480,7 +613,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         try {
             Assert.assertNotEquals(actual, expected, errorMessage);
         } catch (AssertionError e) {
-            setPostponedTestFail(e.getMessage() + " expected:<" + expected + "> but was:<" + actual + ">");
+            setPostponedTestFail(e.getMessage() + ": expected [" + expected + "] but found [" + actual + "]");
         }
     }
 
@@ -495,12 +628,37 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         assertTrue(element.isDisplayed(), errorMessage);
     }
 
-    protected void assertContainsAll(List<? extends Object> actual, List<? extends Object> expected, String errorMessage) {
-        for (Object object : expected) {
-            if (!actual.contains(object)) {
-                fail(errorMessage + " Element '" + object + "' not found in given list");
-            }
+    protected void assertElementsAreDisplayed(By locator, String errorMessage) {
+        try {
+            elementFinder.waitForVisibilityOfAllElementsLocatedBy(locator);
+        } catch (WebDriverException e) {
+            TestUtils.fail(errorMessage);
         }
+    }
+
+    @Deprecated
+    //use element().should().beDisplayed();
+    protected void assertElementIsDisplayed(SearchContext searchContext, By locator, String errorMessage) {
+        throw new RuntimeException("REPLACE WITH NEW APPROACH IMMEDIATELY! METHOD IMPLEMENTATION WAD DELETED! CONTACT Vladimir Efimov vefimov@wiley.com");
+//
+//
+//        try {
+//            elementFinder.waitForVisibilityOfAllElementsLocatedBy(searchContext, locator).get(0);
+//        } catch (WebDriverException e) {
+//            TestUtils.fail(errorMessage);
+//        }
+    }
+
+    protected void assertElementsAreAbsent(By locator, String errorMessage) {
+        TestUtils.waitForSomeTime(TIMEOUT_TO_WAIT_FOR_ABSENCE_OF_ELEMENT, "Wait for elements are absent");
+        elementFinder.findElementsBy(locator)
+                .forEach(webElement -> assertFalse(webElement.isDisplayed(), errorMessage));
+    }
+
+    protected void assertContainsAll(List<? extends Object> actual, List<? extends Object> expected, String errorMessage) {
+        expected.stream()
+                .filter(object -> !actual.contains(object))
+                .forEach(object -> fail(errorMessage + " Element '" + object + "' not found in given list"));
     }
 
     protected void assertNotNull(Object object) {
@@ -559,6 +717,20 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         assertElementIsDisplayed(locator, generateErrorMessage());
     }
 
+    @Deprecated
+    //Use element().should().beVisible()
+    protected void assertElementIsDisplayed(SearchContext searchContext, By locator) {
+        assertElementIsDisplayed(searchContext, locator, generateErrorMessage());
+    }
+
+    protected void assertElementsAreDisplayed(By locator) {
+        assertElementsAreDisplayed(locator, generateErrorMessage());
+    }
+
+    protected void assertElementsAreAbsent(By locator) {
+        assertElementsAreAbsent(locator, generateErrorMessage());
+    }
+
     protected void postponedAssertDateEquals(DateTime actualDate, DateTime expectedDate, String dateFieldName) {
         postponedAssertEquals(actualDate.year().get(), expectedDate.year().get(), "Incorrect field 'year' in " + dateFieldName);
         postponedAssertEquals(actualDate.monthOfYear().get(), expectedDate.monthOfYear().get(), "Incorrect field 'month' in " + dateFieldName);
@@ -566,109 +738,5 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         postponedAssertEquals(actualDate.hourOfDay().get(), expectedDate.hourOfDay().get(), "Incorrect field 'hour' in " + dateFieldName);
         postponedAssertTrue(Math.abs(actualDate.minuteOfHour().get() - expectedDate.minuteOfHour().get()) <= 1, "Incorrect field 'minute' in " + dateFieldName + ". Actual - " + actualDate.minuteOfHour().get() + " . Expected - " + expectedDate.minuteOfHour().get());
         postponedAssertEquals(actualDate.get(DateTimeFieldType.halfdayOfDay()), expectedDate.get(DateTimeFieldType.halfdayOfDay()), "Incorrect field 'halfdayOfDay' in start date" + dateFieldName);
-    }
-
-    protected void clickOkButtonInConfirm() {
-        Alert alert = waitForAlertPresence();
-        alert.accept();
-        //For some reason in Chrome v.30 alerts are not properly interacted with the first try
-        //We are trying to interact with it once more to avoid failures
-        if (getAlert() != null) {
-            alert.accept();
-        }
-    }
-
-    protected void clickOkButtonInConfirm(int timeoutForConfirm) {
-        try {
-            Alert alert = waitForAlertPresence(timeoutForConfirm);
-            alert.accept();
-            //For some reason in Chrome v.30 alerts are not properly interacted with the first try
-            //We are trying to interact with it once more to avoid failures
-            if (getAlert() != null) {
-                alert.accept();
-            }
-        } catch (Exception ignored) {
-        }
-    }
-
-    protected void clickCancelButtonInConfirm() {
-        try {
-            Alert alert = waitForAlertPresence();
-            alert.dismiss();
-
-            //For some reason in Chrome v.30 alerts are not properly interacted with the first try
-            //We are trying to interact with it once more to avoid failures
-            if (getAlert() != null) {
-                alert.dismiss();
-            }
-        } catch (Exception ignored) {
-        }
-    }
-
-    protected Alert getAlert() {
-        try {
-            return getDriver().switchTo().alert();
-        } catch (NoAlertPresentException e) {
-            return null;
-        }
-    }
-
-    protected Alert getAlert(int timeoutForWait) {
-        try {
-            Alert alert = waitForAlertPresence(timeoutForWait);
-
-            //For some reason in Chrome v.30 alerts are not properly interacted with the first try
-            //We are trying to interact with it once more to avoid failures
-            if (getAlert() != null) {
-                return alert;
-            }
-        } catch (Exception ignored) {
-        }
-        return null;
-    }
-
-    protected void checkConfirmText(String confirmText) {
-        postponedAssertEquals(waitForAlertPresence().getText().trim(), confirmText.trim(), "Alert text is incorrect.");
-    }
-
-    protected Alert waitForAlertPresence() {
-        return (new WebDriverWait(driver, timeout, SLEEP_IN_MILLISECONDS)).until(ExpectedConditions.alertIsPresent());
-    }
-
-    protected Alert waitForAlertPresence(int timeoutForAlert) {
-        return (new WebDriverWait(driver, timeoutForAlert, SLEEP_IN_MILLISECONDS)).until(ExpectedConditions.alertIsPresent());
-    }
-
-
-    protected boolean compareStringLists(List<String> list1, List<String> list2) {
-        return compareStringListsAndGetDifferent(list1, list2).isEmpty();
-    }
-
-    protected List<String> compareStringListsAndGetDifferent(List<String> list1, List<String> list2) {
-        List<String> similar = new ArrayList<String>(list1);
-        List<String> different = new ArrayList<String>();
-        different.addAll(list1);
-        different.addAll(list2);
-        similar.retainAll(list2);
-        different.removeAll(similar);
-        return different;
-    }
-
-    protected String getCurrentWindowTitle() {
-        return driver.getTitle();
-    }
-
-    public void scrollIntoView(WebElement element) {
-        ((JavascriptExecutor) getDriver()).executeScript("arguments[0].scrollIntoView(true);", element);
-    }
-
-    @Step
-    @Report("Get Attributes list from Web element list by attribute name")
-    protected List<String> getAttributesFromListWebElement(List<WebElement> elements, String attributeName) {
-        List<String> result = new ArrayList<String>();
-        for (WebElement element : elements) {
-            result.add(element.getAttribute(attributeName));
-        }
-        return result;
     }
 }
