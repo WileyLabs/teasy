@@ -143,8 +143,13 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
 
     protected final <E extends IPage> E navigateTo(final Class<E> target, final String url) {
         getDriver().get(url);
-        getDriver().manage().getCookies().forEach(cookie -> reportWithStep(cookie.toString()));
+        cookies();
         return redirectTo(target);
+    }
+
+    @Step
+    private void cookies(){
+        getDriver().manage().getCookies().forEach(cookie -> reportWithStep(cookie.toString()));
     }
 
     protected final <E extends IComponent> E redirectTo(final Class<E> target, final ComponentProvider componentProvider) {

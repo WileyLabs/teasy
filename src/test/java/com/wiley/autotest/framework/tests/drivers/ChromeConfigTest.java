@@ -24,6 +24,7 @@ public class ChromeConfigTest extends BaseTest {
     @Autowired
     private void setConfiguration(Configuration configuration) {
         getSettings().setDriverName("chrome");
+        getSettings().getRestartDriverCount();
         //set value other than default
         configuration.addCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, UnexpectedAlertBehaviour.IGNORE);
     }

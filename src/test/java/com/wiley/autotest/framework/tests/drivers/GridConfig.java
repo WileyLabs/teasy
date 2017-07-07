@@ -1,13 +1,18 @@
 package com.wiley.autotest.framework.tests.drivers;
 
 import com.wiley.autotest.framework.config.BaseTest;
+import com.wiley.autotest.selenium.SeleniumHolder;
+import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
 import com.wiley.autotest.services.Configuration;
 import org.openqa.grid.common.RegistrationRequest;
 import org.openqa.grid.internal.utils.SelfRegisteringRemote;
 import org.openqa.grid.internal.utils.configuration.GridHubConfiguration;
 import org.openqa.grid.internal.utils.configuration.GridNodeConfiguration;
 import org.openqa.grid.web.Hub;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
@@ -32,7 +37,7 @@ public class GridConfig extends BaseTest {
         remote.startRegistrationProcess();
     }
 
-    @Test
+//    @Test
     public void grid_config_test() throws Exception {
         openPage("main.html");
 

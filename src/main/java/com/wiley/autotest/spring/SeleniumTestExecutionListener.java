@@ -361,7 +361,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         if (!getParameterBrowserName().equals("browser")) {
             browserName = getParameterBrowserName();
             setParameterBrowserName("browser");
-        } else if (!getDriverName().isEmpty()) {
+        } else if (!getDriverName().isEmpty() && getDriverName().equals(settings.getDriverName())) {
             browserName = getDriverName();
         } else {
             browserName = settings.getDriverName();
