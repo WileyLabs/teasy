@@ -4,7 +4,6 @@ import com.wiley.autotest.annotations.BrowserMobProxy;
 import com.wiley.autotest.annotations.FireBug;
 import com.wiley.autotest.annotations.NeedRestartDriver;
 import com.wiley.autotest.annotations.UnexpectedAlertCapability;
-import com.wiley.autotest.selenium.DeviceHolder;
 import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.context.PageLoadingValidator;
 import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
@@ -49,8 +48,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
-import org.testng.Reporter;
-import ru.yandex.qatools.allure.annotations.Step;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -833,68 +830,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
     }
 
     private void addShutdownHook(final WebDriver driver) {
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                driver.quit();
-            }
-        });
-    }
-
-    @Step
-    private void configuration() {
-        AppiumDriver appiumDriver = SeleniumHolder.getAppiumDriver();
-        if (appiumDriver != null) {
-            for (Object entry : appiumDriver.getSessionDetails().entrySet()) {
-                report(entry.toString());
-            }
-            String platformName = String.valueOf(appiumDriver.getSessionDetails().get("platformName"));
-            String platformVersion = String.valueOf(appiumDriver.getSessionDetails().get("platformVersion"));
-            String deviceName = String.valueOf(appiumDriver.getSessionDetails().get("deviceName"));
-            Object device = appiumDriver.getSessionDetails().get("device");
-            String deviceType = String.valueOf(device);
-            Object orientation = appiumDriver.getSessionDetails().get("orientation");
-            String orientationName = String.valueOf(orientation);
-
-            if (platformName != null) {
-                DeviceHolder.setPlatformVersion(platformVersion);
-            }
-            if (platformVersion != null) {
-                DeviceHolder.setPlatformName(platformName);
-            }
-            if (deviceName != null) {
-                DeviceHolder.setDeviceName(deviceName);
-            }
-            if (device != null) {
-                DeviceHolder.setDeviceType(getDeviceTypeFromCapabilities(deviceType));
-            }
-            if (deviceName != null && device == null) {
-                DeviceHolder.setDeviceType(getDeviceTypeFromCapabilities(deviceName));
-            }
-            if (orientation != null) {
-                DeviceHolder.setOrientation(orientationName);
-            } else {
-                DeviceHolder.setOrientation(ScreenOrientation.PORTRAIT.toString());
-            }
-        }
-    }
-
-    private String getDeviceTypeFromCapabilities(String deviceName) {
-        String deviceType;
-        if (deviceName.toLowerCase().contains("phone")) {
-            deviceType = "phone";
-        } else if (deviceName.toLowerCase().contains("pad")) {
-            deviceType = "tablet";
-        } else {
-            deviceType = null;
-        }
-        return deviceType;
-    }
-
-    @Step("{0}")
-    private void report(String report) {
-        LOGGER.info(report);
-        Reporter.log(report);
+        Runtime.getRuntime().addShutdownHook(new Thread(driver::quit));
     }
 
     private static String getNodeIpBySessionId(SessionId sessionId, String gridHubUrl) {
