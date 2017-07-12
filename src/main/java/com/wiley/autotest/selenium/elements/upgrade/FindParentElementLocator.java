@@ -19,11 +19,7 @@ public class FindParentElementLocator implements Locator {
 
     @Override
     public WebElement find() {
-        if (ExecutionUtils.isSafari()) {
-            return searchContext.findElement(by).findElement(By.xpath("./.."));
-        } else {
-            return (WebElement) ((JavascriptExecutor) searchContext).executeScript("return arguments[0].parentNode", searchContext.findElement(by));
-        }
+        return (WebElement) ((JavascriptExecutor) searchContext).executeScript("return arguments[0].parentNode", searchContext.findElement(by));
     }
 
     @Override
