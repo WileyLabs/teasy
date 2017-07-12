@@ -17,4 +17,4 @@ We're just getting started here, but please post issues if you have any!
 
 # License
 
-Apache License 2.0
+MIT
