@@ -13,7 +13,6 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.wiley.autotest.utils.ExecutionUtils.isIE;
 import static org.apache.commons.lang.math.RandomUtils.nextInt;
 
 class SelectImpl extends AbstractEnabledElement implements Select {
@@ -28,7 +27,6 @@ class SelectImpl extends AbstractEnabledElement implements Select {
     @Override
     public void selectByText(final String text) {
         wrappedSelect().selectByVisibleText(text);
-        waitInIE();
     }
 
     @Override
@@ -38,26 +36,12 @@ class SelectImpl extends AbstractEnabledElement implements Select {
 
     @Override
     public void selectByIndex(final int index) {
-        if (isIE()) {
-            String value = getOptions().get(index).getText();
-            selectByText(value);
-        } else {
-            wrappedSelect().selectByIndex(index);
-        }
+        wrappedSelect().selectByIndex(index);
     }
 
     @Override
     public void selectByValue(final String value) {
-        if (isIE()) {
-            for (WebElement element : getOptions()) {
-                if (value.equals(element.getAttribute("value"))) {
-                    selectByText(element.getText());
-                    break;
-                }
-            }
-        } else {
-            wrappedSelect().selectByValue(value);
-        }
+        wrappedSelect().selectByValue(value);
     }
 
     @Override
@@ -108,7 +92,6 @@ class SelectImpl extends AbstractEnabledElement implements Select {
             final WebElement each = options.get(i);
             if (!each.getText().equals(text)) {
                 select.selectByIndex(i);
-                waitInIE();
                 return;
             }
         }
@@ -127,7 +110,6 @@ class SelectImpl extends AbstractEnabledElement implements Select {
                         optionIndex = nextInt(optionsSize);
                     }
                     wrapped.selectByIndex(optionIndex);
-                    waitInIE();
                 }
                 break;
             } catch (StaleElementReferenceException e) {
@@ -225,12 +207,6 @@ class SelectImpl extends AbstractEnabledElement implements Select {
         //TODO NT: need to check work
         for (WebElement option : getOptions()) {
             selectByText(option.getText());
-        }
-    }
-
-    private void waitInIE() {
-        if (isIE()) {
-            getElementFinder().waitForPageToLoad();
         }
     }
 }
