@@ -8,8 +8,6 @@ import org.openqa.selenium.WebElement;
 
 import java.util.List;
 
-import static com.wiley.autotest.utils.ExecutionUtils.isIE;
-
 public class RadioButtonImpl extends AbstractEnabledElement implements RadioButton {
     protected RadioButtonImpl(final OurWebElement wrappedElement) {
         super(wrappedElement);
@@ -27,12 +25,7 @@ public class RadioButtonImpl extends AbstractEnabledElement implements RadioButt
 
     @Override
     public void click() {
-        if (isIE()) {
-            JavascriptExecutor executor = (JavascriptExecutor) getDriver();
-            executor.executeScript("arguments[0].click();", getWrappedWebElement());
-        } else {
-            getWrappedElement().click();
-        }
+        getWrappedElement().click();
     }
 
     @Override

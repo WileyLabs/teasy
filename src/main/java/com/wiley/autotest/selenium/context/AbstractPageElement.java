@@ -31,8 +31,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.wiley.autotest.utils.ExecutionUtils.isIE;
-
 /**
  * Created by IntelliJ IDEA.
  * User: maxim
@@ -177,13 +175,8 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
      */
     protected final boolean isImageLoaded(final WebElement image) {
         final Boolean loaded = (Boolean) executeScript("return arguments[0].complete", image);
-        if (isIE()) {
-            //for IE 9 it's enough to check value of loaded. It's impossible to get naturalWidth property of any image. (null is returned)
-            return loaded;
-        } else {
-            final Long naturalWidth = (Long) executeScript("return arguments[0].naturalWidth", image);
-            return !(loaded == null || !loaded || naturalWidth == null || naturalWidth.equals(Long.valueOf(0)));
-        }
+        final Long naturalWidth = (Long) executeScript("return arguments[0].naturalWidth", image);
+        return !(loaded == null || !loaded || naturalWidth == null || naturalWidth.equals(Long.valueOf(0)));
     }
 
     @Deprecated
