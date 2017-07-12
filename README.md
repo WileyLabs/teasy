@@ -1,8 +1,13 @@
-# teasy
+# Teasy
 Test easy with Teasy - UI automation testing framework
 # Description
-in progress...
-# Maven
+Teasy is a Java-based testing framework build over Selenium, TestNG and Spring. It's aim is to make your web testing easier by carrying over different things that may break your test unexpectedly.
+# Usage
+You will need to have the following soft installed before using teasy:
+* java 8+
+* maven 3+
+
+and you will need to add the following dependency to your project's *pom.xml* file
 ```xml
 <dependency>
   <groupId>com.wiley</groupId>
