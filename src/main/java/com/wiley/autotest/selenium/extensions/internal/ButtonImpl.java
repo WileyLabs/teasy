@@ -8,8 +8,6 @@ import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 
-import static com.wiley.autotest.utils.ExecutionUtils.isIE;
-
 class ButtonImpl extends AbstractEnabledElement implements Button {
     protected ButtonImpl(final OurWebElement wrappedElement) {
         super(wrappedElement);
@@ -33,7 +31,7 @@ class ButtonImpl extends AbstractEnabledElement implements Button {
     public void clickWithReload() {
         int iterationCount = 0;
         OurWebElement element = getWrappedWebElement();
-        while (iterationCount < (isIE() ? 5 : 3)) {
+        while (iterationCount < 3) {
             element.click();
             try {
                 element.waitFor().stale();
