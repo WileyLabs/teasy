@@ -15,6 +15,9 @@ in progress...
 
 We're just getting started here, but please post issues if you have any!
 
+Feel free to join our gitter chat:
+https://gitter.im/teasy-test-framework/Lobby
+
 # License
 
 MIT
