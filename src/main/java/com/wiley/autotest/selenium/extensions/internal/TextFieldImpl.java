@@ -19,32 +19,14 @@ class TextFieldImpl extends AbstractEnabledElement implements TextField {
 
     @Override
     public void type(final String value) {
-        //make text field focused (for ie)
-        if (isIE() || isSafari()) {
-            try {
-                getWrappedElement().click();
-            } catch (WebDriverException ignored) {
-            }
-        }
         try {
             getWrappedElement().sendKeys(value);
-
-            //In IE sometimes
-            if (isIE() && !getText().equals(value)) {
-                TestUtils.waitForSomeTime(1000, EXPLANATION_MESSAGE_FOR_WAIT);
-                clear();
-                getWrappedElement().sendKeys(value);
-            }
-
         } catch (UnhandledAlertException ignored) {
             //In case we try to input some non text/number symbol like ")" or "+" selenium throws this exception
             //this fails the test (for example E4_1920); The solution is to ignore this exception
             //If this causes some problems in future this try catch should be refactored
 
             //ignored.printStackTrace();
-        }
-        if (isAndroid()) {
-            SeleniumHolder.getAppiumDriver().hideKeyboard();
         }
     }
 
