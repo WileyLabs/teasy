@@ -325,11 +325,21 @@ public class OurWebElement implements IOurWebElement, Locatable {
         }
     }
 
+    @Deprecated
+    /**
+     * do not use this method. it will be deleted in future.
+     * use element(), domElement(), elementOrNull() depending on your needs
+     */
     public WebElement findElement(By by) {
         this.repeatLocateElementCounter = 0;
         return find(by);
     }
 
+    @Deprecated
+    /**
+     * do not use this method. it will be deleted in future.
+     * use elements(), domElements(), elementsOrEmpty() depending on your needs
+     */
     public List<WebElement> findElements(By by) {
         this.repeatLocateElementCounter = 0;
         return finds(by);
