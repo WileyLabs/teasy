@@ -1,5 +1,8 @@
 # Teasy
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.wiley/teasy/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.wiley/teasy)
+
 Test easy with Teasy - UI automation testing framework
+
 # Description
 Teasy is a Java-based testing framework build over Selenium, TestNG and Spring. It's aim is to make your web testing easier by carrying over different things that may break your test unexpectedly.
 # Usage
