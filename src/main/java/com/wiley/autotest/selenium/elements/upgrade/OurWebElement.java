@@ -23,9 +23,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.List;
 
-import static com.wiley.autotest.utils.ExecutionUtils.*;
-import static com.wiley.autotest.utils.IETestUtils.*;
-import static com.wiley.autotest.utils.TestUtils.*;
+import static com.wiley.autotest.utils.ExecutionUtils.isChrome;
+import static com.wiley.autotest.utils.TestUtils.fail;
+import static com.wiley.autotest.utils.TestUtils.waitForSomeTime;
 
 
 /**
@@ -205,23 +205,23 @@ public class OurWebElement implements IOurWebElement, Locatable {
         //For Android error text is different and does not have any information related to clickable issue
         String ignoredOrNeedToScrollMessage = ignoredOrNeedToScroll.getMessage();
           if (ignoredOrNeedToScrollMessage.contains("is not clickable at point")) {
- -            LOGGER.error("*****ERROR*****Element is not clickable at point***** during click! Scrolling to element and trying again. ---Locator=" + locator
- -                    .getLocator());
- -
- -            //This was added to fix cases when scrolling does not affect (in chrome when element is half hidden)
- -            //There is a chance that maximising will solve the case
- -            if (repeatLocateElementCounter == 10) {
- -                maximizeWindow();
- -                if (isChrome()) {
- -                    //Some pages (e.g. in Administration Workspace) are reloaded after maximize window in Chrome
- -                    waitForSomeTime(3000, "Wait for window maximized");
- -                    againLocate();
- -                }
- -            }
- -
- -            scrollIntoView(wrappedElement);
- -            scrollToElementLocation(wrappedElement);
- -        }
+             LOGGER.error("*****ERROR*****Element is not clickable at point***** during click! Scrolling to element and trying again. ---Locator=" + locator
+                     .getLocator());
+
+             //This was added to fix cases when scrolling does not affect (in chrome when element is half hidden)
+             //There is a chance that maximising will solve the case
+             if (repeatLocateElementCounter == 10) {
+                 maximizeWindow();
+                 if (isChrome()) {
+                     //Some pages (e.g. in Administration Workspace) are reloaded after maximize window in Chrome
+                     waitForSomeTime(3000, "Wait for window maximized");
+                     againLocate();
+                 }
+             }
+
+             scrollIntoView(wrappedElement);
+             scrollToElementLocation(wrappedElement);
+         }
         if (ignoredOrNeedToScrollMessage.contains("Error: element is not attached to the page document")) {
             againLocate();
         }
