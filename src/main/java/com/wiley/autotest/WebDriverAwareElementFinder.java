@@ -261,17 +261,12 @@ public class WebDriverAwareElementFinder implements ElementFinder {
             return;
         }
         try {
-            try {
-                waitFor(ExpectedConditions2.pageToLoad());
-            } catch (TimeoutException expected) {
-                String readyState = ((JavascriptExecutor) driver).executeScript("return document.readyState").toString();
-                LOGGER.error("*****ERROR***** TimeoutException occurred while waiting for page to load! return document.readyState value is '" + readyState + "' But expected to be 'complete'");
-            } catch (WebDriverException e) {
-                LOGGER.error("*****ERROR***** WebDriverException occurred while waiting for page to load!");
-            }
-        } catch (Throwable unexpectedThrowable) {
-            //TODO this catch should be removed by September 1 2014! Adding it to find out the reason of browsers being not closed after test
-            LOGGER.error("*****ERROR*****!!!*****ERROR*****Throwable occurred was throws during waiting for page to load!", unexpectedThrowable);
+            waitFor(ExpectedConditions2.pageToLoad());
+        } catch (TimeoutException expected) {
+            String readyState = ((JavascriptExecutor) driver).executeScript("return document.readyState").toString();
+            LOGGER.error("*****ERROR***** TimeoutException occurred while waiting for page to load! return document.readyState value is '" + readyState + "' But expected to be 'complete'");
+        } catch (WebDriverException e) {
+            LOGGER.error("*****ERROR***** WebDriverException occurred while waiting for page to load!");
         }
     }
 

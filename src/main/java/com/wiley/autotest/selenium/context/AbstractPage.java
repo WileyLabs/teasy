@@ -4,7 +4,6 @@ import com.wiley.autotest.actions.Actions;
 import com.wiley.autotest.actions.Conditions;
 import com.wiley.autotest.screenshots.*;
 import com.wiley.autotest.screenshots.imagecomparison.*;
-import com.wiley.autotest.annotations.Report;
 import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.utils.TestUtils;
 import org.joda.time.DateTime;
@@ -69,14 +68,12 @@ public abstract class AbstractPage<P extends AbstractPage> extends AbstractPageE
     }
 
     @Step
-    @Report
     public <P extends AbstractPage> P closeCurrentWindow(final Class<P> target) {
         closeBrowserWindow();
         return redirectTo(target);
     }
 
     @Step
-    @Report
     public <P extends AbstractPage> P closeCurrentWindowAndSwitchToLastWindow(final Class<P> target) {
         closeBrowserWindow();
         switchToLastWindow();
@@ -84,7 +81,6 @@ public abstract class AbstractPage<P extends AbstractPage> extends AbstractPageE
     }
 
     @Step
-    @Report
     public P setBrowserDimensions(int width, int height) {
         Dimension dimension = new Dimension(width, height);
         getDriver().manage().window().setSize(dimension);
@@ -96,14 +92,12 @@ public abstract class AbstractPage<P extends AbstractPage> extends AbstractPageE
     }
 
     @Step
-    @Report
     public P waitForDate(DateTimeZone dateTimeZone, DateTime dueDate) {
         waitForAssignmentDate(dateTimeZone, dueDate);
         return (P) this;
     }
 
     @Step
-    @Report
     public <T extends AbstractPage> T waitForDate(DateTimeZone dateTimeZone, DateTime dueDate, Class<T> target) {
         waitForAssignmentDate(dateTimeZone, dueDate);
         return redirectTo(target);
@@ -122,14 +116,12 @@ public abstract class AbstractPage<P extends AbstractPage> extends AbstractPageE
      * @return this page
      */
     @Step
-    @Report
     public P bugInNextStepReportAlert(String bugId) {
         reportWithStep("The next step will fail because of bug with id '" + bugId + "'!");
         return (P) this;
     }
 
     @Step
-    @Report
     public P bugInNextStepReportAlert() {
         String bugId = SeleniumHolder.getBugId();
         if (bugId != null) {
@@ -166,7 +158,6 @@ public abstract class AbstractPage<P extends AbstractPage> extends AbstractPageE
     }
 
     @Step
-    @Report
     public P checkTitleOfBrowserWindow(String expectedTitle) {
         postponedAssertEquals(getDriver().getTitle(), expectedTitle, "Incorrect title of browser window");
         return (P) this;

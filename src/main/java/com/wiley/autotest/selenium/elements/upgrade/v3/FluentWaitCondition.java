@@ -7,12 +7,12 @@ import java.util.function.Function;
 /**
  * Created by vefimov on 18/04/2017.
  */
-class FluentWaitCondition<T> extends FluentWait<T> {
+public class FluentWaitCondition<T> extends FluentWait<T> {
 
     //default condition should stop execution in case of failure
     private boolean nullOnFailure = false;
 
-    FluentWaitCondition(T input) {
+    public FluentWaitCondition(T input) {
         super(input);
     }
 

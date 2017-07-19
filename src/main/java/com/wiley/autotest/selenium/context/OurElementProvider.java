@@ -309,21 +309,33 @@ public abstract class OurElementProvider {
         elementFinder = new WebDriverAwareElementFinder(driver, new WebDriverWait(driver, timeout, SLEEP_IN_MILLISECONDS));
     }
 
+
+    // OLD code that is going to be removed by September 2017.
+    // Currently kept to give users some time to switch to new implementation
+
+    @Deprecated
+    /**
+     * Use {@link Window#close()}
+     */
     protected final void closeBrowserWindow() {
         elementFinder.closeCurrentBrowserWindow();
     }
 
+    @Deprecated
+    /**
+     * Use {@link Window#waitForScriptsToLoad()}
+     */
     protected final void waitForPageToLoad() {
         elementFinder.waitForPageToLoad();
     }
 
+    @Deprecated
+    /**
+     * Use {@link Window#switchToLast()} ()}
+     */
     protected void switchToLastWindow() {
         elementFinder.switchToLastWindow();
     }
-
-
-    // OLD code that is going to be removed by September 2017.
-    // Currently kept to give users some time to switch to new implementation
 
     @Deprecated
     //Outdated method - used only inside deprected methods. Will be removed in future.
