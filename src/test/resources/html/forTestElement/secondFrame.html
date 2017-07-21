@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body style="background-color:Khaki ">
+<h2>This page is displayed in an iframe #2</h2>
+
+<style>
+    #myContainer {
+        width: 200px;
+        height: 200px;
+        position: relative;
+        background: yellow;
+    }
+
+    #myAnimation {
+        width: 10px;
+        height: 10px;
+        position: absolute;
+        background-color: red;
+    }
+</style>
+
+
+<div id="myContainer">
+    <div id="myAnimation"></div>
+</div>
+
+<script>
+
+    myMove()
+
+    function myMove() {
+        var elem = document.getElementById("myAnimation");
+        var pos = 0;
+        var id = setInterval(frame, 5);
+
+        function frame() {
+            if (pos == 190) {
+                clearInterval(id);
+            } else {
+                pos++;
+                elem.style.top = pos + 'px';
+                elem.style.left = pos + 'px';
+            }
+        }
+    }
+</script>
+
+</body>
+
