@@ -1,14 +1,15 @@
 package com.wiley.autotest.selenium.context;
 
-import com.wiley.autotest.annotations.Report;
 import com.wiley.autotest.event.EventFilter;
 import com.wiley.autotest.event.Subscriber;
 import com.wiley.autotest.event.postpone.failure.PostponedFailureEvent;
 import com.wiley.autotest.event.postpone.failure.ScreenshotOnPostponeFailureSubscriber;
+import com.wiley.autotest.selenium.AllureStep2TestNG;
 import com.wiley.autotest.selenium.ParamsProvider;
-import com.wiley.autotest.selenium.ReportAnnotationsWrapperCreator;
+import com.wiley.autotest.selenium.Report;
 import com.wiley.autotest.selenium.elements.CheckBox;
 import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
+import com.wiley.autotest.selenium.elements.upgrade.Window;
 import com.wiley.autotest.selenium.extensions.internal.DefaultElementFactory;
 import com.wiley.autotest.spring.Settings;
 import com.wiley.autotest.utils.DriverUtils;
@@ -19,7 +20,6 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,10 +73,6 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         return driver;
     }
 
-    protected HelperRegistry getRegistry() {
-        return registry;
-    }
-
     /**
      * Method is called by framework to complete navigation to the helper.
      * It is the best place to execute your wait-expressions to ensure that page has been completely loaded.
@@ -121,39 +117,15 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
     }
 
     protected final <E extends IPage> E getHelper(final Class<E> target) {
-        final E helper = getRegistry().getPageHelper(target);
+        final E helper = registry.getPageHelper(target);
         helper.init(getDriver(), screenshotHelper);
-        return ReportAnnotationsWrapperCreator.getReportingProxy(target, helper);
-    }
-
-    protected final <E extends IComponent> E getComponent(final Class<E> target) {
-        final E helper = getRegistry().getBean(target);
-        helper.init(getDriver(), screenshotHelper);
-        return ReportAnnotationsWrapperCreator.getReportingProxy(target, helper);
-    }
-
-    protected final <E extends IComponent> E getHelper(final Class<E> target, final ComponentProvider componentProvider) {
-        final E helper = getRegistry().getComponentHelper(target);
-        helper.init(getDriver(), screenshotHelper);
-        helper.setComponentProvider(componentProvider);
-        return helper;
+        return AllureStep2TestNG.addInterceptor(target, helper);
     }
 
     protected final <E extends IPage> E navigateTo(final Class<E> target, final String url) {
         getDriver().get(url);
         getDriver().manage().getCookies().forEach(cookie -> reportWithStep(cookie.toString()));
         return redirectTo(target);
-    }
-
-    protected final <E extends IComponent> E redirectTo(final Class<E> target, final ComponentProvider componentProvider) {
-        final E component = getHelper(target, componentProvider);
-        component.handleRedirect();
-        return component;
-    }
-
-
-    protected final String getCurrentUrl() {
-        return driver.getCurrentUrl();
     }
 
     /**
@@ -177,27 +149,6 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         final Boolean loaded = (Boolean) executeScript("return arguments[0].complete", image);
         final Long naturalWidth = (Long) executeScript("return arguments[0].naturalWidth", image);
         return !(loaded == null || !loaded || naturalWidth == null || naturalWidth.equals(Long.valueOf(0)));
-    }
-
-    @Deprecated
-    /**
-     * use {@link OurWebElement#getParent()}
-     */
-    public WebElement getParentElement(final WebElement webElement) {
-        return getParentElement(webElement, 1);
-    }
-
-    @Deprecated
-    /**
-     * use {@link OurWebElement#getParent()}
-     */
-    public WebElement getParentElement(final WebElement webElement, int level) {
-        StringBuilder builder = new StringBuilder(".");
-        for (int i = 0; i < level; i++) {
-            builder
-                    .append("/..");
-        }
-        return webElement.findElement(By.xpath(builder.toString()));
     }
 
     protected final Object getParameterForGroup(final String key) {
@@ -231,49 +182,8 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         });
     }
 
-    public P report(final String message) {
-        Reporter.log(message);
-        return (P) this;
-    }
-
-    @Step("{0}")
-    public P reportWithStep(final String message) {
-        Reporter.log(message);
-        return (P) this;
-    }
-
     public ErrorSender getErrorSender() {
         return this;
-    }
-
-    @Deprecated
-    //TODO: VE - should be deleted
-    protected void clickRandomElementInList(final List<WebElement> list) {
-        getRandomElementInList(list).click();
-    }
-
-    @Deprecated
-    //TODO: VE - should be moved to utils
-    public static <T> T getRandomElementInList(final List<T> list) {
-        if (list != null && !list.isEmpty()) {
-            return getRandomElementsInList(list, 1).get(0);
-        }
-        fail("List is null or empty! It's impossible to get random element!");
-        return null;
-    }
-
-    @Deprecated
-    //TODO: VE - should be moved to utils
-    protected static <T> List<T> getRandomElementsInList(final List<T> sourceList, final int itemNumberToSelect) {
-        final ArrayList<T> resultArray = new ArrayList<T>(sourceList.size());
-        resultArray.addAll(sourceList);
-        Collections.shuffle(resultArray);
-
-        if (sourceList.size() <= itemNumberToSelect) {
-            return resultArray;
-        }
-
-        return resultArray.subList(0, itemNumberToSelect);
     }
 
     protected void hoverOverElement(WebElement webElement) {
@@ -294,7 +204,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
     }
 
     public P setWindowWidth(int width) {
-        reportWithStep("set window width " + width);
+        new Report("set window width " + width).allure();
         return setWindowSize(width, -1);
     }
 
@@ -306,115 +216,6 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         DriverUtils.setWindowSize(getDriver(), width, height);
         waitForPageToLoad();
         return (P) this;
-    }
-
-    @Deprecated
-    //TODO: VE - should be moved to utils
-    public List<String> getTextFromWebElementList(final List<OurWebElement> webElementList) {
-        final List<String> resultList = new ArrayList<String>();
-        for (OurWebElement eachElement : webElementList) {
-            scrollIntoView(eachElement);
-            resultList.add(eachElement.getText().trim());
-        }
-        return resultList;
-    }
-
-    @Deprecated
-    //TODO: VE - should be moved to utils
-    public List<String> getTextWithoutQuestionsCountFromFilterOptionList(final List<CheckBox> checkBoxList) {
-        final List<String> resultList = new ArrayList<String>();
-        for (CheckBox checkBox : checkBoxList) {
-            scrollIntoView(checkBox.getWrappedWebElement());
-            resultList.add(checkBox.getText().split(DIGITS_WITHIN_PARENTHESIS)[0].trim());
-        }
-        return resultList;
-    }
-
-    @Deprecated
-    //TODO: VE - should be moved to utils
-    // Method is similar to getTextFromWebElementList except for scrolling into view when iterating elements
-    public List<String> getTextFromWebElementListWithoutScroll(final List<WebElement> webElementList) {
-        final List<String> resultList = new ArrayList<String>();
-        for (WebElement eachElement : webElementList) {
-            resultList.add(eachElement.getText());
-        }
-        return resultList;
-    }
-
-    @Deprecated
-    //TODO: VE - should be moved to utils
-    protected List<String> getTextFromWebElementListWithoutSpaces(final List<WebElement> webElementList) {
-        final List<String> resultList = new ArrayList<String>();
-        for (WebElement eachElement : webElementList) {
-            resultList.add(eachElement.getText().trim());
-        }
-        return resultList;
-    }
-
-    @Deprecated
-    //TODO: VE - should be moved to utils
-    protected List<String> getTextFromWebElementListWithoutEmptyString(final List<WebElement> webElementList) {
-        final List<String> resultList = new ArrayList<String>();
-        for (WebElement eachElement : webElementList) {
-            if (!eachElement.getText().trim().isEmpty()) {
-                resultList.add(eachElement.getText().trim());
-            }
-        }
-        return resultList;
-    }
-
-    @Deprecated
-    //TODO: VE - should be moved to utils
-    protected boolean isWindowDisplayedByPartialUrl(String partialUrl) {
-        try {
-            waitForWindowToBeAppearedByPartialUrlAndSwitchToIt(partialUrl, TIMEOUT_TO_WAIT_FOR_WINDOW);
-            return true;
-        } catch (WebDriverException e) {
-            return false;
-        }
-    }
-
-    @Deprecated
-    //TODO: VE - will be removed from framework
-    protected void clickOkButtonInConfirm() {
-        Alert alert = waitForAlertPresence();
-        alert.accept();
-        //For some reason in Chrome v.30 alerts are not properly interacted with the first try
-        //We are trying to interact with it once more to avoid failures
-        if (getAlert() != null) {
-            alert.accept();
-        }
-    }
-
-    @Deprecated
-    //TODO: VE - will be removed from framework
-    protected void clickOkButtonInConfirm(int timeoutForConfirm) {
-        try {
-            Alert alert = waitForAlertPresence(timeoutForConfirm);
-            alert.accept();
-            //For some reason in Chrome v.30 alerts are not properly interacted with the first try
-            //We are trying to interact with it once more to avoid failures
-            if (getAlert() != null) {
-                alert.accept();
-            }
-        } catch (Exception ignored) {
-        }
-    }
-
-    @Deprecated
-    //TODO: VE - will be removed from framework
-    protected void clickCancelButtonInConfirm() {
-        try {
-            Alert alert = waitForAlertPresence();
-            alert.dismiss();
-
-            //For some reason in Chrome v.30 alerts are not properly interacted with the first try
-            //We are trying to interact with it once more to avoid failures
-            if (getAlert() != null) {
-                alert.dismiss();
-            }
-        } catch (Exception ignored) {
-        }
     }
 
     protected Alert getAlert() {
@@ -439,60 +240,12 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         return null;
     }
 
-    @Deprecated
-    //TODO: VE - will be removed from framework
-    protected void checkConfirmText(String confirmText) {
-        postponedAssertEquals(waitForAlertPresence().getText().trim(), confirmText.trim(), "Alert text is incorrect.");
-    }
-
-    @Deprecated
-    //TODO: VE - will be removed from framework
-    protected Alert waitForAlertPresence() {
-        return (new WebDriverWait(driver, timeout, SLEEP_IN_MILLISECONDS)).until(ExpectedConditions.alertIsPresent());
-    }
-
-    @Deprecated
-    //TODO: VE - will be removed from framework
-    protected Alert waitForAlertPresence(int timeoutForAlert) {
-        return (new WebDriverWait(driver, timeoutForAlert, SLEEP_IN_MILLISECONDS)).until(ExpectedConditions.alertIsPresent());
-    }
-
-    @Deprecated
-    //TODO: VE - will be removed from framework
-    protected boolean compareStringLists(List<String> list1, List<String> list2) {
-        return compareStringListsAndGetDifferent(list1, list2).isEmpty();
-    }
-
-    @Deprecated
-    //TODO: VE - will be removed from framework
-    protected List<String> compareStringListsAndGetDifferent(List<String> list1, List<String> list2) {
-        List<String> similar = new ArrayList<String>(list1);
-        List<String> different = new ArrayList<String>();
-        different.addAll(list1);
-        different.addAll(list2);
-        similar.retainAll(list2);
-        different.removeAll(similar);
-        return different;
-    }
-
     protected String getCurrentWindowTitle() {
         return driver.getTitle();
     }
 
     public void scrollIntoView(OurWebElement element) {
         ((JavascriptExecutor) getDriver()).executeScript("arguments[0].scrollIntoView(true);", element);
-    }
-
-    @Deprecated
-    //TODO: VE - will be removed from framework
-    @Step
-    @Report("Get Attributes list from Web element list by attribute name")
-    protected List<String> getAttributesFromListWebElement(List<WebElement> elements, String attributeName) {
-        List<String> result = new ArrayList<String>();
-        for (WebElement element : elements) {
-            result.add(element.getAttribute(attributeName));
-        }
-        return result;
     }
 
 
@@ -629,19 +382,6 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         }
     }
 
-    @Deprecated
-    //use element().should().beDisplayed();
-    protected void assertElementIsDisplayed(SearchContext searchContext, By locator, String errorMessage) {
-        throw new RuntimeException("REPLACE WITH NEW APPROACH IMMEDIATELY! METHOD IMPLEMENTATION WAD DELETED! CONTACT Vladimir Efimov vefimov@wiley.com");
-//
-//
-//        try {
-//            elementFinder.waitForVisibilityOfAllElementsLocatedBy(searchContext, locator).get(0);
-//        } catch (WebDriverException e) {
-//            TestUtils.fail(errorMessage);
-//        }
-    }
-
     protected void assertElementsAreAbsent(By locator, String errorMessage) {
         TestUtils.waitForSomeTime(TIMEOUT_TO_WAIT_FOR_ABSENCE_OF_ELEMENT, "Wait for elements are absent");
         elementFinder.findElementsBy(locator)
@@ -710,12 +450,6 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         assertElementIsDisplayed(locator, generateErrorMessage());
     }
 
-    @Deprecated
-    //Use element().should().beVisible()
-    protected void assertElementIsDisplayed(SearchContext searchContext, By locator) {
-        assertElementIsDisplayed(searchContext, locator, generateErrorMessage());
-    }
-
     protected void assertElementsAreDisplayed(By locator) {
         assertElementsAreDisplayed(locator, generateErrorMessage());
     }
@@ -729,7 +463,281 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         postponedAssertEquals(actualDate.monthOfYear().get(), expectedDate.monthOfYear().get(), "Incorrect field 'month' in " + dateFieldName);
         postponedAssertEquals(actualDate.dayOfMonth().get(), expectedDate.dayOfMonth().get(), "Incorrect field 'day' in " + dateFieldName);
         postponedAssertEquals(actualDate.hourOfDay().get(), expectedDate.hourOfDay().get(), "Incorrect field 'hour' in " + dateFieldName);
-        postponedAssertTrue(Math.abs(actualDate.minuteOfHour().get() - expectedDate.minuteOfHour().get()) <= 1, "Incorrect field 'minute' in " + dateFieldName + ". Actual - " + actualDate.minuteOfHour().get() + " . Expected - " + expectedDate.minuteOfHour().get());
-        postponedAssertEquals(actualDate.get(DateTimeFieldType.halfdayOfDay()), expectedDate.get(DateTimeFieldType.halfdayOfDay()), "Incorrect field 'halfdayOfDay' in start date" + dateFieldName);
+        postponedAssertTrue(Math.abs(actualDate.minuteOfHour().get() - expectedDate.minuteOfHour().get()) <= 1,
+                "Incorrect field 'minute' in " + dateFieldName + ". Actual - " + actualDate.minuteOfHour().get()
+                        + " . Expected - " + expectedDate.minuteOfHour().get());
+        postponedAssertEquals(actualDate.get(DateTimeFieldType.halfdayOfDay()), expectedDate.get(DateTimeFieldType.halfdayOfDay()),
+                "Incorrect field 'halfdayOfDay' in start date" + dateFieldName);
+    }
+
+    // OLD code that is going to be removed by September 2017.
+    // Currently kept to give users some time to switch to new implementation
+
+
+    @Deprecated
+    /**
+     * use {@link Window#getUrl()}
+     */
+    protected final String getCurrentUrl() {
+        return driver.getCurrentUrl();
+    }
+
+    @Deprecated
+    //Use element().should().beVisible()
+    protected void assertElementIsDisplayed(SearchContext searchContext, By locator) {
+        assertElementIsDisplayed(searchContext, locator, generateErrorMessage());
+    }
+
+    @Deprecated
+    //use element().should().beDisplayed();
+    protected void assertElementIsDisplayed(SearchContext searchContext, By locator, String errorMessage) {
+        throw new RuntimeException("REPLACE WITH NEW APPROACH IMMEDIATELY! METHOD IMPLEMENTATION WAS DELETED! CONTACT Vladimir Efimov vefimov@wiley.com");
+//
+//
+//        try {
+//            elementFinder.waitForVisibilityOfAllElementsLocatedBy(searchContext, locator).get(0);
+//        } catch (WebDriverException e) {
+//            TestUtils.fail(errorMessage);
+//        }
+    }
+
+    @Deprecated
+    //Will be removed from framework. Do not use this method. Create something similar in your project instead.
+    //TODO VE - delete this by Sept 2017
+    protected void checkConfirmText(String confirmText) {
+        postponedAssertEquals(waitForAlertPresence().getText().trim(), confirmText.trim(), "Alert text is incorrect.");
+    }
+
+    @Deprecated
+    //TODO: VE - will be removed from framework
+    protected Alert waitForAlertPresence() {
+        return (new WebDriverWait(driver, timeout, SLEEP_IN_MILLISECONDS)).until(ExpectedConditions.alertIsPresent());
+    }
+
+    @Deprecated
+    //TODO: VE - will be removed from framework
+    protected Alert waitForAlertPresence(int timeoutForAlert) {
+        return (new WebDriverWait(driver, timeoutForAlert, SLEEP_IN_MILLISECONDS)).until(ExpectedConditions.alertIsPresent());
+    }
+
+    @Deprecated
+    //Will be removed from framework. Do not use this method. Create something similar in your project instead.
+    //TODO VE - delete this by Sept 2017
+    protected boolean compareStringLists(List<String> list1, List<String> list2) {
+        return compareStringListsAndGetDifferent(list1, list2).isEmpty();
+    }
+
+    @Deprecated
+    //Will be removed from framework. Do not use this method. Create something similar in your project instead.
+    //TODO VE - delete this by Sept 2017
+    protected List<String> compareStringListsAndGetDifferent(List<String> list1, List<String> list2) {
+        List<String> similar = new ArrayList<String>(list1);
+        List<String> different = new ArrayList<String>();
+        different.addAll(list1);
+        different.addAll(list2);
+        similar.retainAll(list2);
+        different.removeAll(similar);
+        return different;
+    }
+
+    @Deprecated
+    //Will be removed from framework. Do not use this method. Create something similar in your project instead.
+    //TODO VE - delete this by Sept 2017
+    protected List<String> getAttributesFromListWebElement(List<WebElement> elements, String attributeName) {
+        List<String> result = new ArrayList<String>();
+        for (WebElement element : elements) {
+            result.add(element.getAttribute(attributeName));
+        }
+        return result;
+    }
+
+    @Deprecated
+    //Will be removed from framework. Do not use this method. Create something similar in your project instead.
+    //TODO VE - delete this by Sept 2017
+    public List<String> getTextFromWebElementList(final List<OurWebElement> webElementList) {
+        final List<String> resultList = new ArrayList<String>();
+        for (OurWebElement eachElement : webElementList) {
+            scrollIntoView(eachElement);
+            resultList.add(eachElement.getText().trim());
+        }
+        return resultList;
+    }
+
+    @Deprecated
+    //Will be removed from framework. Do not use this method. Create something similar in your project instead.
+    //TODO VE - delete this by Sept 2017
+    public List<String> getTextWithoutQuestionsCountFromFilterOptionList(final List<CheckBox> checkBoxList) {
+        final List<String> resultList = new ArrayList<String>();
+        for (CheckBox checkBox : checkBoxList) {
+            scrollIntoView(checkBox.getWrappedWebElement());
+            resultList.add(checkBox.getText().split(DIGITS_WITHIN_PARENTHESIS)[0].trim());
+        }
+        return resultList;
+    }
+
+    @Deprecated
+    //Will be removed from framework. Do not use this method. Create something similar in your project instead.
+    //TODO VE - delete this by Sept 2017
+    // Method is similar to getTextFromWebElementList except for scrolling into view when iterating elements
+    public List<String> getTextFromWebElementListWithoutScroll(final List<WebElement> webElementList) {
+        final List<String> resultList = new ArrayList<String>();
+        for (WebElement eachElement : webElementList) {
+            resultList.add(eachElement.getText());
+        }
+        return resultList;
+    }
+
+    @Deprecated
+    //Will be removed from framework. Do not use this method. Create something similar in your project instead.
+    //TODO VE - delete this by Sept 2017
+    protected List<String> getTextFromWebElementListWithoutSpaces(final List<WebElement> webElementList) {
+        final List<String> resultList = new ArrayList<String>();
+        for (WebElement eachElement : webElementList) {
+            resultList.add(eachElement.getText().trim());
+        }
+        return resultList;
+    }
+
+    @Deprecated
+    //Will be removed from framework. Do not use this method. Create something similar in your project instead.
+    //TODO VE - delete this by Sept 2017
+    protected List<String> getTextFromWebElementListWithoutEmptyString(final List<WebElement> webElementList) {
+        final List<String> resultList = new ArrayList<String>();
+        for (WebElement eachElement : webElementList) {
+            if (!eachElement.getText().trim().isEmpty()) {
+                resultList.add(eachElement.getText().trim());
+            }
+        }
+        return resultList;
+    }
+
+    @Deprecated
+    //TODO: VE - should be moved to utils
+    protected boolean isWindowDisplayedByPartialUrl(String partialUrl) {
+        try {
+            waitForWindowToBeAppearedByPartialUrlAndSwitchToIt(partialUrl, TIMEOUT_TO_WAIT_FOR_WINDOW);
+            return true;
+        } catch (WebDriverException e) {
+            return false;
+        }
+    }
+
+    @Deprecated
+    //Will be removed from framework. Do not use this method. Create something similar in your project instead.
+    //TODO VE - delete this by Sept 2017
+    protected void clickOkButtonInConfirm() {
+        Alert alert = waitForAlertPresence();
+        alert.accept();
+        //For some reason in Chrome v.30 alerts are not properly interacted with the first try
+        //We are trying to interact with it once more to avoid failures
+        if (getAlert() != null) {
+            alert.accept();
+        }
+    }
+
+    @Deprecated
+    //Will be removed from framework. Do not use this method. Create something similar in your project instead.
+    //TODO VE - delete this by Sept 2017
+    protected void clickOkButtonInConfirm(int timeoutForConfirm) {
+        try {
+            Alert alert = waitForAlertPresence(timeoutForConfirm);
+            alert.accept();
+            //For some reason in Chrome v.30 alerts are not properly interacted with the first try
+            //We are trying to interact with it once more to avoid failures
+            if (getAlert() != null) {
+                alert.accept();
+            }
+        } catch (Exception ignored) {
+        }
+    }
+
+    @Deprecated
+    //Will be removed from framework. Do not use this method. Create something similar in your project instead.
+    //TODO VE - delete this by Sept 2017
+    protected void clickCancelButtonInConfirm() {
+        try {
+            Alert alert = waitForAlertPresence();
+            alert.dismiss();
+
+            //For some reason in Chrome v.30 alerts are not properly interacted with the first try
+            //We are trying to interact with it once more to avoid failures
+            if (getAlert() != null) {
+                alert.dismiss();
+            }
+        } catch (Exception ignored) {
+        }
+    }
+
+    @Deprecated
+    //Will be removed from framework. Do not use this method. Create something similar in your project instead.
+    //TODO VE - delete this by Sept 2017
+    protected void clickRandomElementInList(final List<WebElement> list) {
+        getRandomElementInList(list).click();
+    }
+
+    @Deprecated
+    //Will be removed from framework. Do not use this method. Create something similar in your project instead.
+    //TODO VE - delete this by Sept 2017
+    public static <T> T getRandomElementInList(final List<T> list) {
+        if (list != null && !list.isEmpty()) {
+            return getRandomElementsInList(list, 1).get(0);
+        }
+        fail("List is null or empty! It's impossible to get random element!");
+        return null;
+    }
+
+    @Deprecated
+    //Will be removed from framework. Do not use this method. Create something similar in your project instead.
+    //TODO VE - delete this by Sept 2017
+    protected static <T> List<T> getRandomElementsInList(final List<T> sourceList, final int itemNumberToSelect) {
+        final ArrayList<T> resultArray = new ArrayList<T>(sourceList.size());
+        resultArray.addAll(sourceList);
+        Collections.shuffle(resultArray);
+
+        if (sourceList.size() <= itemNumberToSelect) {
+            return resultArray;
+        }
+
+        return resultArray.subList(0, itemNumberToSelect);
+    }
+
+    @Deprecated
+    /**
+     * use {@link OurWebElement#getParent()}
+     */
+    public WebElement getParentElement(final WebElement webElement) {
+        return getParentElement(webElement, 1);
+    }
+
+    @Deprecated
+    /**
+     * use {@link OurWebElement#getParent()}
+     */
+    public WebElement getParentElement(final WebElement webElement, int level) {
+        StringBuilder builder = new StringBuilder(".");
+        for (int i = 0; i < level; i++) {
+            builder
+                    .append("/..");
+        }
+        return webElement.findElement(By.xpath(builder.toString()));
+    }
+
+    @Deprecated
+    /**
+     * Use {@link Report#testNG()}
+     */
+    public P report(final String message) {
+        Reporter.log(message);
+        return (P) this;
+    }
+
+    @Deprecated
+    @Step("{0}")
+    /**
+     * Use {@link Report#allure()}
+     */
+    public P reportWithStep(final String message) {
+        Reporter.log(message);
+        return (P) this;
     }
 }

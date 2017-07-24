@@ -7,13 +7,16 @@ import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.window.WindowM
  */
 public interface Window {
 
-     void switchToLast();
-     void close();
-
-     //Todo implement commot waitFor and should (similar to OurWebElement) but with limited functionality only required for window
-    void waitForScriptsToLoad();
+    void switchToLast();
 
     void switchTo(WindowMatcher matcher);
+
+    void close();
+
+    //Todo implement common waitFor and should (similar to OurWebElement) but with limited functionality only required for window
+    void waitForScriptsToLoad();
+
+    String getUrl();
 
 
 }
