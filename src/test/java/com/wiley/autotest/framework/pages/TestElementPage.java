@@ -21,6 +21,7 @@ public class TestElementPage extends AbstractPage {
         return this;
     }
 
+    //    The element changes coordinates. Each check validates element with different x, y.
     public TestElementPage checkAnimationElement() {
         element(By.id("myAnimation")).should().beDisplayed();
         element(By.id("myAnimation")).should().beDisplayed();
