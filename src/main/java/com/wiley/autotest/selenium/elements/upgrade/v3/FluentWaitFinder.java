@@ -23,17 +23,15 @@ public class FluentWaitFinder extends FluentWait<WebDriver> {
 
     //todo proper error message should be automatically generated here and in FluentWaitCondition as well
     public <T> T waitFor(Function<WebDriver, T> condition) {
-        if (nullOnFailure) {
-            try {
-                return until(condition);
-            } catch (Throwable ignoredAndContinue) {
+        try {
+            return until(condition);
+        } catch (Throwable ignoredAndContinue) {
+            if (nullOnFailure) {
                 //todo add some logging here if necessary
                 return null;
+            } else {
+                throw new AssertionError("Unable to perform: " + condition.toString());
             }
-        } else {
-            return until(condition);
         }
     }
-
-
 }

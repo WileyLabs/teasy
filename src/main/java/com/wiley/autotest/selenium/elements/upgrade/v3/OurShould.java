@@ -1,7 +1,6 @@
 package com.wiley.autotest.selenium.elements.upgrade.v3;
 
 import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
-import org.openqa.selenium.WebElement;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -45,10 +44,10 @@ public class OurShould {
     public void haveAttribute(String attributeName, String value) {
         waitFor((element) -> element.getAttribute(attributeName).equals(value));
     }
+
     public void notHaveAttribute(String attributeName) {
         waitFor((element) -> element.getAttribute(attributeName) == null);
     }
-
 
     public void customCondition(Function<OurWebElement, Boolean> condition) {
         waitFor(condition);
@@ -57,5 +56,4 @@ public class OurShould {
     private void waitFor(Function<OurWebElement, Boolean> condition) {
         fluentWait.waitFor(condition);
     }
-
 }
