@@ -49,30 +49,30 @@ public interface IOurWebElement {
 
     Locator getLocator();
 
-    public OurShould should();
+    OurShould should();
 
-    public OurShould should(OurSearchStrategy strategy);
+    OurShould should(OurSearchStrategy strategy);
 
-    public OurWaitFor waitFor();
+    OurWaitFor waitFor();
 
-    public OurWaitFor waitFor(OurSearchStrategy strategy);
+    OurWaitFor waitFor(OurSearchStrategy strategy);
 
-    public OurWebElement getParent();
+    OurWebElement getParent();
 
-    public OurWebElement getParent(int level);
+    OurWebElement getParent(int level);
 
     //discuss the necessity of these methods
-    public OurWebElement element(By by);
+    OurWebElement element(By by);
 
-    public List<OurWebElement> elements(By by);
+    List<OurWebElement> elements(By by);
 
-    public OurWebElement elementOrNull(By by);
+    OurWebElement elementOrNull(By by);
 
-    public List<OurWebElement> elementsOrEmpty(By by);
+    List<OurWebElement> elementsOrEmpty(By by);
 
-    public OurWebElement domElement(By by);
+    OurWebElement domElement(By by);
 
-    public List<OurWebElement> domElements(By by);
+    List<OurWebElement> domElements(By by);
 
-    public void click();
+    void click();
 }

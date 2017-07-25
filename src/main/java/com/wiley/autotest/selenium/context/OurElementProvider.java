@@ -31,7 +31,6 @@ import java.util.function.Supplier;
 import static com.wiley.autotest.selenium.SeleniumHolder.getWebDriver;
 import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrap;
 import static com.wiley.autotest.utils.ExecutionUtils.isChrome;
-import static com.wiley.autotest.utils.ExecutionUtils.isSafari;
 
 /**
  * Created by IntelliJ IDEA.
@@ -310,21 +309,33 @@ public abstract class OurElementProvider {
         elementFinder = new WebDriverAwareElementFinder(driver, new WebDriverWait(driver, timeout, SLEEP_IN_MILLISECONDS));
     }
 
+
+    // OLD code that is going to be removed by September 2017.
+    // Currently kept to give users some time to switch to new implementation
+
+    @Deprecated
+    /**
+     * Use {@link Window#close()}
+     */
     protected final void closeBrowserWindow() {
         elementFinder.closeCurrentBrowserWindow();
     }
 
+    @Deprecated
+    /**
+     * Use {@link Window#waitForScriptsToLoad()}
+     */
     protected final void waitForPageToLoad() {
         elementFinder.waitForPageToLoad();
     }
 
+    @Deprecated
+    /**
+     * Use {@link Window#switchToLast()} ()}
+     */
     protected void switchToLastWindow() {
         elementFinder.switchToLastWindow();
     }
-
-
-    // OLD code that is going to be removed by September 2017.
-    // Currently kept to give users some time to switch to new implementation
 
     @Deprecated
     //Outdated method - used only inside deprected methods. Will be removed in future.
@@ -624,15 +635,6 @@ public abstract class OurElementProvider {
         try {
             return elementFinder.findElementBy(locator);
         } catch (WebDriverException e) {
-            //TODO hotfix for safari as it seems that this method does not work correct without timeout
-            if (isSafari()) {
-                TestUtils.waitForSafari();
-                try {
-                    return elementFinder.findElementBy(locator);
-                } catch (WebDriverException ignoreSafari) {
-                    return null;
-                }
-            }
             return null;
         }
     }
@@ -646,15 +648,6 @@ public abstract class OurElementProvider {
         try {
             return elementFinder.findElementBy(searchContext, locator);
         } catch (Exception e) {
-            //TODO hotfix for safari as it seems that this method does not work correct without timeout
-            if (isSafari()) {
-                TestUtils.waitForSafari();
-                try {
-                    return elementFinder.findElementBy(searchContext, locator);
-                } catch (Exception ignoreSafari) {
-                    return null;
-                }
-            }
             return null;
         }
     }

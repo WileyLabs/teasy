@@ -1,7 +1,6 @@
 package com.wiley.autotest.selenium;
 
 import com.wiley.autotest.selenium.context.HelperRegistry;
-import com.wiley.autotest.selenium.context.IComponent;
 import com.wiley.autotest.selenium.context.IPage;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -24,11 +23,6 @@ public class SpringBasedHelperRegistry implements HelperRegistry, ApplicationCon
             }
         }
         return null;
-    }
-
-    @Override
-    public <E extends IComponent> E getComponentHelper(final Class<E> helperClass) {
-        return applicationContext.getBean(helperClass);
     }
 
     @Override

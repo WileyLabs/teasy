@@ -1,0 +1,7 @@
+*.sw?
+*.iml
+*.jar
+.idea/
+.classpath
+.project
+.settings

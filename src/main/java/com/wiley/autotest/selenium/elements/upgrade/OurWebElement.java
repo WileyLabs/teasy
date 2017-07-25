@@ -23,9 +23,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.List;
 
-import static com.wiley.autotest.utils.ExecutionUtils.*;
-import static com.wiley.autotest.utils.IETestUtils.*;
-import static com.wiley.autotest.utils.TestUtils.*;
+import static com.wiley.autotest.utils.ExecutionUtils.isChrome;
+import static com.wiley.autotest.utils.TestUtils.fail;
+import static com.wiley.autotest.utils.TestUtils.waitForSomeTime;
 
 
 /**
@@ -162,7 +162,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
     public void click() {
         try {
             try {
-                clickByBrowser();
+                wrappedElement.click();
             } catch (StaleElementReferenceException e) {
                 clickForStaleElement();
             } catch (UnhandledAlertException ignored) {
@@ -190,16 +190,6 @@ public class OurWebElement implements IOurWebElement, Locatable {
         click();
     }
 
-    private void clickByBrowser() {
-        if (isIE()) {
-            clickInIE();
-        } else if (isSafari()) {
-            clickInSafari();
-        } else {
-            wrappedElement.click();
-        }
-    }
-
     private void clickForNeedToScroll() {
         LOGGER.error("*****ERROR*****ElementNotVisibleException***** during click! Scrolling to element and trying again ---Locator=" + locator
                 .getLocator());
@@ -214,28 +204,24 @@ public class OurWebElement implements IOurWebElement, Locatable {
         increment();
         //For Android error text is different and does not have any information related to clickable issue
         String ignoredOrNeedToScrollMessage = ignoredOrNeedToScroll.getMessage();
-        if (isAndroid() || ignoredOrNeedToScrollMessage.contains("is not clickable at point")) {
-            LOGGER.error("*****ERROR*****Element is not clickable at point***** during click! Scrolling to element and trying again. ---Locator=" + locator
-                    .getLocator());
-            if (isAndroid()) {
-                //set size of page to 80%
-                executeScript("document.body.style.transform='scale(0.8)'");
-            }
+          if (ignoredOrNeedToScrollMessage.contains("is not clickable at point")) {
+             LOGGER.error("*****ERROR*****Element is not clickable at point***** during click! Scrolling to element and trying again. ---Locator=" + locator
+                     .getLocator());
 
-            //This was added to fix cases when scrolling does not affect (in chrome when element is half hidden)
-            //There is a chance that maximising will solve the case
-            if (repeatLocateElementCounter == 10) {
-                maximizeWindow();
-                if (isChrome()) {
-                    //Some pages (e.g. in Administration Workspace) are reloaded after maximize window in Chrome
-                    waitForSomeTime(3000, "Wait for window maximized");
-                    againLocate();
-                }
-            }
+             //This was added to fix cases when scrolling does not affect (in chrome when element is half hidden)
+             //There is a chance that maximising will solve the case
+             if (repeatLocateElementCounter == 10) {
+                 maximizeWindow();
+                 if (isChrome()) {
+                     //Some pages (e.g. in Administration Workspace) are reloaded after maximize window in Chrome
+                     waitForSomeTime(3000, "Wait for window maximized");
+                     againLocate();
+                 }
+             }
 
-            scrollIntoView(wrappedElement);
-            scrollToElementLocation(wrappedElement);
-        }
+             scrollIntoView(wrappedElement);
+             scrollToElementLocation(wrappedElement);
+         }
         if (ignoredOrNeedToScrollMessage.contains("Error: element is not attached to the page document")) {
             againLocate();
         }
@@ -339,11 +325,21 @@ public class OurWebElement implements IOurWebElement, Locatable {
         }
     }
 
+    @Deprecated
+    /**
+     * do not use this method. it will be deleted in future.
+     * use element(), domElement(), elementOrNull() depending on your needs
+     */
     public WebElement findElement(By by) {
         this.repeatLocateElementCounter = 0;
         return find(by);
     }
 
+    @Deprecated
+    /**
+     * do not use this method. it will be deleted in future.
+     * use elements(), domElements(), elementsOrEmpty() depending on your needs
+     */
     public List<WebElement> findElements(By by) {
         this.repeatLocateElementCounter = 0;
         return finds(by);
@@ -434,9 +430,6 @@ public class OurWebElement implements IOurWebElement, Locatable {
      * it should be made private after better solution is found
      */
     public void againLocate() {
-        if (isSafari()) {
-            waitForSafari();
-        }
         WebElement againLocateElement = locator.find();
         wrappedElement = againLocateElement instanceof IOurWebElement ? ((IOurWebElement) againLocateElement).getWrappedWebElement() : againLocateElement;
         increment();
@@ -449,52 +442,6 @@ public class OurWebElement implements IOurWebElement, Locatable {
         } else {
             repeatLocateElementCounter++;
         }
-    }
-
-    private void clickInSafari() {
-        int iterationCount = 0;
-        waitForSomeTime(1000, "Wait for click for Safari");
-        wrappedElement.click();
-        try {
-            if (!isInputOrSelectOrCheckboxElement(wrappedElement) && !isClickWithReload()) {
-                //TODO looks like some outdated logic. To be removed or replaced by a better solution
-                while (iterationCount < 5) {
-                    try {
-                        elementFinder_TO_BE_REMOVED.waitForStalenessOf(wrappedElement, 1);
-                        return;
-                    } catch (TimeoutException ignored) {
-                    }
-                    iterationCount++;
-                }
-            }
-        } catch (NoSuchWindowException ignored) {
-        }
-    }
-
-    private void clickInIE() {
-        waitForSomeTime(500, "Wait for click for IE");
-        if (isDisabledElement(wrappedElement)) {
-            wrappedElement.click();
-            elementFinder_TO_BE_REMOVED.waitForPageToLoad();
-        } else if (isActionElements(wrappedElement)) {
-            final boolean isSelected = wrappedElement.isSelected();
-            wrappedElement.click();
-            elementFinder_TO_BE_REMOVED.waitForPageToLoad();
-            //Check the checkbox is selected then click one more time if is not.
-            checkElementIsSelected(isSelected, wrappedElement);
-        } else if (isNotOptionInput(wrappedElement) && isNotCheckBoxLiSpan(wrappedElement) && isNotLink(wrappedElement) && isNotTable(wrappedElement) && isNotTd(wrappedElement)) {
-            wrappedElement.sendKeys(Keys.ENTER);
-            elementFinder_TO_BE_REMOVED.waitForPageToLoad();
-        } else if (isLiTag(wrappedElement) || isTdTag(wrappedElement) || isDivTag(wrappedElement) || !isNotTable(wrappedElement)) {
-            executeScript("arguments[0].click();", wrappedElement);
-            elementFinder_TO_BE_REMOVED.waitForPageToLoad();
-        } else if (isLink(wrappedElement)) {
-            wrappedElement.sendKeys(Keys.ENTER);
-        } else {
-            wrappedElement.click();
-            elementFinder_TO_BE_REMOVED.waitForPageToLoad();
-        }
-        waitForSomeTime(500, "");
     }
 
     private void scrollIntoView(WebElement element) {
@@ -596,11 +543,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
     }
 
     private WebElement getParentElement(WebElement element) {
-        if (isSafari()) {
-            return element.findElement(By.xpath("./.."));
-        } else {
-            return (WebElement) ((JavascriptExecutor) getDriver()).executeScript("return arguments[0].parentNode", element);
-        }
+        return (WebElement) ((JavascriptExecutor) getDriver()).executeScript("return arguments[0].parentNode", element);
     }
 
     private FramesTransparentWebDriver getFrameTransparentDriver() {
