@@ -417,6 +417,11 @@ public class OurWebElement implements IOurWebElement, Locatable {
         return wrappedElement;
     }
 
+    @Override
+    public String toString(){
+        return locator.getLocator().toString();
+    }
+
     private ElementFinder getElementFinder() {
         return elementFinder_TO_BE_REMOVED;
     }

@@ -26,40 +26,107 @@ public final class ExpectedConditions2 {
     }
 
     public static ExpectedCondition<WebElement> presenceOfElementLocatedBy(final SearchContext searchContext, final By locator) {
-        return driver -> searchContext.findElement(locator);
+        return new ExpectedCondition<WebElement>() {
+            @Override
+            public WebElement apply(final WebDriver driver) {
+                return searchContext.findElement(locator);
+            }
+
+            @Override
+            public String toString() {
+                return String.format("presence of element located by %s -> %s", searchContext, locator);
+            }
+        };
     }
 
     public static ExpectedCondition<List<WebElement>> presenceOfAllElementsLocatedBy(final OurWebElement searchContext, final By locator) {
-        return driver -> searchContext.findElements(locator).isEmpty() ? null : searchContext.findElements(locator);
+        return new ExpectedCondition<List<WebElement>>() {
+            @Override
+            public List<WebElement> apply(final WebDriver driver) {
+                return searchContext.findElements(locator).isEmpty() ? null : searchContext.findElements(locator);
+            }
+
+            @Override
+            public String toString() {
+                return String.format("presence of all elements located by %s -> %s", searchContext, locator);
+            }
+        };
     }
+
     @Deprecated
     //use presenceOfAllElementsLocatedBy(final OurWebElement searchContext, final By locator)
     public static ExpectedCondition<List<WebElement>> presenceOfAllElementsLocatedBy(final SearchContext searchContext, final By locator) {
-        return driver -> searchContext.findElements(locator).isEmpty() ? null : searchContext.findElements(locator);
+        return new ExpectedCondition<List<WebElement>>() {
+            @Override
+            public List<WebElement> apply(final WebDriver driver) {
+                return searchContext.findElements(locator).isEmpty() ? null : searchContext.findElements(locator);
+            }
+
+            @Override
+            public String toString() {
+                return String.format("presence of all elements located by %s -> %s", searchContext, locator);
+            }
+        };
     }
 
     public static ExpectedCondition<List<WebElement>> presenceOfAllElementsLocatedBy(final By locator) {
-        return driver -> driver.findElements(locator).isEmpty() ? null : driver.findElements(locator);
+        return new ExpectedCondition<List<WebElement>>() {
+            @Override
+            public List<WebElement> apply(final WebDriver driver) {
+                return driver.findElements(locator).isEmpty() ? null : driver.findElements(locator);
+            }
+
+            @Override
+            public String toString() {
+                return String.format("presence of all elements located by %s", locator);
+            }
+        };
     }
 
     public static ExpectedCondition<List<WebElement>> presenceOfAllElementsInAllFrames(final By locator) {
-        return driver -> {
-            FramesTransparentWebDriver framesTransparentWebDriver = (FramesTransparentWebDriver) driver;
-            List<WebElement> elementsInFrames = framesTransparentWebDriver.findAllElementsInFrames(locator);
-            return elementsInFrames.isEmpty() ? null : elementsInFrames;
+        return new ExpectedCondition<List<WebElement>>() {
+            @Override
+            public List<WebElement> apply(final WebDriver driver) {
+                FramesTransparentWebDriver framesTransparentWebDriver = (FramesTransparentWebDriver) driver;
+                List<WebElement> elementsInFrames = framesTransparentWebDriver.findAllElementsInFrames(locator);
+                return elementsInFrames.isEmpty() ? null : elementsInFrames;
+            }
+
+            @Override
+            public String toString() {
+                return String.format("presence of all elements located by %s in all frames", locator);
+            }
         };
     }
 
     public static ExpectedCondition<List<WebElement>> presenceOfAllElementsInAllFrames(OurWebElement context, final By locator) {
-        return driver -> {
-            FramesTransparentWebDriver framesTransparentWebDriver = (FramesTransparentWebDriver) driver;
-            List<WebElement> elementsInFrames = framesTransparentWebDriver.findAllElementsInFrames(context, locator);
-            return elementsInFrames.isEmpty() ? null : elementsInFrames;
+        return new ExpectedCondition<List<WebElement>>() {
+            @Override
+            public List<WebElement> apply(final WebDriver driver) {
+                FramesTransparentWebDriver framesTransparentWebDriver = (FramesTransparentWebDriver) driver;
+                List<WebElement> elementsInFrames = framesTransparentWebDriver.findAllElementsInFrames(locator);
+                return elementsInFrames.isEmpty() ? null : elementsInFrames;
+            }
+
+            @Override
+            public String toString() {
+                return String.format("presence of all elements located by %s -> %s in all frames", context, locator);
+            }
         };
     }
 
     public static ExpectedCondition<Boolean> visibilityOf(final WebElement element) {
-        return driver -> element.isDisplayed();
+        return new ExpectedCondition<Boolean>() {
+            @Override
+            public Boolean apply(final WebDriver driver) {
+                return element.isDisplayed();
+            }
+
+            @Override
+            public String toString() {
+                return String.format("visibility of element %s", element);
+            }
+        };
     }
 
     /**
@@ -69,7 +136,17 @@ public final class ExpectedConditions2 {
      * @return
      */
     public static ExpectedCondition<List<WebElement>> visibilityOfFirstElements(final By locator) {
-        return driver -> getFirstVisibleWebElements(driver, null, locator);
+        return new ExpectedCondition<List<WebElement>>() {
+            @Override
+            public List<WebElement> apply(final WebDriver driver) {
+                return getFirstVisibleWebElements(driver, null, locator);
+            }
+
+            @Override
+            public String toString() {
+                return String.format("visibility of element located by %s", locator);
+            }
+        };
     }
 
     /**
@@ -80,9 +157,17 @@ public final class ExpectedConditions2 {
      * @return
      */
     public static ExpectedCondition<List<WebElement>> visibilityOfFirstElements(final OurWebElement searchContext, final By locator) {
-        return driver -> {
-            List<WebElement> visibleElements = getFirstVisibleWebElements(driver, searchContext, locator);
-            return isNotEmpty(visibleElements) ? visibleElements : null;
+        return new ExpectedCondition<List<WebElement>>() {
+            @Override
+            public List<WebElement> apply(final WebDriver driver) {
+                List<WebElement> visibleElements = getFirstVisibleWebElements(driver, searchContext, locator);
+                return isNotEmpty(visibleElements) ? visibleElements : null;
+            }
+
+            @Override
+            public String toString() {
+                return String.format("visibility of element located by %s -> %s", searchContext, locator);
+            }
         };
     }
 
@@ -94,9 +179,17 @@ public final class ExpectedConditions2 {
      * @return
      */
     public static ExpectedCondition<List<WebElement>> visibilityOfFirstElementsInAllFrames(final By locator) {
-        return driver -> {
-            List<WebElement> visibleElements = getFirstVisibleWebElements(driver, null, locator);
-            return isNotEmpty(visibleElements) ? visibleElements : null;
+        return new ExpectedCondition<List<WebElement>>() {
+            @Override
+            public List<WebElement> apply(final WebDriver driver) {
+                List<WebElement> visibleElements = getFirstVisibleWebElements(driver, null, locator);
+                return isNotEmpty(visibleElements) ? visibleElements : null;
+            }
+
+            @Override
+            public String toString() {
+                return String.format("visibility of element located by %s in all frames", locator);
+            }
         };
     }
 
@@ -110,9 +203,17 @@ public final class ExpectedConditions2 {
      * @return
      */
     public static ExpectedCondition<List<WebElement>> visibilityOfFirstElementsInAllFrames(final OurWebElement searchContext, final By locator) {
-        return driver -> {
-            List<WebElement> visibleElements = getFirstVisibleWebElements(driver, searchContext, locator);
-            return isNotEmpty(visibleElements) ? visibleElements : null;
+        return new ExpectedCondition<List<WebElement>>() {
+            @Override
+            public List<WebElement> apply(final WebDriver driver) {
+                List<WebElement> visibleElements = getFirstVisibleWebElements(driver, searchContext, locator);
+                return isNotEmpty(visibleElements) ? visibleElements : null;
+            }
+
+            @Override
+            public String toString() {
+                return String.format("visibility of element located by %s -> %s in all frames", searchContext, locator);
+            }
         };
     }
 
@@ -147,12 +248,20 @@ public final class ExpectedConditions2 {
     }
 
     public static ExpectedCondition<WebElement> visibilityOfElementLocatedBy(By locator) {
-        return driver -> {
-            try {
-                final WebElement foundElement = driver.findElement(locator);
-                return (foundElement.isDisplayed() || isElementHiddenUnderScroll(foundElement)) ? foundElement : null;
-            } catch (Exception e) {
-                return null;
+        return new ExpectedCondition<WebElement>() {
+            @Override
+            public WebElement apply(final WebDriver driver) {
+                try {
+                    final WebElement foundElement = driver.findElement(locator);
+                    return (foundElement.isDisplayed() || isElementHiddenUnderScroll(foundElement)) ? foundElement : null;
+                } catch (Exception e) {
+                    return null;
+                }
+            }
+
+            @Override
+            public String toString() {
+                return String.format("visibility of element located by %s", locator);
             }
         };
     }
@@ -165,29 +274,65 @@ public final class ExpectedConditions2 {
     }
 
     public static ExpectedCondition<WebElement> invisibleOf(final By locator) {
-        return driver -> elementIfInvisible(driver.findElement(locator));
-    }
+        return new ExpectedCondition<WebElement>() {
+            @Override
+            public WebElement apply(final WebDriver driver) {
+                return elementIfInvisible(driver.findElement(locator));
+            }
 
-    public static ExpectedCondition<WebElement> invisibleOf(final WebElement element) {
-        return driver -> elementIfInvisible(element);
-    }
-
-    public static ExpectedCondition<Boolean> absenceElementBy(final By locator) {
-        return driver -> {
-            try {
-                driver.findElement(locator);
-                return false;
-            } catch (WebDriverException ignored) {
-                return true;
+            @Override
+            public String toString() {
+                return String.format("invisibility of element located by %s", locator);
             }
         };
     }
 
-    public static ExpectedCondition<Boolean> xLocationNotChanged(final WebElement webElement) {
-        return driver -> {
-            int startXLocation = webElement.getLocation().getX();
-            TestUtils.waitForSomeTime(100, "Wait for element loaded");
-            return startXLocation == webElement.getLocation().getX();
+    public static ExpectedCondition<WebElement> invisibleOf(final WebElement element) {
+        return new ExpectedCondition<WebElement>() {
+            @Override
+            public WebElement apply(final WebDriver driver) {
+                return elementIfInvisible(element);
+            }
+
+            @Override
+            public String toString() {
+                return String.format("invisibility of element %s", element);
+            }
+        };
+    }
+
+    public static ExpectedCondition<Boolean> absenceElementBy(final By locator) {
+        return new ExpectedCondition<Boolean>() {
+            @Override
+            public Boolean apply(final WebDriver driver) {
+                try {
+                    driver.findElement(locator);
+                    return false;
+                } catch (WebDriverException ignored) {
+                    return true;
+                }
+            }
+
+            @Override
+            public String toString() {
+                return String.format("absence of element located by %s", locator);
+            }
+        };
+    }
+
+    public static ExpectedCondition<Boolean> xLocationNotChanged(final WebElement element) {
+        return new ExpectedCondition<Boolean>() {
+            @Override
+            public Boolean apply(final WebDriver driver) {
+                int startXLocation = element.getLocation().getX();
+                TestUtils.waitForSomeTime(100, "Wait for element loaded");
+                return startXLocation == element.getLocation().getX();
+            }
+
+            @Override
+            public String toString() {
+                return String.format("x location of element %s not changed", element);
+            }
         };
     }
 
@@ -204,129 +349,279 @@ public final class ExpectedConditions2 {
      * @return - handle of expected window
      */
     public static ExpectedCondition<String> appearingOfWindowAndSwitchToIt(final String title) {
-        return driver -> {
-            final String initialHandle = driver.getWindowHandle();
-            for (final String handle : driver.getWindowHandles()) {
-                if (needToSwitch(initialHandle, handle)) {
-                    driver.switchTo().window(handle);
-                    if (driver.getTitle().equals(title)) {
-                        return handle;
+        return new ExpectedCondition<String>() {
+            @Override
+            public String apply(final WebDriver driver) {
+                final String initialHandle = driver.getWindowHandle();
+                for (final String handle : driver.getWindowHandles()) {
+                    if (needToSwitch(initialHandle, handle)) {
+                        driver.switchTo().window(handle);
+                        if (driver.getTitle().equals(title)) {
+                            return handle;
+                        }
                     }
                 }
+                driver.switchTo().window(initialHandle);
+                return null;
             }
-            driver.switchTo().window(initialHandle);
-            return null;
+
+            @Override
+            public String toString() {
+                return String.format("appearing of window by title %s and switch to it", title);
+            }
         };
     }
 
     public static ExpectedCondition<String> appearingOfWindowByPartialTitle(final String fullTitle) {
-        return driver -> {
-            final String initialHandle = driver.getWindowHandle();
-            for (final String handle : driver.getWindowHandles()) {
-                if (needToSwitch(initialHandle, handle)) {
-                    driver.switchTo().window(handle);
-                    if (fullTitle.contains(driver.getTitle().split("\\(")[0].trim())) {
-                        return handle;
+        return new ExpectedCondition<String>() {
+            @Override
+            public String apply(final WebDriver driver) {
+                final String initialHandle = driver.getWindowHandle();
+                for (final String handle : driver.getWindowHandles()) {
+                    if (needToSwitch(initialHandle, handle)) {
+                        driver.switchTo().window(handle);
+                        if (fullTitle.contains(driver.getTitle().split("\\(")[0].trim())) {
+                            return handle;
+                        }
                     }
                 }
+                driver.switchTo().window(initialHandle);
+                return null;
             }
-            driver.switchTo().window(initialHandle);
-            return null;
+
+            @Override
+            public String toString() {
+                return String.format("appearing of window by partial title %s and switch to it", fullTitle);
+            }
         };
     }
 
     public static ExpectedCondition<String> appearingOfWindowWithNewTitle(final Set<String> oldTitle) {
-        return driver -> {
-            Set<String> windowHandles = driver.getWindowHandles();
-            if (windowHandles.containsAll(oldTitle)) {
-                windowHandles.removeAll(oldTitle);
-                if (!windowHandles.isEmpty()) {
-                    return windowHandles.iterator().next();
+        return new ExpectedCondition<String>() {
+            @Override
+            public String apply(final WebDriver driver) {
+                Set<String> windowHandles = driver.getWindowHandles();
+                if (windowHandles.containsAll(oldTitle)) {
+                    windowHandles.removeAll(oldTitle);
+                    if (!windowHandles.isEmpty()) {
+                        return windowHandles.iterator().next();
+                    }
                 }
+                return null;
             }
-            return null;
+
+            @Override
+            public String toString() {
+                return String.format("appearing of window with new title. Old windows titles %s", oldTitle);
+            }
         };
     }
 
     public static ExpectedCondition<String> appearingOfWindowByUrl(final String url) {
-        return driver -> {
-            final String initialHandle = driver.getWindowHandle();
-            for (final String handle : driver.getWindowHandles()) {
-                if (needToSwitch(initialHandle, handle)) {
-                    driver.switchTo().window(handle);
-                    try {
-                        if (url.equals(URLDecoder.decode(driver.getCurrentUrl(), "UTF-8"))) {
-                            return handle;
+        return new ExpectedCondition<String>() {
+            @Override
+            public String apply(final WebDriver driver) {
+                final String initialHandle = driver.getWindowHandle();
+                for (final String handle : driver.getWindowHandles()) {
+                    if (needToSwitch(initialHandle, handle)) {
+                        driver.switchTo().window(handle);
+                        try {
+                            if (url.equals(URLDecoder.decode(driver.getCurrentUrl(), "UTF-8"))) {
+                                return handle;
+                            }
+                        } catch (UnsupportedEncodingException e) {
+                            LOGGER.error("UnsupportedEncodingException occured while decoding url - " + driver.getCurrentUrl());
                         }
-                    } catch (UnsupportedEncodingException e) {
-                        LOGGER.error("UnsupportedEncodingException occured while decoding url - " + driver.getCurrentUrl());
                     }
                 }
+                driver.switchTo().window(initialHandle);
+                return null;
             }
-            driver.switchTo().window(initialHandle);
-            return null;
+
+            @Override
+            public String toString() {
+                return String.format("appearing of window by url %s and switch to it", url);
+            }
         };
     }
 
     public static ExpectedCondition<String> appearingOfWindowByPartialUrl(final String url) {
-        return driver -> {
-            final String initialHandle = driver.getWindowHandle();
-            for (final String handle : driver.getWindowHandles()) {
-                if (needToSwitch(initialHandle, handle)) {
-                    driver.switchTo().window(handle);
-                    if (driver.getCurrentUrl().contains(url)) {
-                        return handle;
+        return new ExpectedCondition<String>() {
+            @Override
+            public String apply(final WebDriver driver) {
+                final String initialHandle = driver.getWindowHandle();
+                for (final String handle : driver.getWindowHandles()) {
+                    if (needToSwitch(initialHandle, handle)) {
+                        driver.switchTo().window(handle);
+                        if (driver.getCurrentUrl().contains(url)) {
+                            return handle;
+                        }
                     }
                 }
+                driver.switchTo().window(initialHandle);
+                return null;
             }
-            driver.switchTo().window(initialHandle);
-            return null;
+
+            @Override
+            public String toString() {
+                return String.format("appearing of window by partial url %s and switch to it", url);
+            }
         };
     }
 
     public static ExpectedCondition<Boolean> textToBePresentInElement(final WebElement element, final String text) {
-        return driver -> element.getText().contains(text);
+        return new ExpectedCondition<Boolean>() {
+            @Override
+            public Boolean apply(final WebDriver driver) {
+                return element.getText().contains(text);
+            }
+
+            @Override
+            public String toString() {
+                return String.format("text %s to be present in element %s", text, element);
+            }
+        };
     }
 
     public static ExpectedCondition<Boolean> textToBePresentInTextField(final TextField textField, final String text) {
-        return driver -> textField.getText().contains(text);
+        return new ExpectedCondition<Boolean>() {
+            @Override
+            public Boolean apply(final WebDriver driver) {
+                return textField.getText().contains(text);
+            }
+
+            @Override
+            public String toString() {
+                return String.format("text %s to be present in textField %s", text, textField);
+            }
+        };
     }
 
-    public static ExpectedCondition<Boolean> textToBePresentInElement(final By by) {
-        return driver -> !driver.findElement(by).getText().isEmpty();
+    public static ExpectedCondition<Boolean> textToBePresentInElement(final By locator) {
+        return new ExpectedCondition<Boolean>() {
+            @Override
+            public Boolean apply(final WebDriver driver) {
+                return !driver.findElement(locator).getText().isEmpty();
+            }
+
+            @Override
+            public String toString() {
+                return String.format("text to be present in element located by %s", locator);
+            }
+        };
     }
 
     public static ExpectedCondition<Boolean> textToBePresentInElement(final WebElement element) {
-        return driver -> !element.getText()
-                .isEmpty() || (element.getAttribute("value") != null && !element.getAttribute("value").isEmpty());
+        return new ExpectedCondition<Boolean>() {
+            @Override
+            public Boolean apply(final WebDriver driver) {
+                return !element.getText()
+                        .isEmpty() || (element.getAttribute("value") != null && !element.getAttribute("value").isEmpty());
+            }
+
+            @Override
+            public String toString() {
+                return String.format("text to be present in element %s", element);
+            }
+        };
     }
 
     public static ExpectedCondition<Boolean> pageToLoad() {
-        return webDriver -> "complete".equals(((JavascriptExecutor) webDriver).executeScript("return document.readyState"));
+        return new ExpectedCondition<Boolean>() {
+            @Override
+            public Boolean apply(final WebDriver driver) {
+                return "complete".equals(((JavascriptExecutor) driver).executeScript("return document.readyState"));
+            }
+
+            @Override
+            public String toString() {
+                return "page to load";
+            }
+        };
     }
 
     public static ExpectedCondition<Boolean> presenceOfElementCount(final By locator, final int expectedNumberOfElements) {
-        return driver -> driver.findElements(locator).size() == expectedNumberOfElements;
+        return new ExpectedCondition<Boolean>() {
+            @Override
+            public Boolean apply(final WebDriver driver) {
+                return driver.findElements(locator).size() == expectedNumberOfElements;
+            }
+
+            @Override
+            public String toString() {
+                return String.format("presence of %s elements located by %s", expectedNumberOfElements, locator);
+            }
+        };
     }
 
     public static ExpectedCondition<Boolean> attributeContainsValue(final WebElement element, final String attributeName, final String attributeValue) {
-        return driver -> element.getAttribute(attributeName).contains(attributeValue);
+        return new ExpectedCondition<Boolean>() {
+            @Override
+            public Boolean apply(final WebDriver driver) {
+                return element.getAttribute(attributeName).contains(attributeValue);
+            }
+
+            @Override
+            public String toString() {
+                return String.format("element %s contains attribute %s with value %s", element, attributeName, attributeValue);
+            }
+        };
     }
 
     public static ExpectedCondition<Boolean> attributeNotContainsValue(final WebElement element, final String attributeName, final String attributeValue) {
-        return driver -> !element.getAttribute(attributeName).contains(attributeValue);
+        return new ExpectedCondition<Boolean>() {
+            @Override
+            public Boolean apply(final WebDriver driver) {
+                return !element.getAttribute(attributeName).contains(attributeValue);
+            }
+
+            @Override
+            public String toString() {
+                return String.format("element %s not contains attribute %s with value %s", element, attributeName, attributeValue);
+            }
+        };
     }
 
     public static ExpectedCondition<Boolean> elementHasAttribute(final WebElement element, final String attributeName) {
-        return driver -> element.getAttribute(attributeName) != null;
+        return new ExpectedCondition<Boolean>() {
+            @Override
+            public Boolean apply(final WebDriver driver) {
+                return element.getAttribute(attributeName) != null;
+            }
+
+            @Override
+            public String toString() {
+                return String.format("element %s contains attribute %s", element, attributeName);
+            }
+        };
     }
 
     public static ExpectedCondition<Boolean> elementDoesNotHaveAttribute(final WebElement element, final String attributeName) {
-        return driver -> element.getAttribute(attributeName) == null;
+        return new ExpectedCondition<Boolean>() {
+            @Override
+            public Boolean apply(final WebDriver driver) {
+                return element.getAttribute(attributeName) == null;
+            }
+
+            @Override
+            public String toString() {
+                return String.format("element %s not contains attribute %s", element, attributeName);
+            }
+        };
     }
 
     public static ExpectedCondition<Boolean> onlyOneWindowIsOpen() {
-        return driver -> driver.getWindowHandles().size() == 1;
+        return new ExpectedCondition<Boolean>() {
+            @Override
+            public Boolean apply(final WebDriver driver) {
+                return driver.getWindowHandles().size() == 1;
+            }
+
+            @Override
+            public String toString() {
+                return "only one window is opened";
+            }
+        };
     }
 
     private static boolean needToSwitch(String initialHandle, String handle) {
