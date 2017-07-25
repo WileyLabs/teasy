@@ -1,8 +1,7 @@
 package com.wiley.autotest.selenium.elements.upgrade.v3.conditions;
 
 import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
-import com.wiley.autotest.selenium.elements.upgrade.v3.OurSearchStrategy;
-import org.openqa.selenium.SearchContext;
+import com.wiley.autotest.selenium.context.OurSearchStrategy;
 
 /**
  * Created by vefimov on 25/05/2017.

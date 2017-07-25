@@ -1,7 +1,7 @@
 package com.wiley.autotest.selenium.elements.upgrade.v3;
 
+import com.wiley.autotest.selenium.context.OurSearchStrategy;
 import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
-import org.openqa.selenium.WebElement;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;

@@ -1,5 +1,6 @@
 package com.wiley.autotest.selenium.elements.upgrade.v3;
 
+import com.wiley.autotest.selenium.context.OurSearchStrategy;
 import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
 import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.OurConditionFactory;
 import org.openqa.selenium.Alert;
