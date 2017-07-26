@@ -20,6 +20,7 @@ public class FirstFoundInAllFramesInContext implements OurCondition {
     public FirstFoundInAllFramesInContext(OurWebElement context) {
         this.context = context;
     }
+
     @Override
     public Function<WebDriver, List<WebElement>> visibility(By locator) {
         return ExpectedConditions2.visibilityOfFirstElementsInAllFrames(context, locator);

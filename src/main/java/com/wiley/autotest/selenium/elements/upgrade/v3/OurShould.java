@@ -45,10 +45,10 @@ public class OurShould {
     public void haveAttribute(String attributeName, String value) {
         waitFor((element) -> element.getAttribute(attributeName).equals(value));
     }
+
     public void notHaveAttribute(String attributeName) {
         waitFor((element) -> element.getAttribute(attributeName) == null);
     }
-
 
     public void customCondition(Function<OurWebElement, Boolean> condition) {
         waitFor(condition);
@@ -57,5 +57,4 @@ public class OurShould {
     private void waitFor(Function<OurWebElement, Boolean> condition) {
         fluentWait.waitFor(condition);
     }
-
 }
