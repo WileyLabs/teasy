@@ -20,7 +20,7 @@ public class OurWaitFor {
 
     public OurWaitFor(OurWebElement element, OurSearchStrategy strategy) {
         this(element);
-        fluentWait.withTimeout(strategy.getTimeout(), TimeUnit.SECONDS);
+        fluentWait.withTimeout(strategy.getCustomTimeout(), TimeUnit.SECONDS);
         fluentWait.pollingEvery(strategy.getPoolingEvery(), strategy.getUnit());
     }
 

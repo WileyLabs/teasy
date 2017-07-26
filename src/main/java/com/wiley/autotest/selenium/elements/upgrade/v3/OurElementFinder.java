@@ -32,7 +32,7 @@ public class OurElementFinder {
     public OurElementFinder(WebDriver driver, OurSearchStrategy strategy) {
         this.strategy = strategy;
         this.fluentWait = new FluentWaitFinder(driver);
-        fluentWait.withTimeout(strategy.getTimeout(), TimeUnit.SECONDS);
+        fluentWait.withTimeout(strategy.getCustomTimeout(), TimeUnit.SECONDS);
         fluentWait.pollingEvery(strategy.getPoolingEvery(), strategy.getUnit());
         fluentWait.setNullOnFailure(strategy.isNullOnFailure());
     }

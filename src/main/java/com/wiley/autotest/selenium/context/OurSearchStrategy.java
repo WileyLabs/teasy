@@ -56,7 +56,7 @@ public class OurSearchStrategy {
         return this;
     }
 
-    public long getTimeout() {
+    public long getCustomTimeout() {
         return customTimeout;
     }
 
