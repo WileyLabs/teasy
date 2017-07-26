@@ -226,7 +226,8 @@ public final class ExpectedConditions2 {
         }
 
         List<WebElement> visibleElements = elements.stream()
-                .filter(element -> element.isDisplayed() || isElementHiddenUnderScroll(element))
+                .filter(element -> element.isDisplayed() || isElementHiddenUnderScroll(element)
+                        && element.getCssValue("visibility") == "hidden")
                 .collect(Collectors.toList());
 
         if (visibleElements.isEmpty() && searchContext == null) {
