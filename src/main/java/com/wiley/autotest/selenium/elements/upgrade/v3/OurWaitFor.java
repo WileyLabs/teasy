@@ -1,8 +1,8 @@
 package com.wiley.autotest.selenium.elements.upgrade.v3;
 
+import com.wiley.autotest.selenium.context.OurSearchStrategy;
 import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
 import org.openqa.selenium.StaleElementReferenceException;
-import org.openqa.selenium.WebElement;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -20,7 +20,7 @@ public class OurWaitFor {
 
     public OurWaitFor(OurWebElement element, OurSearchStrategy strategy) {
         this(element);
-        fluentWait.withTimeout(strategy.getTimeout(), TimeUnit.SECONDS);
+        fluentWait.withTimeout(strategy.getCustomTimeout(), TimeUnit.SECONDS);
         fluentWait.pollingEvery(strategy.getPoolingEvery(), strategy.getUnit());
     }
 

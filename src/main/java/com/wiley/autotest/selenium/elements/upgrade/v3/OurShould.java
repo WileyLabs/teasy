@@ -1,5 +1,6 @@
 package com.wiley.autotest.selenium.elements.upgrade.v3;
 
+import com.wiley.autotest.selenium.context.OurSearchStrategy;
 import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
 
 import java.util.concurrent.TimeUnit;
@@ -18,7 +19,7 @@ public class OurShould {
 
     public OurShould(OurWebElement element, OurSearchStrategy strategy) {
         this(element);
-        fluentWait.withTimeout(strategy.getTimeout(), TimeUnit.SECONDS);
+        fluentWait.withTimeout(strategy.getCustomTimeout(), TimeUnit.SECONDS);
         fluentWait.pollingEvery(strategy.getPoolingEvery(), strategy.getUnit());
     }
 

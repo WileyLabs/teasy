@@ -1,7 +1,5 @@
 package com.wiley.autotest.selenium.context;
 
-import com.wiley.autotest.selenium.elements.upgrade.v3.OurSearchStrategy;
-
 /**
  * User: ntyukavkin
  * Date: 09.03.2017

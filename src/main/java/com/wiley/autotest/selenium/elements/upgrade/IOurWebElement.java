@@ -2,7 +2,7 @@ package com.wiley.autotest.selenium.elements.upgrade;
 
 import com.wiley.autotest.selenium.elements.upgrade.v3.OurShould;
 import com.wiley.autotest.selenium.elements.upgrade.v3.OurWaitFor;
-import com.wiley.autotest.selenium.elements.upgrade.v3.OurSearchStrategy;
+import com.wiley.autotest.selenium.context.OurSearchStrategy;
 import org.openqa.selenium.*;
 
 import java.util.List;

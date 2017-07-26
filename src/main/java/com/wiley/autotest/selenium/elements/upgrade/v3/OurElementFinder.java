@@ -1,5 +1,6 @@
 package com.wiley.autotest.selenium.elements.upgrade.v3;
 
+import com.wiley.autotest.selenium.context.OurSearchStrategy;
 import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
 import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.OurConditionFactory;
 import org.openqa.selenium.Alert;
@@ -31,7 +32,7 @@ public class OurElementFinder {
     public OurElementFinder(WebDriver driver, OurSearchStrategy strategy) {
         this.strategy = strategy;
         this.fluentWait = new FluentWaitFinder(driver);
-        fluentWait.withTimeout(strategy.getTimeout(), TimeUnit.SECONDS);
+        fluentWait.withTimeout(strategy.getCustomTimeout(), TimeUnit.SECONDS);
         fluentWait.pollingEvery(strategy.getPoolingEvery(), strategy.getUnit());
         fluentWait.setNullOnFailure(strategy.isNullOnFailure());
     }

@@ -5,7 +5,7 @@ import com.wiley.autotest.WebDriverAwareElementFinder;
 import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
 import com.wiley.autotest.selenium.elements.upgrade.v3.OurElementFinder;
-import com.wiley.autotest.selenium.elements.upgrade.v3.OurSearchStrategy;
+import com.wiley.autotest.selenium.context.OurSearchStrategy;
 import com.wiley.autotest.selenium.elements.upgrade.v3.OurShould;
 import com.wiley.autotest.selenium.elements.upgrade.v3.OurWaitFor;
 import org.openqa.selenium.*;

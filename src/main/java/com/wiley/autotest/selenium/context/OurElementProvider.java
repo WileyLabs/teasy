@@ -8,7 +8,6 @@ import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
 import com.wiley.autotest.selenium.elements.upgrade.OurWindow;
 import com.wiley.autotest.selenium.elements.upgrade.Window;
 import com.wiley.autotest.selenium.elements.upgrade.v3.OurElementFinder;
-import com.wiley.autotest.selenium.elements.upgrade.v3.OurSearchStrategy;
 import com.wiley.autotest.selenium.elements.upgrade.v3.OurWaitFor;
 import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.window.WindowMatcher;
 import com.wiley.autotest.utils.TestUtils;
