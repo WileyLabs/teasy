@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body style="background-color:#66f049 ">
+<h2>This page is displayed in an iframe #1</h2>
+
+<h1 id="waitElement">Element is visible after 6 sec!</h1>
+
+<style>
+    #waitElement{
+        display: none;
+    }
+</style>
+
+<script>
+    setTimeout(becomeVisible, 6000);
+
+    function becomeVisible() {
+        document.getElementById("waitElement").style.display = "block";
+    }
+</script>
+</body>
+</html>
