@@ -226,14 +226,14 @@ public final class ExpectedConditions2 {
         }
 
         List<WebElement> visibleElements = elements.stream()
-                .filter(element -> element.isDisplayed() || isElementHiddenUnderScroll(element))
+                .filter(element -> isAvailable(element))
                 .collect(Collectors.toList());
 
         if (visibleElements.isEmpty() && searchContext == null) {
             visibleElements = ((FramesTransparentWebDriver) driver)
                     .findAllElementsInFrames(locator)
                     .stream()
-                    .filter(element -> element.isDisplayed() || isElementHiddenUnderScroll(element))
+                    .filter(element -> isAvailable(element))
                     .collect(Collectors.toList());
         }
 
@@ -241,10 +241,21 @@ public final class ExpectedConditions2 {
             visibleElements = ((FramesTransparentWebDriver) driver)
                     .findAllElementsInFrames(searchContext, locator)
                     .stream()
-                    .filter(element -> element.isDisplayed() || isElementHiddenUnderScroll(element))
+                    .filter(element -> isAvailable(element))
                     .collect(Collectors.toList());
         }
         return isNotEmpty(visibleElements) ? visibleElements : null;
+    }
+
+    /**
+     * Defines whether it's possible to work with element
+     * i.e. is displayed or located under scroll.
+     * @param element - our element
+     * @return - true if element is available for the user.
+     */
+    private static boolean isAvailable(WebElement element) {
+        return element.isDisplayed()  || isElementHiddenUnderScroll(element)
+                && !element.getCssValue("visibility").equals("hidden");
     }
 
     public static ExpectedCondition<WebElement> visibilityOfElementLocatedBy(By locator) {
@@ -253,7 +264,7 @@ public final class ExpectedConditions2 {
             public WebElement apply(final WebDriver driver) {
                 try {
                     final WebElement foundElement = driver.findElement(locator);
-                    return (foundElement.isDisplayed() || isElementHiddenUnderScroll(foundElement)) ? foundElement : null;
+                    return (isAvailable(foundElement)) ? foundElement : null;
                 } catch (Exception e) {
                     return null;
                 }

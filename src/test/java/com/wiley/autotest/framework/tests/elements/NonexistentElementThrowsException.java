@@ -9,12 +9,12 @@ import org.testng.annotations.Test;
 /**
  * Created by shekhavtsov on 21/07/2017.
  */
-public class NonexistentElementhrowsException extends BaseTest {
+public class NonexistentElementThrowsException extends BaseTest {
 
     @Autowired
     private TestElementPage testElementPage;
 
-    @Test(expectedExceptions = TimeoutException.class)
+    @Test(expectedExceptions = AssertionError.class)
     public void test() {
         openPage("mainTestElement.html");
         testElementPage.checkElementNotFound();
