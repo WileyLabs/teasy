@@ -10,7 +10,7 @@ import com.wiley.autotest.selenium.SeleniumHolder;
 public final class ExecutionUtils {
 
     public static boolean isIE() {
-        return getDriverName().contains("ie");
+        return getDriverName().startsWith("ie");
     }
 
     public static boolean isFF() {
@@ -22,7 +22,11 @@ public final class ExecutionUtils {
     }
 
     public static boolean isSafari() {
-        return getDriverName().equals("safari");
+        return getDriverName().startsWith("safari") && isMac();
+    }
+
+    public static boolean isMobileSafari() {
+        return getDriverName().equals("safari") && isIOs();
     }
 
     public static boolean isWindows() {
