@@ -4,6 +4,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.internal.HasIdentity;
 import org.openqa.selenium.internal.Locatable;
 import org.openqa.selenium.internal.WrapsElement;
 import org.slf4j.Logger;
@@ -39,7 +40,7 @@ public class FrameAwareWebElementTransformer implements Function<WebElement, Web
     public WebElement apply(final WebElement element) {
         return (WebElement) newProxyInstance(
                 getClass().getClassLoader(),
-                new Class[]{WebElement.class, WrapsElement.class, Locatable.class},
+                new Class[]{WebElement.class, WrapsElement.class, Locatable.class, HasIdentity.class},
                 invocationHandlerFor(element)
         );
     }
