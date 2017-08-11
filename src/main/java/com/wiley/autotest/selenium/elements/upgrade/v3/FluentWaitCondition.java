@@ -13,8 +13,8 @@ public class FluentWaitCondition extends FluentWait<WebDriver> {
     //default condition should stop execution in case of failure
     private boolean nullOnFailure = false;
 
-    public FluentWaitCondition(WebDriver input) {
-        super(input);
+    public FluentWaitCondition(WebDriver driver) {
+        super(driver);
     }
 
     void setNullOnFailure(boolean nullOnFailure) {
@@ -28,7 +28,7 @@ public class FluentWaitCondition extends FluentWait<WebDriver> {
             if (nullOnFailure) {
                 //todo add some logging here if necessary
             } else {
-                throw new AssertionError("Unable to perform: " + condition.toString());
+                throw new AssertionError("Condition: " + condition.toString() + " failed!");
             }
         }
     }

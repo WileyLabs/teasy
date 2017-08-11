@@ -37,7 +37,7 @@ public class OurShould {
 
             @Override
             public String toString() {
-                return String.format("should element '%s' be displayed", element.toString());
+                return String.format("element '%s' should be displayed", element.toString());
             }
         });
     }
@@ -56,7 +56,7 @@ public class OurShould {
 
             @Override
             public String toString() {
-                return String.format("should element '%s' be absent", element.toString());
+                return String.format("element '%s' should be absent", element.toString());
             }
         });
     }
@@ -70,7 +70,7 @@ public class OurShould {
 
             @Override
             public String toString() {
-                return String.format("should element '%s' have text '%s'", element.toString(), text);
+                return String.format("element '%s' should have text '%s'", element.toString(), text);
             }
         });
     }
@@ -84,7 +84,7 @@ public class OurShould {
 
             @Override
             public String toString() {
-                return String.format("should element '%s' have attribute '%s' with value '%s'", element.toString(), attributeName, value);
+                return String.format("element '%s' should have attribute '%s' with value '%s'", element.toString(), attributeName, value);
             }
         });
     }
@@ -98,7 +98,7 @@ public class OurShould {
 
             @Override
             public String toString() {
-                return String.format("should element '%s' have attribute '%s'", element.toString(), attributeName);
+                return String.format("element '%s' should have attribute '%s'", element.toString(), attributeName);
             }
         });
     }
@@ -112,7 +112,7 @@ public class OurShould {
 
             @Override
             public String toString() {
-                return String.format("should element '%s' not have attribute '%s'", element.toString(), attributeName);
+                return String.format("element '%s' should not have attribute '%s'", element.toString(), attributeName);
             }
         });
     }
