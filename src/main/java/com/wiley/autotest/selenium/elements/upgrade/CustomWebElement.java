@@ -12,8 +12,7 @@ import java.util.List;
  * Date: 28.08.2014
  * Time: 18:43
  */
-//public interface IOurWebElement extends WebElement {
-public interface IOurWebElement {
+public interface CustomWebElement {
 
     <X> X getScreenshotAs(OutputType<X> target) throws WebDriverException;
 
@@ -61,18 +60,17 @@ public interface IOurWebElement {
 
     OurWebElement getParent(int level);
 
-    //discuss the necessity of these methods
     OurWebElement element(By by);
+    OurWebElement element(By by, OurSearchStrategy strategy);
 
     List<OurWebElement> elements(By by);
-
-    OurWebElement elementOrNull(By by);
-
-    List<OurWebElement> elementsOrEmpty(By by);
+    List<OurWebElement> elements(By by, OurSearchStrategy strategy);
 
     OurWebElement domElement(By by);
+    OurWebElement domElement(By by, OurSearchStrategy strategy);
 
     List<OurWebElement> domElements(By by);
+    List<OurWebElement> domElements(By by, OurSearchStrategy strategy);
 
     void click();
 }

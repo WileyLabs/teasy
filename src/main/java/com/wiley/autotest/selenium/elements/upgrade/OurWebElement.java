@@ -33,7 +33,7 @@ import static com.wiley.autotest.utils.TestUtils.waitForSomeTime;
  * Date: 27.08.2014
  * Time: 15:41
  */
-public class OurWebElement implements IOurWebElement, Locatable {
+public class OurWebElement implements CustomWebElement, Locatable {
 
     private WebElement wrappedElement;
     private Locator locator;
@@ -70,7 +70,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
         } else if (locator != null) {
             this.locator = locator;
         } else {
-            IOurWebElement ourWebElement = (IOurWebElement) element;
+            CustomWebElement ourWebElement = (CustomWebElement) element;
             element = getParentElement(ourWebElement.getWrappedWebElement());
             this.locator = new FindParentElementLocator(getDriver(), ourWebElement.getLocator().getLocator());
         }
@@ -79,7 +79,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
     }
 
     public void init(WebElement element) {
-        this.wrappedElement = element instanceof IOurWebElement ? ((IOurWebElement) element).getWrappedWebElement() : element;
+        this.wrappedElement = element instanceof CustomWebElement ? ((CustomWebElement) element).getWrappedWebElement() : element;
         this.repeatLocateElementCounter = 0;
         if (elementFinder_TO_BE_REMOVED == null) {
             elementFinder_TO_BE_REMOVED = new WebDriverAwareElementFinder(getDriver(), new WebDriverWait(getDriver(), TIMEOUT_FOR_AGAIN_LOCATE_IN_SECONDS, SLEEP_IN_MILLISECONDS));
@@ -403,7 +403,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
     @Override
     public boolean equals(Object o) {
         return this == o || o != null && wrappedElement != null && wrappedElement.equals(o) ||
-                this == o || o != null && wrappedElement != null && (o instanceof IOurWebElement) && wrappedElement.equals(((IOurWebElement) o)
+                this == o || o != null && wrappedElement != null && (o instanceof CustomWebElement) && wrappedElement.equals(((CustomWebElement) o)
                 .getWrappedWebElement());
     }
 
@@ -436,7 +436,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
      */
     public void againLocate() {
         WebElement againLocateElement = locator.find();
-        wrappedElement = againLocateElement instanceof IOurWebElement ? ((IOurWebElement) againLocateElement).getWrappedWebElement() : againLocateElement;
+        wrappedElement = againLocateElement instanceof CustomWebElement ? ((CustomWebElement) againLocateElement).getWrappedWebElement() : againLocateElement;
         increment();
     }
 

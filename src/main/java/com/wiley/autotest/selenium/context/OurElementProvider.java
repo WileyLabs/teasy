@@ -112,69 +112,6 @@ public abstract class OurElementProvider {
         return customFinder(strategy).presentInDomElements(locator);
     }
 
-    /**
-     * @param locator- locator for element you would like to find
-     * @return list of webElements or empty list in case no such element were found by given locator
-     */
-    protected List<OurWebElement> domElementsOrEmpty(final By locator) {
-        return customFinder(new OurSearchStrategy(timeout).nullOnFailure()).presentInDomElements(locator);
-    }
-
-    /**
-     * Takes the 4th method from a StackTrace chain. It should be the method from Page that called method
-     * Split method by words based on camel case naming convention
-     * Make first letter of first word as upper case and all other words as lower case
-     * for example for "generateErrorMessage" method should return "Generate error message"
-     *
-     * @return String of words separated by spaces
-     */
-    protected String generateErrorMessage() {
-        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-
-        if (stackTrace.length < 5) {
-            return "***Code issue during generating error message for assert! Check the code at OurElementProvider";
-        }
-
-        String nameOfMethodThatCalledMe = "";
-        for (int i = 0; i < stackTrace.length; i++) {
-            StackTraceElement stackTraceElement = stackTrace[i];
-            StackTraceElement nextStackTraceElement;
-            if (i + 1 >= stackTrace.length) {
-                break;
-            }
-            nextStackTraceElement = stackTrace[i + 1];
-            String abstractPageElement = "AbstractPageElement";
-            String abstractElementFinder = "OurElementProvider";
-            if ((stackTraceElement.getClassName().endsWith(abstractPageElement)
-                    && !nextStackTraceElement.getClassName().endsWith(abstractPageElement)
-                    && !nextStackTraceElement.getClassName().endsWith(abstractElementFinder)) ||
-                    (stackTraceElement.getClassName().endsWith(abstractElementFinder)
-                            && !nextStackTraceElement.getClassName().endsWith(abstractPageElement)
-                            && !nextStackTraceElement.getClassName().endsWith(abstractElementFinder))) {
-                nameOfMethodThatCalledMe = nextStackTraceElement.getMethodName();
-                break;
-            }
-        }
-
-        if (nameOfMethodThatCalledMe.isEmpty()) {
-            nameOfMethodThatCalledMe = stackTrace[4].getMethodName();
-        }
-
-        String[] splitName = nameOfMethodThatCalledMe.split("(?<=[a-z])(?=[A-Z])");
-
-        StringBuilder errorMessage = new StringBuilder();
-        //make first letter of first word upper cased
-        errorMessage.append(Character.toUpperCase(splitName[0].charAt(0))).append(splitName[0].substring(1));
-        for (int i = 1; i < splitName.length; i++) {
-            //make first letter of each of next words lower cased
-            errorMessage.append(" ")
-                    .append(Character.toLowerCase(splitName[i].charAt(0)))
-                    .append(splitName[i].substring(1));
-        }
-
-        return errorMessage.toString() + " failed";
-    }
-
     protected Alert alert() {
         return finder().alert();
     }
@@ -293,13 +230,17 @@ public abstract class OurElementProvider {
 
     private <T extends Element> List<T> getElements(Class<T> elementType, By by) {
         List<T> result = new ArrayList<>();
-        elements(by).stream().forEach(element -> result.add(getWebElementWrapper(element).getElement(elementType, by)));
+        elements(by)
+                .stream()
+                .forEach(element -> result.add(getWebElementWrapper(element).getElement(elementType, by)));
         return result;
     }
 
     private <T extends Element> List<T> getElements(Class<T> elementType, OurWebElement searchContext, By by) {
         List<T> result = new ArrayList<>();
-        searchContext.elements(by).stream()
+        searchContext
+                .elements(by)
+                .stream()
                 .forEach(element -> result.add(getWebElementWrapper(element).getElement(elementType, by)));
         return result;
     }
@@ -311,6 +252,65 @@ public abstract class OurElementProvider {
 
     // OLD code that is going to be removed by September 2017.
     // Currently kept to give users some time to switch to new implementation
+
+    /**
+     * Takes the 4th method from a StackTrace chain. It should be the method from Page that called method
+     * Split method by words based on camel case naming convention
+     * Make first letter of first word as upper case and all other words as lower case
+     * for example for "generateErrorMessage" method should return "Generate error message"
+     *
+     * @return String of words separated by spaces
+     *
+     *
+     * use {@link com.wiley.autotest.generator.ErrorMessage}
+     */
+    @Deprecated
+    protected String generateErrorMessage() {
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+
+        if (stackTrace.length < 5) {
+            return "***Code issue during generating error message for assert! Check the code at OurElementProvider";
+        }
+
+        String nameOfMethodThatCalledMe = "";
+        for (int i = 0; i < stackTrace.length; i++) {
+            StackTraceElement stackTraceElement = stackTrace[i];
+            StackTraceElement nextStackTraceElement;
+            if (i + 1 >= stackTrace.length) {
+                break;
+            }
+            nextStackTraceElement = stackTrace[i + 1];
+            String abstractPageElement = "AbstractPageElement";
+            String abstractElementFinder = "OurElementProvider";
+            if ((stackTraceElement.getClassName().endsWith(abstractPageElement)
+                    && !nextStackTraceElement.getClassName().endsWith(abstractPageElement)
+                    && !nextStackTraceElement.getClassName().endsWith(abstractElementFinder)) ||
+                    (stackTraceElement.getClassName().endsWith(abstractElementFinder)
+                            && !nextStackTraceElement.getClassName().endsWith(abstractPageElement)
+                            && !nextStackTraceElement.getClassName().endsWith(abstractElementFinder))) {
+                nameOfMethodThatCalledMe = nextStackTraceElement.getMethodName();
+                break;
+            }
+        }
+
+        if (nameOfMethodThatCalledMe.isEmpty()) {
+            nameOfMethodThatCalledMe = stackTrace[4].getMethodName();
+        }
+
+        String[] splitName = nameOfMethodThatCalledMe.split("(?<=[a-z])(?=[A-Z])");
+
+        StringBuilder errorMessage = new StringBuilder();
+        //make first letter of first word upper cased
+        errorMessage.append(Character.toUpperCase(splitName[0].charAt(0))).append(splitName[0].substring(1));
+        for (int i = 1; i < splitName.length; i++) {
+            //make first letter of each of next words lower cased
+            errorMessage.append(" ")
+                    .append(Character.toLowerCase(splitName[i].charAt(0)))
+                    .append(splitName[i].substring(1));
+        }
+
+        return errorMessage.toString() + " failed";
+    }
 
     @Deprecated
     /**
