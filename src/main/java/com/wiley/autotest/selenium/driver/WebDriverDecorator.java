@@ -1,6 +1,6 @@
 package com.wiley.autotest.selenium.driver;
 
-import com.wiley.autotest.selenium.elements.upgrade.IOurWebElement;
+import com.wiley.autotest.selenium.elements.upgrade.CustomWebElement;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.HasInputDevices;
 import org.openqa.selenium.interactions.Keyboard;
@@ -27,20 +27,20 @@ public abstract class WebDriverDecorator extends EventFiringWebDriver implements
 
     @Override
     public Object executeScript(final String script, final Object... args) {
-        castToOurWebElement(args);
+        castToCustomWebElement(args);
         return ((JavascriptExecutor) driver).executeScript(script, args);
     }
 
     @Override
     public Object executeAsyncScript(final String script, final Object... args) {
-        castToOurWebElement(args);
+        castToCustomWebElement(args);
         return ((JavascriptExecutor) driver).executeAsyncScript(script, args);
     }
 
-    private void castToOurWebElement(Object[] args) {
+    private void castToCustomWebElement(Object[] args) {
         for (int i = 0; i < args.length; i++) {
-            if (args[i] instanceof IOurWebElement) {
-                args[i] = ((IOurWebElement) args[i]).getWrappedWebElement();
+            if (args[i] instanceof CustomWebElement) {
+                args[i] = ((CustomWebElement) args[i]).getWrappedWebElement();
             }
         }
     }

@@ -23,6 +23,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.List;
 
+import static com.wiley.autotest.selenium.SeleniumHolder.*;
+import static com.wiley.autotest.selenium.SeleniumHolder.getWebDriver;
 import static com.wiley.autotest.utils.ExecutionUtils.isChrome;
 import static com.wiley.autotest.utils.TestUtils.fail;
 import static com.wiley.autotest.utils.TestUtils.waitForSomeTime;
@@ -33,7 +35,7 @@ import static com.wiley.autotest.utils.TestUtils.waitForSomeTime;
  * Date: 27.08.2014
  * Time: 15:41
  */
-public class OurWebElement implements IOurWebElement, Locatable {
+public class OurWebElement implements CustomWebElement, Locatable {
 
     private WebElement wrappedElement;
     private Locator locator;
@@ -62,34 +64,34 @@ public class OurWebElement implements IOurWebElement, Locatable {
         if (searchContext != null && by != null && index != null) {
             this.locator = new FindElementsLocator(searchContext, by, index);
         } else if (by != null && index != null) {
-            this.locator = new FindElementsLocator(getDriver(), by, index);
+            this.locator = new FindElementsLocator(getWebDriver(), by, index);
         } else if (searchContext != null && by != null) {
             this.locator = new FindElementLocator(searchContext, by);
         } else if (by != null) {
-            this.locator = new FindElementLocator(getDriver(), by);
+            this.locator = new FindElementLocator(getWebDriver(), by);
         } else if (locator != null) {
             this.locator = locator;
         } else {
-            IOurWebElement ourWebElement = (IOurWebElement) element;
+            CustomWebElement ourWebElement = (CustomWebElement) element;
             element = getParentElement(ourWebElement.getWrappedWebElement());
-            this.locator = new FindParentElementLocator(getDriver(), ourWebElement.getLocator().getLocator());
+            this.locator = new FindParentElementLocator(getWebDriver(), ourWebElement.getLocator().getLocator());
         }
 
         init(element);
     }
 
     public void init(WebElement element) {
-        this.wrappedElement = element instanceof IOurWebElement ? ((IOurWebElement) element).getWrappedWebElement() : element;
+        this.wrappedElement = element instanceof CustomWebElement ? ((CustomWebElement) element).getWrappedWebElement() : element;
         this.repeatLocateElementCounter = 0;
         if (elementFinder_TO_BE_REMOVED == null) {
-            elementFinder_TO_BE_REMOVED = new WebDriverAwareElementFinder(getDriver(), new WebDriverWait(getDriver(), TIMEOUT_FOR_AGAIN_LOCATE_IN_SECONDS, SLEEP_IN_MILLISECONDS));
+            elementFinder_TO_BE_REMOVED = new WebDriverAwareElementFinder(getWebDriver(), new WebDriverWait(getWebDriver(), TIMEOUT_FOR_AGAIN_LOCATE_IN_SECONDS, SLEEP_IN_MILLISECONDS));
         }
 
         if (contextFinder == null) {
-            contextFinder = new OurElementFinder(getDriver(), new OurSearchStrategy(TIMEOUT_FOR_AGAIN_LOCATE_IN_SECONDS), this);
+            contextFinder = new OurElementFinder(getWebDriver(), new OurSearchStrategy(TIMEOUT_FOR_AGAIN_LOCATE_IN_SECONDS), this);
         }
         if (allowNullContextFinder == null) {
-            allowNullContextFinder = new OurElementFinder(getDriver(), new OurSearchStrategy(TIMEOUT_FOR_AGAIN_LOCATE_IN_SECONDS)
+            allowNullContextFinder = new OurElementFinder(getWebDriver(), new OurSearchStrategy(TIMEOUT_FOR_AGAIN_LOCATE_IN_SECONDS)
                     .nullOnFailure(), this);
         }
     }
@@ -134,18 +136,18 @@ public class OurWebElement implements IOurWebElement, Locatable {
     }
 
     @Override
+    public OurWebElement element(By by, OurSearchStrategy strategy) {
+        return customFinder(strategy).visibleElement(by);
+    }
+
+    @Override
     public List<OurWebElement> elements(By by) {
         return contextFinder.visibleElements(by);
     }
 
     @Override
-    public OurWebElement elementOrNull(By by) {
-        return allowNullContextFinder.visibleElement(by);
-    }
-
-    @Override
-    public List<OurWebElement> elementsOrEmpty(By by) {
-        return allowNullContextFinder.visibleElements(by);
+    public List<OurWebElement> elements(By by, OurSearchStrategy strategy) {
+        return customFinder(strategy).visibleElements(by);
     }
 
     @Override
@@ -154,8 +156,22 @@ public class OurWebElement implements IOurWebElement, Locatable {
     }
 
     @Override
+    public OurWebElement domElement(By by, OurSearchStrategy strategy) {
+        return customFinder(strategy).presentInDomElement(by);
+    }
+
+    @Override
     public List<OurWebElement> domElements(By by) {
         return contextFinder.presentInDomElements(by);
+    }
+
+    @Override
+    public List<OurWebElement> domElements(By by, OurSearchStrategy strategy) {
+        return customFinder(strategy).presentInDomElements(by);
+    }
+
+    private OurElementFinder customFinder(OurSearchStrategy strategy) {
+        return new OurElementFinder(getWebDriver(), strategy);
     }
 
     @Override
@@ -231,7 +247,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
         } else if (ignoredOrNeedToScrollMessage.contains("Other element would receive the click")) {
             //TODO NT: workaround for 2.49.1
             //If dropdown option element have bigger size then dropdown we get error 'Element is not clickable at point... Other element would receive the click...'
-            Actions actions = new Actions(getDriver());
+            Actions actions = new Actions(getWebDriver());
             actions
                     .moveToElement(wrappedElement, 0, 0)
                     .click()
@@ -392,18 +408,18 @@ public class OurWebElement implements IOurWebElement, Locatable {
 
     @Override
     public <X> X getScreenshotAs(OutputType<X> target) throws WebDriverException {
-        if (getDriver().getClass() == RemoteWebDriver.class) {
-            WebDriver augmentedDriver = new Augmenter().augment(getDriver());
+        if (getWebDriver().getClass() == RemoteWebDriver.class) {
+            WebDriver augmentedDriver = new Augmenter().augment(getWebDriver());
             return ((TakesScreenshot) augmentedDriver).getScreenshotAs(target);
         } else {
-            return ((TakesScreenshot) getDriver()).getScreenshotAs(target);
+            return ((TakesScreenshot) getWebDriver()).getScreenshotAs(target);
         }
     }
 
     @Override
     public boolean equals(Object o) {
         return this == o || o != null && wrappedElement != null && wrappedElement.equals(o) ||
-                this == o || o != null && wrappedElement != null && (o instanceof IOurWebElement) && wrappedElement.equals(((IOurWebElement) o)
+                this == o || o != null && wrappedElement != null && (o instanceof CustomWebElement) && wrappedElement.equals(((CustomWebElement) o)
                 .getWrappedWebElement());
     }
 
@@ -436,7 +452,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
      */
     public void againLocate() {
         WebElement againLocateElement = locator.find();
-        wrappedElement = againLocateElement instanceof IOurWebElement ? ((IOurWebElement) againLocateElement).getWrappedWebElement() : againLocateElement;
+        wrappedElement = againLocateElement instanceof CustomWebElement ? ((CustomWebElement) againLocateElement).getWrappedWebElement() : againLocateElement;
         increment();
     }
 
@@ -460,7 +476,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
 
     private void maximizeWindow() {
         try {
-            getDriver().manage().window().maximize();
+            getWebDriver().manage().window().maximize();
         } catch (WebDriverException ignored) {
             //If a frame is selected and then browser window is maximized, exception is thrown
             //Selenium bug: Issue 3758: Exception upon maximizing browser window with frame selected
@@ -468,7 +484,7 @@ public class OurWebElement implements IOurWebElement, Locatable {
     }
 
     private Object executeScript(String script, Object... args) {
-        return ((JavascriptExecutor) getDriver()).executeScript(script, args);
+        return ((JavascriptExecutor) getWebDriver()).executeScript(script, args);
     }
 
     @Deprecated
@@ -548,14 +564,11 @@ public class OurWebElement implements IOurWebElement, Locatable {
     }
 
     private WebElement getParentElement(WebElement element) {
-        return (WebElement) ((JavascriptExecutor) getDriver()).executeScript("return arguments[0].parentNode", element);
+        return (WebElement) ((JavascriptExecutor) getWebDriver()).executeScript("return arguments[0].parentNode", element);
     }
 
     private FramesTransparentWebDriver getFrameTransparentDriver() {
-        return (FramesTransparentWebDriver) getDriver();
+        return (FramesTransparentWebDriver) getWebDriver();
     }
 
-    private WebDriver getDriver() {
-        return SeleniumHolder.getWebDriver();
-    }
 }

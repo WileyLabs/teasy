@@ -4,12 +4,11 @@ import com.wiley.autotest.WebDriverAwareElementFinder;
 import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.context.OurElementProvider;
 import com.wiley.autotest.selenium.context.ErrorSender;
-import com.wiley.autotest.selenium.elements.upgrade.IOurWebElement;
+import com.wiley.autotest.selenium.elements.upgrade.CustomWebElement;
 import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -60,14 +59,14 @@ public abstract class AbstractWebContainer extends OurElementProvider implements
     }
 
     protected Object executeScript(final String script, final Object... args) {
-        castToOurWebElement(args);
+        castToCustomWebElement(args);
         return ((JavascriptExecutor) getDriver()).executeScript(script, args);
     }
 
-    private static void castToOurWebElement(Object[] args) {
+    private static void castToCustomWebElement(Object[] args) {
         for (int i = 0; i < args.length; i++) {
-            if (args[i] instanceof IOurWebElement) {
-                args[i] = ((IOurWebElement) args[i]).getWrappedWebElement();
+            if (args[i] instanceof CustomWebElement) {
+                args[i] = ((CustomWebElement) args[i]).getWrappedWebElement();
             }
         }
     }
