@@ -83,10 +83,18 @@ public abstract class OurElementProvider {
         return customFinder(strategy).visibleElements(locator);
     }
 
+    @Deprecated
+    /**
+     * method will be deleted shortly. use elements() and check like isEmpty()
+     */
     protected final OurWebElement elementOrNull(final By locator) {
         return elementOrNull(locator, new OurSearchStrategy(1).nullOnFailure());
     }
 
+    @Deprecated
+    /**
+     * method will be deleted shortly. use elements(by, strategy) and check like isEmpty()
+     */
     protected final OurWebElement elementOrNull(final By locator, OurSearchStrategy strategy) {
         List<OurWebElement> ourWebElements = customFinder(strategy.nullOnFailure()).visibleElements(locator);
         if (ourWebElements.isEmpty()) {
