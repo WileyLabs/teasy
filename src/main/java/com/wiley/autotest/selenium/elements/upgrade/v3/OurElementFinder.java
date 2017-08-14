@@ -3,6 +3,7 @@ package com.wiley.autotest.selenium.elements.upgrade.v3;
 import com.wiley.autotest.selenium.context.OurSearchStrategy;
 import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
 import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.OurConditionFactory;
+import org.jetbrains.annotations.Nullable;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -19,7 +20,8 @@ import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.
 
 
 /**
- * Created by vefimov on 03/05/2017.
+ * Finds different kinds of elements for example
+ * visible, present in dom, alerts etc.
  */
 public class OurElementFinder {
 
@@ -45,57 +47,31 @@ public class OurElementFinder {
     public OurWebElement visibleElement(By locator) {
         Function<WebDriver, List<WebElement>> condition = new OurConditionFactory(context).get(strategy.getFrameStrategy())
                 .visibility(locator);
-        List<WebElement> webElements = waitFor(condition);
-        if (webElements == null) {
-            return null;
-        }
-        if (context == null) {
-            return wrap(webElements.get(0), locator);
-        } else {
-            return wrap(context, webElements.get(0), locator);
-        }
+        return getElement(locator, condition);
     }
 
+    /**
+     * note: Will return empty list in case no visible elements found
+     */
     public List<OurWebElement> visibleElements(By locator) {
         Function<WebDriver, List<WebElement>> condition = new OurConditionFactory(context).get(strategy.getFrameStrategy())
                 .visibility(locator);
-        List<WebElement> webElements = waitFor(condition);
-        if (webElements == null) {
-            return new ArrayList<>();
-        }
-        if (context == null) {
-            return wrapList(webElements, locator);
-        } else {
-            return wrapList(context, webElements, locator);
-        }
+        return getElements(locator, condition);
     }
 
     public OurWebElement presentInDomElement(By locator) {
         Function<WebDriver, List<WebElement>> condition = new OurConditionFactory(context).get(strategy.getFrameStrategy())
                 .presence(locator);
-        List<WebElement> webElements = waitFor(condition);
-        if (webElements == null) {
-            return null;
-        }
-        if (context == null) {
-            return wrap(webElements.get(0), locator);
-        } else {
-            return wrap(context, webElements.get(0), locator);
-        }
+        return getElement(locator, condition);
     }
 
+    /**
+     * note: Will return empty list in case no visible elements found
+     */
     public List<OurWebElement> presentInDomElements(By locator) {
         Function<WebDriver, List<WebElement>> condition = new OurConditionFactory(context).get(strategy.getFrameStrategy())
                 .presence(locator);
-        List<WebElement> webElements = waitFor(condition);
-        if (webElements == null) {
-            return new ArrayList<>();
-        }
-        if (context == null) {
-            return wrapList(webElements, locator);
-        } else {
-            return wrapList(context, webElements, locator);
-        }
+        return getElements(locator, condition);
     }
 
     //this is not "OUR" alert yet, so should probably become "OUR"
@@ -106,5 +82,35 @@ public class OurElementFinder {
 
     private List<WebElement> waitFor(Function<WebDriver, List<WebElement>> condition) {
         return fluentWait.waitFor(condition);
+    }
+
+    private List<OurWebElement> getElements(By locator, Function<WebDriver, List<WebElement>> condition) {
+        List<WebElement> webElements;
+        try {
+            webElements = waitFor(condition);
+        } catch (AssertionError ignoredToReturnEmptyList) {
+            return new ArrayList<>();
+        }
+        if (webElements == null) {
+            return new ArrayList<>();
+        }
+        if (context == null) {
+            return wrapList(webElements, locator);
+        } else {
+            return wrapList(context, webElements, locator);
+        }
+    }
+
+    @Nullable
+    private OurWebElement getElement(By locator, Function<WebDriver, List<WebElement>> condition) {
+        List<WebElement> webElements = waitFor(condition);
+        if (webElements == null) {
+            return null;
+        }
+        if (context == null) {
+            return wrap(webElements.get(0), locator);
+        } else {
+            return wrap(context, webElements.get(0), locator);
+        }
     }
 }

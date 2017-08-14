@@ -19,11 +19,11 @@ import java.util.Iterator;
  */
 public class OurWindow implements Window {
 
-    private FluentWaitCondition<WebDriver> fluentWait;
+    private FluentWaitCondition fluentWait;
     private WebDriver driver;
 
     public OurWindow() {
-        fluentWait = new FluentWaitCondition<>(SeleniumHolder.getWebDriver());
+        fluentWait = new FluentWaitCondition(SeleniumHolder.getWebDriver());
         driver = SeleniumHolder.getWebDriver();
     }
 
@@ -68,5 +68,4 @@ public class OurWindow implements Window {
     public String getUrl() {
         return driver.getCurrentUrl();
     }
-
 }
