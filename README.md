@@ -1,5 +1,8 @@
 # Teasy
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.wiley/teasy/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.wiley/teasy)
+[![Join the chat at https://gitter.im/teasy-test-framework/Lobby](https://img.shields.io/badge/GITTER-join%20chat-green.svg)](https://gitter.im/teasy-test-framework/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
+
 
 Test easy with Teasy - UI automation testing framework
 
@@ -17,7 +20,7 @@ and you will need to add the following dependency to your project's *pom.xml* fi
 <dependency>
   <groupId>com.wiley</groupId>
   <artifactId>teasy</artifactId>
-  <version>1.0.3-beta</version>
+  <version>1.0.5-beta</version>
 </dependency>
 ```
 
@@ -26,7 +29,7 @@ and you will need to add the following dependency to your project's *pom.xml* fi
 We're just getting started here, but please post issues if you have any!
 
 Feel free to join our gitter chat:
-https://gitter.im/teasy-test-framework/Lobby
+[![Join the chat at https://gitter.im/teasy-test-framework/Lobby](https://img.shields.io/badge/GITTER-join%20chat-green.svg)](https://gitter.im/teasy-test-framework/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 # License
 
