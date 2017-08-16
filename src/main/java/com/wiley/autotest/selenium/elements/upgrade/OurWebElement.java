@@ -2,7 +2,6 @@ package com.wiley.autotest.selenium.elements.upgrade;
 
 import com.wiley.autotest.ElementFinder;
 import com.wiley.autotest.WebDriverAwareElementFinder;
-import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
 import com.wiley.autotest.selenium.elements.upgrade.v3.OurElementFinder;
 import com.wiley.autotest.selenium.context.OurSearchStrategy;
@@ -23,7 +22,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.List;
 
-import static com.wiley.autotest.selenium.SeleniumHolder.*;
 import static com.wiley.autotest.selenium.SeleniumHolder.getWebDriver;
 import static com.wiley.autotest.utils.ExecutionUtils.isChrome;
 import static com.wiley.autotest.utils.TestUtils.fail;
@@ -137,7 +135,7 @@ public class OurWebElement implements CustomWebElement, Locatable {
 
     @Override
     public OurWebElement element(By by, OurSearchStrategy strategy) {
-        return customFinder(strategy).visibleElement(by);
+        return customContextFinder(strategy).visibleElement(by);
     }
 
     @Override
@@ -147,7 +145,7 @@ public class OurWebElement implements CustomWebElement, Locatable {
 
     @Override
     public List<OurWebElement> elements(By by, OurSearchStrategy strategy) {
-        return customFinder(strategy).visibleElements(by);
+        return customContextFinder(strategy).visibleElements(by);
     }
 
     @Override
@@ -157,7 +155,7 @@ public class OurWebElement implements CustomWebElement, Locatable {
 
     @Override
     public OurWebElement domElement(By by, OurSearchStrategy strategy) {
-        return customFinder(strategy).presentInDomElement(by);
+        return customContextFinder(strategy).presentInDomElement(by);
     }
 
     @Override
@@ -167,11 +165,11 @@ public class OurWebElement implements CustomWebElement, Locatable {
 
     @Override
     public List<OurWebElement> domElements(By by, OurSearchStrategy strategy) {
-        return customFinder(strategy).presentInDomElements(by);
+        return customContextFinder(strategy).presentInDomElements(by);
     }
 
-    private OurElementFinder customFinder(OurSearchStrategy strategy) {
-        return new OurElementFinder(getWebDriver(), strategy);
+    private OurElementFinder customContextFinder(OurSearchStrategy strategy) {
+        return new OurElementFinder(getWebDriver(), strategy, this);
     }
 
     @Override
