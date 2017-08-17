@@ -44,10 +44,6 @@ public abstract class OurElementProvider {
     @Autowired
     private long timeout;
 
-    @Deprecated
-    //will be replaced with OurElementFinder
-    protected ElementFinder elementFinder;
-
     //default finder that uses timeout from pom
     private OurElementFinder finder;
 
@@ -229,16 +225,13 @@ public abstract class OurElementProvider {
     private <T extends Element> List<T> getElements(Class<T> elementType, By by) {
         List<T> result = new ArrayList<>();
         elements(by)
-                .stream()
                 .forEach(element -> result.add(getWebElementWrapper(element).getElement(elementType, by)));
         return result;
     }
 
     private <T extends Element> List<T> getElements(Class<T> elementType, OurWebElement searchContext, By by) {
         List<T> result = new ArrayList<>();
-        searchContext
-                .elements(by)
-                .stream()
+        searchContext.elements(by)
                 .forEach(element -> result.add(getWebElementWrapper(element).getElement(elementType, by)));
         return result;
     }
@@ -250,6 +243,10 @@ public abstract class OurElementProvider {
 
     // OLD code that is going to be removed by September 2017.
     // Currently kept to give users some time to switch to new implementation
+
+    @Deprecated
+    //will be replaced with OurElementFinder
+    protected ElementFinder elementFinder;
 
     /**
      * Takes the 4th method from a StackTrace chain. It should be the method from Page that called method
