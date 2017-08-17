@@ -51,10 +51,8 @@ public abstract class OurElementProvider {
     //default finder that uses timeout from pom
     private OurElementFinder finder;
 
-    private static final int MIN_TIME_OUT_FOR_WAIT_IN_SECONDS = 1;
     //VE added this to avoid No buffer space available exception. To be replaced with default value of 500 if does not work.
     protected static final long SLEEP_IN_MILLISECONDS = 1000;
-
 
     private OurElementFinder customFinder(OurSearchStrategy strategy) {
         return new OurElementFinder(getWebDriver(), strategy);
@@ -433,7 +431,7 @@ public abstract class OurElementProvider {
      */
     protected final WebElement elementOrNull(final SearchContext searchContext, final By locator) {
 
-        throw new RuntimeException("REPLACE WITH NEW APPROACH IMMEDIATELY! METHOD IMPLEMENTATION WAD DELETED! CONTACT Vladimir Efimov vefimov@wiley.com");
+        throw new RuntimeException("REPLACE WITH NEW APPROACH IMMEDIATELY! METHOD IMPLEMENTATION WAS DELETED! CONTACT Vladimir Efimov vefimov@wiley.com");
 //        try {
 //            return elementFinder.waitForVisibilityOfAllElementsLocatedBy(searchContext, locator, (long) MIN_TIME_OUT_FOR_WAIT_IN_SECONDS)
 //                    .get(0);
