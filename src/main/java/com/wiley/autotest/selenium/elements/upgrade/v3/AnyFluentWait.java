@@ -1,19 +1,18 @@
 package com.wiley.autotest.selenium.elements.upgrade.v3;
 
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.FluentWait;
 
 import java.util.function.Function;
 
 /**
- * Created by vefimov on 18/04/2017.
+ * General fluent waiter handling anything as an input parameter
  */
-public class FluentWaitFinder extends FluentWait<WebDriver> {
+public class AnyFluentWait<T> extends FluentWait<T> {
 
     //default condition should stop execution in case of failure
     private boolean nullOnFailure = false;
 
-    public FluentWaitFinder(WebDriver input) {
+    public AnyFluentWait(T input) {
         super(input);
     }
 
@@ -21,8 +20,7 @@ public class FluentWaitFinder extends FluentWait<WebDriver> {
         this.nullOnFailure = nullOnFailure;
     }
 
-    //todo proper error message should be automatically generated here and in FluentWaitCondition as well
-    public <T> T waitFor(Function<WebDriver, T> condition) {
+    public <R> R waitFor(Function<T, R> condition) {
         try {
             return until(condition);
         } catch (Throwable ignoredAndContinue) {
@@ -30,7 +28,7 @@ public class FluentWaitFinder extends FluentWait<WebDriver> {
                 //todo add some logging here if necessary
                 return null;
             } else {
-                throw new AssertionError("Unable to perform: " + condition.toString());
+                throw new AssertionError("Condition: " + condition.toString() + " failed!");
             }
         }
     }

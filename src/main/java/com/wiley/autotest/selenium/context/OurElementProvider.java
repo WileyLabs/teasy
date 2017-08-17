@@ -44,17 +44,11 @@ public abstract class OurElementProvider {
     @Autowired
     private long timeout;
 
-    @Deprecated
-    //will be replaced with OurElementFinder
-    protected ElementFinder elementFinder;
-
     //default finder that uses timeout from pom
     private OurElementFinder finder;
 
-    private static final int MIN_TIME_OUT_FOR_WAIT_IN_SECONDS = 1;
     //VE added this to avoid No buffer space available exception. To be replaced with default value of 500 if does not work.
     protected static final long SLEEP_IN_MILLISECONDS = 1000;
-
 
     private OurElementFinder customFinder(OurSearchStrategy strategy) {
         return new OurElementFinder(getWebDriver(), strategy);
@@ -239,16 +233,13 @@ public abstract class OurElementProvider {
     private <T extends Element> List<T> getElements(Class<T> elementType, By by) {
         List<T> result = new ArrayList<>();
         elements(by)
-                .stream()
                 .forEach(element -> result.add(getWebElementWrapper(element).getElement(elementType, by)));
         return result;
     }
 
     private <T extends Element> List<T> getElements(Class<T> elementType, OurWebElement searchContext, By by) {
         List<T> result = new ArrayList<>();
-        searchContext
-                .elements(by)
-                .stream()
+        searchContext.elements(by)
                 .forEach(element -> result.add(getWebElementWrapper(element).getElement(elementType, by)));
         return result;
     }
@@ -260,6 +251,10 @@ public abstract class OurElementProvider {
 
     // OLD code that is going to be removed by September 2017.
     // Currently kept to give users some time to switch to new implementation
+
+    @Deprecated
+    //will be replaced with OurElementFinder
+    protected ElementFinder elementFinder;
 
     /**
      * Takes the 4th method from a StackTrace chain. It should be the method from Page that called method
@@ -441,7 +436,7 @@ public abstract class OurElementProvider {
      */
     protected final WebElement elementOrNull(final SearchContext searchContext, final By locator) {
 
-        throw new RuntimeException("REPLACE WITH NEW APPROACH IMMEDIATELY! METHOD IMPLEMENTATION WAD DELETED! CONTACT Vladimir Efimov vefimov@wiley.com");
+        throw new RuntimeException("REPLACE WITH NEW APPROACH IMMEDIATELY! METHOD IMPLEMENTATION WAS DELETED! CONTACT Vladimir Efimov vefimov@wiley.com");
 //        try {
 //            return elementFinder.waitForVisibilityOfAllElementsLocatedBy(searchContext, locator, (long) MIN_TIME_OUT_FOR_WAIT_IN_SECONDS)
 //                    .get(0);
