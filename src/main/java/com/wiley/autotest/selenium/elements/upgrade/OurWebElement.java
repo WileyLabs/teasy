@@ -2,9 +2,9 @@ package com.wiley.autotest.selenium.elements.upgrade;
 
 import com.wiley.autotest.ElementFinder;
 import com.wiley.autotest.WebDriverAwareElementFinder;
+import com.wiley.autotest.selenium.context.OurSearchStrategy;
 import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
 import com.wiley.autotest.selenium.elements.upgrade.v3.OurElementFinder;
-import com.wiley.autotest.selenium.context.OurSearchStrategy;
 import com.wiley.autotest.selenium.elements.upgrade.v3.OurShould;
 import com.wiley.autotest.selenium.elements.upgrade.v3.OurWaitFor;
 import org.openqa.selenium.*;
@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.wiley.autotest.selenium.SeleniumHolder.getWebDriver;
@@ -136,6 +137,24 @@ public class OurWebElement implements CustomWebElement, Locatable {
     @Override
     public OurWebElement element(By by, OurSearchStrategy strategy) {
         return customContextFinder(strategy).visibleElement(by);
+    }
+
+    @Override
+    public OurWebElement elementOrNull(By by) {
+        try {
+            return contextFinder.visibleElement(by);
+        } catch (AssertionError error) {
+            return null;
+        }
+    }
+
+    @Override
+    public List<OurWebElement> elementsOrEmptyList(By by, OurSearchStrategy strategy) {
+        try {
+            return customContextFinder(strategy).visibleElements(by);
+        } catch (AssertionError error) {
+            return new ArrayList<>();
+        }
     }
 
     @Override
