@@ -1,8 +1,8 @@
 package com.wiley.autotest.selenium.elements.upgrade;
 
+import com.wiley.autotest.selenium.context.OurSearchStrategy;
 import com.wiley.autotest.selenium.elements.upgrade.v3.OurShould;
 import com.wiley.autotest.selenium.elements.upgrade.v3.OurWaitFor;
-import com.wiley.autotest.selenium.context.OurSearchStrategy;
 import org.openqa.selenium.*;
 
 import java.util.List;
@@ -62,6 +62,10 @@ public interface CustomWebElement {
 
     OurWebElement element(By by);
     OurWebElement element(By by, OurSearchStrategy strategy);
+
+    OurWebElement elementOrNull(By by);
+
+    List<OurWebElement> elementsOrEmptyList(By by, OurSearchStrategy strategy);
 
     List<OurWebElement> elements(By by);
     List<OurWebElement> elements(By by, OurSearchStrategy strategy);
