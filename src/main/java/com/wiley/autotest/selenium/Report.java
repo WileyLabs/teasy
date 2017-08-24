@@ -32,8 +32,11 @@ public class Report {
     private void allure(String message) {
     }
 
+    /**
+     * Making it an 'error' to guarantee that message will be shown with any log level settings
+     */
     public void jenkins() {
-        LoggerFactory.getLogger(this.getClass()).info(message);
+        LoggerFactory.getLogger(this.getClass()).error(message);
     }
 
     public void everywhere() {
