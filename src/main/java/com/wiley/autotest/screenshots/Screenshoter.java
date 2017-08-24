@@ -32,13 +32,6 @@ public class Screenshoter {
 
     public synchronized void takeScreenshot(final String errorMessage, final String testName) {
         try {
-//            final BufferedImage image;
-//            if (ExecutionUtils.isChrome() && ExecutionUtils.isWindows()) {
-//                image = getScreenshotInChrome();
-//            } else {
-//                final File screenShot = ((TakesScreenshot) getWebDriver()).getScreenshotAs(OutputType.FILE);
-//                image = ImageIO.read(screenShot);
-//            }
 //This probably could be used someday (do not delete)
 //            int jsErrorNumber = JavaScriptError.readErrors(getWebDriver()).size();
 //            printStrings(image, removeNL(testName, errorMessage, "The following number of JS errors appeared during the test: " + jsErrorNumber));

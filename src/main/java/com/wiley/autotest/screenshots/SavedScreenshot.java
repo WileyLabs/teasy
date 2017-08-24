@@ -9,7 +9,11 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Created by mosadchiy on 22.08.2017.
+ * @author <a href="mosadchiy@wiley.com">Mikhail Osadchiy</a>
+ */
+
+/**
+ * Writes instance of Screenshot class as image into *.png file by path and name
  */
 public class SavedScreenshot {
 

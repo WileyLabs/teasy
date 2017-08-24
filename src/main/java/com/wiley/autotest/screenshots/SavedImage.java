@@ -9,7 +9,11 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Created by mosadchiy on 23.08.2017.
+ * @author <a href="mosadchiy@wiley.com">Mikhail Osadchiy</a>
+ */
+
+/**
+ * Writes image into *.png file by path and name
  */
 public class SavedImage {
 

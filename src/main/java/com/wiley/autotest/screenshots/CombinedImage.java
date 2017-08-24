@@ -4,7 +4,11 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 /**
- * Created by mosadchiy on 23.08.2017.
+ * @author <a href="mosadchiy@wiley.com">Mikhail Osadchiy</a>
+ */
+
+/**
+ * Combines three images into one
  */
 class CombinedImage {
 

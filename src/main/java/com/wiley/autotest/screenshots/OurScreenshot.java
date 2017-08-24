@@ -1,6 +1,5 @@
 package com.wiley.autotest.screenshots;
 
-import com.wiley.autotest.utils.ExecutionUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -15,98 +14,114 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.wiley.autotest.selenium.SeleniumHolder.getWebDriver;
+import static com.wiley.autotest.utils.ExecutionUtils.isChrome;
 import static ru.yandex.qatools.ashot.cropper.indent.IndentFilerFactory.monochrome;
 
 /**
- * Created by mosadchiy on 22.08.2017.
+ * @author <a href="mosadchiy@wiley.com">Mikhail Osadchiy</a>
+ */
+
+/**
+ * Provides an opportunity to capture screenshot by the following options:
+ * 1) Exclude and include locators
+ * 2) Exclude locators
+ * 3) Include locators
+ * 4) Full page
  */
 public class OurScreenshot {
 
     public Screenshot excludeAndInclude(List<By> excludeLocators, List<By> includeLocators) {
         WebDriver driver = getWebDriver();
-        boolean isChrome = ExecutionUtils.isChrome();
-        Screenshot screenshot;
         AShot aShot = new AShot();
-        if (isChrome) {
-            ((JavascriptExecutor) driver).executeScript("document.body.style.overflow = 'hidden';");
-            aShot.shootingStrategy(ShootingStrategies.viewportPasting(100));
+        if (isChrome()) {
+            hideScrollbar(driver);
+            makeViewPortShootingStrategy(aShot);
         }
-        for (By excludeLocator : excludeLocators) {
-            for (WebElement excludeElement : driver.findElements(excludeLocator)) {
-                aShot.addIgnoredArea(new Coords(excludeElement.getLocation().getX(), excludeElement.getLocation().getY(),
-                        excludeElement.getSize().getWidth(), excludeElement.getSize().getHeight()));
-            }
-        }
-        List<WebElement> includeElements = new ArrayList<>();
-        for (By by : includeLocators) {
-            includeElements.addAll(driver.findElements(by));
-        }
-        screenshot = aShot.imageCropper(new IndentCropper()
-                .addIndentFilter(monochrome()))
-                .takeScreenshot(driver, includeElements);
-        if (isChrome) {
-            ((JavascriptExecutor) driver).executeScript("document.body.style.overflow = 'visible';");
+        addIgnoredAreas(excludeLocators, driver, aShot);
+        addMonochromeIndentFilter(aShot);
+        Screenshot screenshot = aShot.takeScreenshot(driver, getIncludeElements(includeLocators, driver));
+        if (isChrome()) {
+            revealScrollbar(driver);
         }
         return screenshot;
     }
 
     public Screenshot exclude(List<By> excludeLocators) {
         WebDriver driver = getWebDriver();
-        boolean isChrome = ExecutionUtils.isChrome();
-        Screenshot screenshot;
         AShot aShot = new AShot();
-        if (isChrome) {
-            ((JavascriptExecutor) driver).executeScript("document.body.style.overflow = 'hidden';");
-            aShot.shootingStrategy(ShootingStrategies.viewportPasting(100));
+        if (isChrome()) {
+            hideScrollbar(driver);
+            makeViewPortShootingStrategy(aShot);
         }
-        for (By excludeLocator : excludeLocators) {
-            for (WebElement excludeElement : driver.findElements(excludeLocator)) {
-                aShot.addIgnoredArea(new Coords(excludeElement.getLocation().getX(), excludeElement.getLocation().getY(),
-                        excludeElement.getSize().getWidth(), excludeElement.getSize().getHeight()));
-            }
-        }
-        screenshot = aShot.takeScreenshot(driver);
-        if (isChrome) {
-            ((JavascriptExecutor) driver).executeScript("document.body.style.overflow = 'visible';");
+        addIgnoredAreas(excludeLocators, driver, aShot);
+        Screenshot screenshot = aShot.takeScreenshot(driver);
+        if (isChrome()) {
+            revealScrollbar(driver);
         }
         return screenshot;
     }
 
     public Screenshot include(List<By> includeLocators) {
         WebDriver driver = getWebDriver();
-        boolean isChrome = ExecutionUtils.isChrome();
-        Screenshot screenshot;
         AShot aShot = new AShot();
-        if (isChrome) {
-            ((JavascriptExecutor) driver).executeScript("document.body.style.overflow = 'hidden';");
-            aShot.shootingStrategy(ShootingStrategies.viewportPasting(100));
+        if (isChrome()) {
+            hideScrollbar(driver);
+            makeViewPortShootingStrategy(aShot);
         }
-        List<WebElement> includeElements = new ArrayList<>();
-        for (By by : includeLocators) {
-            includeElements.addAll(driver.findElements(by));
-        }
-        screenshot = aShot.imageCropper(new IndentCropper()
-                .addIndentFilter(monochrome()))
-                .takeScreenshot(driver, includeElements);
-        if (isChrome) {
-            ((JavascriptExecutor) driver).executeScript("document.body.style.overflow = 'visible';");
+        addMonochromeIndentFilter(aShot);
+        Screenshot screenshot = aShot.takeScreenshot(driver, getIncludeElements(includeLocators, driver));
+        if (isChrome()) {
+            revealScrollbar(driver);
         }
         return screenshot;
     }
 
     public Screenshot fullPage() {
         WebDriver driver = getWebDriver();
-        boolean isChrome = ExecutionUtils.isChrome();
-        Screenshot screenshot;
         AShot aShot = new AShot();
-        if (isChrome) {
-            ((JavascriptExecutor) driver).executeScript("document.body.style.overflow = 'hidden';");
-            aShot.shootingStrategy(ShootingStrategies.viewportPasting(100));
+        if (isChrome()) {
+            hideScrollbar(driver);
+            makeViewPortShootingStrategy(aShot);
         }
-        screenshot = aShot.takeScreenshot(driver);
-        if (isChrome) {
-            ((JavascriptExecutor) driver).executeScript("document.body.style.overflow = 'visible';");
+        Screenshot screenshot = aShot.takeScreenshot(driver);
+        if (isChrome()) {
+            revealScrollbar(driver);
         }
         return screenshot;
+    }
+
+    private void addMonochromeIndentFilter(AShot aShot) {
+        aShot.imageCropper(new IndentCropper()
+                .addIndentFilter(monochrome()));
+    }
+
+    private List<WebElement> getIncludeElements(List<By> includeLocators, WebDriver driver) {
+        List<WebElement> includeElements = new ArrayList<>();
+        for (By by : includeLocators) {
+            includeElements.addAll(driver.findElements(by));
+        }
+        return includeElements;
+    }
+
+    private void addIgnoredAreas(List<By> excludeLocators, WebDriver driver, AShot aShot) {
+        for (By excludeLocator : excludeLocators) {
+            for (WebElement excludeElement : driver.findElements(excludeLocator)) {
+                aShot.addIgnoredArea(new Coords(excludeElement.getLocation().getX(), excludeElement.getLocation().getY(),
+                        excludeElement.getSize().getWidth(), excludeElement.getSize().getHeight()));
+            }
+        }
+    }
+
+    private void hideScrollbar(WebDriver driver) {
+        ((JavascriptExecutor) driver).executeScript("document.body.style.overflow = 'hidden';");
+
+    }
+
+    private void makeViewPortShootingStrategy(AShot aShot) {
+        aShot.shootingStrategy(ShootingStrategies.viewportPasting(100));
+    }
+
+    private void revealScrollbar(WebDriver driver) {
+        ((JavascriptExecutor) driver).executeScript("document.body.style.overflow = 'visible';");
     }
 }

@@ -10,7 +10,14 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 /**
- * Created by mosadchiy on 23.08.2017.
+ * @author <a href="mosadchiy@wiley.com">Mikhail Osadchiy</a>
+ */
+
+/**
+ * Compares two instances of Screenshot class.
+ * In case of differences makes two actions:
+ * 1) Writes comparative image into *.png file by path and name
+ * 2) Attaches comparative image to allure report
  */
 public class ComparativeScreenshot {
 

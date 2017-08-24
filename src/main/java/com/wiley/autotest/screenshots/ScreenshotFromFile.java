@@ -9,7 +9,12 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Created by mosadchiy on 23.08.2017.
+ * @author <a href="mosadchiy@wiley.com">Mikhail Osadchiy</a>
+ */
+
+/**
+ * Reads *.png file by path and name.
+ * Returns instance of Screenshot class
  */
 public class ScreenshotFromFile {
 
