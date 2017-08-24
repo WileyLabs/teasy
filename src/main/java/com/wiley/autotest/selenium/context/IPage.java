@@ -6,7 +6,5 @@ package com.wiley.autotest.selenium.context;
  * Time: 12:36 PM
  */
 public interface IPage extends IPageElement {
-    void load();
-
     void load(String path);
 }

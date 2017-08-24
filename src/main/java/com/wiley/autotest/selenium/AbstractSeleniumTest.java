@@ -9,8 +9,6 @@ import com.wiley.autotest.listeners.ProcessPostponedFailureListener;
 import com.wiley.autotest.listeners.SkipTestsListener;
 import com.wiley.autotest.screenshots.Screenshoter;
 import com.wiley.autotest.selenium.context.IPage;
-import com.wiley.autotest.selenium.context.ScreenshotHelper;
-import com.wiley.autotest.selenium.driver.events.listeners.ScreenshotWebDriverEventListener;
 import com.wiley.autotest.services.CookiesService;
 import com.wiley.autotest.services.PageProvider;
 import com.wiley.autotest.services.SeleniumMethodsInvoker;
@@ -18,7 +16,6 @@ import com.wiley.autotest.spring.SeleniumTestExecutionListener;
 import com.wiley.autotest.utils.JavaUtils;
 import com.wiley.autotest.utils.TestUtils;
 import net.lightbody.bmp.proxy.ProxyServer;
-import org.openqa.selenium.support.events.EventFiringWebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestExecutionListeners;
 import org.testng.IHookCallBack;
@@ -43,7 +40,7 @@ import static org.testng.Reporter.log;
         ProcessPostponedFailureListener.class,
         SkipTestsListener.class
 })
-public abstract class AbstractSeleniumTest extends AbstractTest implements ITest, ScreenshotHelper {
+public abstract class AbstractSeleniumTest extends AbstractTest implements ITest {
 
     @Autowired
     private PageProvider pageProvider;
@@ -58,8 +55,6 @@ public abstract class AbstractSeleniumTest extends AbstractTest implements ITest
     protected CookiesService cookiesService;
 
     protected SeleniumMethodsInvoker methodsInvoker;
-
-    private ScreenshotWebDriverEventListener screenshotWebDriverEventListener;
 
     public ThreadLocal<String> mainWindowHandle = new ThreadLocal<>();
 
@@ -84,12 +79,6 @@ public abstract class AbstractSeleniumTest extends AbstractTest implements ITest
         } else {
             methodsInvoker.invokeSuiteMethodsByAnnotation(OurBeforeSuite.class, context);
         }
-    }
-
-    @BeforeClass(alwaysRun = true)
-    public void initScreenshotWebDriverEventListener() {
-        screenshotWebDriverEventListener = new ScreenshotWebDriverEventListener();
-        ((EventFiringWebDriver) getWebDriver()).register(screenshotWebDriverEventListener);
     }
 
     @BeforeClass(alwaysRun = true)
@@ -186,11 +175,11 @@ public abstract class AbstractSeleniumTest extends AbstractTest implements ITest
     }
 
     public <E extends IPage> E getPage(final Class<E> helperClass) {
-        return pageProvider.get(helperClass, this);
+        return pageProvider.get(helperClass);
     }
 
     public <E extends IPage> E getPage(final Class<E> helperClass, final String urlToOpen) {
-        return pageProvider.get(helperClass, this, urlToOpen);
+        return pageProvider.get(helperClass, urlToOpen);
     }
 
     public void setPostponedTestFail(final String message) {
@@ -208,23 +197,19 @@ public abstract class AbstractSeleniumTest extends AbstractTest implements ITest
     public void run(IHookCallBack callBack, ITestResult testResult) {
         super.run(callBack, testResult);
         if (testResult.getThrowable() != null) {
-            takeScreenshot(testResult);
-        }
-    }
+            try {
+                final Throwable testResultThrowable = testResult.getThrowable();
+                String message = testResultThrowable.getMessage() != null ? testResultThrowable.getMessage() :
+                        testResultThrowable.getCause().getMessage();
 
-    private void takeScreenshot(final ITestResult testResult) {
-        try {
-            new Screenshoter().takeScreenshot(testResult);
-        } catch (Exception e) {
-            log("Couldn't take screenshot. Error: " + e.getMessage());
-        }
-    }
+                if (message == null) {
+                    message = "Test failed";
+                }
 
-    public void takeScreenshot(final String errorMessage, final String testName) {
-        try {
-            new Screenshoter().takeScreenshot(errorMessage, testName);
-        } catch (Exception e) {
-            log("Couldn't take screenshot. Error: " + e.getMessage());
+                new Screenshoter().takeScreenshot(message, TestUtils.getTestName(testResult));
+            } catch (Exception e) {
+                log("Couldn't take screenshot. Error: " + e.getMessage());
+            }
         }
     }
 
@@ -249,41 +234,6 @@ public abstract class AbstractSeleniumTest extends AbstractTest implements ITest
             }
         }
         throw new NoSuchMethodException();
-    }
-
-    private String getScreenshotRelativePath() {
-//        try {
-//            Method method = findMethodByAnnotation(Test.class);
-//            return getSettings().getEnvironment().getRunOn().toLowerCase() +
-//                    "/" + SeleniumHolder.getDriverName() +
-//                    "/" + getClass().getName().replaceFirst(".*functional\\.", "").replace('.', '/') +
-//                    "@" + method.getName();
-//
-//        } catch (NoSuchMethodException e) {
-//            throw new AssertionError("Test method cannot be founded");
-//        }
-        return "";
-    }
-
-    public String getScreenshotPath() {
-        return getClass().getResource("/").getPath().replaceFirst("e4testlink-selenium-tests.*", "screenshots/" + getScreenshotRelativePath());
-    }
-
-    public String getComparativePath() {
-        String screenshotRelativePath = getScreenshotRelativePath();
-        if (screenshotRelativePath.length() <= ScreenshotHelper.MAX_FOLDER_NAME_LENGTH) {
-            screenshotRelativePath = screenshotRelativePath.replaceAll("/", ".");
-        }
-        return getClass().getResource("/").getPath().replaceFirst("e4testlink-selenium-tests.*", "screenshots/comparative/" + screenshotRelativePath);
-    }
-
-    public int nextPass() {
-        return ++passCounter;
-    }
-
-    @Override
-    public ScreenshotWebDriverEventListener getScreenshotWebDriverEventListener() {
-        return screenshotWebDriverEventListener;
     }
 
     public Method getTestMethod() {
