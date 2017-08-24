@@ -23,4 +23,8 @@ public class WindowMatcher {
         return new WindowMatcher(new WindowByUrl(url));
     }
 
+    public static WindowMatcher byPartialUrl(String urlPart) {
+        return new WindowMatcher(new WindowByPartialUrl(urlPart));
+    }
+
 }

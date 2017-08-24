@@ -9,9 +9,7 @@ import org.openqa.selenium.WebDriver;
  * Time: 19:08
  */
 public interface IPageElement {
-    void init(WebDriver driver, ScreenshotHelper screenshotHelper);
+    void init(WebDriver driver);
 
     void handleRedirect();
-
-    ErrorSender getErrorSender();
 }

@@ -1,7 +1,9 @@
 package com.wiley.autotest.selenium.extensions.internal;
 
 import com.wiley.autotest.selenium.elements.Select;
+import com.wiley.autotest.selenium.elements.TransformedWebElementList;
 import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
+import com.wiley.autotest.selenium.elements.upgrade.OurWebElementData;
 import com.wiley.autotest.utils.TestUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -132,7 +134,7 @@ class SelectImpl extends AbstractEnabledElement implements Select {
 
     @Override
     public void selectByPartialText(String partialText) {
-        for (WebElement option : getOptions()) {
+        for (OurWebElement option : getOptions()) {
             if (option.getText().contains(partialText)) {
                 selectByText(option.getText());
                 return;
@@ -145,8 +147,8 @@ class SelectImpl extends AbstractEnabledElement implements Select {
     }
 
     @Override
-    public WebElement getSelectedOption() {
-        return wrappedSelect().getFirstSelectedOption();
+    public OurWebElement getSelectedOption() {
+        return new OurWebElement(new OurWebElementData(wrappedSelect().getFirstSelectedOption()));
     }
 
     @Override
@@ -160,22 +162,22 @@ class SelectImpl extends AbstractEnabledElement implements Select {
     }
 
     @Override
-    public List<WebElement> getOptions() {
+    public List<OurWebElement> getOptions() {
         try {
-            return wrappedSelect().getOptions();
+            return new TransformedWebElementList(wrappedSelect().getOptions()).toOurWebElementList();
         } catch (UndeclaredThrowableException ignored) {
             //TODO VF fix it in other places
             //Sometimes this test fails in ie due to such exception
             TestUtils.waitForSomeTime(3000, EXPLANATION_MESSAGE_FOR_WAIT);
-            return wrappedSelect().getOptions();
+            return new TransformedWebElementList(wrappedSelect().getOptions()).toOurWebElementList();
         }
     }
 
     @Override
     @Deprecated
-    public List<WebElement> getValues() {
+    public List<OurWebElement> getValues() {
         //TODO VF Need to complete
-        return new ArrayList<WebElement>();
+        return new ArrayList<OurWebElement>();
     }
 
     @Override
@@ -205,7 +207,7 @@ class SelectImpl extends AbstractEnabledElement implements Select {
     @Override
     public void selectAll() {
         //TODO NT: need to check work
-        for (WebElement option : getOptions()) {
+        for (OurWebElement option : getOptions()) {
             selectByText(option.getText());
         }
     }
