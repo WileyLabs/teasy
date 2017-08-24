@@ -15,12 +15,12 @@ import java.util.function.Function;
  */
 public class OurWaitFor {
 
-    private FluentWaitCondition fluentWait;
+    private WebDriverFluentWait fluentWait;
     private OurWebElement element;
 
     public OurWaitFor(OurWebElement element) {
         this.element = element;
-        fluentWait = new FluentWaitCondition(SeleniumHolder.getWebDriver());
+        fluentWait = new WebDriverFluentWait(SeleniumHolder.getWebDriver());
     }
 
     public OurWaitFor(OurWebElement element, OurSearchStrategy strategy) {
@@ -151,11 +151,8 @@ public class OurWaitFor {
         });
     }
 
-    /**
-     * TODO: ve consider making this method to accept Function<?, Boolean>
-     */
-    public void customCondition(Function<WebDriver, Boolean> condition) {
-        waitFor(condition);
+    public void customCondition(Function<?, ?> condition) {
+        new AnyFluentWait(SeleniumHolder.getWebDriver()).waitFor(condition);
     }
 
     private void waitFor(Function<WebDriver, Boolean> condition) {
