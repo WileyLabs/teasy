@@ -5,15 +5,14 @@
  */
 package com.wiley.autotest.selenium;
 
+import com.wiley.autotest.utils.ReadableMethodName;
 import com.wiley.autotest.utils.StringUtils;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
-import org.testng.Reporter;
 import ru.yandex.qatools.allure.annotations.Step;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
 
 /**
  * Proxy class to transfer all Allure step annotations to TestNG report
@@ -42,12 +41,11 @@ public final class AllureStep2TestNG {
         @Override
         public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable {
             if (method.isAnnotationPresent(Step.class)) {
-                Reporter.getCurrentTestResult().setAttribute("lastMethodTime", System.currentTimeMillis());
-                String testName = Reporter.getCurrentTestResult().getTestName() + ": ";
-                String methodArgs = objects.length == 0 ? "" : Arrays.asList(objects).toString();
-                String methodName = StringUtils.splitCamelCase(method.getName());
-                String report = methodName.substring(0, 1).toUpperCase() + methodName.substring(1);
-                new Report(testName + report + methodArgs).jenkins();
+                String value = method.getAnnotation(Step.class).value();
+                if (value.isEmpty()) {
+                    value = new ReadableMethodName(method.getName()).toString();
+                }
+                new Report(value).testNG();
             }
             Object result = methodProxy.invoke(original, objects);
             if (result == original) {
