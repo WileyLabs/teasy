@@ -3,7 +3,7 @@ package com.wiley.autotest.selenium.elements.upgrade;
 import com.wiley.autotest.ExpectedConditions2;
 import com.wiley.autotest.selenium.Report;
 import com.wiley.autotest.selenium.SeleniumHolder;
-import com.wiley.autotest.selenium.elements.upgrade.v3.WebDriverFluentWait;
+import com.wiley.autotest.selenium.elements.upgrade.v3.OurFluentWait;
 import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.window.WindowMatcher;
 import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.JavascriptExecutor;
@@ -18,11 +18,11 @@ import java.util.Iterator;
  */
 public class OurWindow implements Window {
 
-    private WebDriverFluentWait fluentWait;
+    private OurFluentWait<WebDriver> fluentWait;
     private WebDriver driver;
 
     public OurWindow() {
-        fluentWait = new WebDriverFluentWait(SeleniumHolder.getWebDriver());
+        fluentWait = new OurFluentWait<>(SeleniumHolder.getWebDriver());
         driver = SeleniumHolder.getWebDriver();
     }
 
@@ -38,7 +38,7 @@ public class OurWindow implements Window {
 
     @Override
     public void switchTo(WindowMatcher matcher) {
-        WebDriverFluentWait finder = new WebDriverFluentWait(driver);
+        OurFluentWait<WebDriver> finder = new OurFluentWait<>(driver);
         finder.waitFor(matcher.get().findAndSwitch());
     }
 

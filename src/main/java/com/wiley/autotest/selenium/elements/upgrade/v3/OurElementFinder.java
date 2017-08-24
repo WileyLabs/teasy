@@ -29,14 +29,11 @@ public class OurElementFinder {
 
     private OurWebElement context;
 
-    private WebDriverFluentWait fluentWait;
+    private OurFluentWait<WebDriver> fluentWait;
 
     public OurElementFinder(WebDriver driver, OurSearchStrategy strategy) {
         this.strategy = strategy;
-        this.fluentWait = new WebDriverFluentWait(driver);
-        fluentWait.withTimeout(strategy.getCustomTimeout(), TimeUnit.SECONDS);
-        fluentWait.pollingEvery(strategy.getPoolingEvery(), strategy.getUnit());
-        fluentWait.setNullOnFailure(strategy.isNullOnFailure());
+        this.fluentWait = new OurFluentWait<>(driver, strategy);
     }
 
     public OurElementFinder(WebDriver driver, OurSearchStrategy strategy, OurWebElement context) {
