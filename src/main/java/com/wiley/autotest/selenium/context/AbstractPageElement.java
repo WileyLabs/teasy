@@ -233,6 +233,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         return null;
     }
 
+    @Deprecated// will be removed
     protected String getCurrentWindowTitle() {
         return driver.getTitle();
     }

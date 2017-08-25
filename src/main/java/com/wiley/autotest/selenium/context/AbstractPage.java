@@ -21,20 +21,6 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
  */
 public abstract class AbstractPage<P extends AbstractPage> extends AbstractPageElement<P> implements IPage {
 
-    public static final By TABLE_LOCATOR = By.tagName("table");
-    public static final By TR_LOCATOR = By.tagName("tr");
-    public static final By TD_LOCATOR = By.tagName("td");
-    public static final By TH_LOCATOR = By.tagName("th");
-    public static final By SELECT_LOCATOR = By.tagName("select");
-    public static final By SPAN_LOCATOR = By.tagName("span");
-    public static final By DIV_LOCATOR = By.tagName("div");
-    public static final By P_LOCATOR = By.tagName("p");
-    public static final By A_LOCATOR = By.tagName("a");
-    public static final By B_LOCATOR = By.tagName("b");
-    public static final By INPUT_LOCATOR = By.tagName("input");
-    public static final By IMG_LOCATOR = By.tagName("img");
-    protected static final String CLASS_ATTRIBUTE = "class";
-
     private int count = 0;
 
     private final String path;
@@ -81,21 +67,6 @@ public abstract class AbstractPage<P extends AbstractPage> extends AbstractPageE
         return (P) this;
     }
 
-    public static By getLinkByXpath(String linkText) {
-        return By.xpath("//a[text()='" + linkText + "']");
-    }
-
-    @Step
-    public P waitForDate(DateTimeZone dateTimeZone, DateTime dueDate) {
-        waitForAssignmentDate(dateTimeZone, dueDate);
-        return (P) this;
-    }
-
-    @Step
-    public <T extends AbstractPage> T waitForDate(DateTimeZone dateTimeZone, DateTime dueDate, Class<T> target) {
-        waitForAssignmentDate(dateTimeZone, dueDate);
-        return redirectTo(target);
-    }
 
     /**
      * This method has to be added in every test that fails because of bug
@@ -151,9 +122,60 @@ public abstract class AbstractPage<P extends AbstractPage> extends AbstractPageE
         }
     }
 
+
+    @Deprecated
+    //Copy this to your project if you use it. The method will be deleted
+    public static By getLinkByXpath(String linkText) {
+        return By.xpath("//a[text()='" + linkText + "']");
+    }
+
+    @Deprecated
+    //Copy this to your project if you use it. The method will be deleted
+    @Step
+    public P waitForDate(DateTimeZone dateTimeZone, DateTime dueDate) {
+        waitForAssignmentDate(dateTimeZone, dueDate);
+        return (P) this;
+    }
+    @Deprecated
+    //Copy this to your project if you use it. The method will be deleted
+    @Step
+    public <T extends AbstractPage> T waitForDate(DateTimeZone dateTimeZone, DateTime dueDate, Class<T> target) {
+        waitForAssignmentDate(dateTimeZone, dueDate);
+        return redirectTo(target);
+    }
+
+    @Deprecated
+    //Copy this to your project if you use it. The method will be deleted
     @Step
     public P checkTitleOfBrowserWindow(String expectedTitle) {
         postponedAssertEquals(getDriver().getTitle(), expectedTitle, "Incorrect title of browser window");
         return (P) this;
     }
+
+    @Deprecated // move to your project. constant will be deleted
+    public static final By TABLE_LOCATOR = By.tagName("table");
+    @Deprecated // move to your project. constant will be deleted
+    public static final By TR_LOCATOR = By.tagName("tr");
+    @Deprecated // move to your project. constant will be deleted
+    public static final By TD_LOCATOR = By.tagName("td");
+    @Deprecated // move to your project. constant will be deleted
+    public static final By TH_LOCATOR = By.tagName("th");
+    @Deprecated // move to your project. constant will be deleted
+    public static final By SELECT_LOCATOR = By.tagName("select");
+    @Deprecated // move to your project. constant will be deleted
+    public static final By SPAN_LOCATOR = By.tagName("span");
+    @Deprecated // move to your project. constant will be deleted
+    public static final By DIV_LOCATOR = By.tagName("div");
+    @Deprecated // move to your project. constant will be deleted
+    public static final By P_LOCATOR = By.tagName("p");
+    @Deprecated // move to your project. constant will be deleted
+    public static final By A_LOCATOR = By.tagName("a");
+    @Deprecated // move to your project. constant will be deleted
+    public static final By B_LOCATOR = By.tagName("b");
+    @Deprecated // move to your project. constant will be deleted
+    public static final By INPUT_LOCATOR = By.tagName("input");
+    @Deprecated // move to your project. constant will be deleted
+    public static final By IMG_LOCATOR = By.tagName("img");
+    @Deprecated // move to your project. constant will be deleted
+    protected static final String CLASS_ATTRIBUTE = "class";
 }
