@@ -5,6 +5,7 @@ import com.wiley.autotest.selenium.Report;
 import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.elements.upgrade.v3.OurFluentWait;
 import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.window.WindowMatcher;
+import com.wiley.autotest.selenium.elements.upgrade.v3.expectedconditions.PageLoaded;
 import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TimeoutException;
@@ -53,7 +54,7 @@ public class OurWindow implements Window {
             return;
         }
         try {
-            fluentWait.until(ExpectedConditions2.pageToLoad());
+            fluentWait.until(new PageLoaded());
         } catch (TimeoutException expected) {
             String readyState = ((JavascriptExecutor) driver).executeScript("return document.readyState").toString();
             new Report("*****ERROR***** TimeoutException occurred while waiting for page to load! return document.readyState value is '"

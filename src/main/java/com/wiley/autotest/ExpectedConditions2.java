@@ -537,20 +537,6 @@ public final class ExpectedConditions2 {
         };
     }
 
-    public static ExpectedCondition<Boolean> pageToLoad() {
-        return new ExpectedCondition<Boolean>() {
-            @Override
-            public Boolean apply(final WebDriver driver) {
-                return "complete".equals(((JavascriptExecutor) driver).executeScript("return document.readyState"));
-            }
-
-            @Override
-            public String toString() {
-                return "page to load";
-            }
-        };
-    }
-
     public static ExpectedCondition<Boolean> presenceOfElementCount(final By locator, final int expectedNumberOfElements) {
         return new ExpectedCondition<Boolean>() {
             @Override

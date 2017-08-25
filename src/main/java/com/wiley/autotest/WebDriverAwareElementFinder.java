@@ -3,6 +3,7 @@ package com.wiley.autotest;
 import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
 import com.wiley.autotest.selenium.elements.TextField;
+import com.wiley.autotest.selenium.elements.upgrade.v3.expectedconditions.PageLoaded;
 import com.wiley.autotest.utils.TestUtils;
 import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.*;
@@ -261,7 +262,7 @@ public class WebDriverAwareElementFinder implements ElementFinder {
             return;
         }
         try {
-            waitFor(ExpectedConditions2.pageToLoad());
+            waitFor(new PageLoaded());
         } catch (TimeoutException expected) {
             String readyState = ((JavascriptExecutor) driver).executeScript("return document.readyState").toString();
             LOGGER.error("*****ERROR***** TimeoutException occurred while waiting for page to load! return document.readyState value is '" + readyState + "' But expected to be 'complete'");
