@@ -1,8 +1,8 @@
 package com.wiley.autotest.selenium.elements.upgrade;
 
+import com.wiley.autotest.selenium.elements.upgrade.v3.ElementWaitFor;
 import com.wiley.autotest.selenium.elements.upgrade.v3.OurShould;
-import com.wiley.autotest.selenium.elements.upgrade.v3.OurWaitFor;
-import com.wiley.autotest.selenium.context.OurSearchStrategy;
+import com.wiley.autotest.selenium.context.SearchStrategy;
 import org.openqa.selenium.*;
 
 import java.util.List;
@@ -50,27 +50,27 @@ public interface CustomWebElement {
 
     OurShould should();
 
-    OurShould should(OurSearchStrategy strategy);
+    OurShould should(SearchStrategy strategy);
 
-    OurWaitFor waitFor();
+    ElementWaitFor waitFor();
 
-    OurWaitFor waitFor(OurSearchStrategy strategy);
+    ElementWaitFor waitFor(SearchStrategy strategy);
 
     OurWebElement getParent();
 
     OurWebElement getParent(int level);
 
     OurWebElement element(By by);
-    OurWebElement element(By by, OurSearchStrategy strategy);
+    OurWebElement element(By by, SearchStrategy strategy);
 
     List<OurWebElement> elements(By by);
-    List<OurWebElement> elements(By by, OurSearchStrategy strategy);
+    List<OurWebElement> elements(By by, SearchStrategy strategy);
 
     OurWebElement domElement(By by);
-    OurWebElement domElement(By by, OurSearchStrategy strategy);
+    OurWebElement domElement(By by, SearchStrategy strategy);
 
     List<OurWebElement> domElements(By by);
-    List<OurWebElement> domElements(By by, OurSearchStrategy strategy);
+    List<OurWebElement> domElements(By by, SearchStrategy strategy);
 
     void click();
 }

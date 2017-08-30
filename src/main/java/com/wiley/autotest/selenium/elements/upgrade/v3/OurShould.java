@@ -1,7 +1,7 @@
 package com.wiley.autotest.selenium.elements.upgrade.v3;
 
 import com.wiley.autotest.selenium.SeleniumHolder;
-import com.wiley.autotest.selenium.context.OurSearchStrategy;
+import com.wiley.autotest.selenium.context.SearchStrategy;
 import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
 import com.wiley.autotest.selenium.elements.upgrade.v3.expectedconditions.*;
 import org.openqa.selenium.WebDriver;
@@ -22,7 +22,7 @@ public class OurShould {
         fluentWait = new OurFluentWait<>(SeleniumHolder.getWebDriver());
     }
 
-    public OurShould(OurWebElement element, OurSearchStrategy strategy) {
+    public OurShould(OurWebElement element, SearchStrategy strategy) {
         this(element);
         fluentWait.withTimeout(strategy.getCustomTimeout(), TimeUnit.SECONDS);
         fluentWait.pollingEvery(strategy.getPoolingEvery(), strategy.getUnit());

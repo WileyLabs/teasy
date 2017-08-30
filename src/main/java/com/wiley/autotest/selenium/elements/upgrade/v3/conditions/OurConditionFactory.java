@@ -1,7 +1,7 @@
 package com.wiley.autotest.selenium.elements.upgrade.v3.conditions;
 
 import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
-import com.wiley.autotest.selenium.context.OurSearchStrategy;
+import com.wiley.autotest.selenium.context.SearchStrategy;
 
 /**
  * Created by vefimov on 25/05/2017.
@@ -14,7 +14,7 @@ public class OurConditionFactory {
         this.context = context;
     }
 
-    public OurCondition get(OurSearchStrategy.FrameStrategy frameStrategy) {
+    public OurCondition get(SearchStrategy.FrameStrategy frameStrategy) {
         if (context == null) {
             switch (frameStrategy) {
                 case FIRST_FOUND:

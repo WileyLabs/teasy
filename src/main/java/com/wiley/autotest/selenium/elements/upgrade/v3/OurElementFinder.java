@@ -1,6 +1,6 @@
 package com.wiley.autotest.selenium.elements.upgrade.v3;
 
-import com.wiley.autotest.selenium.context.OurSearchStrategy;
+import com.wiley.autotest.selenium.context.SearchStrategy;
 import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
 import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.OurConditionFactory;
 import org.jetbrains.annotations.Nullable;
@@ -12,7 +12,6 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrap;
@@ -25,18 +24,18 @@ import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.
  */
 public class OurElementFinder {
 
-    private OurSearchStrategy strategy;
+    private SearchStrategy strategy;
 
     private OurWebElement context;
 
     private OurFluentWait<WebDriver> fluentWait;
 
-    public OurElementFinder(WebDriver driver, OurSearchStrategy strategy) {
+    public OurElementFinder(WebDriver driver, SearchStrategy strategy) {
         this.strategy = strategy;
         this.fluentWait = new OurFluentWait<>(driver, strategy);
     }
 
-    public OurElementFinder(WebDriver driver, OurSearchStrategy strategy, OurWebElement context) {
+    public OurElementFinder(WebDriver driver, SearchStrategy strategy, OurWebElement context) {
         this(driver, strategy);
         this.context = context;
     }

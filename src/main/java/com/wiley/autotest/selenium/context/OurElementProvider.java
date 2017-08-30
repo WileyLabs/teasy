@@ -7,8 +7,9 @@ import com.wiley.autotest.selenium.elements.*;
 import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
 import com.wiley.autotest.selenium.elements.upgrade.OurWindow;
 import com.wiley.autotest.selenium.elements.upgrade.Window;
+import com.wiley.autotest.selenium.elements.upgrade.v3.CustomWaitFor;
+import com.wiley.autotest.selenium.elements.upgrade.v3.ElementWaitFor;
 import com.wiley.autotest.selenium.elements.upgrade.v3.OurElementFinder;
-import com.wiley.autotest.selenium.elements.upgrade.v3.OurWaitFor;
 import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.window.WindowMatcher;
 import com.wiley.autotest.utils.TestUtils;
 import org.openqa.selenium.*;
@@ -50,22 +51,30 @@ public abstract class OurElementProvider {
     //VE added this to avoid No buffer space available exception. To be replaced with default value of 500 if does not work.
     protected static final long SLEEP_IN_MILLISECONDS = 1000;
 
-    private OurElementFinder customFinder(OurSearchStrategy strategy) {
+    private OurElementFinder customFinder(SearchStrategy strategy) {
         return new OurElementFinder(getWebDriver(), strategy);
     }
 
     private OurElementFinder finder() {
         if (finder == null) {
-            finder = new OurElementFinder(getWebDriver(), new OurSearchStrategy(timeout));
+            finder = new OurElementFinder(getWebDriver(), new SearchStrategy(timeout));
         }
         return finder;
+    }
+
+    protected CustomWaitFor waitFor() {
+        return new CustomWaitFor();
+    }
+
+    protected CustomWaitFor waitFor(SearchStrategy strategy) {
+        return new CustomWaitFor();
     }
 
     protected OurWebElement element(final By locator) {
         return finder().visibleElement(locator);
     }
 
-    protected OurWebElement element(final By locator, OurSearchStrategy strategy) {
+    protected OurWebElement element(final By locator, SearchStrategy strategy) {
         return customFinder(strategy).visibleElement(locator);
     }
 
@@ -73,36 +82,15 @@ public abstract class OurElementProvider {
         return finder().visibleElements(locator);
     }
 
-    protected List<OurWebElement> elements(final By locator, OurSearchStrategy strategy) {
+    protected List<OurWebElement> elements(final By locator, SearchStrategy strategy) {
         return customFinder(strategy).visibleElements(locator);
-    }
-
-    @Deprecated
-    /**
-     * method will be deleted shortly. use elements() and check like isEmpty()
-     */
-    protected final OurWebElement elementOrNull(final By locator) {
-        return elementOrNull(locator, new OurSearchStrategy(1).nullOnFailure());
-    }
-
-    @Deprecated
-    /**
-     * method will be deleted shortly. use elements(by, strategy) and check like isEmpty()
-     */
-    protected final OurWebElement elementOrNull(final By locator, OurSearchStrategy strategy) {
-        List<OurWebElement> ourWebElements = customFinder(strategy.nullOnFailure()).visibleElements(locator);
-        if (ourWebElements.isEmpty()) {
-            return null;
-        } else {
-            return ourWebElements.get(0);
-        }
     }
 
     protected OurWebElement domElement(By locator) {
         return finder().presentInDomElement(locator);
     }
 
-    protected OurWebElement domElement(By locator, OurSearchStrategy strategy) {
+    protected OurWebElement domElement(By locator, SearchStrategy strategy) {
         return customFinder(strategy).presentInDomElement(locator);
     }
 
@@ -110,7 +98,7 @@ public abstract class OurElementProvider {
         return finder().presentInDomElements(locator);
     }
 
-    protected List<OurWebElement> domElements(By locator, OurSearchStrategy strategy) {
+    protected List<OurWebElement> domElements(By locator, SearchStrategy strategy) {
         return customFinder(strategy).presentInDomElements(locator);
     }
 
@@ -118,7 +106,7 @@ public abstract class OurElementProvider {
         return finder().alert();
     }
 
-    protected Alert alert(OurSearchStrategy strategy) {
+    protected Alert alert(SearchStrategy strategy) {
         return customFinder(strategy).alert();
     }
 
@@ -253,6 +241,27 @@ public abstract class OurElementProvider {
     // Currently kept to give users some time to switch to new implementation
 
     @Deprecated
+    /**
+     * method will be deleted shortly. use elements() and check like isEmpty()
+     */
+    protected final OurWebElement elementOrNull(final By locator) {
+        return elementOrNull(locator, new SearchStrategy(1).nullOnFailure());
+    }
+
+    @Deprecated
+    /**
+     * method will be deleted shortly. use elements(by, strategy) and check like isEmpty()
+     */
+    protected final OurWebElement elementOrNull(final By locator, SearchStrategy strategy) {
+        List<OurWebElement> ourWebElements = customFinder(strategy.nullOnFailure()).visibleElements(locator);
+        if (ourWebElements.isEmpty()) {
+            return null;
+        } else {
+            return ourWebElements.get(0);
+        }
+    }
+
+    @Deprecated
     //will be replaced with OurElementFinder
     protected ElementFinder elementFinder;
 
@@ -263,8 +272,8 @@ public abstract class OurElementProvider {
      * for example for "generateErrorMessage" method should return "Generate error message"
      *
      * @return String of words separated by spaces
-     *
-     *
+     * <p>
+     * <p>
      * use {@link com.wiley.autotest.generator.ErrorMessage}
      */
     @Deprecated
@@ -456,7 +465,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * use element method with {@link OurSearchStrategy}
+     * use element method with {@link SearchStrategy}
      * @param timeOutInSeconds
      */
     protected final void setTimeout(final long timeOutInSeconds) {
@@ -484,7 +493,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * Use {@link OurElementProvider#domElement(By, OurSearchStrategy)}
+     * Use {@link OurElementProvider#domElement(By, SearchStrategy)}
      */
     protected WebElement domElement(By locator, final long timeoutInSeconds) {
         Supplier webElementSupplier = () -> waitForPresenceOfElementLocatedBy(locator, timeoutInSeconds);
@@ -493,7 +502,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * Use {@link OurElementProvider#element(By, OurSearchStrategy)}
+     * Use {@link OurElementProvider#element(By, SearchStrategy)}
      */
     protected final WebElement elementOrNull(final By locator, long timeoutInSeconds) {
         try {
@@ -505,25 +514,25 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * Use {@link OurElementProvider#domElements(By, OurSearchStrategy)}
+     * Use {@link OurElementProvider#domElements(By, SearchStrategy)}
      */
     protected List<WebElement> domElements(By locator, long timeoutInSeconds) {
-        return domElements(locator, SearchStrategy.FIRST_ELEMENTS, timeoutInSeconds);
+        return domElements(locator, OldSearchStrategy.FIRST_ELEMENTS, timeoutInSeconds);
     }
 
     @Deprecated
     /**
-     * Use {@link OurElementProvider#domElements(By, OurSearchStrategy)}
+     * Use {@link OurElementProvider#domElements(By, SearchStrategy)}
      */
-    protected List<WebElement> domElements(By locator, SearchStrategy searchStrategy, long timeoutInSeconds) {
+    protected List<WebElement> domElements(By locator, OldSearchStrategy oldSearchStrategy, long timeoutInSeconds) {
         Supplier<List<WebElement>> webElementsSupplier = () -> {
-            switch (searchStrategy) {
+            switch (oldSearchStrategy) {
                 case FIRST_ELEMENTS:
                     return waitForPresenceOfAllElementsLocatedBy(locator, timeoutInSeconds);
                 case IN_ALL_FRAMES:
                     return elementFinder.waitForPresenceOfAllElementsLocatedByInFrames(locator, timeoutInSeconds);
             }
-            throw new EnumConstantNotPresentException(searchStrategy.getDeclaringClass(), " enum constant is not recognized");
+            throw new EnumConstantNotPresentException(oldSearchStrategy.getDeclaringClass(), " enum constant is not recognized");
         };
         return (List<WebElement>) getSupplierObject(webElementsSupplier, "****WebDriverException in domElements()****", "");
     }
@@ -532,22 +541,22 @@ public abstract class OurElementProvider {
     /**
      * Use {@link OurElementProvider#domElements(By)}
      */
-    protected List<WebElement> domElements(By locator, SearchStrategy searchStrategy) {
+    protected List<WebElement> domElements(By locator, OldSearchStrategy oldSearchStrategy) {
         Supplier<List<WebElement>> webElementsSupplier = () -> {
-            switch (searchStrategy) {
+            switch (oldSearchStrategy) {
                 case FIRST_ELEMENTS:
                     return waitForPresenceOfAllElementsLocatedBy(locator);
                 case IN_ALL_FRAMES:
                     return elementFinder.waitForPresenceOfAllElementsLocatedByInFrames(locator);
             }
-            throw new EnumConstantNotPresentException(searchStrategy.getDeclaringClass(), " enum constant is not recognized");
+            throw new EnumConstantNotPresentException(oldSearchStrategy.getDeclaringClass(), " enum constant is not recognized");
         };
         return (List<WebElement>) getSupplierObject(webElementsSupplier, "****WebDriverException in domElements()****", "");
     }
 
     @Deprecated
     /**
-     * Use {@link OurElementProvider#domElement(By, SearchStrategy)}
+     * Use {@link OurElementProvider#domElement(By, OldSearchStrategy)}
      */
     protected final WebElement waitForPresenceOfElementLocatedBy(final By locator, long timeOutInSeconds) {
         return elementFinder.waitForPresenceOfElementLocatedBy(locator, timeOutInSeconds);
@@ -669,7 +678,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * Use {@link OurElementProvider#element(By, OurSearchStrategy)}
+     * Use {@link OurElementProvider#element(By, SearchStrategy)}
      */
     protected WebElement element(final By locator, final long timeoutInSeconds) {
         Supplier<WebElement> webElementSupplier = () -> elementFinder.waitForVisibilityOfAllElementsLocatedBy(locator, timeoutInSeconds)
@@ -711,17 +720,17 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * Use {@link OurElementProvider#elements(By, OurSearchStrategy)}
+     * Use {@link OurElementProvider#elements(By, SearchStrategy)}
      */
-    protected List<WebElement> elements(final By locator, SearchStrategy searchStrategy, final long timeoutInSeconds) {
+    protected List<WebElement> elements(final By locator, OldSearchStrategy oldSearchStrategy, final long timeoutInSeconds) {
         Supplier<List<WebElement>> webElementsSupplier = () -> {
-            switch (searchStrategy) {
+            switch (oldSearchStrategy) {
                 case FIRST_ELEMENTS:
                     return elementFinder.waitForVisibilityOfAllElementsLocatedBy(locator, timeoutInSeconds);
                 case IN_ALL_FRAMES:
                     return elementFinder.waitForVisibilityOfAllElementsLocatedByInFrames(locator, timeoutInSeconds);
             }
-            throw new EnumConstantNotPresentException(searchStrategy.getDeclaringClass(), " enum constant is not recognized");
+            throw new EnumConstantNotPresentException(oldSearchStrategy.getDeclaringClass(), " enum constant is not recognized");
         };
         return (List<WebElement>) getSupplierObject(webElementsSupplier, "****WebDriverException in elements()****", "");
     }
@@ -729,17 +738,17 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * Use {@link OurElementProvider#elements(By, OurSearchStrategy)}
+     * Use {@link OurElementProvider#elements(By, SearchStrategy)}
      */
-    protected List<WebElement> elements(final By locator, SearchStrategy searchStrategy) {
+    protected List<WebElement> elements(final By locator, OldSearchStrategy oldSearchStrategy) {
         Supplier<List<WebElement>> webElementsSupplier = () -> {
-            switch (searchStrategy) {
+            switch (oldSearchStrategy) {
                 case FIRST_ELEMENTS:
                     return elementFinder.waitForVisibilityOfAllElementsLocatedBy(locator);
                 case IN_ALL_FRAMES:
                     return elementFinder.waitForVisibilityOfAllElementsLocatedByInFrames(locator);
             }
-            throw new EnumConstantNotPresentException(searchStrategy.getDeclaringClass(), " enum constant is not recognized");
+            throw new EnumConstantNotPresentException(oldSearchStrategy.getDeclaringClass(), " enum constant is not recognized");
         };
         return (List<WebElement>) getSupplierObject(webElementsSupplier, "****WebDriverException in elements()****", "");
     }
@@ -747,10 +756,10 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * Use {@link OurElementProvider#elements(By, OurSearchStrategy)}
+     * Use {@link OurElementProvider#elements(By, SearchStrategy)}
      */
     protected List<WebElement> elements(final By locator, final long timeoutInSeconds) {
-        return elements(locator, SearchStrategy.FIRST_ELEMENTS, timeoutInSeconds);
+        return elements(locator, OldSearchStrategy.FIRST_ELEMENTS, timeoutInSeconds);
     }
 
     @Deprecated
@@ -762,7 +771,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * use methods of {@link OurWaitFor} with {@link OurSearchStrategy#nullOnFailure()}
+     * use methods of {@link ElementWaitFor} with {@link SearchStrategy#nullOnFailure()}
      */
     protected boolean booleanCondition(Condition condition, ConditionParams params, By locator) {
         try {
@@ -775,7 +784,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * use {@link OurWaitFor}
+     * use {@link ElementWaitFor}
      */
     /**
      * This method is to be used for different conditions you want to wait for to happen with element using LOCATOR
@@ -790,7 +799,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * use {@link OurWaitFor}
+     * use {@link ElementWaitFor}
      */
     /**
      * This method is to be used for different conditions you want to wait for to happen with ELEMENT
@@ -805,7 +814,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * use {@link OurWaitFor}
+     * use {@link ElementWaitFor}
      */
     protected void condition(Condition condition, ConditionParams params, WebElement element) {
         switch (condition) {
@@ -842,7 +851,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * use {@link OurWaitFor}
+     * use {@link ElementWaitFor}
      */
     protected void condition(Condition condition, ConditionParams params, By locator) {
         switch (condition) {
@@ -851,7 +860,7 @@ public abstract class OurElementProvider {
                 break;
             }
             case NOT_VISIBLE: {
-                throw new RuntimeException("Please use different implementation from OurWaitFor");
+                throw new RuntimeException("Please use different implementation from ElementWaitFor");
             }
             case PRESENT_IN_DOM: {
                 waitForPresenceOfElementLocatedBy(locator);
@@ -869,7 +878,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * use {@link OurWaitFor}
+     * use {@link ElementWaitFor}
      */
     public enum Condition {
         VISIBLE,
@@ -883,7 +892,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * use {@link OurWaitFor}
+     * use {@link ElementWaitFor}
      */
     public class ConditionParams {
         String text;
@@ -930,7 +939,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * use {@link OurWaitFor#customCondition(Function)}
+     * use {@link ElementWaitFor#condition(Function)}
      * example: element.waitFor().text("some text");
      */
     protected final void customCondition(final ExpectedCondition<Boolean> condition, long timeout) {
@@ -966,7 +975,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * use {@link OurWaitFor#text(String)}
+     * use {@link ElementWaitFor#text(String)}
      * example: element.waitFor().text("some text");
      */
     protected final boolean isTextPresentInElement(final By locator, final String text) {
@@ -976,7 +985,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * use {@link OurWaitFor#notContainsAttributeValue(String, String)}
+     * use {@link ElementWaitFor#notContainsAttributeValue(String, String)}
      */
     protected final void waitForElementNotContainsAttributeValue(final WebElement element, final String attributeName, final String attributeValue) {
         elementFinder.waitForElementNotContainsAttributeValue(element, attributeName, attributeValue);
@@ -984,7 +993,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * use {@link OurWaitFor#clickable()}
+     * use {@link ElementWaitFor#clickable()}
      */
     protected final void waitForElementToBeClickable(final WebElement element, final String errorMessage) {
         try {
@@ -996,7 +1005,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * use {@link OurWaitFor#attribute(String, String)}
+     * use {@link ElementWaitFor#attribute(String, String)}
      * example: element.waitFor().attribute("color", "#ffffff");
      */
     protected final void waitForElementContainsAttributeValue(final WebElement element, final String attributeName, final String attributeValue) {
@@ -1005,7 +1014,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * use {@link OurWaitFor#attribute(String, String)}
+     * use {@link ElementWaitFor#attribute(String, String)}
      */
     protected final void waitForElementContainsAttributeValue(final WebElement element, final String attributeName, final String attributeValue, long timeout) {
         elementFinder.waitForElementContainsAttributeValue(element, attributeName, attributeValue, timeout);
@@ -1013,7 +1022,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * use {@link OurWaitFor#stale()}
+     * use {@link ElementWaitFor#stale()}
      */
     protected final Boolean waitForStalenessOf(final WebElement webElement) {
         try {
@@ -1025,7 +1034,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * use {@link OurWaitFor#stale()}
+     * use {@link ElementWaitFor#stale()}
      */
     protected final Boolean waitForStalenessOf(final WebElement webElement, long timeout) {
         try {
@@ -1037,7 +1046,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * use {@link OurWaitFor#stale()}
+     * use {@link ElementWaitFor#stale()}
      */
     protected final Boolean waitForStalenessOf(final WebElement webElement, String errorMessage) {
         try {
@@ -1069,7 +1078,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * use {@link OurWaitFor#text(String)}
+     * use {@link ElementWaitFor#text(String)}
      */
     protected final Boolean waitForTextToBePresentIn(final WebElement element, final String text) {
         try {
@@ -1082,7 +1091,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * use {@link OurWaitFor#text(String)}
+     * use {@link ElementWaitFor#text(String)}
      */
     protected final Boolean waitForTextToBePresentIn(final TextField textField, final String text) {
         return elementFinder.waitForTextToBePresentIn(textField, text);
@@ -1090,7 +1099,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * use {@link OurWaitFor#text(String)}
+     * use {@link ElementWaitFor#text(String)}
      */
     protected final Boolean waitForTextToBePresentIn(final WebElement element) {
         return elementFinder.waitForTextToBePresentIn(element);
@@ -1098,7 +1107,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * use {@link OurWaitFor#clickable()}
+     * use {@link ElementWaitFor#clickable()}
      */
     protected final WebElement waitForElementToBeClickable(final By locator, final String errorMessage) {
         try {
@@ -1127,7 +1136,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * use {@link OurWaitFor#text(String)}
+     * use {@link ElementWaitFor#text(String)}
      */
     protected final Boolean waitForTextToBePresentInElement(final By locator, final String text) {
         return elementFinder.waitForTextToBePresentInElement(locator, text);
@@ -1135,7 +1144,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * use {@link OurWaitFor#text(String)}
+     * use {@link ElementWaitFor#text(String)}
      */
     protected final Boolean waitForTextToBePresentInElement(final By locator) {
         return elementFinder.waitForTextToBePresentInElement(locator);

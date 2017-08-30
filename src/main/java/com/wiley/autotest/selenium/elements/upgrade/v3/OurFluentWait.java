@@ -1,6 +1,6 @@
 package com.wiley.autotest.selenium.elements.upgrade.v3;
 
-import com.wiley.autotest.selenium.context.OurSearchStrategy;
+import com.wiley.autotest.selenium.context.SearchStrategy;
 import org.openqa.selenium.support.ui.FluentWait;
 
 import java.util.concurrent.TimeUnit;
@@ -18,7 +18,7 @@ public class OurFluentWait<T> extends FluentWait<T> {
         super(input);
     }
 
-    public OurFluentWait(T input, OurSearchStrategy strategy) {
+    public OurFluentWait(T input, SearchStrategy strategy) {
         super(input);
         withTimeout(strategy.getCustomTimeout(), TimeUnit.SECONDS);
         pollingEvery(strategy.getPoolingEvery(), strategy.getUnit());

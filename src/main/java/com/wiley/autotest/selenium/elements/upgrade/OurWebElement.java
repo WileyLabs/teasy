@@ -3,10 +3,10 @@ package com.wiley.autotest.selenium.elements.upgrade;
 import com.wiley.autotest.ElementFinder;
 import com.wiley.autotest.WebDriverAwareElementFinder;
 import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
+import com.wiley.autotest.selenium.elements.upgrade.v3.ElementWaitFor;
 import com.wiley.autotest.selenium.elements.upgrade.v3.OurElementFinder;
-import com.wiley.autotest.selenium.context.OurSearchStrategy;
+import com.wiley.autotest.selenium.context.SearchStrategy;
 import com.wiley.autotest.selenium.elements.upgrade.v3.OurShould;
-import com.wiley.autotest.selenium.elements.upgrade.v3.OurWaitFor;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.interactions.internal.Coordinates;
@@ -86,10 +86,10 @@ public class OurWebElement implements CustomWebElement, Locatable {
         }
 
         if (contextFinder == null) {
-            contextFinder = new OurElementFinder(getWebDriver(), new OurSearchStrategy(TIMEOUT_FOR_AGAIN_LOCATE_IN_SECONDS), this);
+            contextFinder = new OurElementFinder(getWebDriver(), new SearchStrategy(TIMEOUT_FOR_AGAIN_LOCATE_IN_SECONDS), this);
         }
         if (allowNullContextFinder == null) {
-            allowNullContextFinder = new OurElementFinder(getWebDriver(), new OurSearchStrategy(TIMEOUT_FOR_AGAIN_LOCATE_IN_SECONDS)
+            allowNullContextFinder = new OurElementFinder(getWebDriver(), new SearchStrategy(TIMEOUT_FOR_AGAIN_LOCATE_IN_SECONDS)
                     .nullOnFailure(), this);
         }
     }
@@ -100,18 +100,18 @@ public class OurWebElement implements CustomWebElement, Locatable {
     }
 
     @Override
-    public OurShould should(OurSearchStrategy strategy) {
+    public OurShould should(SearchStrategy strategy) {
         return new OurShould(this, strategy);
     }
 
     @Override
-    public OurWaitFor waitFor() {
-        return new OurWaitFor(this);
+    public ElementWaitFor waitFor() {
+        return new ElementWaitFor(this);
     }
 
     @Override
-    public OurWaitFor waitFor(OurSearchStrategy strategy) {
-        return new OurWaitFor(this, strategy);
+    public ElementWaitFor waitFor(SearchStrategy strategy) {
+        return new ElementWaitFor(this, strategy);
     }
 
     @Override
@@ -134,7 +134,7 @@ public class OurWebElement implements CustomWebElement, Locatable {
     }
 
     @Override
-    public OurWebElement element(By by, OurSearchStrategy strategy) {
+    public OurWebElement element(By by, SearchStrategy strategy) {
         return customContextFinder(strategy).visibleElement(by);
     }
 
@@ -144,7 +144,7 @@ public class OurWebElement implements CustomWebElement, Locatable {
     }
 
     @Override
-    public List<OurWebElement> elements(By by, OurSearchStrategy strategy) {
+    public List<OurWebElement> elements(By by, SearchStrategy strategy) {
         return customContextFinder(strategy).visibleElements(by);
     }
 
@@ -154,7 +154,7 @@ public class OurWebElement implements CustomWebElement, Locatable {
     }
 
     @Override
-    public OurWebElement domElement(By by, OurSearchStrategy strategy) {
+    public OurWebElement domElement(By by, SearchStrategy strategy) {
         return customContextFinder(strategy).presentInDomElement(by);
     }
 
@@ -164,11 +164,11 @@ public class OurWebElement implements CustomWebElement, Locatable {
     }
 
     @Override
-    public List<OurWebElement> domElements(By by, OurSearchStrategy strategy) {
+    public List<OurWebElement> domElements(By by, SearchStrategy strategy) {
         return customContextFinder(strategy).presentInDomElements(by);
     }
 
-    private OurElementFinder customContextFinder(OurSearchStrategy strategy) {
+    private OurElementFinder customContextFinder(SearchStrategy strategy) {
         return new OurElementFinder(getWebDriver(), strategy, this);
     }
 
