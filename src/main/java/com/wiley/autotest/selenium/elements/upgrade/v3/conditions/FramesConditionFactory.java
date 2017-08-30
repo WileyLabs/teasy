@@ -1,20 +1,20 @@
 package com.wiley.autotest.selenium.elements.upgrade.v3.conditions;
 
-import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyWebElement;
 import com.wiley.autotest.selenium.context.SearchStrategy;
 
 /**
  * Created by vefimov on 25/05/2017.
  */
-public class OurConditionFactory {
+public class FramesConditionFactory {
 
-    private OurWebElement context;
+    private TeasyWebElement context;
 
-    public OurConditionFactory(OurWebElement context) {
+    public FramesConditionFactory(TeasyWebElement context) {
         this.context = context;
     }
 
-    public OurCondition get(SearchStrategy.FrameStrategy frameStrategy) {
+    public ElementCondition get(SearchStrategy.FrameStrategy frameStrategy) {
         if (context == null) {
             switch (frameStrategy) {
                 case FIRST_FOUND:

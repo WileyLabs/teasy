@@ -1,23 +1,15 @@
 package com.wiley.autotest.selenium.extensions.internal;
 
-import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.elements.TextField;
-import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
-import com.wiley.autotest.utils.TestUtils;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyWebElement;
 import org.openqa.selenium.*;
 
-import static com.wiley.autotest.utils.ExecutionUtils.*;
-
-import static com.wiley.autotest.utils.ExecutionUtils.isAndroid;
-import static com.wiley.autotest.utils.ExecutionUtils.isIE;
-import static com.wiley.autotest.utils.ExecutionUtils.isSafari;
-
 class TextFieldImpl extends AbstractEnabledElement implements TextField {
-    protected TextFieldImpl(final OurWebElement wrappedElement) {
+    protected TextFieldImpl(final TeasyWebElement wrappedElement) {
         super(wrappedElement);
     }
 
-    protected TextFieldImpl(final OurWebElement wrappedElement, By by) {
+    protected TextFieldImpl(final TeasyWebElement wrappedElement, By by) {
         super(wrappedElement, by);
     }
 
@@ -75,7 +67,7 @@ class TextFieldImpl extends AbstractEnabledElement implements TextField {
     }
 
     @Override
-    public OurWebElement getWrappedWebElement() {
+    public TeasyWebElement getWrappedWebElement() {
         return getWrappedElement();
     }
 

@@ -1,7 +1,6 @@
 package com.wiley.autotest.selenium.elements;
 
-import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
-import org.openqa.selenium.WebElement;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyWebElement;
 
 import java.util.List;
 
@@ -30,15 +29,15 @@ public interface Select extends Element, EnabledElement {
 
     void selectByPartialText(String partialText);
 
-    OurWebElement getSelectedOption();
+    TeasyWebElement getSelectedOption();
 
     String getSelectedText();
 
     String getSelectedValue();
 
-    List<OurWebElement> getOptions();
+    List<TeasyWebElement> getOptions();
 
-    List<OurWebElement> getValues();
+    List<TeasyWebElement> getValues();
 
     int getSelectedIndex();
 

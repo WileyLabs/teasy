@@ -2,7 +2,7 @@ package com.wiley.autotest;
 
 import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
 import com.wiley.autotest.selenium.elements.TextField;
-import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyWebElement;
 import com.wiley.autotest.utils.ExecutionUtils;
 import com.wiley.autotest.utils.TestUtils;
 import org.openqa.selenium.*;
@@ -39,7 +39,7 @@ public final class ExpectedConditions2 {
         };
     }
 
-    public static ExpectedCondition<List<WebElement>> presenceOfAllElementsLocatedBy(final OurWebElement searchContext, final By locator) {
+    public static ExpectedCondition<List<WebElement>> presenceOfAllElementsLocatedBy(final TeasyWebElement searchContext, final By locator) {
         return new ExpectedCondition<List<WebElement>>() {
             @Override
             public List<WebElement> apply(final WebDriver driver) {
@@ -54,7 +54,7 @@ public final class ExpectedConditions2 {
     }
 
     @Deprecated
-    //use presenceOfAllElementsLocatedBy(final OurWebElement searchContext, final By locator)
+    //use presenceOfAllElementsLocatedBy(final TeasyWebElement searchContext, final By locator)
     public static ExpectedCondition<List<WebElement>> presenceOfAllElementsLocatedBy(final SearchContext searchContext, final By locator) {
         return new ExpectedCondition<List<WebElement>>() {
             @Override
@@ -99,7 +99,7 @@ public final class ExpectedConditions2 {
         };
     }
 
-    public static ExpectedCondition<List<WebElement>> presenceOfAllElementsInAllFrames(OurWebElement context, final By locator) {
+    public static ExpectedCondition<List<WebElement>> presenceOfAllElementsInAllFrames(TeasyWebElement context, final By locator) {
         return new ExpectedCondition<List<WebElement>>() {
             @Override
             public List<WebElement> apply(final WebDriver driver) {
@@ -156,7 +156,7 @@ public final class ExpectedConditions2 {
      * @param locator
      * @return
      */
-    public static ExpectedCondition<List<WebElement>> visibilityOfFirstElements(final OurWebElement searchContext, final By locator) {
+    public static ExpectedCondition<List<WebElement>> visibilityOfFirstElements(final TeasyWebElement searchContext, final By locator) {
         return new ExpectedCondition<List<WebElement>>() {
             @Override
             public List<WebElement> apply(final WebDriver driver) {
@@ -202,7 +202,7 @@ public final class ExpectedConditions2 {
      * @param locator
      * @return
      */
-    public static ExpectedCondition<List<WebElement>> visibilityOfFirstElementsInAllFrames(final OurWebElement searchContext, final By locator) {
+    public static ExpectedCondition<List<WebElement>> visibilityOfFirstElementsInAllFrames(final TeasyWebElement searchContext, final By locator) {
         return new ExpectedCondition<List<WebElement>>() {
             @Override
             public List<WebElement> apply(final WebDriver driver) {
@@ -217,7 +217,7 @@ public final class ExpectedConditions2 {
         };
     }
 
-    private static List<WebElement> getFirstVisibleWebElements(WebDriver driver, OurWebElement searchContext, By locator) {
+    private static List<WebElement> getFirstVisibleWebElements(WebDriver driver, TeasyWebElement searchContext, By locator) {
         List<WebElement> elements;
         if (searchContext == null) {
             elements = driver.findElements(locator);

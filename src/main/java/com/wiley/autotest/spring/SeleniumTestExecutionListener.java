@@ -191,7 +191,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
             } else if (configuration.getClassOfElement() != null) {
                 SeleniumHolder.setOurWebElementClass(configuration.getClassOfElement().getName());
             } else {
-                SeleniumHolder.setOurWebElementClass("com.wiley.autotest.selenium.elements.upgrade.OurWebElement");
+                SeleniumHolder.setOurWebElementClass("com.wiley.autotest.selenium.elements.upgrade.TeasyWebElement");
             }
         }
     }

@@ -11,7 +11,7 @@ import java.util.function.Function;
 /**
  * Created by vefimov on 25/05/2017.
  */
-public class FirstFoundInAllFrames implements OurCondition {
+public class FirstFoundInAllFrames implements ElementCondition {
 
     @Override
     public Function<WebDriver, List<WebElement>> visibility(By locator) {

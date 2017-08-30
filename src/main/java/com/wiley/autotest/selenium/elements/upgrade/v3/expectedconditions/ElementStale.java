@@ -1,6 +1,6 @@
 package com.wiley.autotest.selenium.elements.upgrade.v3.expectedconditions;
 
-import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyWebElement;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
@@ -12,9 +12,9 @@ import javax.annotation.Nullable;
  */
 public class ElementStale implements ExpectedCondition<Boolean> {
 
-    private OurWebElement element;
+    private TeasyWebElement element;
 
-    public ElementStale(OurWebElement element) {
+    public ElementStale(TeasyWebElement element) {
         this.element = element;
     }
 

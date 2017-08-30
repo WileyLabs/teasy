@@ -11,12 +11,12 @@ import org.openqa.selenium.WebElement;
  * Time: 15:51
  */
 public class FindElementsLocator implements Locator {
-    private OurWebElement searchContext;
+    private TeasyWebElement searchContext;
     private WebDriver driver;
     private By by;
     private int index;
 
-    public FindElementsLocator(OurWebElement searchContext, By by, int index) {
+    public FindElementsLocator(TeasyWebElement searchContext, By by, int index) {
         this.searchContext = searchContext;
         this.by = by;
         this.index = index;

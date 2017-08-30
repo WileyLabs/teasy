@@ -1,7 +1,7 @@
 package com.wiley.autotest.selenium.elements.upgrade;
 
 import com.wiley.autotest.selenium.elements.upgrade.v3.ElementWaitFor;
-import com.wiley.autotest.selenium.elements.upgrade.v3.OurShould;
+import com.wiley.autotest.selenium.elements.upgrade.v3.Should;
 import com.wiley.autotest.selenium.context.SearchStrategy;
 import org.openqa.selenium.*;
 
@@ -48,29 +48,29 @@ public interface CustomWebElement {
 
     Locator getLocator();
 
-    OurShould should();
+    Should should();
 
-    OurShould should(SearchStrategy strategy);
+    Should should(SearchStrategy strategy);
 
     ElementWaitFor waitFor();
 
     ElementWaitFor waitFor(SearchStrategy strategy);
 
-    OurWebElement getParent();
+    TeasyWebElement getParent();
 
-    OurWebElement getParent(int level);
+    TeasyWebElement getParent(int level);
 
-    OurWebElement element(By by);
-    OurWebElement element(By by, SearchStrategy strategy);
+    TeasyWebElement element(By by);
+    TeasyWebElement element(By by, SearchStrategy strategy);
 
-    List<OurWebElement> elements(By by);
-    List<OurWebElement> elements(By by, SearchStrategy strategy);
+    List<TeasyWebElement> elements(By by);
+    List<TeasyWebElement> elements(By by, SearchStrategy strategy);
 
-    OurWebElement domElement(By by);
-    OurWebElement domElement(By by, SearchStrategy strategy);
+    TeasyWebElement domElement(By by);
+    TeasyWebElement domElement(By by, SearchStrategy strategy);
 
-    List<OurWebElement> domElements(By by);
-    List<OurWebElement> domElements(By by, SearchStrategy strategy);
+    List<TeasyWebElement> domElements(By by);
+    List<TeasyWebElement> domElements(By by, SearchStrategy strategy);
 
     void click();
 }

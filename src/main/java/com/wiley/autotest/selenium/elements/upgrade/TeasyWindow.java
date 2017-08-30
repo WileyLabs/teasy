@@ -17,12 +17,12 @@ import java.util.Iterator;
 /**
  * Created by vefimov on 30/05/2017.
  */
-public class OurWindow implements Window {
+public class TeasyWindow implements Window {
 
     private OurFluentWait<WebDriver> fluentWait;
     private WebDriver driver;
 
-    public OurWindow() {
+    public TeasyWindow() {
         fluentWait = new OurFluentWait<>(SeleniumHolder.getWebDriver());
         driver = SeleniumHolder.getWebDriver();
     }

@@ -1,6 +1,6 @@
 package com.wiley.autotest.selenium.elements;
 
-import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyWebElement;
 import com.wiley.autotest.selenium.extensions.ElementFactory;
 import com.wiley.autotest.selenium.extensions.internal.DefaultElementFactory;
 import org.openqa.selenium.By;
@@ -13,17 +13,17 @@ import org.openqa.selenium.WebElement;
 public class WebElementWrapper {
 
 
-    //TODO VE refactor this to keep only OurWebElement!
+    //TODO VE refactor this to keep only TeasyWebElement!
 
     public final ElementFactory elementFactory = new DefaultElementFactory();
     public WebElement webElement;
-    public OurWebElement element;
+    public TeasyWebElement element;
 
     public WebElementWrapper(final WebElement webElement) {
         this.webElement = webElement;
     }
 
-    public WebElementWrapper(final OurWebElement element) {
+    public WebElementWrapper(final TeasyWebElement element) {
         this.element = element;
     }
 

@@ -4,12 +4,13 @@ import com.wiley.autotest.ElementFinder;
 import com.wiley.autotest.WebDriverAwareElementFinder;
 import com.wiley.autotest.actions.Actions;
 import com.wiley.autotest.selenium.elements.*;
-import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
-import com.wiley.autotest.selenium.elements.upgrade.OurWindow;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyWebElement;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyWindow;
 import com.wiley.autotest.selenium.elements.upgrade.Window;
 import com.wiley.autotest.selenium.elements.upgrade.v3.CustomWaitFor;
 import com.wiley.autotest.selenium.elements.upgrade.v3.ElementWaitFor;
 import com.wiley.autotest.selenium.elements.upgrade.v3.OurElementFinder;
+import com.wiley.autotest.selenium.elements.upgrade.v3.Should;
 import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.window.WindowMatcher;
 import com.wiley.autotest.utils.TestUtils;
 import org.openqa.selenium.*;
@@ -29,7 +30,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static com.wiley.autotest.selenium.SeleniumHolder.getWebDriver;
-import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrap;
+import static com.wiley.autotest.selenium.elements.upgrade.CustomWebElementFactory.wrap;
 import static com.wiley.autotest.utils.ExecutionUtils.isChrome;
 
 /**
@@ -38,9 +39,9 @@ import static com.wiley.autotest.utils.ExecutionUtils.isChrome;
  * Date: 15.02.12
  * Time: 13:02
  */
-public abstract class OurElementProvider {
+public abstract class TeasyElementProvider {
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(OurElementProvider.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(TeasyElementProvider.class);
 
     @Autowired
     private long timeout;
@@ -70,35 +71,35 @@ public abstract class OurElementProvider {
         return new CustomWaitFor();
     }
 
-    protected OurWebElement element(final By locator) {
+    protected TeasyWebElement element(final By locator) {
         return finder().visibleElement(locator);
     }
 
-    protected OurWebElement element(final By locator, SearchStrategy strategy) {
+    protected TeasyWebElement element(final By locator, SearchStrategy strategy) {
         return customFinder(strategy).visibleElement(locator);
     }
 
-    protected List<OurWebElement> elements(final By locator) {
+    protected List<TeasyWebElement> elements(final By locator) {
         return finder().visibleElements(locator);
     }
 
-    protected List<OurWebElement> elements(final By locator, SearchStrategy strategy) {
+    protected List<TeasyWebElement> elements(final By locator, SearchStrategy strategy) {
         return customFinder(strategy).visibleElements(locator);
     }
 
-    protected OurWebElement domElement(By locator) {
+    protected TeasyWebElement domElement(By locator) {
         return finder().presentInDomElement(locator);
     }
 
-    protected OurWebElement domElement(By locator, SearchStrategy strategy) {
+    protected TeasyWebElement domElement(By locator, SearchStrategy strategy) {
         return customFinder(strategy).presentInDomElement(locator);
     }
 
-    protected List<OurWebElement> domElements(By locator) {
+    protected List<TeasyWebElement> domElements(By locator) {
         return finder().presentInDomElements(locator);
     }
 
-    protected List<OurWebElement> domElements(By locator, SearchStrategy strategy) {
+    protected List<TeasyWebElement> domElements(By locator, SearchStrategy strategy) {
         return customFinder(strategy).presentInDomElements(locator);
     }
 
@@ -111,14 +112,14 @@ public abstract class OurElementProvider {
     }
 
     protected Window window() {
-        return new OurWindow();
+        return new TeasyWindow();
     }
 
     protected Button button(By locator) {
         return getElement(Button.class, locator);
     }
 
-    protected Button button(OurWebElement searchContext, By locator) {
+    protected Button button(TeasyWebElement searchContext, By locator) {
         return getElement(Button.class, searchContext, locator);
     }
 
@@ -126,7 +127,7 @@ public abstract class OurElementProvider {
         return getElements(Button.class, locator);
     }
 
-    protected List<Button> buttons(OurWebElement searchContext, By locator) {
+    protected List<Button> buttons(TeasyWebElement searchContext, By locator) {
         return getElements(Button.class, searchContext, locator);
     }
 
@@ -134,7 +135,7 @@ public abstract class OurElementProvider {
         return getElement(Link.class, locator);
     }
 
-    protected Link link(OurWebElement searchContext, By locator) {
+    protected Link link(TeasyWebElement searchContext, By locator) {
         return getElement(Link.class, searchContext, locator);
     }
 
@@ -142,7 +143,7 @@ public abstract class OurElementProvider {
         return getElements(Link.class, locator);
     }
 
-    protected List<Link> links(OurWebElement searchContext, By locator) {
+    protected List<Link> links(TeasyWebElement searchContext, By locator) {
         return getElements(Link.class, searchContext, locator);
     }
 
@@ -150,7 +151,7 @@ public abstract class OurElementProvider {
         return getElement(CheckBox.class, locator);
     }
 
-    protected CheckBox checkBox(OurWebElement searchContext, By locator) {
+    protected CheckBox checkBox(TeasyWebElement searchContext, By locator) {
         return getElement(CheckBox.class, searchContext, locator);
     }
 
@@ -158,7 +159,7 @@ public abstract class OurElementProvider {
         return getElements(CheckBox.class, locator);
     }
 
-    protected List<CheckBox> checkBoxes(OurWebElement searchContext, By locator) {
+    protected List<CheckBox> checkBoxes(TeasyWebElement searchContext, By locator) {
         return getElements(CheckBox.class, searchContext, locator);
     }
 
@@ -166,7 +167,7 @@ public abstract class OurElementProvider {
         return getElement(RadioButton.class, locator);
     }
 
-    protected RadioButton radioButton(OurWebElement searchContext, By locator) {
+    protected RadioButton radioButton(TeasyWebElement searchContext, By locator) {
         return getElement(RadioButton.class, searchContext, locator);
     }
 
@@ -174,7 +175,7 @@ public abstract class OurElementProvider {
         return getElements(RadioButton.class, locator);
     }
 
-    protected List<RadioButton> radioButtons(OurWebElement searchContext, By locator) {
+    protected List<RadioButton> radioButtons(TeasyWebElement searchContext, By locator) {
         return getElements(RadioButton.class, locator);
     }
 
@@ -182,7 +183,7 @@ public abstract class OurElementProvider {
         return getElement(Select.class, locator);
     }
 
-    protected Select select(OurWebElement searchContext, By locator) {
+    protected Select select(TeasyWebElement searchContext, By locator) {
         return getElement(Select.class, searchContext, locator);
     }
 
@@ -190,7 +191,7 @@ public abstract class OurElementProvider {
         return getElements(Select.class, locator);
     }
 
-    protected List<Select> selects(OurWebElement searchContext, By locator) {
+    protected List<Select> selects(TeasyWebElement searchContext, By locator) {
         return getElements(Select.class, locator);
     }
 
@@ -198,7 +199,7 @@ public abstract class OurElementProvider {
         return getElement(TextField.class, locator);
     }
 
-    protected TextField textField(OurWebElement searchContext, By locator) {
+    protected TextField textField(TeasyWebElement searchContext, By locator) {
         return getElement(TextField.class, searchContext, locator);
     }
 
@@ -206,7 +207,7 @@ public abstract class OurElementProvider {
         return getElements(TextField.class, locator);
     }
 
-    protected List<TextField> textFields(OurWebElement searchContext, By locator) {
+    protected List<TextField> textFields(TeasyWebElement searchContext, By locator) {
         return getElements(TextField.class, searchContext, locator);
     }
 
@@ -214,7 +215,7 @@ public abstract class OurElementProvider {
         return getWebElementWrapper(element(by)).getElement(elementType, by);
     }
 
-    private <T extends Element> T getElement(Class<T> elementType, OurWebElement searchContext, By by) {
+    private <T extends Element> T getElement(Class<T> elementType, TeasyWebElement searchContext, By by) {
         return getWebElementWrapper(searchContext.element(by)).getElement(elementType, by);
     }
 
@@ -225,7 +226,7 @@ public abstract class OurElementProvider {
         return result;
     }
 
-    private <T extends Element> List<T> getElements(Class<T> elementType, OurWebElement searchContext, By by) {
+    private <T extends Element> List<T> getElements(Class<T> elementType, TeasyWebElement searchContext, By by) {
         List<T> result = new ArrayList<>();
         searchContext.elements(by)
                 .forEach(element -> result.add(getWebElementWrapper(element).getElement(elementType, by)));
@@ -244,7 +245,7 @@ public abstract class OurElementProvider {
     /**
      * method will be deleted shortly. use elements() and check like isEmpty()
      */
-    protected final OurWebElement elementOrNull(final By locator) {
+    protected final TeasyWebElement elementOrNull(final By locator) {
         return elementOrNull(locator, new SearchStrategy(1).nullOnFailure());
     }
 
@@ -252,12 +253,12 @@ public abstract class OurElementProvider {
     /**
      * method will be deleted shortly. use elements(by, strategy) and check like isEmpty()
      */
-    protected final OurWebElement elementOrNull(final By locator, SearchStrategy strategy) {
-        List<OurWebElement> ourWebElements = customFinder(strategy.nullOnFailure()).visibleElements(locator);
-        if (ourWebElements.isEmpty()) {
+    protected final TeasyWebElement elementOrNull(final By locator, SearchStrategy strategy) {
+        List<TeasyWebElement> teasyWebElements = customFinder(strategy.nullOnFailure()).visibleElements(locator);
+        if (teasyWebElements.isEmpty()) {
             return null;
         } else {
-            return ourWebElements.get(0);
+            return teasyWebElements.get(0);
         }
     }
 
@@ -281,7 +282,7 @@ public abstract class OurElementProvider {
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
 
         if (stackTrace.length < 5) {
-            return "***Code issue during generating error message for assert! Check the code at OurElementProvider";
+            return "***Code issue during generating error message for assert! Check the code at TeasyElementProvider";
         }
 
         String nameOfMethodThatCalledMe = "";
@@ -293,7 +294,7 @@ public abstract class OurElementProvider {
             }
             nextStackTraceElement = stackTrace[i + 1];
             String abstractPageElement = "AbstractPageElement";
-            String abstractElementFinder = "OurElementProvider";
+            String abstractElementFinder = "TeasyElementProvider";
             if ((stackTraceElement.getClassName().endsWith(abstractPageElement)
                     && !nextStackTraceElement.getClassName().endsWith(abstractPageElement)
                     && !nextStackTraceElement.getClassName().endsWith(abstractElementFinder)) ||
@@ -366,7 +367,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * Use {@link OurElementProvider#window()} and call {@link OurWindow#switchTo(WindowMatcher)}
+     * Use {@link TeasyElementProvider#window()} and call {@link TeasyWindow#switchTo(WindowMatcher)}
      */
     protected final void waitForWindowToBeAppearedByPartialUrlAndSwitchToIt(final String url, long timeoutInSeconds) {
         if (isChrome()) {
@@ -377,7 +378,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * Use {@link OurElementProvider#window()} and call {@link OurWindow#switchTo(WindowMatcher)}
+     * Use {@link TeasyElementProvider#window()} and call {@link TeasyWindow#switchTo(WindowMatcher)}
      */
     protected final void waitForWindowToBeAppearedAndSwitchToIt(final String title) {
         Actions action = () -> {
@@ -395,7 +396,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * Use {@link OurElementProvider#window()} and call {@link OurWindow#switchTo(WindowMatcher)}
+     * Use {@link TeasyElementProvider#window()} and call {@link TeasyWindow#switchTo(WindowMatcher)}
      */
     protected final void waitForWindowToBeAppearedByPartialUrlAndSwitchToIt(final String url) {
         Actions action = () -> {
@@ -414,7 +415,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * Use {@link OurElementProvider#window()} and call {@link OurWindow#switchTo(WindowMatcher)}
+     * Use {@link TeasyElementProvider#window()} and call {@link TeasyWindow#switchTo(WindowMatcher)}
      */
     protected final void waitForWindowToBeAppearedByPartialTitleAndSwitchToIt(final String partialTitle) {
         Actions action = () -> {
@@ -493,7 +494,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * Use {@link OurElementProvider#domElement(By, SearchStrategy)}
+     * Use {@link TeasyElementProvider#domElement(By, SearchStrategy)}
      */
     protected WebElement domElement(By locator, final long timeoutInSeconds) {
         Supplier webElementSupplier = () -> waitForPresenceOfElementLocatedBy(locator, timeoutInSeconds);
@@ -502,7 +503,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * Use {@link OurElementProvider#element(By, SearchStrategy)}
+     * Use {@link TeasyElementProvider#element(By, SearchStrategy)}
      */
     protected final WebElement elementOrNull(final By locator, long timeoutInSeconds) {
         try {
@@ -514,7 +515,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * Use {@link OurElementProvider#domElements(By, SearchStrategy)}
+     * Use {@link TeasyElementProvider#domElements(By, SearchStrategy)}
      */
     protected List<WebElement> domElements(By locator, long timeoutInSeconds) {
         return domElements(locator, OldSearchStrategy.FIRST_ELEMENTS, timeoutInSeconds);
@@ -522,7 +523,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * Use {@link OurElementProvider#domElements(By, SearchStrategy)}
+     * Use {@link TeasyElementProvider#domElements(By, SearchStrategy)}
      */
     protected List<WebElement> domElements(By locator, OldSearchStrategy oldSearchStrategy, long timeoutInSeconds) {
         Supplier<List<WebElement>> webElementsSupplier = () -> {
@@ -539,7 +540,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * Use {@link OurElementProvider#domElements(By)}
+     * Use {@link TeasyElementProvider#domElements(By)}
      */
     protected List<WebElement> domElements(By locator, OldSearchStrategy oldSearchStrategy) {
         Supplier<List<WebElement>> webElementsSupplier = () -> {
@@ -556,7 +557,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * Use {@link OurElementProvider#domElement(By, OldSearchStrategy)}
+     * Use {@link TeasyElementProvider#domElement(By, OldSearchStrategy)}
      */
     protected final WebElement waitForPresenceOfElementLocatedBy(final By locator, long timeOutInSeconds) {
         return elementFinder.waitForPresenceOfElementLocatedBy(locator, timeOutInSeconds);
@@ -564,7 +565,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * Use {@link OurElementProvider#domElement(By)}
+     * Use {@link TeasyElementProvider#domElement(By)}
      */
     protected final WebElement waitForPresenceOfElementLocatedBy(final By locator, final String errorMessage) {
         Supplier<WebElement> webElementSupplier = () -> waitForPresenceOfElementLocatedBy(locator);
@@ -678,7 +679,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * Use {@link OurElementProvider#element(By, SearchStrategy)}
+     * Use {@link TeasyElementProvider#element(By, SearchStrategy)}
      */
     protected WebElement element(final By locator, final long timeoutInSeconds) {
         Supplier<WebElement> webElementSupplier = () -> elementFinder.waitForVisibilityOfAllElementsLocatedBy(locator, timeoutInSeconds)
@@ -688,7 +689,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * Use {@link com.wiley.autotest.selenium.elements.upgrade.v3.OurShould#haveAttribute(String, String)}
+     * Use {@link Should#haveAttribute(String, String)}
      */
     protected final void waitForElementContainsAttribute(final WebElement element, final String attributeName) {
         elementFinder.waitForElementContainsAttribute(element, attributeName);
@@ -696,7 +697,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * Use {@link com.wiley.autotest.selenium.elements.upgrade.v3.OurShould#haveAttribute(String, String)}
+     * Use {@link Should#haveAttribute(String, String)}
      */
     protected final void waitForElementContainsAttribute(final WebElement element, final String attributeName, long timeOutInSeconds) {
         elementFinder.waitForElementContainsAttribute(element, attributeName, timeOutInSeconds);
@@ -704,7 +705,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * Use {@link com.wiley.autotest.selenium.elements.upgrade.v3.OurShould#notHaveAttribute(String)}}
+     * Use {@link Should#notHaveAttribute(String)}}
      */
     protected final void waitForElementNotContainsAttribute(final WebElement element, final String attributeName) {
         elementFinder.waitForElementNotContainsAttribute(element, attributeName);
@@ -712,7 +713,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * Use {@link com.wiley.autotest.selenium.elements.upgrade.v3.OurShould#notHaveAttribute(String)}}
+     * Use {@link Should#notHaveAttribute(String)}}
      */
     protected final void waitForElementNotContainsAttribute(final WebElement element, final String attributeName, long timeOutInSeconds) {
         elementFinder.waitForElementNotContainsAttribute(element, attributeName, timeOutInSeconds);
@@ -720,7 +721,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * Use {@link OurElementProvider#elements(By, SearchStrategy)}
+     * Use {@link TeasyElementProvider#elements(By, SearchStrategy)}
      */
     protected List<WebElement> elements(final By locator, OldSearchStrategy oldSearchStrategy, final long timeoutInSeconds) {
         Supplier<List<WebElement>> webElementsSupplier = () -> {
@@ -738,7 +739,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * Use {@link OurElementProvider#elements(By, SearchStrategy)}
+     * Use {@link TeasyElementProvider#elements(By, SearchStrategy)}
      */
     protected List<WebElement> elements(final By locator, OldSearchStrategy oldSearchStrategy) {
         Supplier<List<WebElement>> webElementsSupplier = () -> {
@@ -756,7 +757,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * Use {@link OurElementProvider#elements(By, SearchStrategy)}
+     * Use {@link TeasyElementProvider#elements(By, SearchStrategy)}
      */
     protected List<WebElement> elements(final By locator, final long timeoutInSeconds) {
         return elements(locator, OldSearchStrategy.FIRST_ELEMENTS, timeoutInSeconds);
@@ -959,7 +960,7 @@ public abstract class OurElementProvider {
     /**
      * will be made privatemi
      */
-    protected WebElementWrapper getWebElementWrapper(OurWebElement wrappedElement) {
+    protected WebElementWrapper getWebElementWrapper(TeasyWebElement wrappedElement) {
         return new WebElementWrapper(wrappedElement);
     }
 
@@ -1120,7 +1121,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * use {@link OurElementProvider#domElement(By)}
+     * use {@link TeasyElementProvider#domElement(By)}
      */
     protected WebElement waitForPresenceOfElementLocatedBy(final By locator) {
         return elementFinder.waitForPresenceOfElementLocatedBy(locator);
@@ -1128,7 +1129,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * use {@link OurElementProvider#domElement(SearchContext, By)}
+     * use {@link TeasyElementProvider#domElement(SearchContext, By)}
      */
     protected WebElement waitForPresenceOfElementLocatedBy(final SearchContext searchContext, final By locator) {
         return wrap(elementFinder.waitForPresenceOfElementLocatedBy(searchContext, locator), locator);
@@ -1152,7 +1153,7 @@ public abstract class OurElementProvider {
 
     @Deprecated
     /**
-     * use {@link OurElementProvider#domElements(SearchContext, By)}
+     * use {@link TeasyElementProvider#domElements(SearchContext, By)}
      */
     protected List<WebElement> waitForPresenceOfAllElementsLocatedBy(final SearchContext searchContext, final By locator) {
         return elementFinder.waitForPresenceOfAllElementsLocatedBy(searchContext, locator);

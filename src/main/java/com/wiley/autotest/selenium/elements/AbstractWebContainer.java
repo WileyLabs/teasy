@@ -2,31 +2,31 @@ package com.wiley.autotest.selenium.elements;
 
 import com.wiley.autotest.WebDriverAwareElementFinder;
 import com.wiley.autotest.selenium.SeleniumHolder;
-import com.wiley.autotest.selenium.context.OurElementProvider;
+import com.wiley.autotest.selenium.context.TeasyElementProvider;
 import com.wiley.autotest.selenium.context.ErrorSender;
 import com.wiley.autotest.selenium.elements.upgrade.CustomWebElement;
-import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyWebElement;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public abstract class AbstractWebContainer extends OurElementProvider implements WebContainer {
+public abstract class AbstractWebContainer extends TeasyElementProvider implements WebContainer {
 
     private static final long WAIT_TIME_OUT_IN_SECONDS = 10;
 
     @DoNotSearch
-    private OurWebElement wrappedElement;
+    private TeasyWebElement wrappedElement;
     private ErrorSender errorSender;
 
     @Override
-    public void init(final OurWebElement wrappedElement) {
+    public void init(final TeasyWebElement wrappedElement) {
         this.wrappedElement = wrappedElement;
         elementFinder = new WebDriverAwareElementFinder(getDriver(), new WebDriverWait(getDriver(), WAIT_TIME_OUT_IN_SECONDS, SLEEP_IN_MILLISECONDS));
     }
 
-    public OurWebElement getWrappedElement() {
+    public TeasyWebElement getWrappedElement() {
         return wrappedElement;
     }
 
@@ -50,7 +50,7 @@ public abstract class AbstractWebContainer extends OurElementProvider implements
     }
 
     @Override
-    public OurWebElement getWrappedWebElement() {
+    public TeasyWebElement getWrappedWebElement() {
         return wrappedElement;
     }
 

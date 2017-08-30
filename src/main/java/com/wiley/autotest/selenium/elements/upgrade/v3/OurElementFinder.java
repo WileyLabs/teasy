@@ -1,8 +1,8 @@
 package com.wiley.autotest.selenium.elements.upgrade.v3;
 
 import com.wiley.autotest.selenium.context.SearchStrategy;
-import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
-import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.OurConditionFactory;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyWebElement;
+import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.FramesConditionFactory;
 import org.jetbrains.annotations.Nullable;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
@@ -14,8 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrap;
-import static com.wiley.autotest.selenium.elements.upgrade.OurWebElementFactory.wrapList;
+import static com.wiley.autotest.selenium.elements.upgrade.CustomWebElementFactory.wrap;
+import static com.wiley.autotest.selenium.elements.upgrade.CustomWebElementFactory.wrapList;
 
 
 /**
@@ -26,7 +26,7 @@ public class OurElementFinder {
 
     private SearchStrategy strategy;
 
-    private OurWebElement context;
+    private TeasyWebElement context;
 
     private OurFluentWait<WebDriver> fluentWait;
 
@@ -35,13 +35,13 @@ public class OurElementFinder {
         this.fluentWait = new OurFluentWait<>(driver, strategy);
     }
 
-    public OurElementFinder(WebDriver driver, SearchStrategy strategy, OurWebElement context) {
+    public OurElementFinder(WebDriver driver, SearchStrategy strategy, TeasyWebElement context) {
         this(driver, strategy);
         this.context = context;
     }
 
-    public OurWebElement visibleElement(By locator) {
-        Function<WebDriver, List<WebElement>> condition = new OurConditionFactory(context).get(strategy.getFrameStrategy())
+    public TeasyWebElement visibleElement(By locator) {
+        Function<WebDriver, List<WebElement>> condition = new FramesConditionFactory(context).get(strategy.getFrameStrategy())
                 .visibility(locator);
         return getElement(locator, condition);
     }
@@ -49,14 +49,14 @@ public class OurElementFinder {
     /**
      * note: Will return empty list in case no visible elements found
      */
-    public List<OurWebElement> visibleElements(By locator) {
-        Function<WebDriver, List<WebElement>> condition = new OurConditionFactory(context).get(strategy.getFrameStrategy())
+    public List<TeasyWebElement> visibleElements(By locator) {
+        Function<WebDriver, List<WebElement>> condition = new FramesConditionFactory(context).get(strategy.getFrameStrategy())
                 .visibility(locator);
         return getElements(locator, condition);
     }
 
-    public OurWebElement presentInDomElement(By locator) {
-        Function<WebDriver, List<WebElement>> condition = new OurConditionFactory(context).get(strategy.getFrameStrategy())
+    public TeasyWebElement presentInDomElement(By locator) {
+        Function<WebDriver, List<WebElement>> condition = new FramesConditionFactory(context).get(strategy.getFrameStrategy())
                 .presence(locator);
         return getElement(locator, condition);
     }
@@ -64,8 +64,8 @@ public class OurElementFinder {
     /**
      * note: Will return empty list in case no visible elements found
      */
-    public List<OurWebElement> presentInDomElements(By locator) {
-        Function<WebDriver, List<WebElement>> condition = new OurConditionFactory(context).get(strategy.getFrameStrategy())
+    public List<TeasyWebElement> presentInDomElements(By locator) {
+        Function<WebDriver, List<WebElement>> condition = new FramesConditionFactory(context).get(strategy.getFrameStrategy())
                 .presence(locator);
         return getElements(locator, condition);
     }
@@ -80,7 +80,7 @@ public class OurElementFinder {
         return fluentWait.waitFor(condition);
     }
 
-    private List<OurWebElement> getElements(By locator, Function<WebDriver, List<WebElement>> condition) {
+    private List<TeasyWebElement> getElements(By locator, Function<WebDriver, List<WebElement>> condition) {
         List<WebElement> webElements;
         try {
             webElements = waitFor(condition);
@@ -98,7 +98,7 @@ public class OurElementFinder {
     }
 
     @Nullable
-    private OurWebElement getElement(By locator, Function<WebDriver, List<WebElement>> condition) {
+    private TeasyWebElement getElement(By locator, Function<WebDriver, List<WebElement>> condition) {
         List<WebElement> webElements = waitFor(condition);
         if (webElements == null) {
             return null;

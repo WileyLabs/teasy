@@ -1,9 +1,8 @@
 package com.wiley.autotest.selenium.elements.upgrade.v3.conditions;
 
 import com.wiley.autotest.ExpectedConditions2;
-import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyWebElement;
 import org.openqa.selenium.By;
-import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
@@ -13,11 +12,11 @@ import java.util.function.Function;
 /**
  * Created by vefimov on 25/05/2017.
  */
-public class FirstFoundInContext implements OurCondition {
+public class FirstFoundInContext implements ElementCondition {
 
-    private OurWebElement context;
+    private TeasyWebElement context;
 
-    public FirstFoundInContext(OurWebElement context) {
+    public FirstFoundInContext(TeasyWebElement context) {
         this.context = context;
     }
 

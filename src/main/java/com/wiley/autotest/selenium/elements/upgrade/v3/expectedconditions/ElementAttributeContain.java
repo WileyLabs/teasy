@@ -1,6 +1,6 @@
 package com.wiley.autotest.selenium.elements.upgrade.v3.expectedconditions;
 
-import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyWebElement;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 
@@ -11,11 +11,11 @@ import javax.annotation.Nullable;
  */
 public class ElementAttributeContain implements ExpectedCondition<Boolean>{
 
-    private OurWebElement element;
+    private TeasyWebElement element;
     private String attributeName;
     private String value;
 
-    public ElementAttributeContain(OurWebElement element, String attributeName, String value) {
+    public ElementAttributeContain(TeasyWebElement element, String attributeName, String value) {
         this.element = element;
         this.attributeName = attributeName;
         this.value = value;

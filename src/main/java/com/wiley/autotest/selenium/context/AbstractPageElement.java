@@ -8,7 +8,7 @@ import com.wiley.autotest.selenium.AllureStep2TestNG;
 import com.wiley.autotest.selenium.ParamsProvider;
 import com.wiley.autotest.selenium.Report;
 import com.wiley.autotest.selenium.elements.CheckBox;
-import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyWebElement;
 import com.wiley.autotest.selenium.elements.upgrade.Window;
 import com.wiley.autotest.selenium.extensions.internal.DefaultElementFactory;
 import com.wiley.autotest.spring.Settings;
@@ -37,7 +37,7 @@ import java.util.List;
  * Date: 07.02.12
  * Time: 18:46
  */
-public abstract class AbstractPageElement<P extends AbstractPageElement> extends OurElementProvider implements IPageElement, ErrorSender {
+public abstract class AbstractPageElement<P extends AbstractPageElement> extends TeasyElementProvider implements IPageElement, ErrorSender {
 
     public static final int TIMEOUT_TO_WAIT_FOR_WINDOW = 2;
     public static final int TIMEOUT_TO_WAIT_FOR_ABSENCE_OF_ELEMENT = 2000;
@@ -238,7 +238,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         return driver.getTitle();
     }
 
-    public void scrollIntoView(OurWebElement element) {
+    public void scrollIntoView(TeasyWebElement element) {
         ((JavascriptExecutor) getDriver()).executeScript("arguments[0].scrollIntoView(true);", element);
     }
 
@@ -548,9 +548,9 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
     @Deprecated
     //Will be removed from framework. Do not use this method. Create something similar in your project instead.
     //TODO VE - delete this by Sept 2017
-    public List<String> getTextFromWebElementList(final List<OurWebElement> webElementList) {
+    public List<String> getTextFromWebElementList(final List<TeasyWebElement> webElementList) {
         final List<String> resultList = new ArrayList<String>();
-        for (OurWebElement eachElement : webElementList) {
+        for (TeasyWebElement eachElement : webElementList) {
             scrollIntoView(eachElement);
             resultList.add(eachElement.getText().trim());
         }
@@ -697,7 +697,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
 
     @Deprecated
     /**
-     * use {@link OurWebElement#getParent()}
+     * use {@link TeasyWebElement#getParent()}
      */
     public WebElement getParentElement(final WebElement webElement) {
         return getParentElement(webElement, 1);
@@ -705,7 +705,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
 
     @Deprecated
     /**
-     * use {@link OurWebElement#getParent()}
+     * use {@link TeasyWebElement#getParent()}
      */
     public WebElement getParentElement(final WebElement webElement, int level) {
         StringBuilder builder = new StringBuilder(".");

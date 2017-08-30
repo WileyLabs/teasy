@@ -10,7 +10,7 @@ import java.util.function.Function;
 /**
  * Created by vefimov on 25/05/2017.
  */
-public interface OurCondition {
+public interface ElementCondition {
 
     Function<WebDriver, List<WebElement>> visibility(By locator);
 
