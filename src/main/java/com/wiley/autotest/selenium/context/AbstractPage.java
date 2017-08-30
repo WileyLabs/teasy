@@ -2,8 +2,6 @@ package com.wiley.autotest.selenium.context;
 
 import com.wiley.autotest.actions.Actions;
 import com.wiley.autotest.actions.Conditions;
-import com.wiley.autotest.screenshots.*;
-import com.wiley.autotest.screenshots.imagecomparison.*;
 import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.utils.TestUtils;
 import org.joda.time.DateTime;
@@ -12,10 +10,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.testng.Reporter;
 import ru.yandex.qatools.allure.annotations.Step;
-
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.util.List;
 
 import static com.wiley.autotest.utils.DateUtils.waitForAssignmentDate;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
@@ -161,69 +155,5 @@ public abstract class AbstractPage<P extends AbstractPage> extends AbstractPageE
     public P checkTitleOfBrowserWindow(String expectedTitle) {
         postponedAssertEquals(getDriver().getTitle(), expectedTitle, "Incorrect title of browser window");
         return (P) this;
-    }
-
-    public P testScreenShot(String screenshotName) {
-        return testScreenShot(screenshotName, new DefaultScreenshotProvider());
-    }
-
-    public P testScreenShot(String screenshotName, final ScreenshotProvider provider) {
-        return testScreenShot("", screenshotName, provider);
-    }
-
-    public P testScreenShot(String path, String screenshotName, final ScreenshotProvider provider) {
-        waitForPageToLoad();
-        provider.setEventListener(getScreenshotHelper().getScreenshotWebDriverEventListener());
-        File folder = new File(getScreenshotHelper().getScreenshotPath(), path);
-        if (!createEtalonScreenShot(folder, screenshotName, provider)) {
-            BufferedImage imageBefore = Screenshoter.readImage(new File(folder.getPath(), screenshotName + ".png"));
-            BufferedImage imageAfter = Screenshoter.takeScreenshot(provider);
-
-            IImageMerger imageMerger = new ImageMerger();
-            ComparativeImage comparativeImage = null;
-            ImageSizeException sizeException = null;
-            boolean failCompare = true;
-            try {
-                comparativeImage = imageMerger.compare(Screenshoter.getMatchedImage(imageBefore), Screenshoter.getMatchedImage(imageAfter));
-                failCompare = comparativeImage.getPixelContradictions() > 0 || comparativeImage.getAreaContradictions() > 0;
-            } catch (ImageSizeException e) {
-                sizeException = e;
-            }
-            if (failCompare) {
-                File comparativeFolder = new File(getScreenshotHelper().getComparativePath());
-                boolean hasComparativeFolder = comparativeFolder.exists();
-                if (!hasComparativeFolder) {
-                    hasComparativeFolder = comparativeFolder.mkdirs();
-                }
-                String comparativeFolderPath = comparativeFolder.getPath();
-                if (hasComparativeFolder) {
-                    String comparativeFileName = path.isEmpty() ? screenshotName : path + "_" + screenshotName;
-                    MergeUtils.writeDiff(comparativeFolderPath, comparativeFileName, imageBefore, imageAfter, comparativeImage);
-                    setPostponedTestFailWithoutScreenshot(String.format("Screenshot comparison has been failed.%s See result in " +
-                            comparativeFolderPath + "\\" + comparativeFileName + ".png", sizeException == null ? "" : sizeException.getMessage()));
-                }
-            }
-        }
-        return (P) this;
-    }
-
-    private boolean createEtalonScreenShot(File folder, String imageName, final ScreenshotProvider provider) {
-        boolean isExistsFolder = folder.exists();
-        if (!isExistsFolder) {
-            isExistsFolder = folder.mkdirs();
-        }
-        if (isExistsFolder) {
-            File etalon = new File(folder.getPath(), imageName + ".png");
-            if (!etalon.exists()) {
-                Screenshoter.writeImage(etalon, Screenshoter.takeScreenshot(provider));
-                return true;
-            } else if (provider.getIncludeLocators() != null) {
-                List<ScreenshotLocator> locators = ScreenshotLocator.getInsertScreenshotLocators();
-                Screenshoter.writeImage(etalon, Screenshoter.insertElementsToImage(Screenshoter.readImage(etalon), new InsertProvider(provider, locators)));
-            }
-        } else {
-            LOGGER.error("Folder for screenshots can not be created");
-        }
-        return false;
     }
 }

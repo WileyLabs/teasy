@@ -67,8 +67,6 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
 
     private DefaultElementFactory elementFactory;
 
-    private ScreenshotHelper screenshotHelper;
-
     protected WebDriver getDriver() {
         return driver;
     }
@@ -80,10 +78,9 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
     public void handleRedirect() {
     }
 
-    public final void init(WebDriver driver, ScreenshotHelper screenshotHelper) {
+    public final void init(WebDriver driver) {
         super.init(driver, timeout);
         this.driver = driver;
-        this.screenshotHelper = screenshotHelper;
         elementFactory = new DefaultElementFactory();
         init();
     }
@@ -94,10 +91,6 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
 
     protected Settings getSettings() {
         return settings;
-    }
-
-    protected ScreenshotHelper getScreenshotHelper() {
-        return screenshotHelper;
     }
 
     protected void init() {
@@ -118,7 +111,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
 
     protected final <E extends IPage> E getHelper(final Class<E> target) {
         final E helper = registry.getPageHelper(target);
-        helper.init(getDriver(), screenshotHelper);
+        helper.init(getDriver());
         return AllureStep2TestNG.addInterceptor(target, helper);
     }
 

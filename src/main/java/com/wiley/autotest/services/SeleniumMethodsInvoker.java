@@ -1,6 +1,7 @@
 package com.wiley.autotest.services;
 
 import com.wiley.autotest.annotations.*;
+import com.wiley.autotest.screenshots.Screenshoter;
 import com.wiley.autotest.selenium.AbstractSeleniumTest;
 import com.wiley.autotest.selenium.AbstractTest;
 import com.wiley.autotest.selenium.Group;
@@ -112,7 +113,7 @@ public class SeleniumMethodsInvoker extends MethodsInvoker {
         try {
             method.invoke(instance);
         } catch (Throwable e) {
-            abstractSeleniumTest.takeScreenshot(e.getMessage(), method.getName());
+            new Screenshoter().takeScreenshot(e.getMessage(), method.getName());
             final Writer result = new StringWriter();
             final PrintWriter printWriter = new PrintWriter(result);
             ((InvocationTargetException) e).getTargetException().printStackTrace(printWriter);
