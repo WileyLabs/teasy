@@ -118,6 +118,20 @@ public class OurWaitFor {
         });
     }
 
+    public void containsAttributeValue(String attributeName, String value) {
+        waitFor(new ExpectedCondition<Boolean>() {
+            @Override
+            public Boolean apply(WebDriver input) {
+                return element.getAttribute(attributeName).contains(value);
+            }
+
+            @Override
+            public String toString() {
+                return String.format("wait for element '%s' contains attribute '%s' ith value '%s'", element.toString(), attributeName, value);
+            }
+        });
+    }
+
     public void stale() {
         waitFor(new ExpectedCondition<Boolean>() {
             @Override
