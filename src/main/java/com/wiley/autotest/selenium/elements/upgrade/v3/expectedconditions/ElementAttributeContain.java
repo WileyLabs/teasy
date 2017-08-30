@@ -9,13 +9,13 @@ import javax.annotation.Nullable;
 /**
  * Created by vefimov on 24/08/2017.
  */
-public class ElementAttributeNotContain implements ExpectedCondition<Boolean> {
+public class ElementAttributeContain implements ExpectedCondition<Boolean>{
 
     private OurWebElement element;
     private String attributeName;
     private String value;
 
-    public ElementAttributeNotContain(OurWebElement element, String attributeName, String value) {
+    public ElementAttributeContain(OurWebElement element, String attributeName, String value) {
         this.element = element;
         this.attributeName = attributeName;
         this.value = value;
@@ -25,11 +25,11 @@ public class ElementAttributeNotContain implements ExpectedCondition<Boolean> {
     @Override
     public Boolean apply(@Nullable WebDriver driver) {
         String attribute = element.getAttribute(attributeName);
-        return attribute != null && !attribute.contains(value);
+        return attribute != null && attribute.contains(value);
     }
 
     @Override
     public String toString() {
-        return String.format("Element '%s' attribute '%s' contains value '%s'!", element.toString(), attributeName, value);
+        return String.format("Element '%s' attribute '%s' does not contain value '%s'!", element.toString(), attributeName, value);
     }
 }

@@ -5,6 +5,7 @@ import com.wiley.autotest.selenium.context.SearchStrategy;
 import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
 import com.wiley.autotest.selenium.elements.upgrade.v3.expectedconditions.*;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -50,6 +51,20 @@ public class ElementWaitFor {
 
     public void notContainsAttributeValue(String attributeName, String value) {
         fluentWait.waitFor(new ElementAttributeNotContain(element, attributeName, value));
+    }
+
+    public void containsAttributeValue(String attributeName, String value) {
+        fluentWait.waitFor(new ExpectedCondition<Boolean>() {
+            @Override
+            public Boolean apply(WebDriver input) {
+                return element.getAttribute(attributeName).contains(value);
+            }
+
+            @Override
+            public String toString() {
+                return String.format("wait for element '%s' contains attribute '%s' ith value '%s'", element.toString(), attributeName, value);
+            }
+        });
     }
 
     public void stale() {
