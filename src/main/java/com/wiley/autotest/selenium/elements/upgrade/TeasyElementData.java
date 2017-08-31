@@ -1,7 +1,6 @@
 package com.wiley.autotest.selenium.elements.upgrade;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebElement;
 
 /**
@@ -9,29 +8,29 @@ import org.openqa.selenium.WebElement;
  * Date: 18.11.2016
  * Time: 16:34
  */
-public class OurWebElementData {
+public class TeasyElementData {
 
     private WebElement element;
-    private OurWebElement searchContext;
+    private TeasyElement searchContext;
     private By by;
     private Integer index;
     private Locator locator;
 
-    public OurWebElementData(WebElement element) {
+    public TeasyElementData(WebElement element) {
         this.element = element;
     }
 
-    public OurWebElementData(WebElement element, By by) {
+    public TeasyElementData(WebElement element, By by) {
         this(element);
         this.by = by;
     }
 
-    public OurWebElementData(OurWebElement context, WebElement element, By by) {
+    public TeasyElementData(TeasyElement context, WebElement element, By by) {
         this(element, by);
         this.searchContext = context;
     }
 
-    public OurWebElementData(OurWebElement context, WebElement element, By by, int index) {
+    public TeasyElementData(TeasyElement context, WebElement element, By by, int index) {
         this(context, element, by);
         this.index = index;
     }
@@ -44,11 +43,11 @@ public class OurWebElementData {
         this.element = element;
     }
 
-    public OurWebElement getSearchContext() {
+    public TeasyElement getSearchContext() {
         return searchContext;
     }
 
-    public void setSearchContext(OurWebElement searchContext) {
+    public void setSearchContext(TeasyElement searchContext) {
         this.searchContext = searchContext;
     }
 

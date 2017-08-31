@@ -3,8 +3,9 @@ package com.wiley.autotest.selenium.elements.upgrade;
 import com.wiley.autotest.ExpectedConditions2;
 import com.wiley.autotest.selenium.Report;
 import com.wiley.autotest.selenium.SeleniumHolder;
-import com.wiley.autotest.selenium.elements.upgrade.v3.WebDriverFluentWait;
+import com.wiley.autotest.selenium.elements.upgrade.v3.OurFluentWait;
 import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.window.WindowMatcher;
+import com.wiley.autotest.selenium.elements.upgrade.v3.expectedconditions.PageLoaded;
 import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TimeoutException;
@@ -16,13 +17,13 @@ import java.util.Iterator;
 /**
  * Created by vefimov on 30/05/2017.
  */
-public class OurWindow implements Window {
+public class TeasyWindow implements Window {
 
-    private WebDriverFluentWait fluentWait;
+    private OurFluentWait<WebDriver> fluentWait;
     private WebDriver driver;
 
-    public OurWindow() {
-        fluentWait = new WebDriverFluentWait(SeleniumHolder.getWebDriver());
+    public TeasyWindow() {
+        fluentWait = new OurFluentWait<>(SeleniumHolder.getWebDriver());
         driver = SeleniumHolder.getWebDriver();
     }
 
@@ -38,7 +39,7 @@ public class OurWindow implements Window {
 
     @Override
     public void switchTo(WindowMatcher matcher) {
-        WebDriverFluentWait finder = new WebDriverFluentWait(driver);
+        OurFluentWait<WebDriver> finder = new OurFluentWait<>(driver);
         finder.waitFor(matcher.get().findAndSwitch());
     }
 
@@ -53,7 +54,7 @@ public class OurWindow implements Window {
             return;
         }
         try {
-            fluentWait.until(ExpectedConditions2.pageToLoad());
+            fluentWait.until(new PageLoaded());
         } catch (TimeoutException expected) {
             String readyState = ((JavascriptExecutor) driver).executeScript("return document.readyState").toString();
             new Report("*****ERROR***** TimeoutException occurred while waiting for page to load! return document.readyState value is '"

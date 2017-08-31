@@ -13,7 +13,7 @@ public interface Window {
 
     void close();
 
-    //Todo implement common waitFor and should (similar to OurWebElement) but with limited functionality only required for window
+    //Todo implement common waitFor and should (similar to TeasyElement) but with limited functionality only required for window
     void waitForScriptsToLoad();
 
     String getUrl();

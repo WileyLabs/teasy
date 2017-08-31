@@ -1,7 +1,7 @@
 package com.wiley.autotest.selenium.driver;
 
 import com.google.common.base.Function;
-import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import com.wiley.autotest.utils.TestUtils;
 import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.*;
@@ -50,7 +50,7 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
         return findFirstElements(by);
     }
 
-    public List<WebElement> findElements(OurWebElement context, final By by) {
+    public List<WebElement> findElements(TeasyElement context, final By by) {
         firstCallInContext.set(true);
         Stack<WebElement> currentFramesPath = new Stack<>();
         return findFirstElements(context, by, currentFramesPath);
@@ -71,7 +71,7 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
         }
     }
 
-    public WebElement findElement(OurWebElement context, final By by) {
+    public WebElement findElement(TeasyElement context, final By by) {
         try {
             firstCallInContext.set(true);
             Stack<WebElement> currentFramesPath = new Stack<>();
@@ -88,7 +88,7 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
         return getAllElementsInFrames(by);
     }
 
-    public List<WebElement> findAllElementsInFrames(OurWebElement context, final By by) {
+    public List<WebElement> findAllElementsInFrames(TeasyElement context, final By by) {
         Stack<WebElement> currentFramesPath = new Stack<>();
         firstCallInContext.set(true);
         return getAllElementsInFrames(context, by, currentFramesPath);
@@ -154,7 +154,7 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
         return emptyList();
     }
 
-    private List<WebElement> findFirstElements(OurWebElement context, final By by, Stack<WebElement> currentFramesPath) {
+    private List<WebElement> findFirstElements(TeasyElement context, final By by, Stack<WebElement> currentFramesPath) {
         if (firstCallInContext.get()) {
             try {
                 context.isEnabled();
@@ -215,7 +215,7 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
         return foundInCurrentFrame;
     }
 
-    private List<WebElement> getAllElementsInFrames(OurWebElement context, final By by, Stack<WebElement> currentFramesPath) {
+    private List<WebElement> getAllElementsInFrames(TeasyElement context, final By by, Stack<WebElement> currentFramesPath) {
         List<WebElement> foundInCurrentFrame = newArrayList();
         if (firstCallInContext.get()) {
             try {
@@ -252,7 +252,7 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
         return foundInCurrentFrame;
     }
 
-    private List<WebElement> getFramesForContext(OurWebElement context) {
+    private List<WebElement> getFramesForContext(TeasyElement context) {
         List<WebElement> currentFrames;
         if (firstCallInContext.get()) {
             currentFrames = context.getWrappedWebElement().findElements(By.tagName("iframe"));

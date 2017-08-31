@@ -3,10 +3,10 @@ package com.wiley.autotest.selenium.elements.upgrade;
 import com.wiley.autotest.ElementFinder;
 import com.wiley.autotest.WebDriverAwareElementFinder;
 import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
+import com.wiley.autotest.selenium.elements.upgrade.v3.ElementWaitFor;
 import com.wiley.autotest.selenium.elements.upgrade.v3.OurElementFinder;
-import com.wiley.autotest.selenium.context.OurSearchStrategy;
-import com.wiley.autotest.selenium.elements.upgrade.v3.OurShould;
-import com.wiley.autotest.selenium.elements.upgrade.v3.OurWaitFor;
+import com.wiley.autotest.selenium.context.SearchStrategy;
+import com.wiley.autotest.selenium.elements.upgrade.v3.Should;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.interactions.internal.Coordinates;
@@ -33,7 +33,7 @@ import static com.wiley.autotest.utils.TestUtils.waitForSomeTime;
  * Date: 27.08.2014
  * Time: 15:41
  */
-public class OurWebElement implements CustomWebElement, Locatable {
+public class TeasyElement implements CustomWebElement, Locatable {
 
     private WebElement wrappedElement;
     private Locator locator;
@@ -43,7 +43,7 @@ public class OurWebElement implements CustomWebElement, Locatable {
     //specific element finder which will return null or emptyList in case element is not found
     private OurElementFinder allowNullContextFinder;
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(OurWebElement.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(TeasyElement.class);
     //The duration in milliseconds to sleep between polls. (default value in selenium is 500)
     private static final long SLEEP_IN_MILLISECONDS = 1000;
 
@@ -52,12 +52,12 @@ public class OurWebElement implements CustomWebElement, Locatable {
     private int repeatLocateElementCounter;
     private static final int MAX_NUMBER_OF_REPEAT_LOCATE_ELEMENT = 20;
 
-    public OurWebElement(OurWebElementData ourWebElementData) {
-        WebElement element = ourWebElementData.getElement();
-        OurWebElement searchContext = ourWebElementData.getSearchContext();
-        By by = ourWebElementData.getBy();
-        Integer index = ourWebElementData.getIndex();
-        Locator locator = ourWebElementData.getLocator();
+    public TeasyElement(TeasyElementData teasyElementData) {
+        WebElement element = teasyElementData.getElement();
+        TeasyElement searchContext = teasyElementData.getSearchContext();
+        By by = teasyElementData.getBy();
+        Integer index = teasyElementData.getIndex();
+        Locator locator = teasyElementData.getLocator();
 
         if (searchContext != null && by != null && index != null) {
             this.locator = new FindElementsLocator(searchContext, by, index);
@@ -86,89 +86,89 @@ public class OurWebElement implements CustomWebElement, Locatable {
         }
 
         if (contextFinder == null) {
-            contextFinder = new OurElementFinder(getWebDriver(), new OurSearchStrategy(TIMEOUT_FOR_AGAIN_LOCATE_IN_SECONDS), this);
+            contextFinder = new OurElementFinder(getWebDriver(), new SearchStrategy(TIMEOUT_FOR_AGAIN_LOCATE_IN_SECONDS), this);
         }
         if (allowNullContextFinder == null) {
-            allowNullContextFinder = new OurElementFinder(getWebDriver(), new OurSearchStrategy(TIMEOUT_FOR_AGAIN_LOCATE_IN_SECONDS)
+            allowNullContextFinder = new OurElementFinder(getWebDriver(), new SearchStrategy(TIMEOUT_FOR_AGAIN_LOCATE_IN_SECONDS)
                     .nullOnFailure(), this);
         }
     }
 
     @Override
-    public OurShould should() {
-        return new OurShould(this);
+    public Should should() {
+        return new Should(this);
     }
 
     @Override
-    public OurShould should(OurSearchStrategy strategy) {
-        return new OurShould(this, strategy);
+    public Should should(SearchStrategy strategy) {
+        return new Should(this, strategy);
     }
 
     @Override
-    public OurWaitFor waitFor() {
-        return new OurWaitFor(this);
+    public ElementWaitFor waitFor() {
+        return new ElementWaitFor(this);
     }
 
     @Override
-    public OurWaitFor waitFor(OurSearchStrategy strategy) {
-        return new OurWaitFor(this, strategy);
+    public ElementWaitFor waitFor(SearchStrategy strategy) {
+        return new ElementWaitFor(this, strategy);
     }
 
     @Override
-    public OurWebElement getParent() {
+    public TeasyElement getParent() {
         return getParent(1);
     }
 
     @Override
-    public OurWebElement getParent(int level) {
+    public TeasyElement getParent(int level) {
         StringBuilder builder = new StringBuilder(".");
         for (int i = 0; i < level; i++) {
             builder.append("/..");
         }
-        return OurWebElementFactory.wrap(this, find(By.xpath(builder.toString())), By.xpath(builder.toString()));
+        return CustomWebElementFactory.wrap(this, find(By.xpath(builder.toString())), By.xpath(builder.toString()));
     }
 
     @Override
-    public OurWebElement element(By by) {
+    public TeasyElement element(By by) {
         return contextFinder.visibleElement(by);
     }
 
     @Override
-    public OurWebElement element(By by, OurSearchStrategy strategy) {
+    public TeasyElement element(By by, SearchStrategy strategy) {
         return customContextFinder(strategy).visibleElement(by);
     }
 
     @Override
-    public List<OurWebElement> elements(By by) {
+    public List<TeasyElement> elements(By by) {
         return contextFinder.visibleElements(by);
     }
 
     @Override
-    public List<OurWebElement> elements(By by, OurSearchStrategy strategy) {
+    public List<TeasyElement> elements(By by, SearchStrategy strategy) {
         return customContextFinder(strategy).visibleElements(by);
     }
 
     @Override
-    public OurWebElement domElement(By by) {
+    public TeasyElement domElement(By by) {
         return contextFinder.presentInDomElement(by);
     }
 
     @Override
-    public OurWebElement domElement(By by, OurSearchStrategy strategy) {
+    public TeasyElement domElement(By by, SearchStrategy strategy) {
         return customContextFinder(strategy).presentInDomElement(by);
     }
 
     @Override
-    public List<OurWebElement> domElements(By by) {
+    public List<TeasyElement> domElements(By by) {
         return contextFinder.presentInDomElements(by);
     }
 
     @Override
-    public List<OurWebElement> domElements(By by, OurSearchStrategy strategy) {
+    public List<TeasyElement> domElements(By by, SearchStrategy strategy) {
         return customContextFinder(strategy).presentInDomElements(by);
     }
 
-    private OurElementFinder customContextFinder(OurSearchStrategy strategy) {
+    private OurElementFinder customContextFinder(SearchStrategy strategy) {
         return new OurElementFinder(getWebDriver(), strategy, this);
     }
 
