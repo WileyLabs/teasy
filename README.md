@@ -20,7 +20,7 @@ and you will need to add the following dependency to your project's *pom.xml* fi
 <dependency>
   <groupId>com.wiley</groupId>
   <artifactId>teasy</artifactId>
-  <version>1.0.5-beta</version>
+  <version>1.0.8-beta</version>
 </dependency>
 ```
 
