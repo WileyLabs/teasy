@@ -42,7 +42,6 @@ import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.remote.*;
-import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +70,6 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
     private static final String FIREFOX = "firefox";
     private static final String CHROME = "chrome";
     private static final String SAFARI = "safari";
-    private static final String SAFARI_10 = "safari10";
     private static final String SAFARI_TECHNOLOGY_PREVIEW = "safariTechnologyPreview";
     private static final String HTML_UNIT = "htmlunit";
     private static final String PHANTOM_JS = "phantomjs";
@@ -488,15 +486,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
                     throw new RuntimeException("Not supported browser: " + browserName + ", for platform: " + platformName);
                 }
             } else if (StringUtils.equalsIgnoreCase(platformName, MAC)) {
-                if (StringUtils.equalsIgnoreCase(browserName, SAFARI)) {
-                    desiredCapabilities = getSafariDesiredCapabilities();
-                    SeleniumHolder.setDriverName(SAFARI);
-                    SeleniumHolder.setPlatform(MAC);
-                } else if (StringUtils.equalsIgnoreCase(browserName, SAFARI_10)) {
-                    desiredCapabilities = getSafari10DesiredCapabilities();
-                    SeleniumHolder.setDriverName(SAFARI_10);
-                    SeleniumHolder.setPlatform(MAC);
-                } else if (StringUtils.equalsIgnoreCase(browserName, SAFARI_TECHNOLOGY_PREVIEW)) {
+                if (StringUtils.equalsIgnoreCase(browserName, SAFARI_TECHNOLOGY_PREVIEW)) {
                     SeleniumHolder.setDriverName(SAFARI_TECHNOLOGY_PREVIEW);
                     SeleniumHolder.setPlatform(MAC);
                     return safariTechnologyPreview(settings);
@@ -563,14 +553,6 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
                 SeleniumHolder.setDriverName(IE9);
                 SeleniumHolder.setPlatform(WINDOWS);
                 return explorer("9", customDesiredCapabilities);
-            } else if (StringUtils.equalsIgnoreCase(browserName, SAFARI)) {
-                SeleniumHolder.setDriverName(SAFARI);
-                SeleniumHolder.setPlatform(MAC);
-                return safari(customDesiredCapabilities);
-            } else if (StringUtils.equalsIgnoreCase(browserName, SAFARI_10)) {
-                SeleniumHolder.setDriverName(SAFARI_10);
-                SeleniumHolder.setPlatform(MAC);
-                return safari10(settings, customDesiredCapabilities);
             } else if (StringUtils.equalsIgnoreCase(browserName, SAFARI_TECHNOLOGY_PREVIEW)) {
                 SeleniumHolder.setDriverName(SAFARI_TECHNOLOGY_PREVIEW);
                 SeleniumHolder.setPlatform(MAC);
@@ -631,30 +613,12 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         return new EdgeDriver(desiredCapabilities);
     }
 
-    private WebDriver safari(DesiredCapabilities customDesiredCapabilities) {
-        DesiredCapabilities desiredCapabilities = getSafariDesiredCapabilities();
-        if (!customDesiredCapabilities.asMap().isEmpty()) {
-            desiredCapabilities.merge(customDesiredCapabilities);
-        }
-        return new SafariDriver(desiredCapabilities);
-    }
-
     private WebDriver safariTechnologyPreview(Settings settings) throws MalformedURLException {
         DesiredCapabilities desiredCapabilities = DesiredCapabilities.safari();
         SafariOptions safariOptions = new SafariOptions();
         safariOptions.setUseCleanSession(true);
         safariOptions.setUseTechnologyPreview(true);
         desiredCapabilities.setCapability(SafariOptions.CAPABILITY, safariOptions);
-        RemoteWebDriver remoteWebDriver = new RemoteWebDriver(new URL(settings.getGridHubUrl()), desiredCapabilities);
-        remoteWebDriver.setFileDetector(new LocalFileDetector());
-        return remoteWebDriver;
-    }
-
-    private WebDriver safari10(Settings settings, DesiredCapabilities customDesiredCapabilities) throws MalformedURLException {
-        DesiredCapabilities desiredCapabilities = getSafari10DesiredCapabilities();
-        if (!customDesiredCapabilities.asMap().isEmpty()) {
-            desiredCapabilities.merge(customDesiredCapabilities);
-        }
         RemoteWebDriver remoteWebDriver = new RemoteWebDriver(new URL(settings.getGridHubUrl()), desiredCapabilities);
         remoteWebDriver.setFileDetector(new LocalFileDetector());
         return remoteWebDriver;
@@ -746,27 +710,6 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         setLoggingPrefs(capabilities);
         setProxy(capabilities);
         return capabilities;
-    }
-
-    private DesiredCapabilities getSafariDesiredCapabilities() {
-        DesiredCapabilities capabilities = DesiredCapabilities.safari();
-        SafariOptions safariOptions = new SafariOptions();
-        safariOptions.setUseCleanSession(true);
-        capabilities.setCapability(SafariOptions.CAPABILITY, safariOptions);
-        capabilities.setPlatform(Platform.MAC);
-        setProxy(capabilities);
-        return capabilities;
-    }
-
-    private DesiredCapabilities getSafari10DesiredCapabilities() {
-        SafariOptions safariOptions = new SafariOptions();
-        safariOptions.setUseCleanSession(true);
-        DesiredCapabilities desiredCapabilities = DesiredCapabilities.safari();
-        desiredCapabilities.setCapability(SafariOptions.CAPABILITY, safariOptions);
-        desiredCapabilities.setCapability(SafariOptions.CAPABILITY, safariOptions);
-        desiredCapabilities.setPlatform(Platform.MAC);
-        setProxy(desiredCapabilities);
-        return desiredCapabilities;
     }
 
     private DesiredCapabilities getHtmlUnitDesiredCapabilities() {
