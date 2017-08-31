@@ -1,9 +1,7 @@
 package com.wiley.autotest.selenium.elements.upgrade;
 
-import com.wiley.autotest.ExpectedConditions2;
 import com.wiley.autotest.selenium.Report;
-import com.wiley.autotest.selenium.SeleniumHolder;
-import com.wiley.autotest.selenium.elements.upgrade.v3.OurFluentWait;
+import com.wiley.autotest.selenium.elements.upgrade.v3.TeasyFluentWait;
 import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.window.WindowMatcher;
 import com.wiley.autotest.selenium.elements.upgrade.v3.expectedconditions.PageLoaded;
 import io.appium.java_client.AppiumDriver;
@@ -19,12 +17,12 @@ import java.util.Iterator;
  */
 public class TeasyWindow implements Window {
 
-    private OurFluentWait<WebDriver> fluentWait;
+    private TeasyFluentWait<WebDriver> fluentWait;
     private WebDriver driver;
 
-    public TeasyWindow() {
-        fluentWait = new OurFluentWait<>(SeleniumHolder.getWebDriver());
-        driver = SeleniumHolder.getWebDriver();
+    public TeasyWindow(WebDriver driver) {
+        this.driver = driver;
+        fluentWait = new TeasyFluentWait<>(driver);
     }
 
     @Override
@@ -39,8 +37,7 @@ public class TeasyWindow implements Window {
 
     @Override
     public void switchTo(WindowMatcher matcher) {
-        OurFluentWait<WebDriver> finder = new OurFluentWait<>(driver);
-        finder.waitFor(matcher.get().findAndSwitch());
+        fluentWait.waitFor(matcher.get().findAndSwitch());
     }
 
     @Override
@@ -54,7 +51,7 @@ public class TeasyWindow implements Window {
             return;
         }
         try {
-            fluentWait.until(new PageLoaded());
+            fluentWait.waitFor(new PageLoaded());
         } catch (TimeoutException expected) {
             String readyState = ((JavascriptExecutor) driver).executeScript("return document.readyState").toString();
             new Report("*****ERROR***** TimeoutException occurred while waiting for page to load! return document.readyState value is '"

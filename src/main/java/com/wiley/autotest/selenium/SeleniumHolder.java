@@ -18,6 +18,7 @@ public final class SeleniumHolder {
 
     private static String browser;
     private static final ThreadLocal<WebDriver> driverHolder = new ThreadLocal<>();
+    private static final ThreadLocal<Integer> timeoutHolder = new ThreadLocal<>();
     private static final ThreadLocal<String> driverName = ThreadLocal.withInitial(() -> "");
     private static final ThreadLocal<String> parameterBrowserName = ThreadLocal.withInitial(() -> "browser");
     private static final ThreadLocal<String> parameterPlatformName = ThreadLocal.withInitial(() -> "platform");
@@ -34,9 +35,6 @@ public final class SeleniumHolder {
     private static final ThreadLocal<List<String>> activeProfilesList = ThreadLocal.withInitial(ArrayList::new);
     private static final ThreadLocal<String> platformName = new ThreadLocal<String>();
 
-    /**
-     * private constructor for utils class
-     */
     private SeleniumHolder() {
     }
 
@@ -46,6 +44,14 @@ public final class SeleniumHolder {
 
     public static void setWebDriver(final WebDriver value) {
         driverHolder.set(value);
+    }
+
+    public static Integer getTimeoutInSeconds() {
+        return timeoutHolder.get();
+    }
+
+    public static void setTimeoutInSeconds(final Integer timeoutInSeconds) {
+        timeoutHolder.set(timeoutInSeconds);
     }
 
     public static String getDriverName() {

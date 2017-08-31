@@ -1,5 +1,6 @@
 package com.wiley.autotest.selenium.context;
 
+import com.wiley.autotest.selenium.SeleniumHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.concurrent.TimeUnit;
@@ -9,21 +10,19 @@ import java.util.concurrent.TimeUnit;
  */
 public class SearchStrategy {
 
-    //timeout value taken from project pom.xml
-    @Autowired
-    private long timeout;
-
     //timeout to be used by search strategy
     private long customTimeout;
-    private int poolingEvery = 0;
-    private TimeUnit unit = TimeUnit.SECONDS;
+    private static final long DEFAULT_SLEEP_TIMEOUT = 500L;
+    private long poolingEvery = DEFAULT_SLEEP_TIMEOUT;
+    private TimeUnit unit = TimeUnit.MILLISECONDS;
     private FrameStrategy frameStrategy = FrameStrategy.FIRST_FOUND;
 
     //flag showing that null should be returned instead of failing
     private boolean nullOnFailure = false;
 
     public SearchStrategy() {
-        this.customTimeout = timeout;
+        //setting default timeout value taken from pom.xml's property 'application.selenium.timeout'
+        this.customTimeout = SeleniumHolder.getTimeoutInSeconds();
     }
 
     public SearchStrategy(long customTimeoutInSeconds) {
@@ -35,12 +34,7 @@ public class SearchStrategy {
         return this;
     }
 
-    public SearchStrategy pollingEvery(int timeInSeconds) {
-        this.poolingEvery = timeInSeconds;
-        return this;
-    }
-
-    public SearchStrategy pollingEvery(int time, TimeUnit unit) {
+    public SearchStrategy pollingEvery(long time, TimeUnit unit) {
         this.poolingEvery = time;
         this.unit = unit;
         return this;
@@ -60,7 +54,7 @@ public class SearchStrategy {
         return customTimeout;
     }
 
-    public int getPoolingEvery() {
+    public long getPoolingEvery() {
         return poolingEvery;
     }
 

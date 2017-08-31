@@ -14,12 +14,12 @@ import java.util.function.Function;
  */
 public class ElementWaitFor {
 
-    private OurFluentWait<WebDriver> fluentWait;
+    private TeasyFluentWait<WebDriver> fluentWait;
     private TeasyElement element;
 
     public ElementWaitFor(TeasyElement element) {
         this.element = element;
-        fluentWait = new OurFluentWait<>(SeleniumHolder.getWebDriver());
+        fluentWait = new TeasyFluentWait<>(SeleniumHolder.getWebDriver());
     }
 
     public ElementWaitFor(TeasyElement element, SearchStrategy strategy) {

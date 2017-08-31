@@ -14,12 +14,12 @@ import java.util.function.Function;
  */
 public class Should {
 
-    private OurFluentWait<WebDriver> fluentWait;
+    private TeasyFluentWait<WebDriver> fluentWait;
     private TeasyElement element;
 
     public Should(TeasyElement element) {
         this.element = element;
-        fluentWait = new OurFluentWait<>(SeleniumHolder.getWebDriver());
+        fluentWait = new TeasyFluentWait<>(SeleniumHolder.getWebDriver());
     }
 
     public Should(TeasyElement element, SearchStrategy strategy) {

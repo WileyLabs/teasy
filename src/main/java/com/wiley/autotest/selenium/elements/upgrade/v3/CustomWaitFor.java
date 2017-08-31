@@ -10,11 +10,11 @@ import java.util.function.Function;
 public class CustomWaitFor {
 
     public <T> void condition(Function<? super T, ?> condition, T input) {
-        new OurFluentWait(input).waitFor(condition);
+        new TeasyFluentWait(input).waitFor(condition);
     }
 
     public <T> void condition(Function<? super T, ?> condition, T input, SearchStrategy strategy) {
-        new OurFluentWait(input, strategy).waitFor(condition);
+        new TeasyFluentWait(input, strategy).waitFor(condition);
     }
 
 }
