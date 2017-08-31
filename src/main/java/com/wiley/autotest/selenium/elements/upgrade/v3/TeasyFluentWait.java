@@ -9,16 +9,16 @@ import java.util.function.Function;
 /**
  * General fluent waiter handling anything as an input parameter
  */
-public class OurFluentWait<T> extends FluentWait<T> {
+public class TeasyFluentWait<T> extends FluentWait<T> {
 
     //default condition should stop execution in case of failure
     private boolean nullOnFailure = false;
 
-    public OurFluentWait(T input) {
+    public TeasyFluentWait(T input) {
         this(input, new SearchStrategy());
     }
 
-    public OurFluentWait(T input, SearchStrategy strategy) {
+    public TeasyFluentWait(T input, SearchStrategy strategy) {
         super(input);
         withTimeout(strategy.getCustomTimeout(), TimeUnit.SECONDS);
         pollingEvery(strategy.getPoolingEvery(), strategy.getUnit());

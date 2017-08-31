@@ -1,7 +1,7 @@
 package com.wiley.autotest.selenium.elements.upgrade;
 
 import com.wiley.autotest.selenium.Report;
-import com.wiley.autotest.selenium.elements.upgrade.v3.OurFluentWait;
+import com.wiley.autotest.selenium.elements.upgrade.v3.TeasyFluentWait;
 import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.window.WindowMatcher;
 import com.wiley.autotest.selenium.elements.upgrade.v3.expectedconditions.PageLoaded;
 import io.appium.java_client.AppiumDriver;
@@ -17,12 +17,12 @@ import java.util.Iterator;
  */
 public class TeasyWindow implements Window {
 
-    private OurFluentWait<WebDriver> fluentWait;
+    private TeasyFluentWait<WebDriver> fluentWait;
     private WebDriver driver;
 
     public TeasyWindow(WebDriver driver) {
         this.driver = driver;
-        fluentWait = new OurFluentWait<>(driver);
+        fluentWait = new TeasyFluentWait<>(driver);
     }
 
     @Override

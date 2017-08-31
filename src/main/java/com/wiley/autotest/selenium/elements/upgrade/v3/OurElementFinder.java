@@ -28,11 +28,11 @@ public class OurElementFinder {
 
     private TeasyElement context;
 
-    private OurFluentWait<WebDriver> fluentWait;
+    private TeasyFluentWait<WebDriver> fluentWait;
 
     public OurElementFinder(WebDriver driver, SearchStrategy strategy) {
         this.strategy = strategy;
-        this.fluentWait = new OurFluentWait<>(driver, strategy);
+        this.fluentWait = new TeasyFluentWait<>(driver, strategy);
     }
 
     public OurElementFinder(WebDriver driver, SearchStrategy strategy, TeasyElement context) {
