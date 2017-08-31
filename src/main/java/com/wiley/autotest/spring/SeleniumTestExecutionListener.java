@@ -42,7 +42,6 @@ import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.remote.*;
-import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +70,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
     private static final String FIREFOX = "firefox";
     private static final String CHROME = "chrome";
     private static final String SAFARI = "safari";
-    private static final String SAFARI_10 = "safari10";
+    private static final String SAFARI_TECHNOLOGY_PREVIEW = "safariTechnologyPreview";
     private static final String HTML_UNIT = "htmlunit";
     private static final String PHANTOM_JS = "phantomjs";
     private static final String IE = "ie";
@@ -85,9 +84,8 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
     private static final String LINUX = "LINUX";
     private static final String MAC = "mac";
     private static final Logger LOGGER = LoggerFactory.getLogger(SeleniumTestExecutionListener.class);
-    private static ProxyServer proxyServer;
     private static final Object SYNC_OBJECT = new Object();
-
+    private static ProxyServer proxyServer;
     private static ThreadLocal<Integer> count = ThreadLocal.withInitial(() -> 0);
     private static ThreadLocal<Integer> driverRestartCount = ThreadLocal.withInitial(() -> 0);
     private static ThreadLocal<Boolean> useProxy = ThreadLocal.withInitial(() -> false);
@@ -96,6 +94,74 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
     private static ThreadLocal<Boolean> isNeedToRestart = ThreadLocal.withInitial(() -> false);
     private static ThreadLocal<Boolean> isUseFireBug = ThreadLocal.withInitial(() -> false);
     private String[] activeProfiles;
+
+    /**
+     * Checks whether browser is dead. Used to catch
+     * situations like "Error communicating with the remote browser. It may have died." exceptions
+     *
+     * @return true if browser is dead
+     */
+    public static boolean isBrowserDead() {
+        try {
+            if (((FramesTransparentWebDriver) getWebDriver()).getWrappedDriver() instanceof AppiumDriver) {
+                getWebDriver().getPageSource();
+            } else {
+                getWebDriver().getCurrentUrl();
+            }
+            return false;
+        } catch (Throwable t) {
+            LOGGER.error("*****BROWSER IS DEAD ERROR***** ", t);
+            return true;
+        }
+    }
+
+    private static String getNodeIpBySessionId(SessionId sessionId, String gridHubUrl) {
+        String[] gridHubIpAndPort = gridHubUrl.split("//")[1].split(":");
+        String gridIp = gridHubIpAndPort[0];
+        int gridPort = Integer.parseInt(gridHubIpAndPort[1].split("/")[0]);
+        try {
+            //check if grid hub stared on local host for appium
+            URL obj = new URL("http://" + gridIp + ":" + gridPort + "/grid/api/");
+            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+            con.setRequestMethod("GET");
+            int responseCode = con.getResponseCode();
+            if (responseCode != HttpStatus.SC_OK) {
+                return gridIp;
+            }
+
+            HttpHost host = new HttpHost(gridIp, gridPort);
+            HttpClient client = HttpClientBuilder.create().build();
+            URL testSessionApi = new URL("http://" + gridIp + ":" + gridPort + "/grid/api/testsession?session=" + sessionId);
+            BasicHttpEntityEnclosingRequest r = new BasicHttpEntityEnclosingRequest("POST", testSessionApi.toExternalForm());
+            HttpResponse response = client.execute(host, r);
+            JSONObject object = extractObject(response);
+            String[] nodeIpAndPort = ((String) object.get("proxyId")).split("//")[1].split(":");
+            return nodeIpAndPort[0];
+        } catch (JSONException e) {
+            LOGGER.error("*****JSONException occurs in getNodeIpBySessionId()*****", e);
+            throw new GridConnectException("*****JSONException occurs in getNodeIpBySessionId()*****", e);
+        } catch (MalformedURLException e) {
+            LOGGER.error("*****MalformedURLException occurs in getNodeIpBySessionId()*****", e);
+            throw new GridConnectException("*****MalformedURLException occurs in getNodeIpBySessionId()*****", e);
+        } catch (ClientProtocolException e) {
+            LOGGER.error("*****ClientProtocolException occurs in getNodeIpBySessionId()*****", e);
+            throw new GridConnectException("*****ClientProtocolException occurs in getNodeIpBySessionId()*****", e);
+        } catch (IOException e) {
+            LOGGER.error("*****IOException occurs in getNodeIpBySessionId()*****", e);
+            throw new GridConnectException("*****IOException occurs in getNodeIpBySessionId()*****", e);
+        }
+    }
+
+    private static JSONObject extractObject(HttpResponse resp) throws IOException, JSONException {
+        BufferedReader rd = new BufferedReader(new InputStreamReader(resp.getEntity().getContent()));
+        StringBuilder stringBuffer = new StringBuilder();
+        String line;
+        while ((line = rd.readLine()) != null) {
+            stringBuffer.append(line);
+        }
+        rd.close();
+        return new JSONObject(stringBuffer.toString());
+    }
 
     @Override
     public void prepareTestInstance(final TestContext context) throws Exception {
@@ -264,26 +330,6 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         SeleniumHolder.setWebDriver(null);
     }
 
-    /**
-     * Checks whether browser is dead. Used to catch
-     * situations like "Error communicating with the remote browser. It may have died." exceptions
-     *
-     * @return true if browser is dead
-     */
-    public static boolean isBrowserDead() {
-        try {
-            if (((FramesTransparentWebDriver) getWebDriver()).getWrappedDriver() instanceof AppiumDriver) {
-                getWebDriver().getPageSource();
-            } else {
-                getWebDriver().getCurrentUrl();
-            }
-            return false;
-        } catch (Throwable t) {
-            LOGGER.error("*****BROWSER IS DEAD ERROR***** ", t);
-            return true;
-        }
-    }
-
     private boolean isPortAvailable(int port) {
         try {
             ServerSocket srv = new ServerSocket(port);
@@ -350,6 +396,12 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
             LOGGER.error("UnknownHostException occurs", e);
         }
         return proxy;
+    }
+
+    private void setProxy(DesiredCapabilities capabilities) {
+        if (useProxy.get()) {
+            capabilities.setCapability(CapabilityType.PROXY, getProxy());
+        }
     }
 
     private WebDriver initWebDriver(Settings settings, Configuration configuration) throws MalformedURLException {
@@ -434,14 +486,10 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
                     throw new RuntimeException("Not supported browser: " + browserName + ", for platform: " + platformName);
                 }
             } else if (StringUtils.equalsIgnoreCase(platformName, MAC)) {
-                if (StringUtils.equalsIgnoreCase(browserName, SAFARI)) {
-                    desiredCapabilities = getSafariDesiredCapabilities();
-                    SeleniumHolder.setDriverName(SAFARI);
+                if (StringUtils.equalsIgnoreCase(browserName, SAFARI_TECHNOLOGY_PREVIEW)) {
+                    SeleniumHolder.setDriverName(SAFARI_TECHNOLOGY_PREVIEW);
                     SeleniumHolder.setPlatform(MAC);
-                } else if (StringUtils.equalsIgnoreCase(browserName, SAFARI_10)) {
-                    desiredCapabilities = getSafari10DesiredCapabilities();
-                    SeleniumHolder.setDriverName(SAFARI_10);
-                    SeleniumHolder.setPlatform(MAC);
+                    return safariTechnologyPreview(settings);
                 } else {
                     throw new RuntimeException("Not supported browser: " + browserName + ", for platform: " + platformName);
                 }
@@ -505,14 +553,10 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
                 SeleniumHolder.setDriverName(IE9);
                 SeleniumHolder.setPlatform(WINDOWS);
                 return explorer("9", customDesiredCapabilities);
-            } else if (StringUtils.equalsIgnoreCase(browserName, SAFARI)) {
-                SeleniumHolder.setDriverName(SAFARI);
+            } else if (StringUtils.equalsIgnoreCase(browserName, SAFARI_TECHNOLOGY_PREVIEW)) {
+                SeleniumHolder.setDriverName(SAFARI_TECHNOLOGY_PREVIEW);
                 SeleniumHolder.setPlatform(MAC);
-                return safari(customDesiredCapabilities);
-            } else if (StringUtils.equalsIgnoreCase(browserName, SAFARI_10)) {
-                SeleniumHolder.setDriverName(SAFARI_10);
-                SeleniumHolder.setPlatform(MAC);
-                return safari10(settings, customDesiredCapabilities);
+                return safariTechnologyPreview(settings);
             } else if (StringUtils.equalsIgnoreCase(browserName, HTML_UNIT)) {
                 SeleniumHolder.setDriverName(HTML_UNIT);
                 return htmlUnit(customDesiredCapabilities);
@@ -569,19 +613,12 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         return new EdgeDriver(desiredCapabilities);
     }
 
-    private WebDriver safari(DesiredCapabilities customDesiredCapabilities) {
-        DesiredCapabilities desiredCapabilities = getSafariDesiredCapabilities();
-        if (!customDesiredCapabilities.asMap().isEmpty()) {
-            desiredCapabilities.merge(customDesiredCapabilities);
-        }
-        return new SafariDriver(desiredCapabilities);
-    }
-
-    private WebDriver safari10(Settings settings, DesiredCapabilities customDesiredCapabilities) throws MalformedURLException {
-        DesiredCapabilities desiredCapabilities = getSafari10DesiredCapabilities();
-        if (!customDesiredCapabilities.asMap().isEmpty()) {
-            desiredCapabilities.merge(customDesiredCapabilities);
-        }
+    private WebDriver safariTechnologyPreview(Settings settings) throws MalformedURLException {
+        DesiredCapabilities desiredCapabilities = DesiredCapabilities.safari();
+        SafariOptions safariOptions = new SafariOptions();
+        safariOptions.setUseCleanSession(true);
+        safariOptions.setUseTechnologyPreview(true);
+        desiredCapabilities.setCapability(SafariOptions.CAPABILITY, safariOptions);
         RemoteWebDriver remoteWebDriver = new RemoteWebDriver(new URL(settings.getGridHubUrl()), desiredCapabilities);
         remoteWebDriver.setFileDetector(new LocalFileDetector());
         return remoteWebDriver;
@@ -675,27 +712,6 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         return capabilities;
     }
 
-    private DesiredCapabilities getSafariDesiredCapabilities() {
-        DesiredCapabilities capabilities = DesiredCapabilities.safari();
-        SafariOptions safariOptions = new SafariOptions();
-        safariOptions.setUseCleanSession(true);
-        capabilities.setCapability(SafariOptions.CAPABILITY, safariOptions);
-        capabilities.setPlatform(Platform.MAC);
-        setProxy(capabilities);
-        return capabilities;
-    }
-
-    private DesiredCapabilities getSafari10DesiredCapabilities() {
-        SafariOptions safariOptions = new SafariOptions();
-        safariOptions.setUseCleanSession(true);
-        DesiredCapabilities desiredCapabilities = DesiredCapabilities.safari();
-        desiredCapabilities.setCapability(SafariOptions.CAPABILITY, safariOptions);
-        desiredCapabilities.setCapability(SafariOptions.CAPABILITY, safariOptions);
-        desiredCapabilities.setPlatform(Platform.MAC);
-        setProxy(desiredCapabilities);
-        return desiredCapabilities;
-    }
-
     private DesiredCapabilities getHtmlUnitDesiredCapabilities() {
         DesiredCapabilities desiredCapabilities = DesiredCapabilities.htmlUnitWithJs();
         desiredCapabilities.setJavascriptEnabled(true);
@@ -720,12 +736,6 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         capabilities.setCapability("platformName", "iOS");
         capabilities.setCapability("newCommandTimeout", "900");
         return capabilities;
-    }
-
-    private void setProxy(DesiredCapabilities capabilities) {
-        if (useProxy.get()) {
-            capabilities.setCapability(CapabilityType.PROXY, getProxy());
-        }
     }
 
     private void setAlertBehaviorCapabilities(DesiredCapabilities capabilities) {
@@ -831,54 +841,6 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
 
     private void addShutdownHook(final WebDriver driver) {
         Runtime.getRuntime().addShutdownHook(new Thread(driver::quit));
-    }
-
-    private static String getNodeIpBySessionId(SessionId sessionId, String gridHubUrl) {
-        String[] gridHubIpAndPort = gridHubUrl.split("//")[1].split(":");
-        String gridIp = gridHubIpAndPort[0];
-        int gridPort = Integer.parseInt(gridHubIpAndPort[1].split("/")[0]);
-        try {
-            //check if grid hub stared on local host for appium
-            URL obj = new URL("http://" + gridIp + ":" + gridPort + "/grid/api/");
-            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-            con.setRequestMethod("GET");
-            int responseCode = con.getResponseCode();
-            if (responseCode != HttpStatus.SC_OK) {
-                return gridIp;
-            }
-
-            HttpHost host = new HttpHost(gridIp, gridPort);
-            HttpClient client = HttpClientBuilder.create().build();
-            URL testSessionApi = new URL("http://" + gridIp + ":" + gridPort + "/grid/api/testsession?session=" + sessionId);
-            BasicHttpEntityEnclosingRequest r = new BasicHttpEntityEnclosingRequest("POST", testSessionApi.toExternalForm());
-            HttpResponse response = client.execute(host, r);
-            JSONObject object = extractObject(response);
-            String[] nodeIpAndPort = ((String) object.get("proxyId")).split("//")[1].split(":");
-            return nodeIpAndPort[0];
-        } catch (JSONException e) {
-            LOGGER.error("*****JSONException occurs in getNodeIpBySessionId()*****", e);
-            throw new GridConnectException("*****JSONException occurs in getNodeIpBySessionId()*****", e);
-        } catch (MalformedURLException e) {
-            LOGGER.error("*****MalformedURLException occurs in getNodeIpBySessionId()*****", e);
-            throw new GridConnectException("*****MalformedURLException occurs in getNodeIpBySessionId()*****", e);
-        } catch (ClientProtocolException e) {
-            LOGGER.error("*****ClientProtocolException occurs in getNodeIpBySessionId()*****", e);
-            throw new GridConnectException("*****ClientProtocolException occurs in getNodeIpBySessionId()*****", e);
-        } catch (IOException e) {
-            LOGGER.error("*****IOException occurs in getNodeIpBySessionId()*****", e);
-            throw new GridConnectException("*****IOException occurs in getNodeIpBySessionId()*****", e);
-        }
-    }
-
-    private static JSONObject extractObject(HttpResponse resp) throws IOException, JSONException {
-        BufferedReader rd = new BufferedReader(new InputStreamReader(resp.getEntity().getContent()));
-        StringBuilder stringBuffer = new StringBuilder();
-        String line;
-        while ((line = rd.readLine()) != null) {
-            stringBuffer.append(line);
-        }
-        rd.close();
-        return new JSONObject(stringBuffer.toString());
     }
 
     private boolean isRunLocal(String gridHubUrl) {
