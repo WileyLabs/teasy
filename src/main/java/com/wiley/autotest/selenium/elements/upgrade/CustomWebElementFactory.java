@@ -19,26 +19,26 @@ public class CustomWebElementFactory {
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(CustomWebElementFactory.class);
 
     public static <T extends CustomWebElement> T wrap(WebElement webElement, By by) {
-        return wrapBase(new TeasyWebElementData(webElement, by));
+        return wrapBase(new TeasyElementData(webElement, by));
     }
 
-    public static <T extends CustomWebElement> T wrap(TeasyWebElement searchContext, WebElement webElement, By by) {
-        return wrapBase(new TeasyWebElementData(searchContext, webElement, by));
+    public static <T extends CustomWebElement> T wrap(TeasyElement searchContext, WebElement webElement, By by) {
+        return wrapBase(new TeasyElementData(searchContext, webElement, by));
     }
 
     public static <T extends CustomWebElement> T wrap(WebElement webElement, By by, int index) {
-        TeasyWebElementData teasyWebElementData = new TeasyWebElementData(webElement, by);
-        teasyWebElementData.setIndex(index);
-        return wrapBase(teasyWebElementData);
+        TeasyElementData teasyElementData = new TeasyElementData(webElement, by);
+        teasyElementData.setIndex(index);
+        return wrapBase(teasyElementData);
     }
 
-    public static <T extends CustomWebElement> T wrap(TeasyWebElement searchContext, WebElement webElement, By by, int index) {
-        return wrapBase(new TeasyWebElementData(searchContext, webElement, by, index));
+    public static <T extends CustomWebElement> T wrap(TeasyElement searchContext, WebElement webElement, By by, int index) {
+        return wrapBase(new TeasyElementData(searchContext, webElement, by, index));
     }
 
     public static <T extends CustomWebElement> T wrapParent(WebElement webElement) {
-        TeasyWebElementData teasyWebElementData = new TeasyWebElementData(webElement);
-        return wrapBase(teasyWebElementData);
+        TeasyElementData teasyElementData = new TeasyElementData(webElement);
+        return wrapBase(teasyElementData);
     }
 
     public static <T extends CustomWebElement> List<T> wrapList(List<WebElement> webElementList, By by) {
@@ -49,7 +49,7 @@ public class CustomWebElementFactory {
         return list;
     }
 
-    public static <T extends CustomWebElement> List<T> wrapList(TeasyWebElement searchContext, List<WebElement> webElementList, By by) {
+    public static <T extends CustomWebElement> List<T> wrapList(TeasyElement searchContext, List<WebElement> webElementList, By by) {
         List<T> list = new ArrayList<>(webElementList.size());
         for (int i = 0; i < webElementList.size(); i++) {
             list.add(wrap(searchContext, webElementList.get(i), by, i));
@@ -57,13 +57,13 @@ public class CustomWebElementFactory {
         return list;
     }
 
-    private static <T extends CustomWebElement> T wrapBase(TeasyWebElementData teasyWebElementData) {
+    private static <T extends CustomWebElement> T wrapBase(TeasyElementData teasyElementData) {
         try {
             Class<T> classOfOurWebElement = (Class<T>) Class.forName(SeleniumHolder.getOurWebElementClass());
-            return classOfOurWebElement.getDeclaredConstructor(TeasyWebElementData.class).newInstance(teasyWebElementData);
+            return classOfOurWebElement.getDeclaredConstructor(TeasyElementData.class).newInstance(teasyElementData);
         } catch (InstantiationException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            LOGGER.error("Cannot create instance of TeasyWebElement." + e.getClass().getName() + " occurred. ", e);
-            throw new WrapElementException("Cannot create instance of TeasyWebElement. " + e.getClass().getName() + " occurred. ", e);
+            LOGGER.error("Cannot create instance of TeasyElement." + e.getClass().getName() + " occurred. ", e);
+            throw new WrapElementException("Cannot create instance of TeasyElement. " + e.getClass().getName() + " occurred. ", e);
         }
     }
 }

@@ -1,7 +1,7 @@
 package com.wiley.autotest.selenium.elements;
 
-import com.wiley.autotest.selenium.elements.upgrade.TeasyWebElement;
-import com.wiley.autotest.selenium.elements.upgrade.TeasyWebElementData;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyElementData;
 import org.openqa.selenium.WebElement;
 
 import java.util.List;
@@ -15,9 +15,9 @@ public class TransformedWebElementList {
         webElementList = list;
     }
 
-    public List<TeasyWebElement> toOurWebElementList() {
+    public List<TeasyElement> toOurWebElementList() {
         return webElementList
-                .stream().map(webElement -> new TeasyWebElement(new TeasyWebElementData(webElement)))
+                .stream().map(webElement -> new TeasyElement(new TeasyElementData(webElement)))
                 .collect(Collectors.toList());
     }
 }

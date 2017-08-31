@@ -1,18 +1,18 @@
 package com.wiley.autotest.selenium.extensions.internal;
 
 import com.wiley.autotest.selenium.elements.Button;
-import com.wiley.autotest.selenium.elements.upgrade.TeasyWebElement;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import com.wiley.autotest.utils.TestUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriverException;
 
 class ButtonImpl extends AbstractEnabledElement implements Button {
-    protected ButtonImpl(final TeasyWebElement wrappedElement) {
+    protected ButtonImpl(final TeasyElement wrappedElement) {
         super(wrappedElement);
     }
 
-    protected ButtonImpl(final TeasyWebElement wrappedElement, By by) {
+    protected ButtonImpl(final TeasyElement wrappedElement, By by) {
         super(wrappedElement, by);
     }
 
@@ -29,7 +29,7 @@ class ButtonImpl extends AbstractEnabledElement implements Button {
     @Override
     public void clickWithReload() {
         int iterationCount = 0;
-        TeasyWebElement element = getWrappedWebElement();
+        TeasyElement element = getWrappedWebElement();
         while (iterationCount < 3) {
             element.click();
             try {
@@ -62,7 +62,7 @@ class ButtonImpl extends AbstractEnabledElement implements Button {
     }
 
     @Override
-    public TeasyWebElement getWrappedWebElement() {
+    public TeasyElement getWrappedWebElement() {
         return getWrappedElement();
     }
 }

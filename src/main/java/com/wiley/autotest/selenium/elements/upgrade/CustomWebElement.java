@@ -56,21 +56,21 @@ public interface CustomWebElement {
 
     ElementWaitFor waitFor(SearchStrategy strategy);
 
-    TeasyWebElement getParent();
+    TeasyElement getParent();
 
-    TeasyWebElement getParent(int level);
+    TeasyElement getParent(int level);
 
-    TeasyWebElement element(By by);
-    TeasyWebElement element(By by, SearchStrategy strategy);
+    TeasyElement element(By by);
+    TeasyElement element(By by, SearchStrategy strategy);
 
-    List<TeasyWebElement> elements(By by);
-    List<TeasyWebElement> elements(By by, SearchStrategy strategy);
+    List<TeasyElement> elements(By by);
+    List<TeasyElement> elements(By by, SearchStrategy strategy);
 
-    TeasyWebElement domElement(By by);
-    TeasyWebElement domElement(By by, SearchStrategy strategy);
+    TeasyElement domElement(By by);
+    TeasyElement domElement(By by, SearchStrategy strategy);
 
-    List<TeasyWebElement> domElements(By by);
-    List<TeasyWebElement> domElements(By by, SearchStrategy strategy);
+    List<TeasyElement> domElements(By by);
+    List<TeasyElement> domElements(By by, SearchStrategy strategy);
 
     void click();
 }

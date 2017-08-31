@@ -1,18 +1,18 @@
 package com.wiley.autotest.selenium.extensions.internal;
 
 import com.wiley.autotest.selenium.elements.CheckBox;
-import com.wiley.autotest.selenium.elements.upgrade.TeasyWebElement;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 import java.util.List;
 
 public class CheckBoxImpl extends AbstractEnabledElement implements CheckBox {
-    protected CheckBoxImpl(final TeasyWebElement wrappedElement) {
+    protected CheckBoxImpl(final TeasyElement wrappedElement) {
         super(wrappedElement);
     }
 
-    protected CheckBoxImpl(final TeasyWebElement wrappedElement, By by) {
+    protected CheckBoxImpl(final TeasyElement wrappedElement, By by) {
         super(wrappedElement, by);
     }
 
@@ -49,7 +49,7 @@ public class CheckBoxImpl extends AbstractEnabledElement implements CheckBox {
     }
 
     @Override
-    public TeasyWebElement getWrappedWebElement() {
+    public TeasyElement getWrappedWebElement() {
         return getWrappedElement();
     }
 

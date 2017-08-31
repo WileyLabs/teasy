@@ -5,7 +5,7 @@ import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.context.TeasyElementProvider;
 import com.wiley.autotest.selenium.context.ErrorSender;
 import com.wiley.autotest.selenium.elements.upgrade.CustomWebElement;
-import com.wiley.autotest.selenium.elements.upgrade.TeasyWebElement;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -17,16 +17,16 @@ public abstract class AbstractWebContainer extends TeasyElementProvider implemen
     private static final long WAIT_TIME_OUT_IN_SECONDS = 10;
 
     @DoNotSearch
-    private TeasyWebElement wrappedElement;
+    private TeasyElement wrappedElement;
     private ErrorSender errorSender;
 
     @Override
-    public void init(final TeasyWebElement wrappedElement) {
+    public void init(final TeasyElement wrappedElement) {
         this.wrappedElement = wrappedElement;
         elementFinder = new WebDriverAwareElementFinder(getDriver(), new WebDriverWait(getDriver(), WAIT_TIME_OUT_IN_SECONDS, SLEEP_IN_MILLISECONDS));
     }
 
-    public TeasyWebElement getWrappedElement() {
+    public TeasyElement getWrappedElement() {
         return wrappedElement;
     }
 
@@ -50,7 +50,7 @@ public abstract class AbstractWebContainer extends TeasyElementProvider implemen
     }
 
     @Override
-    public TeasyWebElement getWrappedWebElement() {
+    public TeasyElement getWrappedWebElement() {
         return wrappedElement;
     }
 

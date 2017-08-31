@@ -1,7 +1,7 @@
 package com.wiley.autotest.selenium.extensions.internal;
 
 import com.wiley.autotest.selenium.elements.*;
-import com.wiley.autotest.selenium.elements.upgrade.TeasyWebElement;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import com.wiley.autotest.selenium.extensions.ElementFactory;
 import com.wiley.autotest.selenium.extensions.ExtendedElementException;
 import org.openqa.selenium.By;
@@ -44,9 +44,9 @@ public class DefaultElementFactory implements ElementFactory {
     }
 
     @Override
-    public <T extends Element> T create(final Class<T> classOfElement, final TeasyWebElement wrappedElement) {
+    public <T extends Element> T create(final Class<T> classOfElement, final TeasyElement wrappedElement) {
         try {
-            return findImplementationFor(classOfElement).getDeclaredConstructor(TeasyWebElement.class).newInstance(wrappedElement);
+            return findImplementationFor(classOfElement).getDeclaredConstructor(TeasyElement.class).newInstance(wrappedElement);
         } catch (InstantiationException e) {
             throw new ExtendedElementException("InstantiationException is happened! " + e);
         } catch (IllegalAccessException e) {
@@ -59,9 +59,9 @@ public class DefaultElementFactory implements ElementFactory {
     }
 
     @Override
-    public <T extends Element> T create(final Class<T> classOfElement, final TeasyWebElement wrappedElement, final By by) {
+    public <T extends Element> T create(final Class<T> classOfElement, final TeasyElement wrappedElement, final By by) {
         try {
-            return findImplementationFor(classOfElement).getDeclaredConstructor(TeasyWebElement.class, By.class).newInstance(wrappedElement, by);
+            return findImplementationFor(classOfElement).getDeclaredConstructor(TeasyElement.class, By.class).newInstance(wrappedElement, by);
         } catch (InstantiationException e) {
             throw new ExtendedElementException("InstantiationException is happened! " + e);
         } catch (IllegalAccessException e) {

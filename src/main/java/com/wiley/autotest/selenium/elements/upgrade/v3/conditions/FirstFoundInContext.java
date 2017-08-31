@@ -1,7 +1,7 @@
 package com.wiley.autotest.selenium.elements.upgrade.v3.conditions;
 
 import com.wiley.autotest.ExpectedConditions2;
-import com.wiley.autotest.selenium.elements.upgrade.TeasyWebElement;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -14,9 +14,9 @@ import java.util.function.Function;
  */
 public class FirstFoundInContext implements ElementCondition {
 
-    private TeasyWebElement context;
+    private TeasyElement context;
 
-    public FirstFoundInContext(TeasyWebElement context) {
+    public FirstFoundInContext(TeasyElement context) {
         this.context = context;
     }
 

@@ -1,6 +1,6 @@
 package com.wiley.autotest.selenium.elements.upgrade.v3.expectedconditions;
 
-import com.wiley.autotest.selenium.elements.upgrade.TeasyWebElement;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 
@@ -11,10 +11,10 @@ import javax.annotation.Nullable;
  */
 public class ElementNotHaveAttribute implements ExpectedCondition<Boolean> {
 
-    private TeasyWebElement element;
+    private TeasyElement element;
     private String attributeName;
 
-    public ElementNotHaveAttribute(TeasyWebElement element, String attributeName) {
+    public ElementNotHaveAttribute(TeasyElement element, String attributeName) {
         this.element = element;
         this.attributeName = attributeName;
     }

@@ -8,29 +8,29 @@ import org.openqa.selenium.WebElement;
  * Date: 18.11.2016
  * Time: 16:34
  */
-public class TeasyWebElementData {
+public class TeasyElementData {
 
     private WebElement element;
-    private TeasyWebElement searchContext;
+    private TeasyElement searchContext;
     private By by;
     private Integer index;
     private Locator locator;
 
-    public TeasyWebElementData(WebElement element) {
+    public TeasyElementData(WebElement element) {
         this.element = element;
     }
 
-    public TeasyWebElementData(WebElement element, By by) {
+    public TeasyElementData(WebElement element, By by) {
         this(element);
         this.by = by;
     }
 
-    public TeasyWebElementData(TeasyWebElement context, WebElement element, By by) {
+    public TeasyElementData(TeasyElement context, WebElement element, By by) {
         this(element, by);
         this.searchContext = context;
     }
 
-    public TeasyWebElementData(TeasyWebElement context, WebElement element, By by, int index) {
+    public TeasyElementData(TeasyElement context, WebElement element, By by, int index) {
         this(context, element, by);
         this.index = index;
     }
@@ -43,11 +43,11 @@ public class TeasyWebElementData {
         this.element = element;
     }
 
-    public TeasyWebElement getSearchContext() {
+    public TeasyElement getSearchContext() {
         return searchContext;
     }
 
-    public void setSearchContext(TeasyWebElement searchContext) {
+    public void setSearchContext(TeasyElement searchContext) {
         this.searchContext = searchContext;
     }
 

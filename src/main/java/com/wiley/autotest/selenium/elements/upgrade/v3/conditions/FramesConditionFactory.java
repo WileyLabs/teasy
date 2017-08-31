@@ -1,6 +1,6 @@
 package com.wiley.autotest.selenium.elements.upgrade.v3.conditions;
 
-import com.wiley.autotest.selenium.elements.upgrade.TeasyWebElement;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import com.wiley.autotest.selenium.context.SearchStrategy;
 
 /**
@@ -8,9 +8,9 @@ import com.wiley.autotest.selenium.context.SearchStrategy;
  */
 public class FramesConditionFactory {
 
-    private TeasyWebElement context;
+    private TeasyElement context;
 
-    public FramesConditionFactory(TeasyWebElement context) {
+    public FramesConditionFactory(TeasyElement context) {
         this.context = context;
     }
 

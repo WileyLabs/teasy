@@ -1,7 +1,7 @@
 package com.wiley.autotest.selenium.elements.upgrade.v3;
 
 import com.wiley.autotest.selenium.context.SearchStrategy;
-import com.wiley.autotest.selenium.elements.upgrade.TeasyWebElement;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.FramesConditionFactory;
 import org.jetbrains.annotations.Nullable;
 import org.openqa.selenium.Alert;
@@ -26,7 +26,7 @@ public class OurElementFinder {
 
     private SearchStrategy strategy;
 
-    private TeasyWebElement context;
+    private TeasyElement context;
 
     private OurFluentWait<WebDriver> fluentWait;
 
@@ -35,12 +35,12 @@ public class OurElementFinder {
         this.fluentWait = new OurFluentWait<>(driver, strategy);
     }
 
-    public OurElementFinder(WebDriver driver, SearchStrategy strategy, TeasyWebElement context) {
+    public OurElementFinder(WebDriver driver, SearchStrategy strategy, TeasyElement context) {
         this(driver, strategy);
         this.context = context;
     }
 
-    public TeasyWebElement visibleElement(By locator) {
+    public TeasyElement visibleElement(By locator) {
         Function<WebDriver, List<WebElement>> condition = new FramesConditionFactory(context).get(strategy.getFrameStrategy())
                 .visibility(locator);
         return getElement(locator, condition);
@@ -49,13 +49,13 @@ public class OurElementFinder {
     /**
      * note: Will return empty list in case no visible elements found
      */
-    public List<TeasyWebElement> visibleElements(By locator) {
+    public List<TeasyElement> visibleElements(By locator) {
         Function<WebDriver, List<WebElement>> condition = new FramesConditionFactory(context).get(strategy.getFrameStrategy())
                 .visibility(locator);
         return getElements(locator, condition);
     }
 
-    public TeasyWebElement presentInDomElement(By locator) {
+    public TeasyElement presentInDomElement(By locator) {
         Function<WebDriver, List<WebElement>> condition = new FramesConditionFactory(context).get(strategy.getFrameStrategy())
                 .presence(locator);
         return getElement(locator, condition);
@@ -64,7 +64,7 @@ public class OurElementFinder {
     /**
      * note: Will return empty list in case no visible elements found
      */
-    public List<TeasyWebElement> presentInDomElements(By locator) {
+    public List<TeasyElement> presentInDomElements(By locator) {
         Function<WebDriver, List<WebElement>> condition = new FramesConditionFactory(context).get(strategy.getFrameStrategy())
                 .presence(locator);
         return getElements(locator, condition);
@@ -80,7 +80,7 @@ public class OurElementFinder {
         return fluentWait.waitFor(condition);
     }
 
-    private List<TeasyWebElement> getElements(By locator, Function<WebDriver, List<WebElement>> condition) {
+    private List<TeasyElement> getElements(By locator, Function<WebDriver, List<WebElement>> condition) {
         List<WebElement> webElements;
         try {
             webElements = waitFor(condition);
@@ -98,7 +98,7 @@ public class OurElementFinder {
     }
 
     @Nullable
-    private TeasyWebElement getElement(By locator, Function<WebDriver, List<WebElement>> condition) {
+    private TeasyElement getElement(By locator, Function<WebDriver, List<WebElement>> condition) {
         List<WebElement> webElements = waitFor(condition);
         if (webElements == null) {
             return null;

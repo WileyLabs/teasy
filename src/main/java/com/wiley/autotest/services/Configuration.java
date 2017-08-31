@@ -1,6 +1,6 @@
 package com.wiley.autotest.services;
 
-import com.wiley.autotest.selenium.elements.upgrade.TeasyWebElement;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +19,7 @@ public class Configuration {
 
     private DesiredCapabilities desiredCapabilities;
     private Map<String, Object> capabilities = new HashMap<>();
-    private Class<? extends TeasyWebElement> classOfElement;
+    private Class<? extends TeasyElement> classOfElement;
 
     public DesiredCapabilities getDesiredCapabilities() {
         return desiredCapabilities;
@@ -41,11 +41,11 @@ public class Configuration {
         this.capabilities.put(key, value);
     }
 
-    public Class<? extends TeasyWebElement> getClassOfElement() {
+    public Class<? extends TeasyElement> getClassOfElement() {
         return classOfElement;
     }
 
-    public void setClassOfElement(Class<? extends TeasyWebElement> classOfElement) {
+    public void setClassOfElement(Class<? extends TeasyElement> classOfElement) {
         this.classOfElement = classOfElement;
     }
 }

@@ -1,6 +1,6 @@
 package com.wiley.autotest.selenium.elements.upgrade.v3.expectedconditions;
 
-import com.wiley.autotest.selenium.elements.upgrade.TeasyWebElement;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 
@@ -11,9 +11,9 @@ import javax.annotation.Nullable;
  */
 public class ElementAbsent implements ExpectedCondition<Boolean> {
 
-    private TeasyWebElement element;
+    private TeasyElement element;
 
-    public ElementAbsent(TeasyWebElement element) {
+    public ElementAbsent(TeasyElement element) {
         this.element = element;
     }
 
@@ -23,7 +23,7 @@ public class ElementAbsent implements ExpectedCondition<Boolean> {
         try {
             return !element.isDisplayed();
         } catch (Throwable ignored) {
-            //in case of any exception in TeasyWebElement considering that element is absent
+            //in case of any exception in TeasyElement considering that element is absent
             return true;
         }
     }

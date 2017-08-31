@@ -1,18 +1,18 @@
 package com.wiley.autotest.selenium.extensions.internal;
 
 import com.wiley.autotest.selenium.elements.Link;
-import com.wiley.autotest.selenium.elements.upgrade.TeasyWebElement;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import com.wiley.autotest.utils.TestUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriverException;
 
 class LinkImpl extends AbstractElement implements Link {
-    protected LinkImpl(final TeasyWebElement wrappedElement) {
+    protected LinkImpl(final TeasyElement wrappedElement) {
         super(wrappedElement);
     }
 
-    protected LinkImpl(final TeasyWebElement wrappedElement, By by) {
+    protected LinkImpl(final TeasyElement wrappedElement, By by) {
         super(wrappedElement, by);
     }
 
@@ -29,7 +29,7 @@ class LinkImpl extends AbstractElement implements Link {
     @Override
     public void clickWithReload() {
         int iterationCount = 0;
-        TeasyWebElement element = getWrappedWebElement();
+        TeasyElement element = getWrappedWebElement();
         while (iterationCount < 3) {
             element.click();
             try {
@@ -62,7 +62,7 @@ class LinkImpl extends AbstractElement implements Link {
     }
 
     @Override
-    public TeasyWebElement getWrappedWebElement() {
+    public TeasyElement getWrappedWebElement() {
         return getWrappedElement();
     }
 }

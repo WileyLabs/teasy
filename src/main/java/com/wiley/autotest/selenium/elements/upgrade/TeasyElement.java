@@ -33,7 +33,7 @@ import static com.wiley.autotest.utils.TestUtils.waitForSomeTime;
  * Date: 27.08.2014
  * Time: 15:41
  */
-public class TeasyWebElement implements CustomWebElement, Locatable {
+public class TeasyElement implements CustomWebElement, Locatable {
 
     private WebElement wrappedElement;
     private Locator locator;
@@ -43,7 +43,7 @@ public class TeasyWebElement implements CustomWebElement, Locatable {
     //specific element finder which will return null or emptyList in case element is not found
     private OurElementFinder allowNullContextFinder;
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(TeasyWebElement.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(TeasyElement.class);
     //The duration in milliseconds to sleep between polls. (default value in selenium is 500)
     private static final long SLEEP_IN_MILLISECONDS = 1000;
 
@@ -52,12 +52,12 @@ public class TeasyWebElement implements CustomWebElement, Locatable {
     private int repeatLocateElementCounter;
     private static final int MAX_NUMBER_OF_REPEAT_LOCATE_ELEMENT = 20;
 
-    public TeasyWebElement(TeasyWebElementData teasyWebElementData) {
-        WebElement element = teasyWebElementData.getElement();
-        TeasyWebElement searchContext = teasyWebElementData.getSearchContext();
-        By by = teasyWebElementData.getBy();
-        Integer index = teasyWebElementData.getIndex();
-        Locator locator = teasyWebElementData.getLocator();
+    public TeasyElement(TeasyElementData teasyElementData) {
+        WebElement element = teasyElementData.getElement();
+        TeasyElement searchContext = teasyElementData.getSearchContext();
+        By by = teasyElementData.getBy();
+        Integer index = teasyElementData.getIndex();
+        Locator locator = teasyElementData.getLocator();
 
         if (searchContext != null && by != null && index != null) {
             this.locator = new FindElementsLocator(searchContext, by, index);
@@ -115,12 +115,12 @@ public class TeasyWebElement implements CustomWebElement, Locatable {
     }
 
     @Override
-    public TeasyWebElement getParent() {
+    public TeasyElement getParent() {
         return getParent(1);
     }
 
     @Override
-    public TeasyWebElement getParent(int level) {
+    public TeasyElement getParent(int level) {
         StringBuilder builder = new StringBuilder(".");
         for (int i = 0; i < level; i++) {
             builder.append("/..");
@@ -129,42 +129,42 @@ public class TeasyWebElement implements CustomWebElement, Locatable {
     }
 
     @Override
-    public TeasyWebElement element(By by) {
+    public TeasyElement element(By by) {
         return contextFinder.visibleElement(by);
     }
 
     @Override
-    public TeasyWebElement element(By by, SearchStrategy strategy) {
+    public TeasyElement element(By by, SearchStrategy strategy) {
         return customContextFinder(strategy).visibleElement(by);
     }
 
     @Override
-    public List<TeasyWebElement> elements(By by) {
+    public List<TeasyElement> elements(By by) {
         return contextFinder.visibleElements(by);
     }
 
     @Override
-    public List<TeasyWebElement> elements(By by, SearchStrategy strategy) {
+    public List<TeasyElement> elements(By by, SearchStrategy strategy) {
         return customContextFinder(strategy).visibleElements(by);
     }
 
     @Override
-    public TeasyWebElement domElement(By by) {
+    public TeasyElement domElement(By by) {
         return contextFinder.presentInDomElement(by);
     }
 
     @Override
-    public TeasyWebElement domElement(By by, SearchStrategy strategy) {
+    public TeasyElement domElement(By by, SearchStrategy strategy) {
         return customContextFinder(strategy).presentInDomElement(by);
     }
 
     @Override
-    public List<TeasyWebElement> domElements(By by) {
+    public List<TeasyElement> domElements(By by) {
         return contextFinder.presentInDomElements(by);
     }
 
     @Override
-    public List<TeasyWebElement> domElements(By by, SearchStrategy strategy) {
+    public List<TeasyElement> domElements(By by, SearchStrategy strategy) {
         return customContextFinder(strategy).presentInDomElements(by);
     }
 

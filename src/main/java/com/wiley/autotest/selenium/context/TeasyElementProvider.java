@@ -4,7 +4,7 @@ import com.wiley.autotest.ElementFinder;
 import com.wiley.autotest.WebDriverAwareElementFinder;
 import com.wiley.autotest.actions.Actions;
 import com.wiley.autotest.selenium.elements.*;
-import com.wiley.autotest.selenium.elements.upgrade.TeasyWebElement;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyWindow;
 import com.wiley.autotest.selenium.elements.upgrade.Window;
 import com.wiley.autotest.selenium.elements.upgrade.v3.CustomWaitFor;
@@ -71,35 +71,35 @@ public abstract class TeasyElementProvider {
         return new CustomWaitFor();
     }
 
-    protected TeasyWebElement element(final By locator) {
+    protected TeasyElement element(final By locator) {
         return finder().visibleElement(locator);
     }
 
-    protected TeasyWebElement element(final By locator, SearchStrategy strategy) {
+    protected TeasyElement element(final By locator, SearchStrategy strategy) {
         return customFinder(strategy).visibleElement(locator);
     }
 
-    protected List<TeasyWebElement> elements(final By locator) {
+    protected List<TeasyElement> elements(final By locator) {
         return finder().visibleElements(locator);
     }
 
-    protected List<TeasyWebElement> elements(final By locator, SearchStrategy strategy) {
+    protected List<TeasyElement> elements(final By locator, SearchStrategy strategy) {
         return customFinder(strategy).visibleElements(locator);
     }
 
-    protected TeasyWebElement domElement(By locator) {
+    protected TeasyElement domElement(By locator) {
         return finder().presentInDomElement(locator);
     }
 
-    protected TeasyWebElement domElement(By locator, SearchStrategy strategy) {
+    protected TeasyElement domElement(By locator, SearchStrategy strategy) {
         return customFinder(strategy).presentInDomElement(locator);
     }
 
-    protected List<TeasyWebElement> domElements(By locator) {
+    protected List<TeasyElement> domElements(By locator) {
         return finder().presentInDomElements(locator);
     }
 
-    protected List<TeasyWebElement> domElements(By locator, SearchStrategy strategy) {
+    protected List<TeasyElement> domElements(By locator, SearchStrategy strategy) {
         return customFinder(strategy).presentInDomElements(locator);
     }
 
@@ -119,7 +119,7 @@ public abstract class TeasyElementProvider {
         return getElement(Button.class, locator);
     }
 
-    protected Button button(TeasyWebElement searchContext, By locator) {
+    protected Button button(TeasyElement searchContext, By locator) {
         return getElement(Button.class, searchContext, locator);
     }
 
@@ -127,7 +127,7 @@ public abstract class TeasyElementProvider {
         return getElements(Button.class, locator);
     }
 
-    protected List<Button> buttons(TeasyWebElement searchContext, By locator) {
+    protected List<Button> buttons(TeasyElement searchContext, By locator) {
         return getElements(Button.class, searchContext, locator);
     }
 
@@ -135,7 +135,7 @@ public abstract class TeasyElementProvider {
         return getElement(Link.class, locator);
     }
 
-    protected Link link(TeasyWebElement searchContext, By locator) {
+    protected Link link(TeasyElement searchContext, By locator) {
         return getElement(Link.class, searchContext, locator);
     }
 
@@ -143,7 +143,7 @@ public abstract class TeasyElementProvider {
         return getElements(Link.class, locator);
     }
 
-    protected List<Link> links(TeasyWebElement searchContext, By locator) {
+    protected List<Link> links(TeasyElement searchContext, By locator) {
         return getElements(Link.class, searchContext, locator);
     }
 
@@ -151,7 +151,7 @@ public abstract class TeasyElementProvider {
         return getElement(CheckBox.class, locator);
     }
 
-    protected CheckBox checkBox(TeasyWebElement searchContext, By locator) {
+    protected CheckBox checkBox(TeasyElement searchContext, By locator) {
         return getElement(CheckBox.class, searchContext, locator);
     }
 
@@ -159,7 +159,7 @@ public abstract class TeasyElementProvider {
         return getElements(CheckBox.class, locator);
     }
 
-    protected List<CheckBox> checkBoxes(TeasyWebElement searchContext, By locator) {
+    protected List<CheckBox> checkBoxes(TeasyElement searchContext, By locator) {
         return getElements(CheckBox.class, searchContext, locator);
     }
 
@@ -167,7 +167,7 @@ public abstract class TeasyElementProvider {
         return getElement(RadioButton.class, locator);
     }
 
-    protected RadioButton radioButton(TeasyWebElement searchContext, By locator) {
+    protected RadioButton radioButton(TeasyElement searchContext, By locator) {
         return getElement(RadioButton.class, searchContext, locator);
     }
 
@@ -175,7 +175,7 @@ public abstract class TeasyElementProvider {
         return getElements(RadioButton.class, locator);
     }
 
-    protected List<RadioButton> radioButtons(TeasyWebElement searchContext, By locator) {
+    protected List<RadioButton> radioButtons(TeasyElement searchContext, By locator) {
         return getElements(RadioButton.class, locator);
     }
 
@@ -183,7 +183,7 @@ public abstract class TeasyElementProvider {
         return getElement(Select.class, locator);
     }
 
-    protected Select select(TeasyWebElement searchContext, By locator) {
+    protected Select select(TeasyElement searchContext, By locator) {
         return getElement(Select.class, searchContext, locator);
     }
 
@@ -191,7 +191,7 @@ public abstract class TeasyElementProvider {
         return getElements(Select.class, locator);
     }
 
-    protected List<Select> selects(TeasyWebElement searchContext, By locator) {
+    protected List<Select> selects(TeasyElement searchContext, By locator) {
         return getElements(Select.class, locator);
     }
 
@@ -199,7 +199,7 @@ public abstract class TeasyElementProvider {
         return getElement(TextField.class, locator);
     }
 
-    protected TextField textField(TeasyWebElement searchContext, By locator) {
+    protected TextField textField(TeasyElement searchContext, By locator) {
         return getElement(TextField.class, searchContext, locator);
     }
 
@@ -207,7 +207,7 @@ public abstract class TeasyElementProvider {
         return getElements(TextField.class, locator);
     }
 
-    protected List<TextField> textFields(TeasyWebElement searchContext, By locator) {
+    protected List<TextField> textFields(TeasyElement searchContext, By locator) {
         return getElements(TextField.class, searchContext, locator);
     }
 
@@ -215,7 +215,7 @@ public abstract class TeasyElementProvider {
         return getWebElementWrapper(element(by)).getElement(elementType, by);
     }
 
-    private <T extends Element> T getElement(Class<T> elementType, TeasyWebElement searchContext, By by) {
+    private <T extends Element> T getElement(Class<T> elementType, TeasyElement searchContext, By by) {
         return getWebElementWrapper(searchContext.element(by)).getElement(elementType, by);
     }
 
@@ -226,7 +226,7 @@ public abstract class TeasyElementProvider {
         return result;
     }
 
-    private <T extends Element> List<T> getElements(Class<T> elementType, TeasyWebElement searchContext, By by) {
+    private <T extends Element> List<T> getElements(Class<T> elementType, TeasyElement searchContext, By by) {
         List<T> result = new ArrayList<>();
         searchContext.elements(by)
                 .forEach(element -> result.add(getWebElementWrapper(element).getElement(elementType, by)));
@@ -245,7 +245,7 @@ public abstract class TeasyElementProvider {
     /**
      * method will be deleted shortly. use elements() and check like isEmpty()
      */
-    protected final TeasyWebElement elementOrNull(final By locator) {
+    protected final TeasyElement elementOrNull(final By locator) {
         return elementOrNull(locator, new SearchStrategy(1).nullOnFailure());
     }
 
@@ -253,12 +253,12 @@ public abstract class TeasyElementProvider {
     /**
      * method will be deleted shortly. use elements(by, strategy) and check like isEmpty()
      */
-    protected final TeasyWebElement elementOrNull(final By locator, SearchStrategy strategy) {
-        List<TeasyWebElement> teasyWebElements = customFinder(strategy.nullOnFailure()).visibleElements(locator);
-        if (teasyWebElements.isEmpty()) {
+    protected final TeasyElement elementOrNull(final By locator, SearchStrategy strategy) {
+        List<TeasyElement> teasyElements = customFinder(strategy.nullOnFailure()).visibleElements(locator);
+        if (teasyElements.isEmpty()) {
             return null;
         } else {
-            return teasyWebElements.get(0);
+            return teasyElements.get(0);
         }
     }
 
@@ -960,7 +960,7 @@ public abstract class TeasyElementProvider {
     /**
      * will be made privatemi
      */
-    protected WebElementWrapper getWebElementWrapper(TeasyWebElement wrappedElement) {
+    protected WebElementWrapper getWebElementWrapper(TeasyElement wrappedElement) {
         return new WebElementWrapper(wrappedElement);
     }
 

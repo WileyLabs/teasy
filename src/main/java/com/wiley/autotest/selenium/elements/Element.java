@@ -1,7 +1,7 @@
 package com.wiley.autotest.selenium.elements;
 
 import com.wiley.autotest.selenium.context.ErrorSender;
-import com.wiley.autotest.selenium.elements.upgrade.TeasyWebElement;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 
 /**
  * Base interface for objects like Buttons, Links, CheckBoxes, Selects etc.
@@ -14,5 +14,5 @@ public interface Element {
     @Deprecated
     void setErrorSender(ErrorSender errorSender);
 
-    TeasyWebElement getWrappedWebElement();
+    TeasyElement getWrappedWebElement();
 }

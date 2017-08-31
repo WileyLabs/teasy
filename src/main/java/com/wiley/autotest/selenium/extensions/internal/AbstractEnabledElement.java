@@ -1,16 +1,16 @@
 package com.wiley.autotest.selenium.extensions.internal;
 
 import com.wiley.autotest.selenium.elements.EnabledElement;
-import com.wiley.autotest.selenium.elements.upgrade.TeasyWebElement;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import org.openqa.selenium.By;
 
 abstract class AbstractEnabledElement extends AbstractElement implements EnabledElement {
 
-    protected AbstractEnabledElement(final TeasyWebElement wrappedElement) {
+    protected AbstractEnabledElement(final TeasyElement wrappedElement) {
         super(wrappedElement);
     }
 
-    protected AbstractEnabledElement(final TeasyWebElement wrappedElement, final By by) {
+    protected AbstractEnabledElement(final TeasyElement wrappedElement, final By by) {
         super(wrappedElement, by);
     }
 
@@ -20,7 +20,7 @@ abstract class AbstractEnabledElement extends AbstractElement implements Enabled
     }
 
     @Override
-    public TeasyWebElement getWrappedWebElement() {
+    public TeasyElement getWrappedWebElement() {
         return getWrappedElement();
     }
 }

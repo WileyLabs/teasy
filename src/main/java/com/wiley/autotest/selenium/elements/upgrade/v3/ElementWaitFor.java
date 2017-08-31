@@ -2,7 +2,7 @@ package com.wiley.autotest.selenium.elements.upgrade.v3;
 
 import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.context.SearchStrategy;
-import com.wiley.autotest.selenium.elements.upgrade.TeasyWebElement;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import com.wiley.autotest.selenium.elements.upgrade.v3.expectedconditions.*;
 import org.openqa.selenium.WebDriver;
 
@@ -15,14 +15,14 @@ import java.util.function.Function;
 public class ElementWaitFor {
 
     private OurFluentWait<WebDriver> fluentWait;
-    private TeasyWebElement element;
+    private TeasyElement element;
 
-    public ElementWaitFor(TeasyWebElement element) {
+    public ElementWaitFor(TeasyElement element) {
         this.element = element;
         fluentWait = new OurFluentWait<>(SeleniumHolder.getWebDriver());
     }
 
-    public ElementWaitFor(TeasyWebElement element, SearchStrategy strategy) {
+    public ElementWaitFor(TeasyElement element, SearchStrategy strategy) {
         this(element);
         fluentWait.withTimeout(strategy.getCustomTimeout(), TimeUnit.SECONDS);
         fluentWait.pollingEvery(strategy.getPoolingEvery(), strategy.getUnit());
