@@ -12,8 +12,9 @@ public class SearchStrategy {
 
     //timeout to be used by search strategy
     private long customTimeout;
-    private int poolingEvery = 0;
-    private TimeUnit unit = TimeUnit.SECONDS;
+    private static final long DEFAULT_SLEEP_TIMEOUT = 500L;
+    private long poolingEvery = DEFAULT_SLEEP_TIMEOUT;
+    private TimeUnit unit = TimeUnit.MILLISECONDS;
     private FrameStrategy frameStrategy = FrameStrategy.FIRST_FOUND;
 
     //flag showing that null should be returned instead of failing
@@ -33,12 +34,7 @@ public class SearchStrategy {
         return this;
     }
 
-    public SearchStrategy pollingEvery(int timeInSeconds) {
-        this.poolingEvery = timeInSeconds;
-        return this;
-    }
-
-    public SearchStrategy pollingEvery(int time, TimeUnit unit) {
+    public SearchStrategy pollingEvery(long time, TimeUnit unit) {
         this.poolingEvery = time;
         this.unit = unit;
         return this;
@@ -58,7 +54,7 @@ public class SearchStrategy {
         return customTimeout;
     }
 
-    public int getPoolingEvery() {
+    public long getPoolingEvery() {
         return poolingEvery;
     }
 

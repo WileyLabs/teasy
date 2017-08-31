@@ -15,7 +15,7 @@ public class OurFluentWait<T> extends FluentWait<T> {
     private boolean nullOnFailure = false;
 
     public OurFluentWait(T input) {
-        super(input);
+        this(input, new SearchStrategy());
     }
 
     public OurFluentWait(T input, SearchStrategy strategy) {

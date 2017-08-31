@@ -3,6 +3,7 @@ package com.wiley.autotest.selenium.context;
 import com.wiley.autotest.ElementFinder;
 import com.wiley.autotest.WebDriverAwareElementFinder;
 import com.wiley.autotest.actions.Actions;
+import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.elements.*;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyWindow;
@@ -112,7 +113,7 @@ public abstract class TeasyElementProvider {
     }
 
     protected Window window() {
-        return new TeasyWindow();
+        return new TeasyWindow(SeleniumHolder.getWebDriver());
     }
 
     protected Button button(By locator) {

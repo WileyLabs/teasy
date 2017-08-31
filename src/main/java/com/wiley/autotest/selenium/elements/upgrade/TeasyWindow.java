@@ -1,8 +1,6 @@
 package com.wiley.autotest.selenium.elements.upgrade;
 
-import com.wiley.autotest.ExpectedConditions2;
 import com.wiley.autotest.selenium.Report;
-import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.elements.upgrade.v3.OurFluentWait;
 import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.window.WindowMatcher;
 import com.wiley.autotest.selenium.elements.upgrade.v3.expectedconditions.PageLoaded;
@@ -22,8 +20,8 @@ public class TeasyWindow implements Window {
     private OurFluentWait<WebDriver> fluentWait;
     private WebDriver driver;
 
-    public TeasyWindow() {
-        driver = SeleniumHolder.getWebDriver();
+    public TeasyWindow(WebDriver driver) {
+        this.driver = driver;
         fluentWait = new OurFluentWait<>(driver);
     }
 
