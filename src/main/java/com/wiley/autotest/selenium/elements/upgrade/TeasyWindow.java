@@ -23,8 +23,8 @@ public class TeasyWindow implements Window {
     private WebDriver driver;
 
     public TeasyWindow() {
-        fluentWait = new OurFluentWait<>(SeleniumHolder.getWebDriver());
         driver = SeleniumHolder.getWebDriver();
+        fluentWait = new OurFluentWait<>(driver);
     }
 
     @Override
@@ -39,8 +39,7 @@ public class TeasyWindow implements Window {
 
     @Override
     public void switchTo(WindowMatcher matcher) {
-        OurFluentWait<WebDriver> finder = new OurFluentWait<>(driver);
-        finder.waitFor(matcher.get().findAndSwitch());
+        fluentWait.waitFor(matcher.get().findAndSwitch());
     }
 
     @Override
@@ -54,7 +53,7 @@ public class TeasyWindow implements Window {
             return;
         }
         try {
-            fluentWait.until(new PageLoaded());
+            fluentWait.waitFor(new PageLoaded());
         } catch (TimeoutException expected) {
             String readyState = ((JavascriptExecutor) driver).executeScript("return document.readyState").toString();
             new Report("*****ERROR***** TimeoutException occurred while waiting for page to load! return document.readyState value is '"

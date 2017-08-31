@@ -1,5 +1,6 @@
 package com.wiley.autotest.selenium.context;
 
+import com.wiley.autotest.selenium.SeleniumHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.concurrent.TimeUnit;
@@ -8,10 +9,6 @@ import java.util.concurrent.TimeUnit;
  * Created by vefimov on 26/04/2017.
  */
 public class SearchStrategy {
-
-    //timeout value taken from project pom.xml
-    @Autowired
-    private long timeout;
 
     //timeout to be used by search strategy
     private long customTimeout;
@@ -23,7 +20,8 @@ public class SearchStrategy {
     private boolean nullOnFailure = false;
 
     public SearchStrategy() {
-        this.customTimeout = timeout;
+        //setting default timeout value taken from pom.xml's property 'application.selenium.timeout'
+        this.customTimeout = SeleniumHolder.getTimeoutInSeconds();
     }
 
     public SearchStrategy(long customTimeoutInSeconds) {

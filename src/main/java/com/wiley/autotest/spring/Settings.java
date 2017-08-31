@@ -14,6 +14,7 @@ public class Settings extends Properties {
     private static final String APPLICATION_PROTOCOL_PROP_KEY = "application.protocol";
     private static final String APPLICATION_CONTEXT_PROP_KEY = "application.context";
     private static final String APPLICATION_SELENIUM_DRIVER_PROP_KEY = "application.selenium.driver";
+    private static final String APPLICATION_SELENIUM_TIMEOUT_PROP_KEY = "application.selenium.timeout";
     private static final String SELENIUM_FIREFOX_PROFILE_PROP_KEY = "selenium.firefox.profile";
     private static final String RUN_TESTS_WITH_GRID_PROP_KEY = "run.tests.with.grid";
     private static final String GRID_HUB_URL_PROP_KEY = "grid.hub.url";
@@ -68,6 +69,8 @@ public class Settings extends Properties {
     public String getDriverName() {
         return getProperty(APPLICATION_SELENIUM_DRIVER_PROP_KEY);
     }
+
+    public Integer getTimeout() {return  getAsInteger(APPLICATION_SELENIUM_TIMEOUT_PROP_KEY);}
 
     public String getBrowserProfileName() {
         return getProperty(SELENIUM_FIREFOX_PROFILE_PROP_KEY);

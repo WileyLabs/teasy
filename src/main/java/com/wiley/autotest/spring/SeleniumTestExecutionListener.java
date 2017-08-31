@@ -242,6 +242,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
 
             addShutdownHook(driver);
             SeleniumHolder.setWebDriver(driver);
+            SeleniumHolder.setTimeoutInSeconds(settings.getTimeout());
 
             AndroidDriver androidDriver = castToAndroidDriver(driver);
             IOSDriver iosDriver = castToIOSDriver(driver);
