@@ -2,6 +2,7 @@ package com.wiley.autotest.selenium.elements.upgrade.v3.conditions;
 
 import com.wiley.autotest.ExpectedConditions2;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
+import com.wiley.autotest.selenium.elements.upgrade.VisibleTeasyElement;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;

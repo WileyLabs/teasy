@@ -1,8 +1,15 @@
 package com.wiley.autotest.framework.pages;
 
 import com.wiley.autotest.selenium.context.AbstractPage;
+import com.wiley.autotest.selenium.context.SearchStrategy;
+import com.wiley.autotest.selenium.elements.upgrade.DomTeasyElement;
+import com.wiley.autotest.selenium.elements.upgrade.NullTeasyElement;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
+import com.wiley.autotest.selenium.elements.upgrade.VisibleTeasyElement;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.springframework.stereotype.Component;
+import org.testng.Assert;
 
 /**
  * Created by shekhavtsov on 20/07/2017.
@@ -40,5 +47,32 @@ public class TestElementPage extends AbstractPage {
         return this;
     }
 
+    public TestElementPage checkElementInstanceOfVisibleElement() {
+        TeasyElement element = element(By.cssSelector("li"));
+        assertTrue(element instanceof VisibleTeasyElement);
+        return this;
+    }
 
+    public TestElementPage checkDomElementInstanceOfDomElement() {
+        TeasyElement element = domElement(By.cssSelector("li"));
+        assertTrue(element instanceof DomTeasyElement);
+        return this;
+    }
+
+    public TestElementPage checkNonExistingElementInstanceOfNullElement() {
+        TeasyElement element = element(By.cssSelector("not_present_element"), new SearchStrategy(1));
+        assertTrue(element instanceof NullTeasyElement);
+        return this;
+    }
+
+    public TestElementPage checkNonExistingElementShouldBeAbsent() {
+        TeasyElement element = element(By.cssSelector("not_present_element"), new SearchStrategy(1));
+        element.should().beAbsent();
+        return this;
+    }
+
+    public TestElementPage checkNonExistingElementClickFails() {
+        element(By.cssSelector("not_present_element"), new SearchStrategy(1)).click();
+        return this;
+    }
 }

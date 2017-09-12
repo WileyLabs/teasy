@@ -26,7 +26,7 @@ public class FindElementLocator implements Locator {
 
     @Override
     public WebElement find() {
-        return driver != null ? driver.findElement(by) : searchContext.findElement(by);
+        return driver != null ? driver.findElement(by) : searchContext.domElement(by).getWrappedWebElement();
     }
 
     @Override

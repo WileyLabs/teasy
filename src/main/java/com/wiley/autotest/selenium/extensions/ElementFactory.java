@@ -2,6 +2,7 @@ package com.wiley.autotest.selenium.extensions;
 
 import com.wiley.autotest.selenium.elements.Element;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
+import com.wiley.autotest.selenium.elements.upgrade.VisibleTeasyElement;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 

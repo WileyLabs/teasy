@@ -28,11 +28,10 @@ public class FindElementsLocator implements Locator {
         this.index = index;
     }
 
-
     @Override
     public WebElement find() {
         try {
-            return driver != null ? driver.findElements(by).get(index) : searchContext.findElements(by).get(index);
+            return driver != null ? driver.findElements(by).get(index) : searchContext.domElements(by).get(index).getWrappedWebElement();
         } catch (IndexOutOfBoundsException e) {
             throw new NoSuchElementException("Unable to find element " + by + ", Exception - " + e);
         }

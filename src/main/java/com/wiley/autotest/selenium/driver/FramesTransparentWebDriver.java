@@ -156,11 +156,9 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
 
     private List<WebElement> findFirstElements(TeasyElement context, final By by, Stack<WebElement> currentFramesPath) {
         if (firstCallInContext.get()) {
-            try {
-                context.isEnabled();
-            } catch (StaleElementReferenceException e) {
-                context.againLocate();
-            }
+
+            avoidStaleness(context);
+
             List<WebElement> elements = context.getWrappedWebElement().findElements(by);
             if (!elements.isEmpty()) {
                 return elements;
@@ -218,11 +216,8 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
     private List<WebElement> getAllElementsInFrames(TeasyElement context, final By by, Stack<WebElement> currentFramesPath) {
         List<WebElement> foundInCurrentFrame = newArrayList();
         if (firstCallInContext.get()) {
-            try {
-                context.isEnabled();
-            } catch (StaleElementReferenceException e) {
-                context.againLocate();
-            }
+            avoidStaleness(context);
+
             List<WebElement> elements = context.getWrappedWebElement().findElements(by);
             if (!elements.isEmpty()) {
                 foundInCurrentFrame.addAll(elements);
@@ -250,6 +245,16 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
             currentFramesPath.forEach(this::switchToFrame);
         }
         return foundInCurrentFrame;
+    }
+
+    /**
+     * Quite hacky workaround to make sure context is not stale before searching inside it
+     * we call getText() method which takes care of StaleElementReferenceException and calls
+     * for againLocate() method inside TeasyElement.
+     * @param context - TeasyElement which might be stale.
+     */
+    private void avoidStaleness(TeasyElement context) {
+        context.getText();
     }
 
     private List<WebElement> getFramesForContext(TeasyElement context) {

@@ -1,9 +1,10 @@
 package com.wiley.autotest.selenium.extensions.internal;
 
 import com.wiley.autotest.selenium.elements.Select;
-import com.wiley.autotest.selenium.elements.TransformedWebElementList;
+import com.wiley.autotest.selenium.elements.upgrade.DomTeasyElement;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyElementData;
+import com.wiley.autotest.selenium.elements.upgrade.VisibleTeasyElement;
 import com.wiley.autotest.utils.TestUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -14,15 +15,16 @@ import org.testng.Reporter;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang.math.RandomUtils.nextInt;
 
 class SelectImpl extends AbstractEnabledElement implements Select {
-    protected SelectImpl(final TeasyElement wrappedElement) {
+    protected SelectImpl(final VisibleTeasyElement wrappedElement) {
         super(wrappedElement);
     }
 
-    protected SelectImpl(final TeasyElement wrappedElement, By by) {
+    protected SelectImpl(final VisibleTeasyElement wrappedElement, By by) {
         super(wrappedElement, by);
     }
 
@@ -148,7 +150,7 @@ class SelectImpl extends AbstractEnabledElement implements Select {
 
     @Override
     public TeasyElement getSelectedOption() {
-        return new TeasyElement(new TeasyElementData(wrappedSelect().getFirstSelectedOption()));
+        return new DomTeasyElement(new TeasyElementData(wrappedSelect().getFirstSelectedOption(), By.tagName("option")));
     }
 
     @Override
@@ -164,12 +166,18 @@ class SelectImpl extends AbstractEnabledElement implements Select {
     @Override
     public List<TeasyElement> getOptions() {
         try {
-            return new TransformedWebElementList(wrappedSelect().getOptions()).toOurWebElementList();
+            return wrappedSelect().getOptions()
+                    .stream()
+                    .map(webElement -> new DomTeasyElement(new TeasyElementData(getWrappedElement(), By.tagName("option"))))
+                    .collect(Collectors.toList());
         } catch (UndeclaredThrowableException ignored) {
             //TODO VF fix it in other places
             //Sometimes this test fails in ie due to such exception
             TestUtils.waitForSomeTime(3000, EXPLANATION_MESSAGE_FOR_WAIT);
-            return new TransformedWebElementList(wrappedSelect().getOptions()).toOurWebElementList();
+            return wrappedSelect().getOptions()
+                    .stream()
+                    .map(webElement -> new DomTeasyElement(new TeasyElementData(getWrappedElement(), By.tagName("option"))))
+                    .collect(Collectors.toList());
         }
     }
 
@@ -177,7 +185,7 @@ class SelectImpl extends AbstractEnabledElement implements Select {
     @Deprecated
     public List<TeasyElement> getValues() {
         //TODO VF Need to complete
-        return new ArrayList<TeasyElement>();
+        return new ArrayList<>();
     }
 
     @Override

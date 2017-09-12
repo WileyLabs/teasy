@@ -2,6 +2,7 @@ package com.wiley.autotest.selenium.extensions.internal;
 
 import com.wiley.autotest.selenium.elements.Button;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
+import com.wiley.autotest.selenium.elements.upgrade.VisibleTeasyElement;
 import com.wiley.autotest.utils.TestUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.TimeoutException;

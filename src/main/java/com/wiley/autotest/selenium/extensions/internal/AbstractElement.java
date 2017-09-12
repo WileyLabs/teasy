@@ -6,6 +6,7 @@ import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.context.ErrorSender;
 import com.wiley.autotest.selenium.elements.Element;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
+import com.wiley.autotest.selenium.elements.upgrade.VisibleTeasyElement;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;

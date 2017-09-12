@@ -14,7 +14,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static com.wiley.autotest.selenium.elements.upgrade.CustomWebElementFactory.wrapList;
+import static com.wiley.autotest.selenium.elements.upgrade.TeasyElementWrapper.wrapList;
 import static java.util.Collections.emptyList;
 import static org.apache.commons.collections.CollectionUtils.isEmpty;
 import static org.apache.commons.collections.CollectionUtils.isNotEmpty;

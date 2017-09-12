@@ -7,11 +7,12 @@ import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.elements.*;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyWindow;
+import com.wiley.autotest.selenium.elements.upgrade.VisibleTeasyElement;
 import com.wiley.autotest.selenium.elements.upgrade.Window;
 import com.wiley.autotest.selenium.elements.upgrade.v3.CustomWaitFor;
-import com.wiley.autotest.selenium.elements.upgrade.v3.ElementWaitFor;
-import com.wiley.autotest.selenium.elements.upgrade.v3.OurElementFinder;
-import com.wiley.autotest.selenium.elements.upgrade.v3.Should;
+import com.wiley.autotest.selenium.elements.upgrade.v3.TeasyElementFinder;
+import com.wiley.autotest.selenium.elements.upgrade.v3.VisibleElementWaitFor;
+import com.wiley.autotest.selenium.elements.upgrade.v3.VisibleShould;
 import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.window.WindowMatcher;
 import com.wiley.autotest.utils.TestUtils;
 import org.openqa.selenium.*;
@@ -31,7 +32,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static com.wiley.autotest.selenium.SeleniumHolder.getWebDriver;
-import static com.wiley.autotest.selenium.elements.upgrade.CustomWebElementFactory.wrap;
+import static com.wiley.autotest.selenium.elements.upgrade.TeasyElementWrapper.wrap_to_be_deleted;
 import static com.wiley.autotest.utils.ExecutionUtils.isChrome;
 
 /**
@@ -48,18 +49,18 @@ public abstract class TeasyElementProvider {
     private long timeout;
 
     //default finder that uses timeout from pom
-    private OurElementFinder finder;
+    private TeasyElementFinder finder;
 
     //VE added this to avoid No buffer space available exception. To be replaced with default value of 500 if does not work.
     protected static final long SLEEP_IN_MILLISECONDS = 1000;
 
-    private OurElementFinder customFinder(SearchStrategy strategy) {
-        return new OurElementFinder(getWebDriver(), strategy);
+    private TeasyElementFinder customFinder(SearchStrategy strategy) {
+        return new TeasyElementFinder(getWebDriver(), strategy);
     }
 
-    private OurElementFinder finder() {
+    private TeasyElementFinder finder() {
         if (finder == null) {
-            finder = new OurElementFinder(getWebDriver(), new SearchStrategy(timeout));
+            finder = new TeasyElementFinder(getWebDriver(), new SearchStrategy(timeout));
         }
         return finder;
     }
@@ -120,7 +121,7 @@ public abstract class TeasyElementProvider {
         return getElement(Button.class, locator);
     }
 
-    protected Button button(TeasyElement searchContext, By locator) {
+    protected Button button(VisibleTeasyElement searchContext, By locator) {
         return getElement(Button.class, searchContext, locator);
     }
 
@@ -128,7 +129,7 @@ public abstract class TeasyElementProvider {
         return getElements(Button.class, locator);
     }
 
-    protected List<Button> buttons(TeasyElement searchContext, By locator) {
+    protected List<Button> buttons(VisibleTeasyElement searchContext, By locator) {
         return getElements(Button.class, searchContext, locator);
     }
 
@@ -136,7 +137,7 @@ public abstract class TeasyElementProvider {
         return getElement(Link.class, locator);
     }
 
-    protected Link link(TeasyElement searchContext, By locator) {
+    protected Link link(VisibleTeasyElement searchContext, By locator) {
         return getElement(Link.class, searchContext, locator);
     }
 
@@ -144,7 +145,7 @@ public abstract class TeasyElementProvider {
         return getElements(Link.class, locator);
     }
 
-    protected List<Link> links(TeasyElement searchContext, By locator) {
+    protected List<Link> links(VisibleTeasyElement searchContext, By locator) {
         return getElements(Link.class, searchContext, locator);
     }
 
@@ -152,7 +153,7 @@ public abstract class TeasyElementProvider {
         return getElement(CheckBox.class, locator);
     }
 
-    protected CheckBox checkBox(TeasyElement searchContext, By locator) {
+    protected CheckBox checkBox(VisibleTeasyElement searchContext, By locator) {
         return getElement(CheckBox.class, searchContext, locator);
     }
 
@@ -160,7 +161,7 @@ public abstract class TeasyElementProvider {
         return getElements(CheckBox.class, locator);
     }
 
-    protected List<CheckBox> checkBoxes(TeasyElement searchContext, By locator) {
+    protected List<CheckBox> checkBoxes(VisibleTeasyElement searchContext, By locator) {
         return getElements(CheckBox.class, searchContext, locator);
     }
 
@@ -168,7 +169,7 @@ public abstract class TeasyElementProvider {
         return getElement(RadioButton.class, locator);
     }
 
-    protected RadioButton radioButton(TeasyElement searchContext, By locator) {
+    protected RadioButton radioButton(VisibleTeasyElement searchContext, By locator) {
         return getElement(RadioButton.class, searchContext, locator);
     }
 
@@ -176,7 +177,7 @@ public abstract class TeasyElementProvider {
         return getElements(RadioButton.class, locator);
     }
 
-    protected List<RadioButton> radioButtons(TeasyElement searchContext, By locator) {
+    protected List<RadioButton> radioButtons(VisibleTeasyElement searchContext, By locator) {
         return getElements(RadioButton.class, locator);
     }
 
@@ -184,7 +185,7 @@ public abstract class TeasyElementProvider {
         return getElement(Select.class, locator);
     }
 
-    protected Select select(TeasyElement searchContext, By locator) {
+    protected Select select(VisibleTeasyElement searchContext, By locator) {
         return getElement(Select.class, searchContext, locator);
     }
 
@@ -192,7 +193,7 @@ public abstract class TeasyElementProvider {
         return getElements(Select.class, locator);
     }
 
-    protected List<Select> selects(TeasyElement searchContext, By locator) {
+    protected List<Select> selects(VisibleTeasyElement searchContext, By locator) {
         return getElements(Select.class, locator);
     }
 
@@ -200,7 +201,7 @@ public abstract class TeasyElementProvider {
         return getElement(TextField.class, locator);
     }
 
-    protected TextField textField(TeasyElement searchContext, By locator) {
+    protected TextField textField(VisibleTeasyElement searchContext, By locator) {
         return getElement(TextField.class, searchContext, locator);
     }
 
@@ -208,7 +209,7 @@ public abstract class TeasyElementProvider {
         return getElements(TextField.class, locator);
     }
 
-    protected List<TextField> textFields(TeasyElement searchContext, By locator) {
+    protected List<TextField> textFields(VisibleTeasyElement searchContext, By locator) {
         return getElements(TextField.class, searchContext, locator);
     }
 
@@ -216,7 +217,7 @@ public abstract class TeasyElementProvider {
         return getWebElementWrapper(element(by)).getElement(elementType, by);
     }
 
-    private <T extends Element> T getElement(Class<T> elementType, TeasyElement searchContext, By by) {
+    private <T extends Element> T getElement(Class<T> elementType, VisibleTeasyElement searchContext, By by) {
         return getWebElementWrapper(searchContext.element(by)).getElement(elementType, by);
     }
 
@@ -227,7 +228,7 @@ public abstract class TeasyElementProvider {
         return result;
     }
 
-    private <T extends Element> List<T> getElements(Class<T> elementType, TeasyElement searchContext, By by) {
+    private <T extends Element> List<T> getElements(Class<T> elementType, VisibleTeasyElement searchContext, By by) {
         List<T> result = new ArrayList<>();
         searchContext.elements(by)
                 .forEach(element -> result.add(getWebElementWrapper(element).getElement(elementType, by)));
@@ -242,29 +243,29 @@ public abstract class TeasyElementProvider {
     // OLD code that is going to be removed by September 2017.
     // Currently kept to give users some time to switch to new implementation
 
-    @Deprecated
     /**
      * method will be deleted shortly. use elements() and check like isEmpty()
      */
+    @Deprecated
     protected final TeasyElement elementOrNull(final By locator) {
         return elementOrNull(locator, new SearchStrategy(1).nullOnFailure());
     }
 
-    @Deprecated
     /**
      * method will be deleted shortly. use elements(by, strategy) and check like isEmpty()
      */
+    @Deprecated
     protected final TeasyElement elementOrNull(final By locator, SearchStrategy strategy) {
-        List<TeasyElement> teasyElements = customFinder(strategy.nullOnFailure()).visibleElements(locator);
-        if (teasyElements.isEmpty()) {
+        List<TeasyElement> visibleTeasyElements = customFinder(strategy.nullOnFailure()).visibleElements(locator);
+        if (visibleTeasyElements.isEmpty()) {
             return null;
         } else {
-            return teasyElements.get(0);
+            return visibleTeasyElements.get(0);
         }
     }
 
+    //will be replaced with TeasyElementFinder
     @Deprecated
-    //will be replaced with OurElementFinder
     protected ElementFinder elementFinder;
 
     /**
@@ -326,32 +327,32 @@ public abstract class TeasyElementProvider {
         return errorMessage.toString() + " failed";
     }
 
-    @Deprecated
     /**
      * Use {@link Window#close()}
      */
+    @Deprecated
     protected final void closeBrowserWindow() {
         elementFinder.closeCurrentBrowserWindow();
     }
 
-    @Deprecated
     /**
      * Use {@link Window#waitForScriptsToLoad()}
      */
+    @Deprecated
     protected final void waitForPageToLoad() {
         elementFinder.waitForPageToLoad();
     }
 
-    @Deprecated
     /**
      * Use {@link Window#switchToLast()} ()}
      */
+    @Deprecated
     protected void switchToLastWindow() {
         elementFinder.switchToLastWindow();
     }
 
-    @Deprecated
     //Outdated method - used only inside deprected methods. Will be removed in future.
+    @Deprecated
     private Object getSupplierObject(Supplier webElementSupplier, String loggerMessage, String errorMessage) {
         try {
             return webElementSupplier.get();
@@ -366,10 +367,10 @@ public abstract class TeasyElementProvider {
         return null;
     }
 
-    @Deprecated
     /**
      * Use {@link TeasyElementProvider#window()} and call {@link TeasyWindow#switchTo(WindowMatcher)}
      */
+    @Deprecated
     protected final void waitForWindowToBeAppearedByPartialUrlAndSwitchToIt(final String url, long timeoutInSeconds) {
         if (isChrome()) {
             TestUtils.waitForSomeTime(3000, "Wait for window is appear in chrome");
@@ -377,10 +378,10 @@ public abstract class TeasyElementProvider {
         elementFinder.waitForWindowToBeAppearedByPartialUrlAndSwitchToIt(url, timeoutInSeconds);
     }
 
-    @Deprecated
     /**
      * Use {@link TeasyElementProvider#window()} and call {@link TeasyWindow#switchTo(WindowMatcher)}
      */
+    @Deprecated
     protected final void waitForWindowToBeAppearedAndSwitchToIt(final String title) {
         Actions action = () -> {
             if (isChrome()) {
@@ -395,10 +396,10 @@ public abstract class TeasyElementProvider {
         }
     }
 
-    @Deprecated
     /**
      * Use {@link TeasyElementProvider#window()} and call {@link TeasyWindow#switchTo(WindowMatcher)}
      */
+    @Deprecated
     protected final void waitForWindowToBeAppearedByPartialUrlAndSwitchToIt(final String url) {
         Actions action = () -> {
             if (isChrome()) {
@@ -414,10 +415,10 @@ public abstract class TeasyElementProvider {
         }
     }
 
-    @Deprecated
     /**
      * Use {@link TeasyElementProvider#window()} and call {@link TeasyWindow#switchTo(WindowMatcher)}
      */
+    @Deprecated
     protected final void waitForWindowToBeAppearedByPartialTitleAndSwitchToIt(final String partialTitle) {
         Actions action = () -> {
             if (isChrome()) {
@@ -432,19 +433,19 @@ public abstract class TeasyElementProvider {
         }
     }
 
-    @Deprecated
     /**
      * Use element().domElements() or domElement().domeElements()
      */
+    @Deprecated
     protected List<WebElement> domElements(SearchContext searchContext, By locator) {
         Supplier<List<WebElement>> webElementsSupplier = () -> waitForPresenceOfAllElementsLocatedBy(searchContext, locator);
         return (List<WebElement>) getSupplierObject(webElementsSupplier, "****WebDriverException in domElements()****", "");
     }
 
-    @Deprecated
     /**
      * Use element().elementOrNull()
      */
+    @Deprecated
     protected final WebElement elementOrNull(final SearchContext searchContext, final By locator) {
 
         throw new RuntimeException("REPLACE WITH NEW APPROACH IMMEDIATELY! METHOD IMPLEMENTATION WAS DELETED! CONTACT Vladimir Efimov vefimov@wiley.com");
@@ -456,56 +457,58 @@ public abstract class TeasyElementProvider {
 //        }
     }
 
-    @Deprecated
+
     /**
      * Use element().domElement() or domElement().domeElement()
      */
+    @Deprecated
     protected WebElement domElement(SearchContext searchContext, By locator) {
         Supplier webElementSupplier = () -> waitForPresenceOfElementLocatedBy(searchContext, locator);
         return (WebElement) getSupplierObject(webElementSupplier, "****WebDriverException in domElement()****", "");
     }
 
-    @Deprecated
     /**
      * use element method with {@link SearchStrategy}
+     *
      * @param timeOutInSeconds
      */
+    @Deprecated
     protected final void setTimeout(final long timeOutInSeconds) {
         elementFinder.setTimeout(timeOutInSeconds);
     }
 
-    @Deprecated
     /**
      * use element().element() methods call chain
      */
+    @Deprecated
     protected WebElement element(final SearchContext searchContext, final By locator) {
         Supplier<WebElement> webElementSupplier = () -> elementFinder.waitForVisibilityOfAllElementsLocatedBy(searchContext, locator)
                 .get(0);
         return (WebElement) getSupplierObject(webElementSupplier, "****WebDriverException in element()****", "");
     }
 
-    @Deprecated
     /**
      * use element().elements() methods call chain
      */
+    @Deprecated
     protected List<WebElement> elements(final SearchContext searchContext, final By locator) {
         Supplier<List<WebElement>> webElementsSupplier = () -> elementFinder.waitForVisibilityOfAllElementsLocatedBy(searchContext, locator);
         return (List<WebElement>) getSupplierObject(webElementsSupplier, "****WebDriverException in elements()****", "");
     }
 
-    @Deprecated
     /**
      * Use {@link TeasyElementProvider#domElement(By, SearchStrategy)}
      */
+    @Deprecated
     protected WebElement domElement(By locator, final long timeoutInSeconds) {
         Supplier webElementSupplier = () -> waitForPresenceOfElementLocatedBy(locator, timeoutInSeconds);
         return (WebElement) getSupplierObject(webElementSupplier, "****WebDriverException in domElement()****", "");
     }
 
-    @Deprecated
     /**
      * Use {@link TeasyElementProvider#element(By, SearchStrategy)}
      */
+    @Deprecated
     protected final WebElement elementOrNull(final By locator, long timeoutInSeconds) {
         try {
             return elementFinder.waitForVisibilityOfAllElementsLocatedBy(locator, timeoutInSeconds).get(0);
@@ -514,18 +517,18 @@ public abstract class TeasyElementProvider {
         }
     }
 
-    @Deprecated
     /**
      * Use {@link TeasyElementProvider#domElements(By, SearchStrategy)}
      */
+    @Deprecated
     protected List<WebElement> domElements(By locator, long timeoutInSeconds) {
         return domElements(locator, OldSearchStrategy.FIRST_ELEMENTS, timeoutInSeconds);
     }
 
-    @Deprecated
     /**
      * Use {@link TeasyElementProvider#domElements(By, SearchStrategy)}
      */
+    @Deprecated
     protected List<WebElement> domElements(By locator, OldSearchStrategy oldSearchStrategy, long timeoutInSeconds) {
         Supplier<List<WebElement>> webElementsSupplier = () -> {
             switch (oldSearchStrategy) {
@@ -539,10 +542,10 @@ public abstract class TeasyElementProvider {
         return (List<WebElement>) getSupplierObject(webElementsSupplier, "****WebDriverException in domElements()****", "");
     }
 
-    @Deprecated
     /**
      * Use {@link TeasyElementProvider#domElements(By)}
      */
+    @Deprecated
     protected List<WebElement> domElements(By locator, OldSearchStrategy oldSearchStrategy) {
         Supplier<List<WebElement>> webElementsSupplier = () -> {
             switch (oldSearchStrategy) {
@@ -556,28 +559,28 @@ public abstract class TeasyElementProvider {
         return (List<WebElement>) getSupplierObject(webElementsSupplier, "****WebDriverException in domElements()****", "");
     }
 
-    @Deprecated
     /**
-     * Use {@link TeasyElementProvider#domElement(By, OldSearchStrategy)}
+     * Use {@link TeasyElementProvider#domElement(By, SearchStrategy)}
      */
+    @Deprecated
     protected final WebElement waitForPresenceOfElementLocatedBy(final By locator, long timeOutInSeconds) {
         return elementFinder.waitForPresenceOfElementLocatedBy(locator, timeOutInSeconds);
     }
 
-    @Deprecated
     /**
      * Use {@link TeasyElementProvider#domElement(By)}
      */
+    @Deprecated
     protected final WebElement waitForPresenceOfElementLocatedBy(final By locator, final String errorMessage) {
         Supplier<WebElement> webElementSupplier = () -> waitForPresenceOfElementLocatedBy(locator);
         return (WebElement) getSupplierObject(webElementSupplier, "", errorMessage);
     }
 
-    @Deprecated
     /**
      * Use element/select/textField/checkBox - when you need VISIBLE element
      * Use domElement - when you need element which is PRESENT IN DOM
      */
+    @Deprecated
     protected final WebElement waitForPresenceOfElementLocatedBy(final By locator, long timeOutInSeconds, final String errorMessage) {
         Supplier<WebElement> webElementSupplier = () -> waitForPresenceOfElementLocatedBy(locator, timeOutInSeconds);
         return (WebElement) getSupplierObject(webElementSupplier, "", errorMessage);
@@ -629,8 +632,8 @@ public abstract class TeasyElementProvider {
         return elementFinder.waitForVisibilityOfElementLocatedBy(locator, timeOutInSeconds);
     }
 
-    @Deprecated
     //TODO VE: should be removed from framework
+    @Deprecated
     public void waitUntilOnlyOneWindowIsOpen(String errorMessage) {
         try {
             elementFinder.waitUntilOnlyOneWindowIsOpen();
@@ -678,52 +681,52 @@ public abstract class TeasyElementProvider {
         }
     }
 
-    @Deprecated
     /**
      * Use {@link TeasyElementProvider#element(By, SearchStrategy)}
      */
+    @Deprecated
     protected WebElement element(final By locator, final long timeoutInSeconds) {
         Supplier<WebElement> webElementSupplier = () -> elementFinder.waitForVisibilityOfAllElementsLocatedBy(locator, timeoutInSeconds)
                 .get(0);
         return (WebElement) getSupplierObject(webElementSupplier, "****WebDriverException in element()****", "");
     }
 
-    @Deprecated
     /**
-     * Use {@link Should#haveAttribute(String, String)}
+     * Use {@link VisibleShould#haveAttribute(String, String)}
      */
+    @Deprecated
     protected final void waitForElementContainsAttribute(final WebElement element, final String attributeName) {
         elementFinder.waitForElementContainsAttribute(element, attributeName);
     }
 
-    @Deprecated
     /**
-     * Use {@link Should#haveAttribute(String, String)}
+     * Use {@link VisibleShould#haveAttribute(String, String)}
      */
+    @Deprecated
     protected final void waitForElementContainsAttribute(final WebElement element, final String attributeName, long timeOutInSeconds) {
         elementFinder.waitForElementContainsAttribute(element, attributeName, timeOutInSeconds);
     }
 
-    @Deprecated
     /**
-     * Use {@link Should#notHaveAttribute(String)}}
+     * Use {@link VisibleShould#notHaveAttribute(String)}}
      */
+    @Deprecated
     protected final void waitForElementNotContainsAttribute(final WebElement element, final String attributeName) {
         elementFinder.waitForElementNotContainsAttribute(element, attributeName);
     }
 
-    @Deprecated
     /**
-     * Use {@link Should#notHaveAttribute(String)}}
+     * Use {@link VisibleShould#notHaveAttribute(String)}}
      */
+    @Deprecated
     protected final void waitForElementNotContainsAttribute(final WebElement element, final String attributeName, long timeOutInSeconds) {
         elementFinder.waitForElementNotContainsAttribute(element, attributeName, timeOutInSeconds);
     }
 
-    @Deprecated
     /**
      * Use {@link TeasyElementProvider#elements(By, SearchStrategy)}
      */
+    @Deprecated
     protected List<WebElement> elements(final By locator, OldSearchStrategy oldSearchStrategy, final long timeoutInSeconds) {
         Supplier<List<WebElement>> webElementsSupplier = () -> {
             switch (oldSearchStrategy) {
@@ -737,11 +740,10 @@ public abstract class TeasyElementProvider {
         return (List<WebElement>) getSupplierObject(webElementsSupplier, "****WebDriverException in elements()****", "");
     }
 
-
-    @Deprecated
     /**
      * Use {@link TeasyElementProvider#elements(By, SearchStrategy)}
      */
+    @Deprecated
     protected List<WebElement> elements(final By locator, OldSearchStrategy oldSearchStrategy) {
         Supplier<List<WebElement>> webElementsSupplier = () -> {
             switch (oldSearchStrategy) {
@@ -756,25 +758,25 @@ public abstract class TeasyElementProvider {
     }
 
 
-    @Deprecated
     /**
      * Use {@link TeasyElementProvider#elements(By, SearchStrategy)}
      */
+    @Deprecated
     protected List<WebElement> elements(final By locator, final long timeoutInSeconds) {
         return elements(locator, OldSearchStrategy.FIRST_ELEMENTS, timeoutInSeconds);
     }
 
-    @Deprecated
     // Implement in your project if you need it. This method will be deleted
     // TODO VE: remove from framework
+    @Deprecated
     protected final String waitForNewPopUpWindow(Set<String> windowHandles) {
         return elementFinder.waitForNewPopUpWindow(windowHandles);
     }
 
-    @Deprecated
     /**
-     * use methods of {@link ElementWaitFor} with {@link SearchStrategy#nullOnFailure()}
+     * use methods of {@link VisibleElementWaitFor} with {@link SearchStrategy#nullOnFailure()}
      */
+    @Deprecated
     protected boolean booleanCondition(Condition condition, ConditionParams params, By locator) {
         try {
             condition(condition, params, locator);
@@ -784,9 +786,8 @@ public abstract class TeasyElementProvider {
         }
     }
 
-    @Deprecated
     /**
-     * use {@link ElementWaitFor}
+     * use {@link VisibleElementWaitFor}
      */
     /**
      * This method is to be used for different conditions you want to wait for to happen with element using LOCATOR
@@ -795,13 +796,13 @@ public abstract class TeasyElementProvider {
      *                  for Locator "STALE" condition does not make sense so throwing an exception in case someone mistakenly decide to use it
      * @param locator   - locator for element you would like condition to happen
      */
+    @Deprecated
     protected void condition(Condition condition, By locator) {
         condition(condition, new ConditionParams(), locator);
     }
 
-    @Deprecated
     /**
-     * use {@link ElementWaitFor}
+     * use {@link VisibleElementWaitFor}
      */
     /**
      * This method is to be used for different conditions you want to wait for to happen with ELEMENT
@@ -810,14 +811,15 @@ public abstract class TeasyElementProvider {
      *                  for element "PRESENT_IN_DOM" and "ABSENT_IN_DOM" condition does not make sense so throwing an exception in case someone mistakenly decide to use it
      * @param element   - element you would like condition to happen
      */
+    @Deprecated
     protected void condition(Condition condition, WebElement element) {
         condition(condition, null, element);
     }
 
-    @Deprecated
     /**
-     * use {@link ElementWaitFor}
+     * use {@link VisibleElementWaitFor}
      */
+    @Deprecated
     protected void condition(Condition condition, ConditionParams params, WebElement element) {
         switch (condition) {
             case VISIBLE: {
@@ -851,10 +853,10 @@ public abstract class TeasyElementProvider {
         }
     }
 
-    @Deprecated
     /**
-     * use {@link ElementWaitFor}
+     * use {@link VisibleElementWaitFor}
      */
+    @Deprecated
     protected void condition(Condition condition, ConditionParams params, By locator) {
         switch (condition) {
             case VISIBLE: {
@@ -862,7 +864,7 @@ public abstract class TeasyElementProvider {
                 break;
             }
             case NOT_VISIBLE: {
-                throw new RuntimeException("Please use different implementation from ElementWaitFor");
+                throw new RuntimeException("Please use different implementation from VisibleElementWaitFor");
             }
             case PRESENT_IN_DOM: {
                 waitForPresenceOfElementLocatedBy(locator);
@@ -878,10 +880,10 @@ public abstract class TeasyElementProvider {
         }
     }
 
-    @Deprecated
     /**
-     * use {@link ElementWaitFor}
+     * use {@link VisibleElementWaitFor}
      */
+    @Deprecated
     public enum Condition {
         VISIBLE,
         NOT_VISIBLE,
@@ -892,10 +894,10 @@ public abstract class TeasyElementProvider {
         LOCATION_NOT_CHANGED
     }
 
-    @Deprecated
     /**
-     * use {@link ElementWaitFor}
+     * use {@link VisibleElementWaitFor}
      */
+    @Deprecated
     public class ConditionParams {
         String text;
         long timeout = 0;
@@ -939,64 +941,64 @@ public abstract class TeasyElementProvider {
         }
     }
 
-    @Deprecated
     /**
-     * use {@link ElementWaitFor#condition(Function)}
+     * use {@link VisibleElementWaitFor#condition(Function)}
      * example: element.waitFor().text("some text");
      */
+    @Deprecated
     protected final void customCondition(final ExpectedCondition<Boolean> condition, long timeout) {
         elementFinder.waitForCondition(condition, timeout);
     }
 
-    @Deprecated
     /**
      * use methods like button(), select(), textField() directly.
      * This method will be made private
      */
+    @Deprecated
     protected WebElementWrapper getWebElementWrapper(final WebElement wrappedElement) {
         return new WebElementWrapper(wrappedElement);
     }
 
-    @Deprecated
     /**
      * will be made privatemi
      */
-    protected WebElementWrapper getWebElementWrapper(TeasyElement wrappedElement) {
+    @Deprecated
+    protected WebElementWrapper getWebElementWrapper(VisibleTeasyElement wrappedElement) {
         return new WebElementWrapper(wrappedElement);
     }
 
-    @Deprecated
     /**
      * Separate click and switch in two operations
      * 1. click
      * 2. switch to window
      */
+    @Deprecated
     protected final void clickButtonAndWaitForNewPopUpWindowAndSwitchToIt(WebElement webElement) {
         elementFinder.waitForNewPopUpWindowAndSwitchToIt(webElement);
     }
 
-    @Deprecated
     /**
-     * use {@link ElementWaitFor#text(String)}
+     * use {@link VisibleElementWaitFor#text(String)}
      * example: element.waitFor().text("some text");
      */
+    @Deprecated
     protected final boolean isTextPresentInElement(final By locator, final String text) {
         return elementFinder.isTextPresentInElement(locator, text);
     }
 
 
-    @Deprecated
     /**
-     * use {@link ElementWaitFor#notContainsAttributeValue(String, String)}
+     * use {@link VisibleElementWaitFor#notContainsAttributeValue(String, String)}
      */
+    @Deprecated
     protected final void waitForElementNotContainsAttributeValue(final WebElement element, final String attributeName, final String attributeValue) {
         elementFinder.waitForElementNotContainsAttributeValue(element, attributeName, attributeValue);
     }
 
-    @Deprecated
     /**
-     * use {@link ElementWaitFor#clickable()}
+     * use {@link VisibleElementWaitFor#clickable()}
      */
+    @Deprecated
     protected final void waitForElementToBeClickable(final WebElement element, final String errorMessage) {
         try {
             elementFinder.waitForElementToBeClickable(element);
@@ -1005,27 +1007,27 @@ public abstract class TeasyElementProvider {
         }
     }
 
-    @Deprecated
     /**
-     * use {@link ElementWaitFor#attribute(String, String)}
+     * use {@link VisibleElementWaitFor#attribute(String, String)}
      * example: element.waitFor().attribute("color", "#ffffff");
      */
+    @Deprecated
     protected final void waitForElementContainsAttributeValue(final WebElement element, final String attributeName, final String attributeValue) {
         elementFinder.waitForElementContainsAttributeValue(element, attributeName, attributeValue);
     }
 
-    @Deprecated
     /**
-     * use {@link ElementWaitFor#attribute(String, String)}
+     * use {@link VisibleElementWaitFor#attribute(String, String)}
      */
+    @Deprecated
     protected final void waitForElementContainsAttributeValue(final WebElement element, final String attributeName, final String attributeValue, long timeout) {
         elementFinder.waitForElementContainsAttributeValue(element, attributeName, attributeValue, timeout);
     }
 
-    @Deprecated
     /**
-     * use {@link ElementWaitFor#stale()}
+     * use {@link VisibleElementWaitFor#stale()}
      */
+    @Deprecated
     protected final Boolean waitForStalenessOf(final WebElement webElement) {
         try {
             return elementFinder.waitForStalenessOf(webElement);
@@ -1034,10 +1036,10 @@ public abstract class TeasyElementProvider {
         }
     }
 
-    @Deprecated
     /**
-     * use {@link ElementWaitFor#stale()}
+     * use {@link VisibleElementWaitFor#stale()}
      */
+    @Deprecated
     protected final Boolean waitForStalenessOf(final WebElement webElement, long timeout) {
         try {
             return elementFinder.waitForStalenessOf(webElement, timeout);
@@ -1046,10 +1048,10 @@ public abstract class TeasyElementProvider {
         }
     }
 
-    @Deprecated
     /**
-     * use {@link ElementWaitFor#stale()}
+     * use {@link VisibleElementWaitFor#stale()}
      */
+    @Deprecated
     protected final Boolean waitForStalenessOf(final WebElement webElement, String errorMessage) {
         try {
             return waitForStalenessOf(webElement);
@@ -1059,29 +1061,29 @@ public abstract class TeasyElementProvider {
         return false;
     }
 
-    @Deprecated
     /**
      * use {@link com.wiley.autotest.utils.TestUtils#fail(String)} ()}
      */
+    @Deprecated
     public static void fail(final String errorMessage) {
         Reporter.log("ERROR: " + errorMessage);
         throw new AssertionError(errorMessage);
     }
 
-    @Deprecated
     /**
      * use this method copy from TestUtils
      */
+    @Deprecated
     protected final void fail(final String errorMessage, Throwable cause) {
         Reporter.log("ERROR: " + errorMessage + cause.getMessage());
         throw new Error(errorMessage + cause.getMessage(), cause);
         //throw new AssertionError(errorMessage + cause.getMessage(), cause);//since 1.7
     }
 
-    @Deprecated
     /**
-     * use {@link ElementWaitFor#text(String)}
+     * use {@link VisibleElementWaitFor#text(String)}
      */
+    @Deprecated
     protected final Boolean waitForTextToBePresentIn(final WebElement element, final String text) {
         try {
             return elementFinder.waitForTextToBePresentIn(element, text);
@@ -1091,71 +1093,71 @@ public abstract class TeasyElementProvider {
         return null;
     }
 
-    @Deprecated
     /**
-     * use {@link ElementWaitFor#text(String)}
+     * use {@link VisibleElementWaitFor#text(String)}
      */
+    @Deprecated
     protected final Boolean waitForTextToBePresentIn(final TextField textField, final String text) {
         return elementFinder.waitForTextToBePresentIn(textField, text);
     }
 
-    @Deprecated
     /**
-     * use {@link ElementWaitFor#text(String)}
+     * use {@link VisibleElementWaitFor#text(String)}
      */
+    @Deprecated
     protected final Boolean waitForTextToBePresentIn(final WebElement element) {
         return elementFinder.waitForTextToBePresentIn(element);
     }
 
-    @Deprecated
     /**
-     * use {@link ElementWaitFor#clickable()}
+     * use {@link VisibleElementWaitFor#clickable()}
      */
+    @Deprecated
     protected final WebElement waitForElementToBeClickable(final By locator, final String errorMessage) {
         try {
-            return wrap(elementFinder.waitForElementToBeClickable(locator), locator);
+            return wrap_to_be_deleted(elementFinder.waitForElementToBeClickable(locator), locator);
         } catch (WebDriverException e) {
             fail(errorMessage);
         }
         return null;
     }
 
-    @Deprecated
     /**
      * use {@link TeasyElementProvider#domElement(By)}
      */
+    @Deprecated
     protected WebElement waitForPresenceOfElementLocatedBy(final By locator) {
         return elementFinder.waitForPresenceOfElementLocatedBy(locator);
     }
 
-    @Deprecated
     /**
      * use {@link TeasyElementProvider#domElement(SearchContext, By)}
      */
+    @Deprecated
     protected WebElement waitForPresenceOfElementLocatedBy(final SearchContext searchContext, final By locator) {
-        return wrap(elementFinder.waitForPresenceOfElementLocatedBy(searchContext, locator), locator);
+        return wrap_to_be_deleted(elementFinder.waitForPresenceOfElementLocatedBy(searchContext, locator), locator);
     }
 
-    @Deprecated
     /**
-     * use {@link ElementWaitFor#text(String)}
+     * use {@link VisibleElementWaitFor#text(String)}
      */
+    @Deprecated
     protected final Boolean waitForTextToBePresentInElement(final By locator, final String text) {
         return elementFinder.waitForTextToBePresentInElement(locator, text);
     }
 
-    @Deprecated
     /**
-     * use {@link ElementWaitFor#text(String)}
+     * use {@link VisibleElementWaitFor#text(String)}
      */
+    @Deprecated
     protected final Boolean waitForTextToBePresentInElement(final By locator) {
         return elementFinder.waitForTextToBePresentInElement(locator);
     }
 
-    @Deprecated
     /**
      * use {@link TeasyElementProvider#domElements(SearchContext, By)}
      */
+    @Deprecated
     protected List<WebElement> waitForPresenceOfAllElementsLocatedBy(final SearchContext searchContext, final By locator) {
         return elementFinder.waitForPresenceOfAllElementsLocatedBy(searchContext, locator);
     }

@@ -39,7 +39,7 @@ public class RadioButtonImpl extends AbstractEnabledElement implements RadioButt
 
     @Override
     public boolean isSelected() {
-        List<WebElement> inputTags = getWrappedWebElement().findElements(By.xpath("./../input"));
+        List<TeasyElement> inputTags = getWrappedWebElement().domElements(By.xpath("./../input"));
         if (!inputTags.isEmpty()) {
             if (inputTags.get(0).getAttribute("class").contains("customRadio")) {
                 String inputId = inputTags.get(0).getAttribute("id");
@@ -51,7 +51,7 @@ public class RadioButtonImpl extends AbstractEnabledElement implements RadioButt
 
     @Override
     public boolean isEnabled() {
-        List<WebElement> inputTags = getWrappedWebElement().findElements(By.xpath("./../input"));
+        List<TeasyElement> inputTags = getWrappedWebElement().domElements(By.xpath("./../input"));
         if (!inputTags.isEmpty()) {
             if (inputTags.get(0).getAttribute("class").contains("customRadio")) {
                 String inputId = inputTags.get(0).getAttribute("id");
