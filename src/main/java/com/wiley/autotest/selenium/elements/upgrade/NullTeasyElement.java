@@ -46,7 +46,7 @@ public class NullTeasyElement implements TeasyElement, Locatable {
      */
 
     @Override
-    public <X> X getScreenshotAs(OutputType<X> target) throws WebDriverException {
+    public <X> X getScreenshotAs(OutputType<X> target) {
         throwException();
         return null;
     }
@@ -60,19 +60,16 @@ public class NullTeasyElement implements TeasyElement, Locatable {
     @Override
     public void submit() {
         throwException();
-
     }
 
     @Override
     public void sendKeys(CharSequence... charSequences) {
         throwException();
-
     }
 
     @Override
     public void clear() {
         throwException();
-
     }
 
     @Override

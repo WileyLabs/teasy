@@ -10,7 +10,7 @@ import static com.wiley.autotest.utils.TestUtils.waitForSomeTime;
 
 
 /**
- * Represents element that is visible for the user
+ * Represents element that is displayed for the user
  */
 public class VisibleTeasyElement extends BaseTeasyElement {
 

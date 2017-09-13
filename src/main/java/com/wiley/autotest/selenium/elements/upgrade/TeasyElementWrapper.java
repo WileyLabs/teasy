@@ -1,8 +1,8 @@
 package com.wiley.autotest.selenium.elements.upgrade;
 
+import com.wiley.autotest.selenium.Report;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -12,8 +12,6 @@ import java.util.List;
  * Wrap element with TeasyElement
  */
 public class TeasyElementWrapper {
-
-    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(TeasyElementWrapper.class);
 
     public static <T extends TeasyElement> T wrap(WebElement webElement, By by, TeasyElementType type) {
         return wrapBase(new TeasyElementData(webElement, by), type);
@@ -58,7 +56,7 @@ public class TeasyElementWrapper {
     private static <T extends TeasyElement> T wrapBase(TeasyElementData data, TeasyElementType type) {
         try {
 
-            //TODO !!!IMPORTANT!!! Current approach does not support overloading of element in particular projct
+            //TODO !!!IMPORTANT!!! Current approach does not support overloading of element in particular project
             //TODO VE, NT, consider providing necesarry changes to support it
 //            Class<T> classOfOurWebElement = (Class<T>) Class.forName(SeleniumHolder.getOurWebElementClass());
 
@@ -66,7 +64,7 @@ public class TeasyElementWrapper {
 
             return classOfOurWebElement.getDeclaredConstructor(TeasyElementData.class).newInstance(data);
         } catch (InstantiationException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            LOGGER.error("Cannot create instance of TeasyElement." + e.getClass().getName() + " occurred. ", e);
+            new Report("Cannot create instance of TeasyElement." + e.getClass().getName(), e).jenkins();
             throw new WrapElementException("Cannot create instance of TeasyElement. " + e.getClass().getName() + " occurred. ", e);
         }
     }

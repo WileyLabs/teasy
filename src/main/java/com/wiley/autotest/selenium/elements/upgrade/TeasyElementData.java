@@ -4,7 +4,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 /**
- * Class-holder for all data that is used fo future TeasyElement creation;
+ * Class-holder for all data that is used for TeasyElement creation;
  */
 public class TeasyElementData {
 

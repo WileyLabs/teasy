@@ -363,7 +363,7 @@ public abstract class BaseTeasyElement implements TeasyElement, Locatable {
     }
 
     @Override
-    public <X> X getScreenshotAs(OutputType<X> target) throws WebDriverException {
+    public <X> X getScreenshotAs(OutputType<X> target) {
         if (getWebDriver().getClass() == RemoteWebDriver.class) {
             WebDriver augmentedDriver = new Augmenter().augment(getWebDriver());
             return ((TakesScreenshot) augmentedDriver).getScreenshotAs(target);

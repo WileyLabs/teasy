@@ -20,7 +20,6 @@ public class NullShould implements Should {
     private TeasyElementData elementData;
     private TeasyElementFinder finder;
 
-
     public NullShould(TeasyElementData elementData, SearchStrategy strategy) {
         this.elementData = elementData;
         this.fluentWait = new TeasyFluentWait<>(SeleniumHolder.getWebDriver(), strategy);
