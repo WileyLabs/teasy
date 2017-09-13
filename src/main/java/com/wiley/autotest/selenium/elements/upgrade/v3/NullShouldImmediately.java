@@ -8,9 +8,6 @@ import org.openqa.selenium.WebDriver;
 
 import java.util.function.Function;
 
-/**
- * Created by vefimov on 26/04/2017.
- */
 public class NullShouldImmediately implements Should {
 
     private TeasyElement element;
