@@ -9,7 +9,6 @@ import com.wiley.autotest.selenium.ParamsProvider;
 import com.wiley.autotest.selenium.Report;
 import com.wiley.autotest.selenium.elements.CheckBox;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
-import com.wiley.autotest.selenium.elements.upgrade.VisibleTeasyElement;
 import com.wiley.autotest.selenium.elements.upgrade.Window;
 import com.wiley.autotest.selenium.extensions.internal.DefaultElementFactory;
 import com.wiley.autotest.spring.Settings;
@@ -549,9 +548,9 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
     @Deprecated
     //Will be removed from framework. Do not use this method. Create something similar in your project instead.
     //TODO VE - delete this by Sept 2017
-    public List<String> getTextFromWebElementList(final List<VisibleTeasyElement> webElementList) {
+    public List<String> getTextFromWebElementList(final List<TeasyElement> webElementList) {
         final List<String> resultList = new ArrayList<String>();
-        for (VisibleTeasyElement eachElement : webElementList) {
+        for (TeasyElement eachElement : webElementList) {
             scrollIntoView(eachElement);
             resultList.add(eachElement.getText().trim());
         }
@@ -698,7 +697,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
 
     @Deprecated
     /**
-     * use {@link VisibleTeasyElement#getParent()}
+     * use {@link TeasyElement#getParent()}
      */
     public WebElement getParentElement(final WebElement webElement) {
         return getParentElement(webElement, 1);
@@ -706,7 +705,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
 
     @Deprecated
     /**
-     * use {@link VisibleTeasyElement#getParent()}
+     * use {@link TeasyElement#getParent()}
      */
     public WebElement getParentElement(final WebElement webElement, int level) {
         StringBuilder builder = new StringBuilder(".");
