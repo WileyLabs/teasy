@@ -11,7 +11,7 @@ import java.util.List;
 public interface TeasyElement extends WebElement {
 
     /**
-     * Вo not use this method. it does not fit TeasyElement concept and only here because
+     * Do not use this method. it does not fit TeasyElement concept and only here because
      * it is originally a method of WebElement.
      * use elements() or domElements(), depending on your needs
      */
@@ -21,7 +21,7 @@ public interface TeasyElement extends WebElement {
 
 
     /**
-     * Вo not use this method. it does not fit TeasyElement concept and only here because
+     * Do not use this method. it does not fit TeasyElement concept and only here because
      * it is originally a method of WebElement
      * use element() or domElement() depending on your needs
      */
