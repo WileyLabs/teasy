@@ -56,7 +56,7 @@ public class TeasyElementFinder {
     }
 
     /**
-     * note: Will return empty list in case no visible elements found
+     * note: Will return empty list in case no elements found in DOM
      */
     public List<TeasyElement> presentInDomElements(By locator) {
         return getElements(locator, conditionFactory.get().presence(locator), DOM);
