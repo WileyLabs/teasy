@@ -5,6 +5,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 public class ElementLocatorFactory {
+
     private TeasyElementData elementData;
     private WebDriver driver;
 
