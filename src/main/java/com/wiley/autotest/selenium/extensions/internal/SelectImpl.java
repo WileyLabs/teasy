@@ -4,7 +4,6 @@ import com.wiley.autotest.selenium.elements.Select;
 import com.wiley.autotest.selenium.elements.upgrade.DomTeasyElement;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyElementData;
-import com.wiley.autotest.selenium.elements.upgrade.VisibleTeasyElement;
 import com.wiley.autotest.utils.TestUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -20,11 +19,11 @@ import java.util.stream.Collectors;
 import static org.apache.commons.lang.math.RandomUtils.nextInt;
 
 class SelectImpl extends AbstractEnabledElement implements Select {
-    protected SelectImpl(final VisibleTeasyElement wrappedElement) {
+    protected SelectImpl(final TeasyElement wrappedElement) {
         super(wrappedElement);
     }
 
-    protected SelectImpl(final VisibleTeasyElement wrappedElement, By by) {
+    protected SelectImpl(final TeasyElement wrappedElement, By by) {
         super(wrappedElement, by);
     }
 

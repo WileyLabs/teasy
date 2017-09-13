@@ -7,7 +7,6 @@ import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.elements.*;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyWindow;
-import com.wiley.autotest.selenium.elements.upgrade.VisibleTeasyElement;
 import com.wiley.autotest.selenium.elements.upgrade.Window;
 import com.wiley.autotest.selenium.elements.upgrade.v3.CustomWaitFor;
 import com.wiley.autotest.selenium.elements.upgrade.v3.TeasyElementFinder;
@@ -121,7 +120,7 @@ public abstract class TeasyElementProvider {
         return getElement(Button.class, locator);
     }
 
-    protected Button button(VisibleTeasyElement searchContext, By locator) {
+    protected Button button(TeasyElement searchContext, By locator) {
         return getElement(Button.class, searchContext, locator);
     }
 
@@ -129,7 +128,7 @@ public abstract class TeasyElementProvider {
         return getElements(Button.class, locator);
     }
 
-    protected List<Button> buttons(VisibleTeasyElement searchContext, By locator) {
+    protected List<Button> buttons(TeasyElement searchContext, By locator) {
         return getElements(Button.class, searchContext, locator);
     }
 
@@ -137,7 +136,7 @@ public abstract class TeasyElementProvider {
         return getElement(Link.class, locator);
     }
 
-    protected Link link(VisibleTeasyElement searchContext, By locator) {
+    protected Link link(TeasyElement searchContext, By locator) {
         return getElement(Link.class, searchContext, locator);
     }
 
@@ -145,7 +144,7 @@ public abstract class TeasyElementProvider {
         return getElements(Link.class, locator);
     }
 
-    protected List<Link> links(VisibleTeasyElement searchContext, By locator) {
+    protected List<Link> links(TeasyElement searchContext, By locator) {
         return getElements(Link.class, searchContext, locator);
     }
 
@@ -153,7 +152,7 @@ public abstract class TeasyElementProvider {
         return getElement(CheckBox.class, locator);
     }
 
-    protected CheckBox checkBox(VisibleTeasyElement searchContext, By locator) {
+    protected CheckBox checkBox(TeasyElement searchContext, By locator) {
         return getElement(CheckBox.class, searchContext, locator);
     }
 
@@ -161,7 +160,7 @@ public abstract class TeasyElementProvider {
         return getElements(CheckBox.class, locator);
     }
 
-    protected List<CheckBox> checkBoxes(VisibleTeasyElement searchContext, By locator) {
+    protected List<CheckBox> checkBoxes(TeasyElement searchContext, By locator) {
         return getElements(CheckBox.class, searchContext, locator);
     }
 
@@ -169,7 +168,7 @@ public abstract class TeasyElementProvider {
         return getElement(RadioButton.class, locator);
     }
 
-    protected RadioButton radioButton(VisibleTeasyElement searchContext, By locator) {
+    protected RadioButton radioButton(TeasyElement searchContext, By locator) {
         return getElement(RadioButton.class, searchContext, locator);
     }
 
@@ -177,7 +176,7 @@ public abstract class TeasyElementProvider {
         return getElements(RadioButton.class, locator);
     }
 
-    protected List<RadioButton> radioButtons(VisibleTeasyElement searchContext, By locator) {
+    protected List<RadioButton> radioButtons(TeasyElement searchContext, By locator) {
         return getElements(RadioButton.class, locator);
     }
 
@@ -185,7 +184,7 @@ public abstract class TeasyElementProvider {
         return getElement(Select.class, locator);
     }
 
-    protected Select select(VisibleTeasyElement searchContext, By locator) {
+    protected Select select(TeasyElement searchContext, By locator) {
         return getElement(Select.class, searchContext, locator);
     }
 
@@ -193,7 +192,7 @@ public abstract class TeasyElementProvider {
         return getElements(Select.class, locator);
     }
 
-    protected List<Select> selects(VisibleTeasyElement searchContext, By locator) {
+    protected List<Select> selects(TeasyElement searchContext, By locator) {
         return getElements(Select.class, locator);
     }
 
@@ -201,7 +200,7 @@ public abstract class TeasyElementProvider {
         return getElement(TextField.class, locator);
     }
 
-    protected TextField textField(VisibleTeasyElement searchContext, By locator) {
+    protected TextField textField(TeasyElement searchContext, By locator) {
         return getElement(TextField.class, searchContext, locator);
     }
 
@@ -209,7 +208,7 @@ public abstract class TeasyElementProvider {
         return getElements(TextField.class, locator);
     }
 
-    protected List<TextField> textFields(VisibleTeasyElement searchContext, By locator) {
+    protected List<TextField> textFields(TeasyElement searchContext, By locator) {
         return getElements(TextField.class, searchContext, locator);
     }
 
@@ -217,7 +216,7 @@ public abstract class TeasyElementProvider {
         return getWebElementWrapper(element(by)).getElement(elementType, by);
     }
 
-    private <T extends Element> T getElement(Class<T> elementType, VisibleTeasyElement searchContext, By by) {
+    private <T extends Element> T getElement(Class<T> elementType, TeasyElement searchContext, By by) {
         return getWebElementWrapper(searchContext.element(by)).getElement(elementType, by);
     }
 
@@ -228,7 +227,7 @@ public abstract class TeasyElementProvider {
         return result;
     }
 
-    private <T extends Element> List<T> getElements(Class<T> elementType, VisibleTeasyElement searchContext, By by) {
+    private <T extends Element> List<T> getElements(Class<T> elementType, TeasyElement searchContext, By by) {
         List<T> result = new ArrayList<>();
         searchContext.elements(by)
                 .forEach(element -> result.add(getWebElementWrapper(element).getElement(elementType, by)));
@@ -960,10 +959,10 @@ public abstract class TeasyElementProvider {
     }
 
     /**
-     * will be made privatemi
+     * will be made private
      */
     @Deprecated
-    protected WebElementWrapper getWebElementWrapper(VisibleTeasyElement wrappedElement) {
+    protected WebElementWrapper getWebElementWrapper(TeasyElement wrappedElement) {
         return new WebElementWrapper(wrappedElement);
     }
 

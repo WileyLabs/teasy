@@ -2,7 +2,6 @@ package com.wiley.autotest.selenium.extensions.internal;
 
 import com.wiley.autotest.selenium.elements.EnabledElement;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
-import com.wiley.autotest.selenium.elements.upgrade.VisibleTeasyElement;
 import org.openqa.selenium.By;
 
 abstract class AbstractEnabledElement extends AbstractElement implements EnabledElement {
