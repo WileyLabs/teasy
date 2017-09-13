@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 /**
- * Assertions for Dom Element
+ * Assertions for DOM Element
  */
 public class DomShould implements Should {
 

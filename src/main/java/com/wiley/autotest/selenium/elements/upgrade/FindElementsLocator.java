@@ -31,7 +31,7 @@ public class FindElementsLocator implements Locator {
         try {
             return driver != null ? driver.findElements(by).get(index) : searchContext.domElements(by).get(index).getWrappedWebElement();
         } catch (IndexOutOfBoundsException e) {
-            throw new NoSuchElementException("Unable to find element " + by + ", Exception - " + e);
+            throw new NoSuchElementException("Unable to find element with locator " + by + " and index " + index + ", Exception - " + e);
         }
     }
 

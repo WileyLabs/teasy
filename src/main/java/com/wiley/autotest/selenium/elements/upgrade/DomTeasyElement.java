@@ -5,7 +5,7 @@ import com.wiley.autotest.selenium.elements.upgrade.v3.*;
 
 
 /**
- * Reprsents element that is present in Dom (not necessarily visible)
+ * Reprsents element that is present in DOM (not necessarily visible)
  */
 public class DomTeasyElement extends BaseTeasyElement {
 

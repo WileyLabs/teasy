@@ -36,11 +36,11 @@ public abstract class BaseTeasyElement implements TeasyElement, Locatable {
     private int repeatLocateElementCounter;
     private static final int MAX_NUMBER_OF_REPEAT_LOCATE_ELEMENT = 20;
 
-    BaseTeasyElement(TeasyElementData teasyElementData) {
-        WebElement element = teasyElementData.getElement();
-        TeasyElement searchContext = teasyElementData.getSearchContext();
-        By by = teasyElementData.getBy();
-        Integer index = teasyElementData.getIndex();
+    BaseTeasyElement(TeasyElementData elementData) {
+        WebElement element = elementData.getElement();
+        TeasyElement searchContext = elementData.getSearchContext();
+        By by = elementData.getBy();
+        Integer index = elementData.getIndex();
 
         if (searchContext != null && by != null && index != null) {
             //element from list in searchContext with index
@@ -60,6 +60,7 @@ public abstract class BaseTeasyElement implements TeasyElement, Locatable {
             element = getParentElement(ourWebElement.getWrappedWebElement());
             this.locator = new FindParentElementLocator(getWebDriver(), ourWebElement.getLocator().getLocator());
         }
+        this.locator = new ElementLocatorFactory(elementData, getWebDriver()).getLocator();
 
         init(element);
     }
