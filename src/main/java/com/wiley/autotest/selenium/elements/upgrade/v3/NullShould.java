@@ -68,9 +68,9 @@ public class NullShould implements Should {
             //if element is not found again - throw exception
             throwException();
             return null;
-        } else {
-            return lastAttemptToGetElement;
         }
+
+        return lastAttemptToGetElement;
     }
 
     //We can log something here... or just keep it as empty(delete)
