@@ -1,8 +1,5 @@
 package com.wiley.autotest.selenium.elements.upgrade.v3.conditions.window;
 
-/**
- * Created by vefimov on 31/05/2017.
- */
 public class WindowMatcher {
 
     private WindowFinder finder;

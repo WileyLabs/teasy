@@ -1,6 +1,7 @@
 package com.wiley.autotest.selenium.elements.upgrade.v3;
 
 import com.wiley.autotest.selenium.context.SearchStrategy;
+import org.jetbrains.annotations.Nullable;
 import org.openqa.selenium.support.ui.FluentWait;
 
 import java.util.concurrent.TimeUnit;
@@ -25,6 +26,7 @@ public class TeasyFluentWait<T> extends FluentWait<T> {
         this.nullOnFailure = strategy.isNullOnFailure();
     }
 
+    @Nullable
     public <R> R waitFor(Function<? super T, R> condition) {
         try {
             return until(condition);

@@ -1,572 +1,67 @@
 package com.wiley.autotest.selenium.elements.upgrade;
 
-import com.wiley.autotest.ElementFinder;
-import com.wiley.autotest.WebDriverAwareElementFinder;
-import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
-import com.wiley.autotest.selenium.elements.upgrade.v3.ElementWaitFor;
-import com.wiley.autotest.selenium.elements.upgrade.v3.OurElementFinder;
 import com.wiley.autotest.selenium.context.SearchStrategy;
+import com.wiley.autotest.selenium.elements.upgrade.v3.ElementWaitFor;
 import com.wiley.autotest.selenium.elements.upgrade.v3.Should;
-import org.openqa.selenium.*;
-import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.interactions.internal.Coordinates;
-import org.openqa.selenium.internal.Locatable;
-import org.openqa.selenium.remote.Augmenter;
-import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.remote.UnreachableBrowserException;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.List;
 
-import static com.wiley.autotest.selenium.SeleniumHolder.getWebDriver;
-import static com.wiley.autotest.utils.ExecutionUtils.isChrome;
-import static com.wiley.autotest.utils.TestUtils.fail;
-import static com.wiley.autotest.utils.TestUtils.waitForSomeTime;
-
-
-/**
- * User: vefimov
- * Date: 27.08.2014
- * Time: 15:41
- */
-public class TeasyElement implements CustomWebElement, Locatable {
-
-    private WebElement wrappedElement;
-    private Locator locator;
-    private ElementFinder elementFinder_TO_BE_REMOVED;
-    private OurElementFinder contextFinder;
-
-    //specific element finder which will return null or emptyList in case element is not found
-    private OurElementFinder allowNullContextFinder;
-
-    public static final Logger LOGGER = LoggerFactory.getLogger(TeasyElement.class);
-    //The duration in milliseconds to sleep between polls. (default value in selenium is 500)
-    private static final long SLEEP_IN_MILLISECONDS = 1000;
-
-    //TODO think about making this value configurable
-    private static final long TIMEOUT_FOR_AGAIN_LOCATE_IN_SECONDS = 5;
-    private int repeatLocateElementCounter;
-    private static final int MAX_NUMBER_OF_REPEAT_LOCATE_ELEMENT = 20;
-
-    public TeasyElement(TeasyElementData teasyElementData) {
-        WebElement element = teasyElementData.getElement();
-        TeasyElement searchContext = teasyElementData.getSearchContext();
-        By by = teasyElementData.getBy();
-        Integer index = teasyElementData.getIndex();
-        Locator locator = teasyElementData.getLocator();
-
-        if (searchContext != null && by != null && index != null) {
-            this.locator = new FindElementsLocator(searchContext, by, index);
-        } else if (by != null && index != null) {
-            this.locator = new FindElementsLocator(getWebDriver(), by, index);
-        } else if (searchContext != null && by != null) {
-            this.locator = new FindElementLocator(searchContext, by);
-        } else if (by != null) {
-            this.locator = new FindElementLocator(getWebDriver(), by);
-        } else if (locator != null) {
-            this.locator = locator;
-        } else {
-            CustomWebElement ourWebElement = (CustomWebElement) element;
-            element = getParentElement(ourWebElement.getWrappedWebElement());
-            this.locator = new FindParentElementLocator(getWebDriver(), ourWebElement.getLocator().getLocator());
-        }
-
-        init(element);
-    }
-
-    public void init(WebElement element) {
-        this.wrappedElement = element instanceof CustomWebElement ? ((CustomWebElement) element).getWrappedWebElement() : element;
-        this.repeatLocateElementCounter = 0;
-        if (elementFinder_TO_BE_REMOVED == null) {
-            elementFinder_TO_BE_REMOVED = new WebDriverAwareElementFinder(getWebDriver(), new WebDriverWait(getWebDriver(), TIMEOUT_FOR_AGAIN_LOCATE_IN_SECONDS, SLEEP_IN_MILLISECONDS));
-        }
-
-        if (contextFinder == null) {
-            contextFinder = new OurElementFinder(getWebDriver(), new SearchStrategy(TIMEOUT_FOR_AGAIN_LOCATE_IN_SECONDS), this);
-        }
-        if (allowNullContextFinder == null) {
-            allowNullContextFinder = new OurElementFinder(getWebDriver(), new SearchStrategy(TIMEOUT_FOR_AGAIN_LOCATE_IN_SECONDS)
-                    .nullOnFailure(), this);
-        }
-    }
-
-    @Override
-    public Should should() {
-        return new Should(this);
-    }
-
-    @Override
-    public Should should(SearchStrategy strategy) {
-        return new Should(this, strategy);
-    }
-
-    @Override
-    public ElementWaitFor waitFor() {
-        return new ElementWaitFor(this);
-    }
-
-    @Override
-    public ElementWaitFor waitFor(SearchStrategy strategy) {
-        return new ElementWaitFor(this, strategy);
-    }
-
-    @Override
-    public TeasyElement getParent() {
-        return getParent(1);
-    }
-
-    @Override
-    public TeasyElement getParent(int level) {
-        StringBuilder builder = new StringBuilder(".");
-        for (int i = 0; i < level; i++) {
-            builder.append("/..");
-        }
-        return CustomWebElementFactory.wrap(this, find(By.xpath(builder.toString())), By.xpath(builder.toString()));
-    }
-
-    @Override
-    public TeasyElement element(By by) {
-        return contextFinder.visibleElement(by);
-    }
-
-    @Override
-    public TeasyElement element(By by, SearchStrategy strategy) {
-        return customContextFinder(strategy).visibleElement(by);
-    }
-
-    @Override
-    public List<TeasyElement> elements(By by) {
-        return contextFinder.visibleElements(by);
-    }
-
-    @Override
-    public List<TeasyElement> elements(By by, SearchStrategy strategy) {
-        return customContextFinder(strategy).visibleElements(by);
-    }
-
-    @Override
-    public TeasyElement domElement(By by) {
-        return contextFinder.presentInDomElement(by);
-    }
-
-    @Override
-    public TeasyElement domElement(By by, SearchStrategy strategy) {
-        return customContextFinder(strategy).presentInDomElement(by);
-    }
-
-    @Override
-    public List<TeasyElement> domElements(By by) {
-        return contextFinder.presentInDomElements(by);
-    }
-
-    @Override
-    public List<TeasyElement> domElements(By by, SearchStrategy strategy) {
-        return customContextFinder(strategy).presentInDomElements(by);
-    }
-
-    private OurElementFinder customContextFinder(SearchStrategy strategy) {
-        return new OurElementFinder(getWebDriver(), strategy, this);
-    }
-
-    @Override
-    public void click() {
-        try {
-            try {
-                wrappedElement.click();
-            } catch (StaleElementReferenceException e) {
-                clickForStaleElement();
-            } catch (UnhandledAlertException ignored) {
-                LOGGER.error("*****ERROR*****UnhandledAlertException***** during click! Doing nothing just trying to continue the test. ---Locator=" + locator
-                        .getLocator());
-            } catch (UnreachableBrowserException ignored) {
-                //doing this because for FireFox for some reason browser becomes unresponsive after click
-                //but actually it is alive so it worth to try to continue test
-                //it will fail on the next method after click if some real error happened
-                LOGGER.error("*****ERROR*****UnreachableBrowserException***** during click! Doing nothing just trying to continue the test. ---Locator=" + locator
-                        .getLocator());
-            } catch (ElementNotVisibleException needToScroll) {
-                clickForNeedToScroll();
-            } catch (WebDriverException ignoredOrNeedToScroll) {
-                clickForIgnoredScroll(ignoredOrNeedToScroll);
-            }
-        } catch (Exception e) {
-            LOGGER.error("*****FATAL ERROR*****Exception***** DURING CLICK LOGIC. SHOULD BE REFACTORED!!!! -----Locator=" + locator
-                    .getLocator(), e);
-        }
-    }
-
-    private void clickForStaleElement() {
-        againLocate();
-        click();
-    }
-
-    private void clickForNeedToScroll() {
-        LOGGER.error("*****ERROR*****ElementNotVisibleException***** during click! Scrolling to element and trying again ---Locator=" + locator
-                .getLocator());
-        increment();
-        scrollIntoView(wrappedElement);
-        scrollToElementLocation(wrappedElement);
-        click();
-    }
-
-    private void clickForIgnoredScroll(WebDriverException ignoredOrNeedToScroll) {
-        LOGGER.error("*****ERROR*****WebDriverException***** during click!-----Locator=" + locator.getLocator());
-        increment();
-        //For Android error text is different and does not have any information related to clickable issue
-        String ignoredOrNeedToScrollMessage = ignoredOrNeedToScroll.getMessage();
-          if (ignoredOrNeedToScrollMessage.contains("is not clickable at point")) {
-             LOGGER.error("*****ERROR*****Element is not clickable at point***** during click! Scrolling to element and trying again. ---Locator=" + locator
-                     .getLocator());
-
-             //This was added to fix cases when scrolling does not affect (in chrome when element is half hidden)
-             //There is a chance that maximising will solve the case
-             if (repeatLocateElementCounter == 10) {
-                 maximizeWindow();
-                 if (isChrome()) {
-                     //Some pages (e.g. in Administration Workspace) are reloaded after maximize window in Chrome
-                     waitForSomeTime(3000, "Wait for window maximized");
-                     againLocate();
-                 }
-             }
-
-             scrollIntoView(wrappedElement);
-             scrollToElementLocation(wrappedElement);
-         }
-        if (ignoredOrNeedToScrollMessage.contains("Error: element is not attached to the page document")) {
-            againLocate();
-        }
-        if (ignoredOrNeedToScrollMessage.contains("unknown error: no element reference returned by script")) {
-            againLocate();
-            executeScript("arguments[0].click();", wrappedElement);
-        } else if (ignoredOrNeedToScrollMessage.contains("Other element would receive the click")) {
-            //TODO NT: workaround for 2.49.1
-            //If dropdown option element have bigger size then dropdown we get error 'Element is not clickable at point... Other element would receive the click...'
-            Actions actions = new Actions(getWebDriver());
-            actions
-                    .moveToElement(wrappedElement, 0, 0)
-                    .click()
-                    .perform();
-        } else {
-            click();
-        }
-    }
-
-    @Override
-    public void submit() {
-        wrappedElement.submit();
-    }
-
-    @Override
-    public void sendKeys(CharSequence... charSequences) {
-        try {
-            wrappedElement.sendKeys(charSequences);
-        } catch (StaleElementReferenceException e) {
-            againLocate();
-            sendKeys(charSequences);
-        }
-    }
-
-    @Override
-    public void clear() {
-        try {
-            wrappedElement.clear();
-        } catch (StaleElementReferenceException e) {
-            againLocate();
-            clear();
-        }
-    }
-
-    @Override
-    public String getTagName() {
-        try {
-            return wrappedElement.getTagName();
-        } catch (StaleElementReferenceException e) {
-            againLocate();
-            return getTagName();
-        }
-    }
-
-    @Override
-    public String getAttribute(String s) {
-        try {
-            return wrappedElement.getAttribute(s);
-        } catch (StaleElementReferenceException e) {
-            againLocate();
-            return getAttribute(s);
-        }
-    }
-
-    @Override
-    public boolean isSelected() {
-        try {
-            return wrappedElement.isSelected();
-        } catch (StaleElementReferenceException e) {
-            againLocate();
-            return isSelected();
-        }
-    }
+public interface TeasyElement extends WebElement {
 
     /**
-     * This method *should not* catch StaleElementReferenceException
-     * as it is used to define staleness of element
+     * Do not use this method. it does not fit TeasyElement concept and only here because
+     * it is originally a method of WebElement.
+     * use elements() or domElements(), depending on your needs
      */
     @Override
-    public boolean isEnabled() {
-        return wrappedElement.isEnabled();
-    }
-
-    @Override
-    public boolean isStale() {
-        try {
-            isEnabled();
-            return false;
-        } catch (StaleElementReferenceException elementIsStale) {
-            return true;
-        }
-    }
-
-    @Override
-    public String getText() {
-        try {
-            return wrappedElement.getText();
-        } catch (StaleElementReferenceException e) {
-            againLocate();
-            return getText();
-        }
-    }
-
     @Deprecated
-    /**
-     * do not use this method. it will be deleted in future.
-     * use element(), domElement(), elementOrNull() depending on your needs
-     */
-    public WebElement findElement(By by) {
-        this.repeatLocateElementCounter = 0;
-        return find(by);
-    }
+    List<WebElement> findElements(By by);
 
+
+    /**
+     * Do not use this method. it does not fit TeasyElement concept and only here because
+     * it is originally a method of WebElement
+     * use element() or domElement() depending on your needs
+     */
+    @Override
     @Deprecated
-    /**
-     * do not use this method. it will be deleted in future.
-     * use elements(), domElements(), elementsOrEmpty() depending on your needs
-     */
-    public List<WebElement> findElements(By by) {
-        this.repeatLocateElementCounter = 0;
-        return finds(by);
-    }
+    WebElement findElement(By by);
 
-    @Override
-    public boolean isDisplayed() {
-        try {
-            return wrappedElement.isDisplayed();
-        } catch (StaleElementReferenceException e) {
-            againLocate();
-            return isDisplayed();
-        }
-    }
+    WebElement getWrappedWebElement();
 
-    @Override
-    public Point getLocation() {
-        try {
-            return wrappedElement.getLocation();
-        } catch (StaleElementReferenceException e) {
-            againLocate();
-            return getLocation();
-        }
-    }
+    boolean isStale();
 
-    @Override
-    public Dimension getSize() {
-        return wrappedElement.getSize();
-    }
+    Locator getLocator();
 
-    @Override
-    public Rectangle getRect() {
-        return wrappedElement.getRect();
-    }
+    Should should();
 
-    @Override
-    public String getCssValue(String s) {
-        return wrappedElement.getCssValue(s);
-    }
+    Should should(SearchStrategy strategy);
 
-    @Override
-    public Coordinates getCoordinates() {
-        return ((Locatable) getWrappedWebElement()).getCoordinates();
-    }
+    ElementWaitFor waitFor();
 
-    @Override
-    public Locator getLocator() {
-        return locator;
-    }
+    ElementWaitFor waitFor(SearchStrategy strategy);
 
-    @Override
-    public <X> X getScreenshotAs(OutputType<X> target) throws WebDriverException {
-        if (getWebDriver().getClass() == RemoteWebDriver.class) {
-            WebDriver augmentedDriver = new Augmenter().augment(getWebDriver());
-            return ((TakesScreenshot) augmentedDriver).getScreenshotAs(target);
-        } else {
-            return ((TakesScreenshot) getWebDriver()).getScreenshotAs(target);
-        }
-    }
+    TeasyElement getParent();
 
-    @Override
-    public boolean equals(Object o) {
-        return this == o || o != null && wrappedElement != null && wrappedElement.equals(o) ||
-                this == o || o != null && wrappedElement != null && (o instanceof CustomWebElement) && wrappedElement.equals(((CustomWebElement) o)
-                .getWrappedWebElement());
-    }
+    TeasyElement getParent(int level);
 
-    @Override
-    public int hashCode() {
-        return wrappedElement != null ? wrappedElement.hashCode() : 0;
-    }
+    TeasyElement element(By by);
 
-    @Override
-    public WebElement getWrappedWebElement() {
-        return wrappedElement;
-    }
+    TeasyElement element(By by, SearchStrategy strategy);
 
-    @Override
-    public String toString(){
-        return locator.getLocator().toString();
-    }
+    List<TeasyElement> elements(By by);
 
-    private ElementFinder getElementFinder() {
-        return elementFinder_TO_BE_REMOVED;
-    }
+    List<TeasyElement> elements(By by, SearchStrategy strategy);
 
-    private int getRepeatLocateElementCounter() {
-        return repeatLocateElementCounter;
-    }
+    TeasyElement domElement(By by);
 
-    /**
-     * TODO VE: So far this method is public only because it's needed for some "logic" in FrameTransparentWebDriver
-     * it should be made private after better solution is found
-     */
-    public void againLocate() {
-        WebElement againLocateElement = locator.find();
-        wrappedElement = againLocateElement instanceof CustomWebElement ? ((CustomWebElement) againLocateElement).getWrappedWebElement() : againLocateElement;
-        increment();
-    }
+    TeasyElement domElement(By by, SearchStrategy strategy);
 
-    private void increment() {
-        if (repeatLocateElementCounter > MAX_NUMBER_OF_REPEAT_LOCATE_ELEMENT) {
-            fail("Cannot interact properly with element with locator '" + locator.getLocator() + "'"
-                    + (!wrappedElement.isDisplayed() ? "Element was not displayed!" : ""));
-        } else {
-            repeatLocateElementCounter++;
-        }
-    }
+    List<TeasyElement> domElements(By by);
 
-    private void scrollIntoView(WebElement element) {
-        executeScript("arguments[0].scrollIntoView(true);", element);
-    }
+    List<TeasyElement> domElements(By by, SearchStrategy strategy);
 
-    private void scrollToElementLocation(WebElement element) {
-        executeScript("scroll(" + (element.getLocation().getX() + element.getSize()
-                .getWidth()) + "," + element.getLocation().getY() + ");");
-    }
-
-    private void maximizeWindow() {
-        try {
-            getWebDriver().manage().window().maximize();
-        } catch (WebDriverException ignored) {
-            //If a frame is selected and then browser window is maximized, exception is thrown
-            //Selenium bug: Issue 3758: Exception upon maximizing browser window with frame selected
-        }
-    }
-
-    private Object executeScript(String script, Object... args) {
-        return ((JavascriptExecutor) getWebDriver()).executeScript(script, args);
-    }
-
-    @Deprecated
-    //tobe removed from the framework
-    //The method checks the checkbox is selected after click and click one more time if not.
-    private void checkElementIsSelected(boolean wasElementSelectedByDefault, WebElement element) {
-        try {
-            if (wasElementSelectedByDefault == element.isSelected()) {
-                element.click();
-                elementFinder_TO_BE_REMOVED.waitForPageToLoad();
-            }
-        } catch (StaleElementReferenceException ignored) {
-            //If the element changed its state after click it's an expected behavior
-        }
-    }
-
-    private boolean isClickWithReload() {
-        StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
-        for (int i = 0; i < 10; i++) {
-            String methodName = stackTraceElements[i].getMethodName();
-            if (methodName.equals("clickWithReload")) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private List<WebElement> finds(By by) {
-        try {
-            //for catch stale element
-            isEnabled();
-            return (getFrameTransparentDriver()).findElements(this, by);
-        } catch (StaleElementReferenceException e) {
-            againLocate();
-            return finds(by);
-        } catch (UndeclaredThrowableException e) {
-            //This checks for findElementByNoThrow, otherwise we call againLocate
-            if (((InvocationTargetException) e.getUndeclaredThrowable()).getTargetException() instanceof NoSuchElementException) {
-                try {
-                    return (getFrameTransparentDriver()).findElements(this, by);
-                } catch (UndeclaredThrowableException noSuchElementException) {
-                    throw new NoSuchElementException("Unable to find elements " + by.toString() + ", Exception - " + ((InvocationTargetException) noSuchElementException
-                            .getUndeclaredThrowable()).getTargetException().getMessage());
-                }
-            }
-            againLocate();
-            return finds(by);
-        }
-    }
-
-    private WebElement find(By by) {
-        try {
-            //for catch stale element
-            isEnabled();
-            return (getFrameTransparentDriver()).findElement(this, by);
-        } catch (StaleElementReferenceException e) {
-            againLocate();
-            return find(by);
-        } catch (UndeclaredThrowableException e) {
-            //This checks for findElementByNoThrow, otherwise we call againLocate
-            if (((InvocationTargetException) e.getUndeclaredThrowable()).getTargetException() instanceof NoSuchElementException) {
-                try {
-                    return getFrameTransparentDriver().findElement(this, by);
-                } catch (UndeclaredThrowableException noSuchElementException) {
-                    throw new NoSuchElementException("Unable to find element " + by.toString() + ", Exception - " + ((InvocationTargetException) noSuchElementException
-                            .getUndeclaredThrowable()).getTargetException().getMessage());
-                }
-            }
-            againLocate();
-            return find(by);
-        } catch (NoSuchElementException e) {
-            return (getFrameTransparentDriver()).findElement(this, by);
-        } catch (WebDriverException e) {
-            againLocate();
-            return find(by);
-        }
-    }
-
-    private WebElement getParentElement(WebElement element) {
-        return (WebElement) ((JavascriptExecutor) getWebDriver()).executeScript("return arguments[0].parentNode", element);
-    }
-
-    private FramesTransparentWebDriver getFrameTransparentDriver() {
-        return (FramesTransparentWebDriver) getWebDriver();
-    }
-
+    void click();
 }

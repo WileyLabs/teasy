@@ -1,71 +1,31 @@
 package com.wiley.autotest.selenium.elements.upgrade.v3;
 
-import com.wiley.autotest.selenium.SeleniumHolder;
-import com.wiley.autotest.selenium.context.SearchStrategy;
-import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
-import com.wiley.autotest.selenium.elements.upgrade.v3.expectedconditions.*;
 import org.openqa.selenium.WebDriver;
 
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 /**
- * Created by vefimov on 26/04/2017.
+ * Created by vefimov on 04/09/2017.
  */
-public class ElementWaitFor {
+public interface ElementWaitFor {
+    void displayed();
 
-    private TeasyFluentWait<WebDriver> fluentWait;
-    private TeasyElement element;
+    void absent();
 
-    public ElementWaitFor(TeasyElement element) {
-        this.element = element;
-        fluentWait = new TeasyFluentWait<>(SeleniumHolder.getWebDriver());
-    }
+    void text(String text);
 
-    public ElementWaitFor(TeasyElement element, SearchStrategy strategy) {
-        this(element);
-        fluentWait.withTimeout(strategy.getCustomTimeout(), TimeUnit.SECONDS);
-        fluentWait.pollingEvery(strategy.getPoolingEvery(), strategy.getUnit());
-    }
+    void attribute(String attributeName, String value);
 
-    public void displayed() {
-        fluentWait.waitFor(new ElementDisplayed(element));
-    }
 
-    public void absent() {
-        fluentWait.waitFor(new ElementAbsent(element));
-    }
+    void attribute(String attributeName);
 
-    public void text(String text) {
-        fluentWait.waitFor(new ElementTextEquals(element, text));
-    }
+    void notContainsAttributeValue(String attributeName, String value);
 
-    public void attribute(String attributeName, String value) {
-        fluentWait.waitFor(new ElementAttributeValue(element, attributeName, value));
-    }
+    void containsAttributeValue(String attributeName, String value);
 
-    public void attribute(String attributeName) {
-        fluentWait.waitFor(new ElementHasAttribute(element, attributeName));
-    }
+    void stale();
 
-    public void notContainsAttributeValue(String attributeName, String value) {
-        fluentWait.waitFor(new ElementAttributeNotContain(element, attributeName, value));
-    }
+    void clickable();
 
-    public void containsAttributeValue(String attributeName, String value) {
-        fluentWait.waitFor(new ElementAttributeContain(element, attributeName, value));
-    }
-
-    public void stale() {
-        fluentWait.waitFor(new ElementStale(element));
-    }
-
-    public void clickable() {
-        fluentWait.waitFor(new ElementClickable(element));
-    }
-
-    public void condition(Function<? super WebDriver, ?> condition) {
-        fluentWait.waitFor(condition);
-    }
-
+    void condition(Function<? super WebDriver, ?> condition);
 }

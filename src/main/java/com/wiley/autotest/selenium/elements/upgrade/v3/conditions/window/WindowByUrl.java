@@ -5,9 +5,6 @@ import org.openqa.selenium.WebDriver;
 
 import java.util.function.Function;
 
-/**
- * Created by vefimov on 30/05/2017.
- */
 public class WindowByUrl extends WindowFinder {
 
     public WindowByUrl(String url){

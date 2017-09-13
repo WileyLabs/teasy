@@ -4,7 +4,6 @@ import com.wiley.autotest.WebDriverAwareElementFinder;
 import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.context.TeasyElementProvider;
 import com.wiley.autotest.selenium.context.ErrorSender;
-import com.wiley.autotest.selenium.elements.upgrade.CustomWebElement;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.JavascriptExecutor;
@@ -59,14 +58,14 @@ public abstract class AbstractWebContainer extends TeasyElementProvider implemen
     }
 
     protected Object executeScript(final String script, final Object... args) {
-        castToCustomWebElement(args);
+        castToTeasyElement(args);
         return ((JavascriptExecutor) getDriver()).executeScript(script, args);
     }
 
-    private static void castToCustomWebElement(Object[] args) {
+    private static void castToTeasyElement(Object[] args) {
         for (int i = 0; i < args.length; i++) {
-            if (args[i] instanceof CustomWebElement) {
-                args[i] = ((CustomWebElement) args[i]).getWrappedWebElement();
+            if (args[i] instanceof TeasyElement) {
+                args[i] = ((TeasyElement) args[i]).getWrappedWebElement();
             }
         }
     }

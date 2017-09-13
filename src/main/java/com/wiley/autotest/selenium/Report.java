@@ -1,5 +1,6 @@
 package com.wiley.autotest.selenium;
 
+import org.codehaus.plexus.util.ExceptionUtils;
 import org.slf4j.LoggerFactory;
 import org.testng.Reporter;
 import ru.yandex.qatools.allure.annotations.Step;
@@ -15,6 +16,10 @@ public class Report {
 
     public Report(String message) {
         this.message = message;
+    }
+
+    public Report(String message, Exception e) {
+        this(message + "\n" + ExceptionUtils.getStackTrace(e));
     }
 
     public void testNG() {

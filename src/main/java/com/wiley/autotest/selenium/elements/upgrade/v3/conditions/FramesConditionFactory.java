@@ -9,12 +9,14 @@ import com.wiley.autotest.selenium.context.SearchStrategy;
 public class FramesConditionFactory {
 
     private TeasyElement context;
+    private SearchStrategy.FrameStrategy frameStrategy;
 
-    public FramesConditionFactory(TeasyElement context) {
+    public FramesConditionFactory(TeasyElement context, SearchStrategy.FrameStrategy frameStrategy) {
         this.context = context;
+        this.frameStrategy = frameStrategy;
     }
 
-    public ElementCondition get(SearchStrategy.FrameStrategy frameStrategy) {
+    public ElementCondition get() {
         if (context == null) {
             switch (frameStrategy) {
                 case FIRST_FOUND:

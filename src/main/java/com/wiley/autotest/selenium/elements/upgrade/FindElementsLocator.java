@@ -6,9 +6,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 /**
- * User: vefimov
- * Date: 27.08.2014
- * Time: 15:51
+ * Find element in list by index
  */
 public class FindElementsLocator implements Locator {
     private TeasyElement searchContext;
@@ -28,13 +26,12 @@ public class FindElementsLocator implements Locator {
         this.index = index;
     }
 
-
     @Override
     public WebElement find() {
         try {
-            return driver != null ? driver.findElements(by).get(index) : searchContext.findElements(by).get(index);
+            return driver != null ? driver.findElements(by).get(index) : searchContext.domElements(by).get(index).getWrappedWebElement();
         } catch (IndexOutOfBoundsException e) {
-            throw new NoSuchElementException("Unable to find element " + by + ", Exception - " + e);
+            throw new NoSuchElementException("Unable to find element with locator " + by + " and index " + index + ", Exception - " + e);
         }
     }
 

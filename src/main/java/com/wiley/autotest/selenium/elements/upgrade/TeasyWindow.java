@@ -3,7 +3,7 @@ package com.wiley.autotest.selenium.elements.upgrade;
 import com.wiley.autotest.selenium.Report;
 import com.wiley.autotest.selenium.elements.upgrade.v3.TeasyFluentWait;
 import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.window.WindowMatcher;
-import com.wiley.autotest.selenium.elements.upgrade.v3.expectedconditions.PageLoaded;
+import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.PageLoaded;
 import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TimeoutException;

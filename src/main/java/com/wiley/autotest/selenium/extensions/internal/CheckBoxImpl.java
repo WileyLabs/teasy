@@ -38,7 +38,7 @@ public class CheckBoxImpl extends AbstractEnabledElement implements CheckBox {
 
     @Override
     public boolean isSelected() {
-        List<WebElement> inputTags = getWrappedWebElement().findElements(By.xpath("./../input"));
+        List<TeasyElement> inputTags = getWrappedWebElement().domElements(By.xpath("./../input"));
         if (!inputTags.isEmpty()) {
             if (inputTags.get(0).getAttribute("class").contains("customCheckbox")) {
                 String inputId = inputTags.get(0).getAttribute("id");
@@ -55,7 +55,7 @@ public class CheckBoxImpl extends AbstractEnabledElement implements CheckBox {
 
     @Override
     public boolean isEnabled() {
-        List<WebElement> inputTags = getWrappedWebElement().findElements(By.xpath("./../input"));
+        List<TeasyElement> inputTags = getWrappedWebElement().domElements(By.xpath("./../input"));
         if (!inputTags.isEmpty()) {
             if (inputTags.get(0).getAttribute("class").contains("customCheckbox")) {
                 String inputId = inputTags.get(0).getAttribute("id");

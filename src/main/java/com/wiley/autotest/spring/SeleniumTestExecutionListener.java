@@ -252,13 +252,15 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
                 SeleniumHolder.setIOSDriver(iosDriver);
             }
 
+            //TODO VE, NT - consider reworking with new model in mind (Visible/Dom/Null)
+
             String classFromSettings = settings.getProperty("our.webelement.class");
             if (classFromSettings != null && !classFromSettings.isEmpty()) {
                 SeleniumHolder.setOurWebElementClass(classFromSettings);
             } else if (configuration.getClassOfElement() != null) {
                 SeleniumHolder.setOurWebElementClass(configuration.getClassOfElement().getName());
             } else {
-                SeleniumHolder.setOurWebElementClass("com.wiley.autotest.selenium.elements.upgrade.TeasyElement");
+                SeleniumHolder.setOurWebElementClass("com.wiley.autotest.selenium.elements.upgrade.VisibleTeasyElement");
             }
         }
     }

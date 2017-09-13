@@ -1,4 +1,4 @@
-package com.wiley.autotest.selenium.elements.upgrade.v3.expectedconditions;
+package com.wiley.autotest.selenium.elements.upgrade.v3.conditions;
 
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
