@@ -9,7 +9,7 @@ public class ElementLocatorFactory {
     private TeasyElementData elementData;
     private WebDriver driver;
 
-    public ElementLocatorFactory(TeasyElementData elementData, WebDriver driver) {
+    ElementLocatorFactory(TeasyElementData elementData, WebDriver driver) {
         this.elementData = elementData;
         this.driver = driver;
     }
@@ -35,6 +35,5 @@ public class ElementLocatorFactory {
             TeasyElement ourWebElement = (TeasyElement) element;
             return new FindParentElementLocator(driver, ourWebElement.getLocator().getLocator());
         }
-
     }
 }
