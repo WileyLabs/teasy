@@ -248,13 +248,13 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
     }
 
     /**
-     * Quite hacky workaround to make sure context is not stale before searching inside it
+     * Quite hacky workaround to make sure element is not stale before searching inside it
      * we call getText() method which takes care of StaleElementReferenceException and calls
      * for againLocate() method inside TeasyElement.
-     * @param context - TeasyElement which might be stale.
+     * @param element - TeasyElement which might be stale.
      */
-    private void avoidStaleness(TeasyElement context) {
-        context.getText();
+    private void avoidStaleness(TeasyElement element) {
+        element.getText();
     }
 
     private List<WebElement> getFramesForContext(TeasyElement context) {
