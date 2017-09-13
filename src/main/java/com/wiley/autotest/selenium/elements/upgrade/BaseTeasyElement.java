@@ -42,23 +42,10 @@ public abstract class BaseTeasyElement implements TeasyElement, Locatable {
         By by = elementData.getBy();
         Integer index = elementData.getIndex();
 
-        if (searchContext != null && by != null && index != null) {
-            //element from list in searchContext with index
-            this.locator = new FindElementsLocator(searchContext, by, index);
-        } else if (by != null && index != null) {
-            //element from list with index
-            this.locator = new FindElementsLocator(getWebDriver(), by, index);
-        } else if (searchContext != null && by != null) {
-            //element in searchContext
-            this.locator = new FindElementLocator(searchContext, by);
-        } else if (by != null) {
-            //element
-            this.locator = new FindElementLocator(getWebDriver(), by);
-        } else {
+        if (searchContext == null && by == null && index == null) {
             //parent element (locator is null - as a sign that we should take parent)
             TeasyElement ourWebElement = (TeasyElement) element;
             element = getParentElement(ourWebElement.getWrappedWebElement());
-            this.locator = new FindParentElementLocator(getWebDriver(), ourWebElement.getLocator().getLocator());
         }
         this.locator = new ElementLocatorFactory(elementData, getWebDriver()).getLocator();
 
