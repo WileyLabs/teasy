@@ -5,9 +5,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 /**
- * User: vefimov
- * Date: 27.08.2014
- * Time: 15:50
+ * Find element
  */
 public class FindElementLocator implements Locator {
     private TeasyElement searchContext;

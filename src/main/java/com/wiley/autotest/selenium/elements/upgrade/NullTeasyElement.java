@@ -10,9 +10,7 @@ import java.util.List;
 
 
 /**
- * User: vefimov
- * Date: 27.08.2014
- * Time: 15:41
+ * Represents element that is absent (not found)
  */
 public class NullTeasyElement implements TeasyElement, Locatable {
 

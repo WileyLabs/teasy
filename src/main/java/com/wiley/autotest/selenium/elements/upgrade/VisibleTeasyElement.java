@@ -10,9 +10,7 @@ import static com.wiley.autotest.utils.TestUtils.waitForSomeTime;
 
 
 /**
- * User: vefimov
- * Date: 27.08.2014
- * Time: 15:41
+ * Represents element that is visible for the user
  */
 public class VisibleTeasyElement extends BaseTeasyElement {
 

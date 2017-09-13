@@ -5,9 +5,7 @@ import com.wiley.autotest.selenium.elements.upgrade.v3.*;
 
 
 /**
- * User: vefimov
- * Date: 27.08.2014
- * Time: 15:41
+ * Reprsents element that is present in Dom (not necessarily visible)
  */
 public class DomTeasyElement extends BaseTeasyElement {
 

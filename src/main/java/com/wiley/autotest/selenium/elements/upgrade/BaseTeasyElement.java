@@ -23,9 +23,7 @@ import static com.wiley.autotest.utils.TestUtils.waitForSomeTime;
 
 
 /**
- * User: vefimov
- * Date: 27.08.2014
- * Time: 15:41
+ * General implementation with all basic logic of an element
  */
 public abstract class BaseTeasyElement implements TeasyElement, Locatable {
 
@@ -56,7 +54,7 @@ public abstract class BaseTeasyElement implements TeasyElement, Locatable {
         } else if (by != null) {
             //element
             this.locator = new FindElementLocator(getWebDriver(), by);
-        } else  {
+        } else {
             //parent element (locator is null - as a sign that we should take parent)
             TeasyElement ourWebElement = (TeasyElement) element;
             element = getParentElement(ourWebElement.getWrappedWebElement());
@@ -74,7 +72,6 @@ public abstract class BaseTeasyElement implements TeasyElement, Locatable {
             contextFinder = new TeasyElementFinder(getWebDriver(), new SearchStrategy(TIMEOUT_FOR_AGAIN_LOCATE_IN_SECONDS), this);
         }
     }
-
 
     @Override
     public TeasyElement getParent() {
