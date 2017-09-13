@@ -7,9 +7,6 @@ import java.util.function.Function;
 
 import static com.wiley.autotest.utils.ExecutionUtils.isChrome;
 
-/**
- * Created by vefimov on 30/05/2017.
- */
 public abstract class WindowFinder {
 
     private String locatedBy;

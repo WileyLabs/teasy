@@ -12,7 +12,7 @@ import org.openqa.selenium.WebDriver;
 import java.util.function.Function;
 
 /**
- * Created by vefimov on 26/04/2017.
+ * Condition waiter for Null Element
  */
 public class NullElementWaitFor implements ElementWaitFor {
 

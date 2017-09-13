@@ -7,9 +7,6 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 
 import javax.annotation.Nullable;
 
-/**
- * Created by vefimov on 23/08/2017.
- */
 public class ElementStale implements ExpectedCondition<Boolean> {
 
     private TeasyElement element;

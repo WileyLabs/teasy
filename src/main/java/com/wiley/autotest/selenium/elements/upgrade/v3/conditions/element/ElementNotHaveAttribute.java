@@ -6,9 +6,6 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 
 import javax.annotation.Nullable;
 
-/**
- * Created by vefimov on 24/08/2017.
- */
 public class ElementNotHaveAttribute implements ExpectedCondition<Boolean> {
 
     private TeasyElement element;

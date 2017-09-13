@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 /**
- * Created by vefimov on 26/04/2017.
+ * Condition waiter for Dom Element
  */
 public class DomElementWaitFor implements ElementWaitFor {
 

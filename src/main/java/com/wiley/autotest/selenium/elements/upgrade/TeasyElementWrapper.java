@@ -1,6 +1,5 @@
 package com.wiley.autotest.selenium.elements.upgrade;
 
-import com.wiley.autotest.selenium.SeleniumHolder;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.slf4j.LoggerFactory;
@@ -10,9 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * User: ntyukavkin
- * Date: 17.11.2016
- * Time: 16:57
+ * Wrap element with TeasyElement
  */
 public class TeasyElementWrapper {
 
