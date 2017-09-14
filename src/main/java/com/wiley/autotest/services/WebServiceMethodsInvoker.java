@@ -1,8 +1,8 @@
 package com.wiley.autotest.services;
 
-import com.wiley.autotest.annotations.RetryPrecondition;
 import com.wiley.autotest.selenium.AbstractTest;
 import com.wiley.autotest.selenium.AbstractWebServiceTest;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.stereotype.Service;
 import org.testng.ITestContext;
 import org.testng.TestRunner;
@@ -44,29 +44,14 @@ public class WebServiceMethodsInvoker extends MethodsInvoker {
         try {
             method.invoke(instance);
         } catch (Throwable e) {
-            final Writer result = new StringWriter();
-            final PrintWriter printWriter = new PrintWriter(result);
-            ((InvocationTargetException) e).getTargetException().printStackTrace(printWriter);
-            String errorMessage = format("Precondition method '%s' failed ", method.getName()) + "\n " + result.toString();
+            String errorMessage = format("Precondition method '%s' failed ", method.getName()) + "\n " + ExceptionUtils.getStackTrace(e);
             if (isBeforeAfterGroup) {
                 abstractWebServiceTest.setPostponedBeforeAfterGroupFail(errorMessage, context.getTestContext());
             } else {
                 abstractWebServiceTest.setPostponedTestFail(errorMessage);
             }
 
-            if (method.getAnnotation(RetryPrecondition.class) != null) {
-                retryCount.set(retryCount.get() + 1);
-                if (method.getAnnotation(RetryPrecondition.class).retryCount() >= retryCount.get()) {
-                    LOGGER.error("*****ERROR***** Method '" + method.getDeclaringClass().getSimpleName() + "." + method.getName() + "' is failed. Retrying it. Current retryCount is " + retryCount.get());
-                    invokeMethod(instance, method, context, isBeforeAfterGroup);
-                }
-            }
-
             log(errorMessage);
-
-            if (method.getAnnotation(RetryPrecondition.class) == null) {
-                throw new StopTestExecutionException(errorMessage, e);
-            }
         }
     }
 }

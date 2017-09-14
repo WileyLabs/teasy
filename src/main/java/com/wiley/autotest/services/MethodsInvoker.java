@@ -37,12 +37,11 @@ public abstract class MethodsInvoker {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(MethodsInvoker.class);
     private static final String UNABLE_TO_CREATE_TEST_CLASS_INSTANCE = "Unable to create test class instance. ";
-    protected static ThreadLocal<Integer> retryCount = ThreadLocal.withInitial(() -> 0);
 
     abstract void invokeMethod(final AbstractTest instance, final Method method, TestClassContext context, boolean isBeforeAfterGroup);
 
     /**
-     * Called when using all project-specific annotations (E4BeforeGroups, E4AfterMethod, etc.)
+     * Called when using all project-specific annotations (OurBeforeGroups, OurAfterMethod, etc.)
      * We decided to catch all kind of exceptions here because
      * based on (https://groups.google.com/forum/#!topic/testng-users/0JhqmewMezM) we think that tests get skipped
      * in case of failure in any before/after method
