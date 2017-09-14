@@ -1,6 +1,7 @@
 package com.wiley.autotest.selenium.elements.upgrade;
 
 import com.wiley.autotest.selenium.Report;
+import com.wiley.autotest.selenium.SeleniumHolder;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -54,6 +55,36 @@ public class TeasyElementWrapper {
     }
 
     private static <T extends TeasyElement> T wrapBase(TeasyElementData data, TeasyElementType type) {
+        try {
+            TeasyElementFactory elementFactory;
+            if (SeleniumHolder.getCustomElementFactoryClass() != null) {
+                elementFactory = (TeasyElementFactory) Class.forName(SeleniumHolder.getCustomElementFactoryClass())
+                        .getDeclaredConstructor(TeasyElementData.class).newInstance(data);
+            } else {
+                elementFactory = new DefaultTeasyElementFactory(data);
+            }
+
+            switch (type) {
+                case VISIBLE: {
+                    return (T) elementFactory.getVisibleElement();
+                }
+                case DOM: {
+                    return (T) elementFactory.getDomElement();
+                }
+                case NULL: {
+                    return (T) elementFactory.getNullElement();
+                }
+                default: {
+                    throw new ClassNotFoundException("Cannot create instance of TeasyElement for type '" + type + "'");
+                }
+            }
+        } catch (InstantiationException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            new Report("Cannot create instance of TeasyElement." + e.getClass().getName(), e).jenkins();
+            throw new WrapElementException("Cannot create instance of TeasyElement. " + e.getClass().getName() + " occurred. ", e);
+        }
+    }
+
+    private static <T extends TeasyElement> T wrapBaseOld(TeasyElementData data, TeasyElementType type) {
         try {
 
             //TODO !!!IMPORTANT!!! Current approach does not support overloading of element in particular project
