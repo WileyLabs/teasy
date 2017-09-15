@@ -167,7 +167,7 @@ class SelectImpl extends AbstractEnabledElement implements Select {
         try {
             return wrappedSelect().getOptions()
                     .stream()
-                    .map(webElement -> new DomTeasyElement(new TeasyElementData(getWrappedElement(), By.tagName("option"))))
+                    .map(option -> new DomTeasyElement(new TeasyElementData(option, By.tagName("option"))))
                     .collect(Collectors.toList());
         } catch (UndeclaredThrowableException ignored) {
             //TODO VF fix it in other places
@@ -175,7 +175,7 @@ class SelectImpl extends AbstractEnabledElement implements Select {
             TestUtils.waitForSomeTime(3000, EXPLANATION_MESSAGE_FOR_WAIT);
             return wrappedSelect().getOptions()
                     .stream()
-                    .map(webElement -> new DomTeasyElement(new TeasyElementData(getWrappedElement(), By.tagName("option"))))
+                    .map(option -> new DomTeasyElement(new TeasyElementData(option, By.tagName("option"))))
                     .collect(Collectors.toList());
         }
     }
