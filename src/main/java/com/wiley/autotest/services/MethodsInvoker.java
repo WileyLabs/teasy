@@ -52,7 +52,7 @@ public abstract class MethodsInvoker {
      */
     protected void invokeMethodsByAnnotation(final TestClassContext context, boolean isBeforeAfterGroup) {
         try {
-            final Method[] methods = context.getTestClass().getMethods();
+            final Method[] methods = context.getTestClass().getDeclaredMethods();
             //reverse methods array for correct invoke order if TestClass extends SuperClass with @Before methods
             if (context.getAnnotationToInvokeMethod().getName().contains("OurBefore")) {
                 ArrayUtils.reverse(methods);
