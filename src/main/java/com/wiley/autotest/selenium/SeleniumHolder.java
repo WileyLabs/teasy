@@ -28,7 +28,7 @@ public final class SeleniumHolder {
     private static final ThreadLocal<String> mainWindowHandle = new ThreadLocal<>();
     private static final ThreadLocal<String> nodeIp = ThreadLocal.withInitial(() -> "localhost");
     private static final ThreadLocal<SessionId> sessionId = new ThreadLocal<>();
-    private static String ourWebElementClass;
+    private static String customElementFactoryClass;
     private static final ThreadLocal<AppiumDriver> appiumDriver = new ThreadLocal<>();
     private static final ThreadLocal<IOSDriver> iosDriverHolder = new ThreadLocal<>();
     private static final ThreadLocal<AndroidDriver> androidDriverHolder = new ThreadLocal<>();
@@ -145,12 +145,12 @@ public final class SeleniumHolder {
         return bugParameter.get();
     }
 
-    public static String getOurWebElementClass() {
-        return ourWebElementClass;
+    public static String getCustomElementFactoryClass() {
+        return customElementFactoryClass;
     }
 
-    public static void setOurWebElementClass(String ourWebElementClass) {
-        SeleniumHolder.ourWebElementClass = ourWebElementClass;
+    public static void setCustomElementFactoryClass(String customElementFactoryClass) {
+        SeleniumHolder.customElementFactoryClass = customElementFactoryClass;
     }
 
     public static AppiumDriver getAppiumDriver() {
