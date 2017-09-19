@@ -111,6 +111,7 @@ public class SeleniumMethodsInvoker extends MethodsInvoker {
         }
 
         try {
+            method.setAccessible(true);
             method.invoke(instance);
         } catch (Throwable e) {
             new Screenshoter().takeScreenshot(e.getMessage(), method.getName());
