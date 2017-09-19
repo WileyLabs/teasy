@@ -6,7 +6,7 @@ package com.wiley.autotest.selenium.elements.upgrade;
  */
 public class DefaultTeasyElementFactory extends TeasyElementFactory {
 
-    public DefaultTeasyElementFactory(TeasyElementData elementData) {
+    DefaultTeasyElementFactory(TeasyElementData elementData) {
         super(elementData);
     }
 
