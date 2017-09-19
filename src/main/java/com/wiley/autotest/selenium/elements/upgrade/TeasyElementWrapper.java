@@ -84,19 +84,4 @@ public class TeasyElementWrapper {
         }
     }
 
-    private static <T extends TeasyElement> T wrapBaseOld(TeasyElementData data, TeasyElementType type) {
-        try {
-
-            //TODO !!!IMPORTANT!!! Current approach does not support overloading of element in particular project
-            //TODO VE, NT, consider providing necesarry changes to support it
-//            Class<T> classOfOurWebElement = (Class<T>) Class.forName(SeleniumHolder.getOurWebElementClass());
-
-            Class<T> classOfOurWebElement = (Class<T>) Class.forName(type.className());
-
-            return classOfOurWebElement.getDeclaredConstructor(TeasyElementData.class).newInstance(data);
-        } catch (InstantiationException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            new Report("Cannot create instance of TeasyElement." + e.getClass().getName(), e).jenkins();
-            throw new WrapElementException("Cannot create instance of TeasyElement. " + e.getClass().getName() + " occurred. ", e);
-        }
-    }
 }

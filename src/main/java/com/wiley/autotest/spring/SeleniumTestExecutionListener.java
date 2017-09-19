@@ -183,7 +183,8 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         if (restartDriverCount > 0) {
             if (count.get() > (settings.getPlatform().equals(ANDROID) ? ANDROID_WEB_DRIVER_NUMBER_OF_TESTS_LIMIT :
                     settings.getDriverName().equals(SAFARI) ? SAFARI_WEB_DRIVER_NUMBER_OF_TESTS_LIMIT :
-                            (settings.getDriverName().equals(IE) || settings.getDriverName().equals(IE9) || settings.getDriverName().equals(IE10)) ? IE_WEB_DRIVER_NUMBER_OF_TESTS_LIMIT :
+                            (settings.getDriverName().equals(IE) || settings.getDriverName().equals(IE9) || settings.getDriverName()
+                                    .equals(IE10)) ? IE_WEB_DRIVER_NUMBER_OF_TESTS_LIMIT :
                                     restartDriverCount)) {
                 quitWebDriver();
             }
@@ -252,15 +253,8 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
                 SeleniumHolder.setIOSDriver(iosDriver);
             }
 
-            //TODO VE, NT - consider reworking with new model in mind (Visible/Dom/Null)
-
-            String classFromSettings = settings.getProperty("our.webelement.class");
-            if (classFromSettings != null && !classFromSettings.isEmpty()) {
-                SeleniumHolder.setOurWebElementClass(classFromSettings);
-            } else if (configuration.getClassOfElement() != null) {
-                SeleniumHolder.setOurWebElementClass(configuration.getClassOfElement().getName());
-            } else {
-                SeleniumHolder.setOurWebElementClass("com.wiley.autotest.selenium.elements.upgrade.VisibleTeasyElement");
+            if (configuration.getCustomElementFactoryClass() != null) {
+                SeleniumHolder.setCustomElementFactoryClass(configuration.getCustomElementFactoryClass().getName());
             }
         }
     }
