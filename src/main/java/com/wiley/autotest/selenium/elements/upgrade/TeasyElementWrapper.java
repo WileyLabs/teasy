@@ -66,13 +66,22 @@ public class TeasyElementWrapper {
 
             switch (type) {
                 case VISIBLE: {
-                    return (T) elementFactory.getVisibleElement();
+                    TeasyElement visibleElement = elementFactory.getVisibleElement() != null
+                            ? elementFactory.getVisibleElement()
+                            : new DefaultTeasyElementFactory(data).getVisibleElement();
+                    return (T) visibleElement;
                 }
                 case DOM: {
-                    return (T) elementFactory.getDomElement();
+                    TeasyElement domElement = elementFactory.getDomElement() != null
+                            ? elementFactory.getDomElement()
+                            : new DefaultTeasyElementFactory(data).getDomElement();
+                    return (T) domElement;
                 }
                 case NULL: {
-                    return (T) elementFactory.getNullElement();
+                    TeasyElement nullElement = elementFactory.getNullElement() != null
+                            ? elementFactory.getNullElement()
+                            : new DefaultTeasyElementFactory(data).getNullElement();
+                    return (T) nullElement;
                 }
                 default: {
                     throw new ClassNotFoundException("Cannot create instance of TeasyElement for type '" + type + "'");
