@@ -16,6 +16,10 @@ public class FramesConditionFactory {
         this.frameStrategy = frameStrategy;
     }
 
+    public FramesConditionFactory(SearchStrategy.FrameStrategy frameStrategy) {
+        this(null, frameStrategy);
+    }
+
     public ElementCondition get() {
         if (context == null) {
             switch (frameStrategy) {
