@@ -26,13 +26,7 @@ import java.util.stream.Collectors;
 
 import static org.apache.commons.lang.ArrayUtils.contains;
 import static org.apache.commons.lang.ArrayUtils.isEmpty;
-import static org.testng.Reporter.log;
 
-/**
- * User: dfedorov
- * Date: 7/26/12
- * Time: 9:32 AM
- */
 @Service
 public abstract class MethodsInvoker {
 
@@ -200,7 +194,6 @@ public abstract class MethodsInvoker {
             testContextManager.prepareTestInstance(instance);
             return instance;
         } catch (Exception e) {
-            log(UNABLE_TO_CREATE_TEST_CLASS_INSTANCE + e.getMessage());
             LOGGER.error(UNABLE_TO_CREATE_TEST_CLASS_INSTANCE, e);
         }
 
