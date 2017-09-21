@@ -22,6 +22,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang.ArrayUtils.contains;
 import static org.apache.commons.lang.ArrayUtils.isEmpty;
@@ -51,17 +52,36 @@ public abstract class MethodsInvoker {
      */
     protected void invokeMethodsByAnnotation(final TestClassContext context, boolean isBeforeAfterGroup) {
         try {
-            final Method[] methods = context.getTestClass().getMethods();
+
+            //for invoke all public methods with @OurBefore... and @OurAfter... from super or this class
+            Method[] publicMethods = context.getTestClass().getMethods();
+
+            //for invoke private methods with @OurBefore... and @OurAfter... from this class
+            Method[] privateMethods = context.getTestClass().getDeclaredMethods();
+
+            //remove public methods of test class
+            List<Method> filteredMethods = Arrays.asList(publicMethods).stream()
+                    .filter(name -> !name.getDeclaringClass().getName().contains(context.getTestClass().getName()))
+                    .collect(Collectors.toList());
+
+            //paste all methods from test class to top of the list
+            for (int i = 0; i < privateMethods.length; i++) {
+                filteredMethods.add(i, privateMethods[i]);
+            }
+
+            Method[] allMethods = new Method[filteredMethods.size()];
+            filteredMethods.toArray(allMethods);
+
             //reverse methods array for correct invoke order if TestClass extends SuperClass with @Before methods
             if (context.getAnnotationToInvokeMethod().getName().contains("OurBefore")) {
-                ArrayUtils.reverse(methods);
+                ArrayUtils.reverse(allMethods);
             }
-            for (Method method : methods) {
+            for (Method method : allMethods) {
                 if (isMethodShouldBeInvoked(method, context)) {
                     AbstractTest testInstance = context.getTestInstance();
                     if (testInstance != null || (testInstance = createTestClassInstance(context.getTestClass())) != null) {
-                        //hack for E4 project only (@LoginAs and @LoginTo) by default the method will do nothing untill you override it
-                        //and add some specific logic. For example handle your special anotations
+                        //hack for E4 project only (@LoginAs and @LoginTo) by default the method will do nothing until you override it
+                        //and add some specific logic. For example handle your special annotations
                         testInstance.handleBeforeAfterAnnotations(method);
 
                         invokeMethod(testInstance, method, context, isBeforeAfterGroup);

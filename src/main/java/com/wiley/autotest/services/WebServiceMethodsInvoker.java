@@ -42,6 +42,7 @@ public class WebServiceMethodsInvoker extends MethodsInvoker {
     void invokeMethod(AbstractTest instance, Method method, TestClassContext context, boolean isBeforeAfterGroup) {
         AbstractWebServiceTest abstractWebServiceTest = (AbstractWebServiceTest) instance;
         try {
+            method.setAccessible(true);
             method.invoke(instance);
         } catch (Throwable e) {
             String errorMessage = format("Precondition method '%s' failed ", method.getName()) + "\n " + ExceptionUtils.getStackTrace(e);

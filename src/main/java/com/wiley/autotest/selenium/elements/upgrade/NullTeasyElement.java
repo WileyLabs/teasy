@@ -2,6 +2,7 @@ package com.wiley.autotest.selenium.elements.upgrade;
 
 import com.wiley.autotest.selenium.context.SearchStrategy;
 import com.wiley.autotest.selenium.elements.upgrade.v3.*;
+import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.internal.Coordinates;
 import org.openqa.selenium.internal.Locatable;
@@ -47,188 +48,161 @@ public class NullTeasyElement implements TeasyElement, Locatable {
 
     @Override
     public <X> X getScreenshotAs(OutputType<X> target) {
-        throwException();
-        return null;
+        throw noSuchElementException();
     }
 
     @Override
     public WebElement getWrappedWebElement() {
-        throwException();
-        return null;
+        throw noSuchElementException();
     }
 
     @Override
     public void submit() {
-        throwException();
+        throw noSuchElementException();
     }
 
     @Override
     public void sendKeys(CharSequence... charSequences) {
-        throwException();
+        throw noSuchElementException();
     }
 
     @Override
     public void clear() {
-        throwException();
+        throw noSuchElementException();
     }
 
     @Override
     public String getTagName() {
-        throwException();
-        return null;
+        throw noSuchElementException();
     }
 
     @Override
     public String getAttribute(String s) {
-        throwException();
-        return null;
+        throw noSuchElementException();
     }
 
     @Override
     public boolean isSelected() {
-        throwException();
-        return false;
+        throw noSuchElementException();
     }
 
     @Override
     public boolean isEnabled() {
-        throwException();
-        return false;
+        throw noSuchElementException();
     }
 
     @Override
     public boolean isStale() {
-        throwException();
-        return false;
+        throw noSuchElementException();
     }
 
     @Override
     public String getText() {
-        throwException();
-        return null;
+        throw noSuchElementException();
     }
 
     @Override
     public List<WebElement> findElements(By by) {
-        throwException();
-        return null;
+        throw noSuchElementException();
     }
 
     @Override
     public WebElement findElement(By by) {
-        throwException();
-        return null;
+        throw noSuchElementException();
     }
 
     @Override
     public boolean isDisplayed() {
-        throwException();
-        return false;
+        throw noSuchElementException();
     }
 
     @Override
     public Point getLocation() {
-        throwException();
-        return null;
+        throw noSuchElementException();
     }
 
     @Override
     public Dimension getSize() {
-        throwException();
-        return null;
+        throw noSuchElementException();
     }
 
     @Override
     public Rectangle getRect() {
-        throwException();
-        return null;
+        throw noSuchElementException();
     }
 
     @Override
     public String getCssValue(String s) {
-        throwException();
-        return null;
+        throw noSuchElementException();
     }
 
     @Override
     public Locator getLocator() {
-        throwException();
-        return null;
+        throw noSuchElementException();
     }
-
 
     @Override
     public TeasyElement getParent() {
-        throwException();
-        return null;
+        throw noSuchElementException();
     }
 
     @Override
     public TeasyElement getParent(int level) {
-        throwException();
-        return null;
+        throw noSuchElementException();
     }
 
     @Override
     public TeasyElement element(By by) {
-        throwException();
-        return null;
+        throw noSuchElementException();
     }
 
     @Override
     public TeasyElement element(By by, SearchStrategy strategy) {
-        throwException();
-        return null;
+        throw noSuchElementException();
     }
 
     @Override
     public List<TeasyElement> elements(By by) {
-        throwException();
-        return null;
+        throw noSuchElementException();
     }
 
     @Override
     public List<TeasyElement> elements(By by, SearchStrategy strategy) {
-        throwException();
-        return null;
+        throw noSuchElementException();
     }
 
     @Override
     public TeasyElement domElement(By by) {
-        throwException();
-        return null;
+        throw noSuchElementException();
     }
 
     @Override
     public TeasyElement domElement(By by, SearchStrategy strategy) {
-        throwException();
-        return null;
+        throw noSuchElementException();
     }
 
     @Override
     public List<TeasyElement> domElements(By by) {
-        throwException();
-        return null;
+        throw noSuchElementException();
     }
 
     @Override
     public List<TeasyElement> domElements(By by, SearchStrategy strategy) {
-        throwException();
-        return null;
+        throw noSuchElementException();
     }
 
     @Override
     public void click() {
-        throwException();
+        throw noSuchElementException();
     }
 
     @Override
     public Coordinates getCoordinates() {
-        throwException();
-        return null;
+        throw noSuchElementException();
     }
 
-    private void throwException() {
-        throw new NoSuchElementException("Unable to find element with locator '" + elementData.getBy() + "'");
+    @NotNull
+    private NoSuchElementException noSuchElementException() {
+        return new NoSuchElementException("Unable to find element with locator '" + elementData.getBy() + "'");
     }
 }
