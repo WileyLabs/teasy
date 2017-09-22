@@ -32,12 +32,13 @@ public class TeasyElementFinder {
 
     public TeasyElementFinder(WebDriver driver, SearchStrategy strategy) {
         this.fluentWait = new TeasyFluentWait<>(driver, strategy);
-        this.conditionFactory = new FramesConditionFactory(context, strategy.getFrameStrategy());
+        this.conditionFactory = new FramesConditionFactory(strategy.getFrameStrategy());
     }
 
     public TeasyElementFinder(WebDriver driver, SearchStrategy strategy, TeasyElement context) {
-        this(driver, strategy);
+        this.fluentWait = new TeasyFluentWait<>(driver, strategy);
         this.context = context;
+        this.conditionFactory = new FramesConditionFactory(context, strategy.getFrameStrategy());
     }
 
     public TeasyElement visibleElement(By locator) {
