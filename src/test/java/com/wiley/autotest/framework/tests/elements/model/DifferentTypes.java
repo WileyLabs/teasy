@@ -21,6 +21,7 @@ public class DifferentTypes extends BaseTest {
                 .checkElementInstanceOfVisibleElement()
                 .checkDomElementInstanceOfDomElement()
                 .checkNonExistingElementInstanceOfNullElement()
+                .checkNonExistingElementWithNullOnFailure()
                 .checkNonExistingElementShouldBeAbsent();
     }
 

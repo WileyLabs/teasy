@@ -29,14 +29,17 @@ public class TeasyElementFinder {
     private TeasyElement context;
     private TeasyFluentWait<WebDriver> fluentWait;
     private FramesConditionFactory conditionFactory;
+    private SearchStrategy strategy;
 
     public TeasyElementFinder(WebDriver driver, SearchStrategy strategy) {
         this.fluentWait = new TeasyFluentWait<>(driver, strategy);
+        this.strategy = strategy;
         this.conditionFactory = new FramesConditionFactory(strategy.getFrameStrategy());
     }
 
     public TeasyElementFinder(WebDriver driver, SearchStrategy strategy, TeasyElement context) {
         this.fluentWait = new TeasyFluentWait<>(driver, strategy);
+        this.strategy = strategy;
         this.context = context;
         this.conditionFactory = new FramesConditionFactory(context, strategy.getFrameStrategy());
     }
@@ -94,6 +97,12 @@ public class TeasyElementFinder {
             webElements = new ArrayList<>();
         }
         if (webElements == null || webElements.isEmpty()) {
+
+            //this is needed to return null when the user explicitly set to receive null in case of failure
+            if (strategy.isNullOnFailure()) {
+                return null;
+            }
+
             if (context == null) {
                 return wrap(null, locator, TeasyElementType.NULL);
             } else {
