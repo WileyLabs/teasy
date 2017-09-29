@@ -1,22 +1,23 @@
 package com.wiley.autotest.framework.tests.domElements;
 
 import com.wiley.autotest.framework.config.BaseTest;
+import com.wiley.autotest.framework.pages.TestDomElementPage;
 import com.wiley.autotest.framework.pages.TestElementPage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.Test;
 
 /**
- * Created by shekhavtsov on 20/07/2017.
+ * Created by shekhavtsov on 29/09/2017.
  */
-public class WaitElementBecomeVisible extends BaseTest {
+public class WaitDomElementBecomeVisible extends BaseTest {
 
     @Autowired
-    private TestElementPage testElementPage;
+    private TestDomElementPage testDomElementPage;
 
     @Test
     public void test() {
         openPage("mainTestElement.html");
-        testElementPage.checkElementBecomeVisible();
+        testDomElementPage.checkDomElementBecomeVisible();
     }
 
 }

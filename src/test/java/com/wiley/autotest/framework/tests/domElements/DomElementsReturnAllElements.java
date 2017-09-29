@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.Test;
 
 /**
- * Created by shekhavtsov on 20/07/2017.
+ * Created by shekhavtsov on 29/09/2017.
  */
 public class DomElementsReturnAllElements extends BaseTest {
 
@@ -16,6 +16,6 @@ public class DomElementsReturnAllElements extends BaseTest {
     @Test
     public void test() {
         openPage("mainTestElement.html");
-        testDomElementPage.checkAnimationDomElement();
+        testDomElementPage.checkDomElemetsReturnAll();
     }
 }
