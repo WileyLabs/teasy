@@ -65,6 +65,12 @@ public class TestElementPage extends AbstractPage {
         return this;
     }
 
+    public TestElementPage checkNonExistingElementWithNullOnFailure() {
+        TeasyElement element = element(By.cssSelector("not_present_element"), new SearchStrategy(1).nullOnFailure());
+        assertNull(element);
+        return this;
+    }
+
     public TestElementPage checkNonExistingElementShouldBeAbsent() {
         TeasyElement element = element(By.cssSelector("not_present_element"), new SearchStrategy(1));
         element.should().beAbsent();
