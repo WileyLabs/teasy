@@ -79,7 +79,6 @@ public class SeleniumMethodsInvoker extends MethodsInvoker {
     void invokeMethod(AbstractTest instance, Method method, TestClassContext context, boolean isBeforeAfterGroup) {
         final WebDriver mainDriver = SeleniumHolder.getWebDriver();
         final String mainDriverName = SeleniumHolder.getDriverName();
-        String platformName = SeleniumHolder.getPlatform();
 
         AbstractSeleniumTest abstractSeleniumTest = (AbstractSeleniumTest) instance;
 
@@ -88,23 +87,18 @@ public class SeleniumMethodsInvoker extends MethodsInvoker {
         }
 
         //For IE and Safari browser and @FireFoxOnly annotation setting specifically prepared FF driver
-        if ((mainDriverName.contains(IE) ||
-                mainDriverName.equals(SAFARI) ||
-                platformName.equals(ANDROID))
-                && method.getAnnotation(FireFoxOnly.class) != null) {
+        if ((mainDriverName.contains(SAFARI) || mainDriverName.equals(IE)) && method.getAnnotation(FireFoxOnly.class) != null) {
             SeleniumHolder.setWebDriver(DriverUtils.getFFDriver());
             SeleniumHolder.setDriverName(FIREFOX);
             isFFDriver.set(true);
         }
 
-        //Set FirefoxOnly for all after methods in safari, ie, android
-        if ((mainDriverName.equals(SAFARI) ||
-                mainDriverName.contains(IE) ||
-                platformName.equals(ANDROID)) &&
-                (method.getAnnotation(OurAfterMethod.class) != null ||
-                        method.getAnnotation(OurAfterClass.class) != null ||
-                        method.getAnnotation(OurAfterGroups.class) != null ||
-                        method.getAnnotation(OurAfterSuite.class) != null)) {
+        //Set FirefoxOnly for all after methods in safari, ie
+        if ((mainDriverName.equals(SAFARI) || mainDriverName.contains(IE))
+                && (method.getAnnotation(OurAfterMethod.class) != null ||
+                method.getAnnotation(OurAfterClass.class) != null ||
+                method.getAnnotation(OurAfterGroups.class) != null ||
+                method.getAnnotation(OurAfterSuite.class) != null)) {
             SeleniumHolder.setWebDriver(DriverUtils.getFFDriver());
             SeleniumHolder.setDriverName(FIREFOX);
             isFFDriver.set(true);
@@ -118,8 +112,7 @@ public class SeleniumMethodsInvoker extends MethodsInvoker {
             final Writer result = new StringWriter();
             final PrintWriter printWriter = new PrintWriter(result);
             ((InvocationTargetException) e).getTargetException().printStackTrace(printWriter);
-            String errorMessage = format("Precondition method '%s' failed ", method.getName()) + "\n " +
-                    result.toString();
+            String errorMessage = format("Precondition method '%s' failed ", method.getName()) + "\n " + result.toString();
             if (isBeforeAfterGroup) {
                 abstractSeleniumTest.setPostponedBeforeAfterGroupFail(errorMessage, context.getTestContext());
             } else {

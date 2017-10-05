@@ -102,6 +102,7 @@ public abstract class MethodsInvoker {
             }
         } catch (Throwable t) {
             LOGGER.error("*****THROWABLE*****" + context.getTestClass() + " " + t.getCause());
+            t.printStackTrace();
         }
     }
 
