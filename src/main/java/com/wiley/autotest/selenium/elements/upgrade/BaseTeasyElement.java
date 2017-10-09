@@ -127,21 +127,19 @@ public abstract class BaseTeasyElement implements TeasyElement, Locatable {
             } catch (StaleElementReferenceException e) {
                 clickForStaleElement();
             } catch (UnhandledAlertException ignored) {
-                new Report("*****UnhandledAlertException***** during click! Doing nothing just trying to continue the test. Locator=" + locator
-                        .getLocator()).jenkins();
+                new Report("*****UnhandledAlertException***** during click! Doing nothing just trying to continue the test. Locator=" + locator.getBy()).jenkins();
             } catch (UnreachableBrowserException ignored) {
                 //doing this because for FireFox for some reason browser becomes unresponsive after click
                 //but actually it is alive so it worth to try to continue test
                 //it will fail on the next method after click if some real error happened
-                new Report("*****ERROR*****UnreachableBrowserException***** during click! Doing nothing just trying to continue the test. Locator=" + locator
-                        .getLocator()).jenkins();
+                new Report("*****ERROR*****UnreachableBrowserException***** during click! Doing nothing just trying to continue the test. Locator=" + locator.getBy()).jenkins();
             } catch (ElementNotVisibleException needToScroll) {
                 clickForNeedToScroll();
             } catch (WebDriverException ignoredOrNeedToScroll) {
                 clickForIgnoredScroll(ignoredOrNeedToScroll);
             }
         } catch (Exception e) {
-            new Report("*****UNKNOWN ERROR*****Exception***** DURING CLICK LOGIC. SHOULD BE REFACTORED!!!! Locator=" + locator.getLocator(), e).jenkins();
+            new Report("*****UNKNOWN ERROR*****Exception***** DURING CLICK LOGIC. SHOULD BE REFACTORED!!!! Locator=" + locator.getBy(), e).jenkins();
         }
     }
 
@@ -151,7 +149,7 @@ public abstract class BaseTeasyElement implements TeasyElement, Locatable {
     }
 
     private void clickForNeedToScroll() {
-        new Report("ElementNotVisibleException***** during click! Scrolling to element and trying again ---Locator=" + locator.getLocator()).jenkins();
+        new Report("ElementNotVisibleException***** during click! Scrolling to element and trying again ---Locator=" + locator.getBy()).jenkins();
         increment();
         scrollIntoView(wrappedElement);
         scrollToElementLocation(wrappedElement);
@@ -159,13 +157,12 @@ public abstract class BaseTeasyElement implements TeasyElement, Locatable {
     }
 
     private void clickForIgnoredScroll(WebDriverException ignoredOrNeedToScroll) {
-        new Report("*****WebDriverException***** during click!-----Locator=" + locator.getLocator()).jenkins();
+        new Report("*****WebDriverException***** during click!-----Locator=" + locator.getBy()).jenkins();
         increment();
         //For Android error text is different and does not have any information related to clickable issue
         String ignoredOrNeedToScrollMessage = ignoredOrNeedToScroll.getMessage();
         if (ignoredOrNeedToScrollMessage.contains("is not clickable at point")) {
-            new Report("*****Element is not clickable at point***** during click! Scrolling to element and trying again. ---Locator=" + locator
-                    .getLocator()).jenkins();
+            new Report("*****Element is not clickable at point***** during click! Scrolling to element and trying again. ---Locator=" + locator.getBy()).jenkins();
 
             //This was added to fix cases when scrolling does not affect (in chrome when element is half hidden)
             //There is a chance that maximising will solve the case
@@ -378,7 +375,7 @@ public abstract class BaseTeasyElement implements TeasyElement, Locatable {
 
     @Override
     public String toString() {
-        return locator.getLocator().toString();
+        return locator.getBy().toString();
     }
 
     private void againLocate() {
@@ -389,8 +386,7 @@ public abstract class BaseTeasyElement implements TeasyElement, Locatable {
 
     private void increment() {
         if (repeatLocateElementCounter > MAX_NUMBER_OF_REPEAT_LOCATE_ELEMENT) {
-            fail("Cannot interact properly with element with locator '" + locator.getLocator() + "'"
-                    + (!wrappedElement.isDisplayed() ? "Element was not displayed!" : ""));
+            fail("Cannot interact properly with element with locator '" + locator.getBy() + "'" + (!wrappedElement.isDisplayed() ? "Element was not displayed!" : ""));
         } else {
             repeatLocateElementCounter++;
         }
@@ -476,5 +472,4 @@ public abstract class BaseTeasyElement implements TeasyElement, Locatable {
     private FramesTransparentWebDriver getFrameTransparentDriver() {
         return (FramesTransparentWebDriver) getWebDriver();
     }
-
 }

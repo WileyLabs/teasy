@@ -9,6 +9,8 @@ import org.openqa.selenium.internal.Locatable;
 
 import java.util.List;
 
+import static com.wiley.autotest.selenium.SeleniumHolder.getWebDriver;
+
 
 /**
  * Represents element that is absent (not found)
@@ -16,9 +18,11 @@ import java.util.List;
 public class NullTeasyElement implements TeasyElement, Locatable {
 
     private TeasyElementData elementData;
+    private Locator locator;
 
     public NullTeasyElement(TeasyElementData elementData) {
         this.elementData = elementData;
+        this.locator = new ElementLocatorFactory(elementData, getWebDriver()).getLocator();
     }
 
     @Override
@@ -138,7 +142,7 @@ public class NullTeasyElement implements TeasyElement, Locatable {
 
     @Override
     public Locator getLocator() {
-        throw noSuchElementException();
+        return locator;
     }
 
     @Override

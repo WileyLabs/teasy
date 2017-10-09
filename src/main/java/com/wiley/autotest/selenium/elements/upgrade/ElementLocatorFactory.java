@@ -33,7 +33,7 @@ public class ElementLocatorFactory {
         } else {
             //parent element (locator is null - as a sign that we should take parent)
             TeasyElement ourWebElement = (TeasyElement) element;
-            return new FindParentElementLocator(driver, ourWebElement.getLocator().getLocator());
+            return new FindParentElementLocator(driver, ourWebElement.getLocator().getBy());
         }
     }
 }
