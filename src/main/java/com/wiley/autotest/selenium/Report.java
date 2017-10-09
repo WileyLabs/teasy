@@ -18,8 +18,8 @@ public class Report {
         this.message = message;
     }
 
-    public Report(String message, Exception e) {
-        this(message + "\n" + ExceptionUtils.getStackTrace(e));
+    public Report(String message, Throwable t) {
+        this(message + "\n" + ExceptionUtils.getStackTrace(t));
     }
 
     public void testNG() {

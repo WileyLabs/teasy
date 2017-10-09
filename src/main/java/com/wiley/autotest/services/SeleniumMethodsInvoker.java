@@ -2,10 +2,7 @@ package com.wiley.autotest.services;
 
 import com.wiley.autotest.annotations.*;
 import com.wiley.autotest.screenshots.Screenshoter;
-import com.wiley.autotest.selenium.AbstractSeleniumTest;
-import com.wiley.autotest.selenium.AbstractTest;
-import com.wiley.autotest.selenium.Group;
-import com.wiley.autotest.selenium.SeleniumHolder;
+import com.wiley.autotest.selenium.*;
 import com.wiley.autotest.utils.DriverUtils;
 import org.openqa.selenium.WebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -122,7 +119,7 @@ public class SeleniumMethodsInvoker extends MethodsInvoker {
             if (method.getAnnotation(RetryPrecondition.class) != null) {
                 retryCount.set(retryCount.get() + 1);
                 if (method.getAnnotation(RetryPrecondition.class).retryCount() >= retryCount.get()) {
-                    LOGGER.error("*****ERROR***** Method '" + method.getDeclaringClass().getSimpleName() + "." + method.getName() + "' is failed. Retrying it. Current retryCount is " + retryCount.get());
+                    new Report("*****ERROR***** Method '" + method.getDeclaringClass().getSimpleName() + "." + method.getName() + "' is failed. Retrying it. Current retryCount is " + retryCount.get()).jenkins();
                     invokeMethod(instance, method, context, isBeforeAfterGroup);
                 }
             }
