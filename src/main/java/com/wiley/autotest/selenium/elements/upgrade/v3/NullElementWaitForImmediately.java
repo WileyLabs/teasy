@@ -59,7 +59,7 @@ public class NullElementWaitForImmediately implements ElementWaitFor {
     }
 
     private void throwException() {
-        throw new NoSuchElementException("Unable to find element with locator '" + element.getLocator().getLocator() + "'");
+        throw new NoSuchElementException("Unable to find element with locator '" + element.getLocator().getBy() + "'");
     }
 
     //We can log something here... or just keep it as empty(delete)

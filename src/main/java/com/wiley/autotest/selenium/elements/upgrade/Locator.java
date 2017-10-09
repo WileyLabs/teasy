@@ -9,5 +9,5 @@ import org.openqa.selenium.WebElement;
 public interface Locator {
     WebElement find();
 
-    By getLocator();
+    By getBy();
 }

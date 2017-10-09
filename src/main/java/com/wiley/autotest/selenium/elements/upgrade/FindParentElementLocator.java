@@ -21,7 +21,7 @@ public class FindParentElementLocator implements Locator {
     }
 
     @Override
-    public By getLocator() {
+    public By getBy() {
         return by;
     }
 }
