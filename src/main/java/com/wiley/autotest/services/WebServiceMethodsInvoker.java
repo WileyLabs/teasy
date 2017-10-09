@@ -3,6 +3,7 @@ package com.wiley.autotest.services;
 import com.wiley.autotest.annotations.RetryPrecondition;
 import com.wiley.autotest.selenium.AbstractTest;
 import com.wiley.autotest.selenium.AbstractWebServiceTest;
+import com.wiley.autotest.selenium.Report;
 import org.springframework.stereotype.Service;
 import org.testng.ITestContext;
 import org.testng.TestRunner;
@@ -58,7 +59,7 @@ public class WebServiceMethodsInvoker extends MethodsInvoker {
             if (method.getAnnotation(RetryPrecondition.class) != null) {
                 retryCount.set(retryCount.get() + 1);
                 if (method.getAnnotation(RetryPrecondition.class).retryCount() >= retryCount.get()) {
-                    LOGGER.error("*****ERROR***** Method '" + method.getDeclaringClass().getSimpleName() + "." + method.getName() + "' is failed. Retrying it. Current retryCount is " + retryCount.get());
+                    new Report("*****ERROR***** Method '" + method.getDeclaringClass().getSimpleName() + "." + method.getName() + "' is failed. Retrying it. Current retryCount is " + retryCount.get()).jenkins();
                     invokeMethod(instance, method, context, isBeforeAfterGroup);
                 }
             }
