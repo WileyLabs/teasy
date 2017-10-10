@@ -18,5 +18,6 @@ public interface Window {
 
     String getUrl();
 
+    void changeSize(int width, int height);
 
 }

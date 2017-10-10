@@ -5,10 +5,7 @@ import com.wiley.autotest.selenium.elements.upgrade.v3.TeasyFluentWait;
 import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.window.WindowMatcher;
 import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.PageLoaded;
 import io.appium.java_client.AppiumDriver;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.*;
 
 import java.util.Iterator;
 
@@ -64,5 +61,10 @@ public class TeasyWindow implements Window {
     @Override
     public String getUrl() {
         return driver.getCurrentUrl();
+    }
+
+    @Override
+    public void changeSize(int width, int height) {
+        driver.manage().window().setSize(new Dimension(width, height));
     }
 }
