@@ -2,20 +2,16 @@ package com.wiley.autotest.services;
 
 import com.wiley.autotest.selenium.AbstractTest;
 import com.wiley.autotest.selenium.AbstractWebServiceTest;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import com.wiley.autotest.selenium.Report;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.stereotype.Service;
 import org.testng.ITestContext;
 import org.testng.TestRunner;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import static java.lang.String.format;
-import static org.testng.Reporter.log;
 
 /**
  * User: dfedorov
@@ -30,7 +26,10 @@ public class WebServiceMethodsInvoker extends MethodsInvoker {
     }
 
     public <T extends Annotation> void invokeGroupMethodsByAnnotation(final Class<T> annotationClass, final ITestContext testContext) {
-        final TestClassContext testClassContext = new TestClassContext(((TestRunner) testContext).getTest().getXmlClasses().get(0).getSupportClass(), null, annotationClass, testContext);
+        final TestClassContext testClassContext = new TestClassContext(((TestRunner) testContext).getTest()
+                .getXmlClasses()
+                .get(0)
+                .getSupportClass(), null, annotationClass, testContext);
         invokeMethodsByAnnotation(testClassContext, true);
     }
 
@@ -52,7 +51,7 @@ public class WebServiceMethodsInvoker extends MethodsInvoker {
                 abstractWebServiceTest.setPostponedTestFail(errorMessage);
             }
 
-            log(errorMessage);
+            new Report(errorMessage).allure();
         }
     }
 }

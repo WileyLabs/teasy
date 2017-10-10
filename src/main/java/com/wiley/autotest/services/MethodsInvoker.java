@@ -5,9 +5,8 @@ import com.wiley.autotest.annotations.OurAfterSuite;
 import com.wiley.autotest.annotations.OurBeforeGroups;
 import com.wiley.autotest.annotations.OurBeforeSuite;
 import com.wiley.autotest.selenium.AbstractTest;
+import com.wiley.autotest.selenium.Report;
 import org.apache.commons.lang.ArrayUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
@@ -29,9 +28,6 @@ import static org.apache.commons.lang.ArrayUtils.isEmpty;
 
 @Service
 public abstract class MethodsInvoker {
-
-    protected static final Logger LOGGER = LoggerFactory.getLogger(MethodsInvoker.class);
-    private static final String UNABLE_TO_CREATE_TEST_CLASS_INSTANCE = "Unable to create test class instance. ";
 
     abstract void invokeMethod(final AbstractTest instance, final Method method, TestClassContext context, boolean isBeforeAfterGroup);
 
@@ -85,16 +81,16 @@ public abstract class MethodsInvoker {
         } catch (StopTestExecutionException e) {
             if (e.getCause() instanceof InvocationTargetException) {
                 Throwable targetException = ((InvocationTargetException) e.getCause()).getTargetException();
-                LOGGER.error("*****StopTestExecutionException*****" + context.getTestClass() + " " + targetException.getCause());
+                new Report("*****StopTestExecutionException*****" + context.getTestClass() + " " + targetException.getCause(), e).jenkins();
             } else {
-                LOGGER.error("*****StopTestExecutionException*****" + context.getTestClass() + " " + e.getCause());
+                new Report("*****StopTestExecutionException*****" + context.getTestClass() + " " + e.getCause(), e).jenkins();
             }
             try {
                 context.getTestInstance().setStopTextExecutionThrowable(e);
             } catch (NullPointerException ignored) {
             }
         } catch (Throwable t) {
-            LOGGER.error("*****THROWABLE*****" + context.getTestClass() + " " + t.getCause());
+            new Report("*****Throwable*****" + context.getTestClass(), t).jenkins();
         }
     }
 
@@ -185,16 +181,13 @@ public abstract class MethodsInvoker {
                 configurationLocationsList.addAll(Arrays.asList(testContextConfigurationLocations));
             }
 
-            final String[] locations = configurationLocationsList.stream().toArray(String[]::new);
-
+            final String[] locations = configurationLocationsList.toArray(new String[0]);
             final ApplicationContext applicationContext = new ClassPathXmlApplicationContext(locations);
-
             final T instance = applicationContext.getAutowireCapableBeanFactory().createBean(testClass);
-            final TestContextManager testContextManager = new TestContextManager(testClass);
-            testContextManager.prepareTestInstance(instance);
+            new TestContextManager(testClass).prepareTestInstance(instance);
             return instance;
         } catch (Exception e) {
-            LOGGER.error(UNABLE_TO_CREATE_TEST_CLASS_INSTANCE, e);
+            new Report("Unable to create test class instance.", e).jenkins();
         }
 
         return null;

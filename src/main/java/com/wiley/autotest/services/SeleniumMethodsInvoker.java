@@ -1,11 +1,8 @@
 package com.wiley.autotest.services;
 
 import com.wiley.autotest.screenshots.Screenshoter;
-import com.wiley.autotest.selenium.AbstractSeleniumTest;
-import com.wiley.autotest.selenium.AbstractTest;
-import com.wiley.autotest.selenium.Group;
-import com.wiley.autotest.selenium.SeleniumHolder;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import com.wiley.autotest.selenium.*;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.openqa.selenium.WebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,7 +14,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 import static java.lang.String.format;
-import static org.testng.Reporter.log;
 
 /**
  * User: dfedorov
@@ -89,8 +85,7 @@ public class SeleniumMethodsInvoker extends MethodsInvoker {
                 abstractSeleniumTest.setPostponedTestFail(errorMessage);
             }
 
-            log(errorMessage);
-
+            new Report(errorMessage).allure();
             throw new StopTestExecutionException(errorMessage, e);
         } finally {
             SeleniumHolder.setDriverName(mainDriverName);
