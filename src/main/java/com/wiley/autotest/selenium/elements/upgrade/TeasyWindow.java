@@ -67,4 +67,14 @@ public class TeasyWindow implements Window {
     public void changeSize(int width, int height) {
         driver.manage().window().setSize(new Dimension(width, height));
     }
+
+    @Override
+    public String getTitle() {
+        return driver.getTitle();
+    }
+
+    @Override
+    public void maximize() {
+        driver.manage().window().maximize();
+    }
 }

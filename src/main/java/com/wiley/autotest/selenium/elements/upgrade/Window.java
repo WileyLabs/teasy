@@ -20,4 +20,8 @@ public interface Window {
 
     void changeSize(int width, int height);
 
+    String getTitle();
+
+    void maximize();
+
 }
