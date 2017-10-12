@@ -95,14 +95,6 @@ public abstract class AbstractSeleniumTest extends AbstractTest implements ITest
     }
 
     @BeforeMethod(alwaysRun = true)
-    public void setBugId(final Method test) {
-        Bug bugAnnotation = test.getAnnotation(Bug.class);
-        if (bugAnnotation != null && bugAnnotation.id() != null && !bugAnnotation.id().isEmpty()) {
-            SeleniumHolder.setBugId(bugAnnotation.id());
-        }
-    }
-
-    @BeforeMethod(alwaysRun = true)
     public void doBeforeMethods(final Method test, final ITestContext context) {
         mainWindowHandle.set(getWebDriver().getWindowHandle());
         methodsInvoker.invokeMethodsByAnnotation(this, OurBeforeMethod.class);
@@ -124,7 +116,6 @@ public abstract class AbstractSeleniumTest extends AbstractTest implements ITest
     public void afterMethod() {
         getParameterProvider().clear();
         postponeFailureEvent.unsubscribeAll();
-        SeleniumHolder.setBugId(null);
     }
 
     @AfterMethod(alwaysRun = true)

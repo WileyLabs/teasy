@@ -15,7 +15,6 @@ public abstract class AbstractWebContainer extends TeasyElementProvider implemen
 
     private static final long WAIT_TIME_OUT_IN_SECONDS = 10;
 
-    @DoNotSearch
     private TeasyElement wrappedElement;
     private ErrorSender errorSender;
 

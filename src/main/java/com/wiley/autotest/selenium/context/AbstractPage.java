@@ -23,8 +23,6 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
  */
 public abstract class AbstractPage<P extends AbstractPage> extends AbstractPageElement<P> implements IPage {
 
-    private int count = 0;
-
     private final String path;
 
     public AbstractPage() {
@@ -47,24 +45,12 @@ public abstract class AbstractPage<P extends AbstractPage> extends AbstractPageE
      * If after this method test does not fail, it probably means that the bug was fixed
      * and this method call has to be removed as well as bug annotation and group from the test
      *
-     * @param bugId - id of a bug,
-     *              in case when there's no bug but system behavior is different from test case
-     *              ask for an approval of manual QA team; If they say "OK, keep it as is" use
-     *              EXPECTED_FAILURE_AGREED_WITH_MANUAL_QA constant as an ID.
-     * @return this page
+     * @param bugId - id of a bug
+     * @return current page
      */
     @Step
     public P bugInNextStepReportAlert(String bugId) {
         new Report("The next step will fail because of bug with id '" + bugId + "'!").allure();
-        return (P) this;
-    }
-
-    @Step
-    public P bugInNextStepReportAlert() {
-        String bugId = SeleniumHolder.getBugId();
-        if (bugId != null) {
-            new Report("The next step will fail because of bug with id '" + bugId + "'!").allure();
-        }
         return (P) this;
     }
 

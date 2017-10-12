@@ -1,9 +1,6 @@
 package com.wiley.autotest.selenium.context;
 
-import com.wiley.autotest.event.EventFilter;
-import com.wiley.autotest.event.Subscriber;
 import com.wiley.autotest.event.postpone.failure.PostponedFailureEvent;
-import com.wiley.autotest.event.postpone.failure.ScreenshotOnPostponeFailureSubscriber;
 import com.wiley.autotest.selenium.AllureStep2TestNG;
 import com.wiley.autotest.selenium.ParamsProvider;
 import com.wiley.autotest.selenium.Report;
@@ -11,7 +8,6 @@ import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.elements.CheckBox;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import com.wiley.autotest.selenium.elements.upgrade.Window;
-import com.wiley.autotest.selenium.extensions.internal.DefaultElementFactory;
 import com.wiley.autotest.spring.Settings;
 import com.wiley.autotest.utils.DriverUtils;
 import com.wiley.autotest.utils.TestUtils;
@@ -40,12 +36,6 @@ import java.util.List;
  */
 public abstract class AbstractPageElement<P extends AbstractPageElement> extends TeasyElementProvider implements IPageElement, ErrorSender {
 
-    public static final int TIMEOUT_TO_WAIT_FOR_WINDOW = 2;
-    public static final int TIMEOUT_TO_WAIT_FOR_ABSENCE_OF_ELEMENT = 2000;
-    //VE added this to avoid No buffer space available exception. To be replaced with default value of 500 if does not work.
-    private static final long SLEEP_IN_MILLISECONDS = 1000;
-    private static final String DIGITS_WITHIN_PARENTHESIS = "\\(\\d+";
-
     private WebDriver driver;
 
     @Autowired
@@ -66,8 +56,6 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
     @Autowired
     private Settings settings;
 
-    private DefaultElementFactory elementFactory;
-
     /**
      * Method is called by framework to complete navigation to the helper.
      * It is the best place to execute your wait-expressions to ensure that page has been completely loaded.
@@ -78,7 +66,6 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
     public final void init(WebDriver driver) {
         super.init(driver, timeout);
         this.driver = driver;
-        elementFactory = new DefaultElementFactory();
         init();
     }
 
@@ -114,7 +101,6 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
 
     protected final <E extends IPage> E navigateTo(final Class<E> target, final String url) {
         getDriver().get(url);
-        getDriver().manage().getCookies().forEach(cookie -> reportWithStep(cookie.toString()));
         return redirectTo(target);
     }
 
@@ -160,34 +146,6 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
     public void setPostponedTestFail(final String message) {
         postponeFailureEvent.fire(message);
     }
-
-    public void setPostponedTestFailWithoutScreenshot(final String message) {
-        postponeFailureEvent.fire(message, new EventFilter() {
-            @Override
-            public <MsgType> void fire(Subscriber<MsgType> each, MsgType message) {
-                if (!(each instanceof ScreenshotOnPostponeFailureSubscriber)) {
-                    each.notify(message);
-                }
-            }
-        });
-    }
-
-    public ErrorSender getErrorSender() {
-        return this;
-    }
-
-    protected void hoverOverElement(WebElement webElement) {
-        maximizeWindow();
-        Actions builder = new Actions(getDriver());
-        Actions hoverOverWebElement = builder.moveToElement(webElement);
-        hoverOverWebElement.perform();
-    }
-
-
-    public void scrollIntoView(TeasyElement element) {
-        ((JavascriptExecutor) getDriver()).executeScript("arguments[0].scrollIntoView(true);", element);
-    }
-
 
 // ============ ASSERTIONS ===========
 
@@ -403,7 +361,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
     //use element().should().beAbsent()
     @Deprecated
     protected void assertElementIsAbsent(By locator, String errorMessage) {
-        TestUtils.waitForSomeTime(TIMEOUT_TO_WAIT_FOR_ABSENCE_OF_ELEMENT, "Wait for absence element");
+        TestUtils.waitForSomeTime(2000, "Wait for absence element");
         WebElement element = findElementByNoThrow(locator);
         assertTrue(element == null || !element.isDisplayed(), errorMessage);
     }
@@ -428,7 +386,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
     //use element().should().beAbsent()
     @Deprecated
     protected void assertElementsAreAbsent(By locator, String errorMessage) {
-        TestUtils.waitForSomeTime(TIMEOUT_TO_WAIT_FOR_ABSENCE_OF_ELEMENT, "Wait for elements are absent");
+        TestUtils.waitForSomeTime(2000, "Wait for elements are absent");
         elementFinder.findElementsBy(locator)
                 .forEach(webElement -> assertFalse(webElement.isDisplayed(), errorMessage));
     }
@@ -559,13 +517,13 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
     @Deprecated
     //TODO: VE - will be removed from framework
     protected Alert waitForAlertPresence() {
-        return (new WebDriverWait(driver, timeout, SLEEP_IN_MILLISECONDS)).until(ExpectedConditions.alertIsPresent());
+        return (new WebDriverWait(driver, timeout, (long) 1000)).until(ExpectedConditions.alertIsPresent());
     }
 
     @Deprecated
     //TODO: VE - will be removed from framework
     protected Alert waitForAlertPresence(int timeoutForAlert) {
-        return (new WebDriverWait(driver, timeoutForAlert, SLEEP_IN_MILLISECONDS)).until(ExpectedConditions.alertIsPresent());
+        return (new WebDriverWait(driver, timeoutForAlert, (long) 1000)).until(ExpectedConditions.alertIsPresent());
     }
 
     @Deprecated
@@ -618,7 +576,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         final List<String> resultList = new ArrayList<String>();
         for (CheckBox checkBox : checkBoxList) {
             scrollIntoView(checkBox.getWrappedWebElement());
-            resultList.add(checkBox.getText().split(DIGITS_WITHIN_PARENTHESIS)[0].trim());
+            resultList.add(checkBox.getText().split("\\(\\d+")[0].trim());
         }
         return resultList;
     }
@@ -663,7 +621,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
     //TODO: VE - should be moved to utils
     protected boolean isWindowDisplayedByPartialUrl(String partialUrl) {
         try {
-            waitForWindowToBeAppearedByPartialUrlAndSwitchToIt(partialUrl, TIMEOUT_TO_WAIT_FOR_WINDOW);
+            waitForWindowToBeAppearedByPartialUrlAndSwitchToIt(partialUrl, 2);
             return true;
         } catch (WebDriverException e) {
             return false;
@@ -788,4 +746,20 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         Reporter.log(message);
         return (P) this;
     }
+
+    //will be deleted. implement in your project if you need it
+    @Deprecated
+    protected void hoverOverElement(WebElement webElement) {
+        maximizeWindow();
+        Actions builder = new Actions(getDriver());
+        Actions hoverOverWebElement = builder.moveToElement(webElement);
+        hoverOverWebElement.perform();
+    }
+
+    //will be deleted. implement in your project if you need it
+    @Deprecated
+    public void scrollIntoView(TeasyElement element) {
+        ((JavascriptExecutor) getDriver()).executeScript("arguments[0].scrollIntoView(true);", element);
+    }
+
 }
