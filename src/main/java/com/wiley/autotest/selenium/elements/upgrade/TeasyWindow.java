@@ -2,8 +2,8 @@ package com.wiley.autotest.selenium.elements.upgrade;
 
 import com.wiley.autotest.selenium.Report;
 import com.wiley.autotest.selenium.elements.upgrade.v3.TeasyFluentWait;
-import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.window.WindowMatcher;
 import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.PageLoaded;
+import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.window.WindowMatcher;
 import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TimeoutException;
@@ -64,5 +64,9 @@ public class TeasyWindow implements Window {
     @Override
     public String getUrl() {
         return driver.getCurrentUrl();
+    }
+
+    public void scrollTo(TeasyElement element) {
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
     }
 }
