@@ -584,7 +584,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
     }
 
     private WebDriver explorer(DesiredCapabilities customDesiredCapabilities) {
-        InternetExplorerDriverManager.getInstance().setup();
+        InternetExplorerDriverManager.getInstance().version("3.4.0").setup();
         DesiredCapabilities desiredCapabilities = getIEDesiredCapabilities();
         if (!customDesiredCapabilities.asMap().isEmpty()) {
             desiredCapabilities.merge(customDesiredCapabilities);
