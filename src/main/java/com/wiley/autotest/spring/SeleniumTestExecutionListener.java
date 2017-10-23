@@ -638,7 +638,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         return new PhantomJSDriver(desiredCapabilities);
     }
 
-    public DesiredCapabilities getCustomDesiredCapabilities(Configuration configuration) {
+    private DesiredCapabilities getCustomDesiredCapabilities(Configuration configuration) {
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
         if (configuration.getDesiredCapabilities() != null) {
             desiredCapabilities.merge(configuration.getDesiredCapabilities());
