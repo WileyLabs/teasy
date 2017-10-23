@@ -94,6 +94,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
     private static ThreadLocal<Boolean> isNeedToRestart = ThreadLocal.withInitial(() -> false);
     private static ThreadLocal<Boolean> isUseFireBug = ThreadLocal.withInitial(() -> false);
     private String[] activeProfiles;
+    private static final String STABLE_IE_DRIVER_VERSION = "3.4.0";
 
     /**
      * Checks whether browser is dead. Used to catch
@@ -584,7 +585,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
     }
 
     private WebDriver explorer(DesiredCapabilities customDesiredCapabilities) {
-        InternetExplorerDriverManager.getInstance().setup();
+        InternetExplorerDriverManager.getInstance().version(STABLE_IE_DRIVER_VERSION).setup();
         DesiredCapabilities desiredCapabilities = getIEDesiredCapabilities();
         if (!customDesiredCapabilities.asMap().isEmpty()) {
             desiredCapabilities.merge(customDesiredCapabilities);
@@ -593,7 +594,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
     }
 
     private WebDriver explorer(String version, DesiredCapabilities customDesiredCapabilities) {
-        InternetExplorerDriverManager.getInstance().setup();
+        InternetExplorerDriverManager.getInstance().version(STABLE_IE_DRIVER_VERSION).setup();
         DesiredCapabilities desiredCapabilities = getIEDesiredCapabilities(version);
         if (!customDesiredCapabilities.asMap().isEmpty()) {
             desiredCapabilities.merge(customDesiredCapabilities);

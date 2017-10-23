@@ -2,15 +2,15 @@ package com.wiley.autotest.selenium.elements.upgrade;
 
 import com.wiley.autotest.selenium.Report;
 import com.wiley.autotest.selenium.elements.upgrade.v3.TeasyFluentWait;
-import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.window.WindowMatcher;
 import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.PageLoaded;
+import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.window.WindowMatcher;
 import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.*;
 
 import java.util.Iterator;
 
 /**
- * Created by vefimov on 30/05/2017.
+ * Represents browser window
  */
 public class TeasyWindow implements Window {
 
@@ -76,5 +76,9 @@ public class TeasyWindow implements Window {
     @Override
     public void maximize() {
         driver.manage().window().maximize();
+    }
+
+    public void scrollTo(TeasyElement element) {
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
     }
 }
