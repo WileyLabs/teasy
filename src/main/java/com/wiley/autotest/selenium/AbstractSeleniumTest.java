@@ -16,6 +16,7 @@ import com.wiley.autotest.spring.SeleniumTestExecutionListener;
 import com.wiley.autotest.utils.JavaUtils;
 import com.wiley.autotest.utils.TestUtils;
 import net.lightbody.bmp.proxy.ProxyServer;
+import org.openqa.selenium.JavascriptExecutor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestExecutionListeners;
 import org.testng.IHookCallBack;
@@ -129,8 +130,10 @@ public abstract class AbstractSeleniumTest extends AbstractTest implements ITest
 
     @AfterMethod(alwaysRun = true)
     public void doAfterMethods() {
-        //TODO VE: sometimes cookies may be needed so it's worth to make it optional/configurable
+        //TODO VE: sometimes local data may be needed so it's worth to make it optional/configurable
         cookiesService.deleteAllCookies();
+        ((JavascriptExecutor)getWebDriver()).executeScript("window.localStorage.clear();");
+        ((JavascriptExecutor)getWebDriver()).executeScript("window.sessionStorage.clear();");
         methodsInvoker.invokeMethodsByAnnotation(this, OurAfterMethod.class);
     }
 
