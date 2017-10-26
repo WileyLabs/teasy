@@ -1,6 +1,6 @@
 package com.wiley.autotest.selenium.elements.upgrade.v3.conditions;
 
-import com.wiley.autotest.ExpectedConditions2;
+import com.wiley.autotest.TeasyExpectedConditions;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -22,11 +22,11 @@ public class FirstFoundInContext implements ElementCondition {
 
     @Override
     public Function<WebDriver, List<WebElement>> visibility(By locator) {
-        return ExpectedConditions2.visibilityOfFirstElements(context, locator);
+        return TeasyExpectedConditions.visibilityOfFirstElements(context, locator);
     }
 
     @Override
     public Function<WebDriver, List<WebElement>> presence(By locator) {
-        return ExpectedConditions2.presenceOfAllElementsLocatedBy(context, locator);
+        return TeasyExpectedConditions.presenceOfAllElementsLocatedBy(context, locator);
     }
 }

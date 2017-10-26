@@ -18,11 +18,14 @@ import java.util.stream.Collectors;
 
 import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 
-public final class ExpectedConditions2 {
+/**
+ * Library of custom expected conditions
+ */
+public final class TeasyExpectedConditions {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExpectedConditions2.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TeasyExpectedConditions.class);
 
-    private ExpectedConditions2() {
+    private TeasyExpectedConditions() {
     }
 
     public static ExpectedCondition<WebElement> presenceOfElementLocatedBy(final SearchContext searchContext, final By locator) {

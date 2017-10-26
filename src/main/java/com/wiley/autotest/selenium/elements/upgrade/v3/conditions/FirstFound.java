@@ -1,6 +1,6 @@
 package com.wiley.autotest.selenium.elements.upgrade.v3.conditions;
 
-import com.wiley.autotest.ExpectedConditions2;
+import com.wiley.autotest.TeasyExpectedConditions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -16,7 +16,7 @@ public class FirstFound implements ElementCondition {
 
     @Override
     public Function<WebDriver, List<WebElement>> visibility(By locator) {
-        return ExpectedConditions2.visibilityOfFirstElements(locator);
+        return TeasyExpectedConditions.visibilityOfFirstElements(locator);
     }
 
     @Override
