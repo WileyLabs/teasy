@@ -21,12 +21,22 @@ public class FirstFoundInAllFramesInContext implements ElementCondition {
     }
 
     @Override
-    public Function<WebDriver, List<WebElement>> visibility(By locator) {
+    public Function<WebDriver, List<WebElement>> visibilities(By locator) {
         return ExpectedConditions2.visibilityOfFirstElementsInAllFrames(context, locator);
     }
 
     @Override
-    public Function<WebDriver, List<WebElement>> presence(By locator) {
+    public Function<WebDriver, WebElement> visibility(By locator) {
+        return ExpectedConditions2.visibilityOfFirstElementInAllFrames(context, locator);
+    }
+
+    @Override
+    public Function<WebDriver, List<WebElement>> presences(By locator) {
         return ExpectedConditions2.presenceOfAllElementsInAllFrames(context, locator);
+    }
+
+    @Override
+    public Function<WebDriver, WebElement> presence(By locator) {
+        return ExpectedConditions2.presenceOfElementInAllFrames(context, locator);
     }
 }

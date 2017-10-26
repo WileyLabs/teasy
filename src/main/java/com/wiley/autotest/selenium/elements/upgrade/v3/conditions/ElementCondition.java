@@ -12,8 +12,12 @@ import java.util.function.Function;
  */
 public interface ElementCondition {
 
-    Function<WebDriver, List<WebElement>> visibility(By locator);
+    Function<WebDriver, List<WebElement>> visibilities(By locator);
 
-    Function<WebDriver, List<WebElement>> presence(By locator);
+    Function<WebDriver, WebElement> visibility(By locator);
+
+    Function<WebDriver, List<WebElement>> presences(By locator);
+
+    Function<WebDriver, WebElement> presence(By locator);
 
 }

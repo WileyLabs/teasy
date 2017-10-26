@@ -19,7 +19,6 @@ import static com.wiley.autotest.selenium.elements.upgrade.TeasyElementType.VISI
 import static com.wiley.autotest.selenium.elements.upgrade.TeasyElementWrapper.wrap;
 import static com.wiley.autotest.selenium.elements.upgrade.TeasyElementWrapper.wrapList;
 
-
 /**
  * Finds different kinds of elements for example
  * visible, present in dom, alerts etc.
@@ -52,7 +51,7 @@ public class TeasyElementFinder {
      * note: Will return empty list in case no visible elements found
      */
     public List<TeasyElement> visibleElements(By locator) {
-        return getElements(locator, conditionFactory.get().visibility(locator), VISIBLE);
+        return getElements(locator, conditionFactory.get().visibilities(locator), VISIBLE);
     }
 
     public TeasyElement presentInDomElement(By locator) {
@@ -63,14 +62,13 @@ public class TeasyElementFinder {
      * note: Will return empty list in case no elements found in DOM
      */
     public List<TeasyElement> presentInDomElements(By locator) {
-        return getElements(locator, conditionFactory.get().presence(locator), DOM);
+        return getElements(locator, conditionFactory.get().presences(locator), DOM);
     }
 
     //this is not "Teasy" alert yet, so should probably become "Teasy"
     public Alert alert() {
         return fluentWait.waitFor(ExpectedConditions.alertIsPresent());
     }
-
 
     private <T extends TeasyElement> List<T> getElements(By locator, Function<WebDriver, List<WebElement>> condition, TeasyElementType type) {
         List<WebElement> webElements;
@@ -89,14 +87,14 @@ public class TeasyElementFinder {
         }
     }
 
-    private TeasyElement getElement(By locator, Function<WebDriver, List<WebElement>> condition, TeasyElementType type) {
-        List<WebElement> webElements;
+    private TeasyElement getElement(By locator, Function<WebDriver, WebElement> condition, TeasyElementType type) {
+        WebElement webElement;
         try {
-            webElements = fluentWait.waitFor(condition);
+            webElement = fluentWait.waitFor(condition);
         } catch (AssertionError ignoredToReturnEmptyList) {
-            webElements = new ArrayList<>();
+            webElement = null;
         }
-        if (webElements == null || webElements.isEmpty()) {
+        if (webElement == null) {
 
             //this is needed to return null when the user explicitly set to receive null in case of failure
             if (strategy.isNullOnFailure()) {
@@ -110,9 +108,9 @@ public class TeasyElementFinder {
             }
         }
         if (context == null) {
-            return wrap(webElements.get(0), locator, type);
+            return wrap(webElement, locator, type);
         } else {
-            return wrap(context, webElements.get(0), locator, type);
+            return wrap(context, webElement, locator, type);
         }
     }
 }

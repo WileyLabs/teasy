@@ -1,11 +1,6 @@
 package com.wiley.autotest.framework.pages;
 
 import com.wiley.autotest.selenium.context.AbstractPage;
-import com.wiley.autotest.selenium.context.SearchStrategy;
-import com.wiley.autotest.selenium.elements.upgrade.DomTeasyElement;
-import com.wiley.autotest.selenium.elements.upgrade.NullTeasyElement;
-import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
-import com.wiley.autotest.selenium.elements.upgrade.VisibleTeasyElement;
 import org.openqa.selenium.By;
 import org.springframework.stereotype.Component;
 
@@ -44,7 +39,7 @@ public class TestDomElementPage extends AbstractPage {
         return this;
     }
 
-    public TestDomElementPage checkDomElemetsReturnAll(){
+    public TestDomElementPage checkDomElementsReturnAll() {
         assertTrue(domElements(By.tagName("li")).size() == 5);
         return this;
     }

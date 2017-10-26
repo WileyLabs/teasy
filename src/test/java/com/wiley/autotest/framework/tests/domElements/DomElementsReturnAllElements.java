@@ -16,6 +16,6 @@ public class DomElementsReturnAllElements extends BaseTest {
     @Test
     public void test() {
         openPage("mainTestElement.html");
-        testDomElementPage.checkDomElemetsReturnAll();
+        testDomElementPage.checkDomElementsReturnAll();
     }
 }
