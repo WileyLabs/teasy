@@ -132,8 +132,11 @@ public abstract class AbstractSeleniumTest extends AbstractTest implements ITest
     public void doAfterMethods() {
         //TODO VE: sometimes local data may be needed so it's worth to make it optional/configurable
         cookiesService.deleteAllCookies();
-        ((JavascriptExecutor)getWebDriver()).executeScript("window.localStorage.clear();");
-        ((JavascriptExecutor)getWebDriver()).executeScript("window.sessionStorage.clear();");
+        try {
+            ((JavascriptExecutor) getWebDriver()).executeScript("window.localStorage.clear();");
+            ((JavascriptExecutor) getWebDriver()).executeScript("window.sessionStorage.clear();");
+        } catch (Exception ignored) {
+        }
         methodsInvoker.invokeMethodsByAnnotation(this, OurAfterMethod.class);
     }
 
