@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
@@ -59,11 +60,18 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
     @Override
     public WebElement findElement(final By by) {
         try {
-            List<WebElement> found = newArrayList(transform(driverFindElements(by), toFrameAwareWebElements));
-            if (found.isEmpty()) {
-                switchToDefaultContext();
-                currentFramesPath.clear();
-                found = findFirstElements(by);
+            List<WebElement> found;
+
+            WebElement element = driverFindElement(by);
+            if (element != null) {
+                found = newArrayList(transform(Collections.singletonList(element), toFrameAwareWebElements));
+            } else {
+                found = newArrayList(transform(driverFindElements(by), toFrameAwareWebElements));
+                if (found.isEmpty()) {
+                    switchToDefaultContext();
+                    currentFramesPath.clear();
+                    found = findFirstElements(by);
+                }
             }
             return found.get(0);
         } catch (IndexOutOfBoundsException e) {
@@ -251,6 +259,7 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
      * Quite hacky workaround to make sure element is not stale before searching inside it
      * we call getText() method which takes care of StaleElementReferenceException and calls
      * for againLocate() method inside TeasyElement.
+     *
      * @param element - TeasyElement which might be stale.
      */
     private void avoidStaleness(TeasyElement element) {
@@ -281,12 +290,26 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
             } catch (Exception e1) {
                 return new ArrayList<>();
             }
-        } catch (WebDriverException e) {
-            //this exception can be thrown if current frame is already detached.
-            return new ArrayList<>();
         } catch (Exception e) {
             //In some cases IE driver can throw InvalidSelectorException or NullPointerException
             return new ArrayList<>();
+        }
+    }
+
+    private WebElement driverFindElement(By by) {
+        try {
+            return getDriver().findElement(by);
+        } catch (NoSuchWindowException e) {
+            //chrome driver throws this exception if current window is closed
+            try {
+                switchToMainWindow();
+                return getDriver().findElement(by);
+            } catch (Exception e1) {
+                return null;
+            }
+        } catch (Exception e) {
+            //In some cases IE driver can throw InvalidSelectorException or NullPointerException
+            return null;
         }
     }
 
