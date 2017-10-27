@@ -42,6 +42,20 @@ public final class TeasyExpectedConditions {
         };
     }
 
+    public static ExpectedCondition<WebElement> presenceOfElementLocatedBy(final By locator) {
+        return new ExpectedCondition<WebElement>() {
+            @Override
+            public WebElement apply(final WebDriver driver) {
+                return driver.findElement(locator);
+            }
+
+            @Override
+            public String toString() {
+                return String.format("presence of element located by %s", locator);
+            }
+        };
+    }
+
     public static ExpectedCondition<List<WebElement>> presenceOfAllElementsLocatedBy(final TeasyElement searchContext, final By locator) {
         return new ExpectedCondition<List<WebElement>>() {
             @Override
@@ -109,6 +123,22 @@ public final class TeasyExpectedConditions {
                 FramesTransparentWebDriver framesTransparentWebDriver = (FramesTransparentWebDriver) driver;
                 List<WebElement> elementsInFrames = framesTransparentWebDriver.findAllElementsInFrames(locator);
                 return elementsInFrames.isEmpty() ? null : elementsInFrames;
+            }
+
+            @Override
+            public String toString() {
+                return String.format("presence of all elements located by %s -> %s in all frames", context, locator);
+            }
+        };
+    }
+
+    public static ExpectedCondition<WebElement> presenceOfElementInAllFrames(TeasyElement context, final By locator) {
+        return new ExpectedCondition<WebElement>() {
+            @Override
+            public WebElement apply(final WebDriver driver) {
+                FramesTransparentWebDriver framesTransparentWebDriver = (FramesTransparentWebDriver) driver;
+                List<WebElement> elementsInFrames = framesTransparentWebDriver.findAllElementsInFrames(locator);
+                return elementsInFrames.isEmpty() ? null : elementsInFrames.get(0);
             }
 
             @Override
@@ -220,6 +250,21 @@ public final class TeasyExpectedConditions {
         };
     }
 
+    public static ExpectedCondition<WebElement> visibilityOfFirstElementInAllFrames(final TeasyElement searchContext, final By locator) {
+        return new ExpectedCondition<WebElement>() {
+            @Override
+            public WebElement apply(final WebDriver driver) {
+                List<WebElement> visibleElements = getFirstVisibleWebElements(driver, searchContext, locator);
+                return isNotEmpty(visibleElements) ? visibleElements.get(0) : null;
+            }
+
+            @Override
+            public String toString() {
+                return String.format("visibility of element located by %s -> %s in all frames", searchContext, locator);
+            }
+        };
+    }
+
     private static List<WebElement> getFirstVisibleWebElements(WebDriver driver, TeasyElement searchContext, By locator) {
         List<WebElement> elements;
         if (searchContext == null) {
@@ -253,11 +298,12 @@ public final class TeasyExpectedConditions {
     /**
      * Defines whether it's possible to work with element
      * i.e. is displayed or located under scroll.
+     *
      * @param element - our element
      * @return - true if element is available for the user.
      */
     private static boolean isAvailable(WebElement element) {
-        return element.isDisplayed()  || isElementHiddenUnderScroll(element)
+        return element.isDisplayed() || isElementHiddenUnderScroll(element)
                 && !element.getCssValue("visibility").equals("hidden");
     }
 
@@ -265,12 +311,7 @@ public final class TeasyExpectedConditions {
         return new ExpectedCondition<WebElement>() {
             @Override
             public WebElement apply(final WebDriver driver) {
-                try {
-                    final WebElement foundElement = driver.findElement(locator);
-                    return (isAvailable(foundElement)) ? foundElement : null;
-                } catch (Exception e) {
-                    return null;
-                }
+                return getFirstVisibleWebElement(driver, locator);
             }
 
             @Override
@@ -278,6 +319,39 @@ public final class TeasyExpectedConditions {
                 return String.format("visibility of element located by %s", locator);
             }
         };
+    }
+
+    public static ExpectedCondition<WebElement> visibilityOfElementLocatedBy(final TeasyElement searchContext, By locator) {
+        return new ExpectedCondition<WebElement>() {
+            @Override
+            public WebElement apply(final WebDriver driver) {
+                return getFirstVisibleWebElement(searchContext, locator);
+            }
+
+            @Override
+            public String toString() {
+                return String.format("visibility of element located by %s -> %s", searchContext, locator);
+            }
+        };
+    }
+
+    private static WebElement getFirstVisibleWebElement(SearchContext searchContext, By locator) {
+        try {
+            final WebElement foundElement = searchContext.findElement(locator);
+            if (isAvailable(foundElement)) {
+                return foundElement;
+            } else {
+                List<WebElement> elements = searchContext.findElements(locator);
+                for (WebElement element : elements) {
+                    if (isAvailable(element)) {
+                        return element;
+                    }
+                }
+                return null;
+            }
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     /**
