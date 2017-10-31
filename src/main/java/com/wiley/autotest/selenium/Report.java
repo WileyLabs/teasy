@@ -1,6 +1,6 @@
 package com.wiley.autotest.selenium;
 
-import org.codehaus.plexus.util.ExceptionUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.LoggerFactory;
 import org.testng.Reporter;
 import ru.yandex.qatools.allure.annotations.Step;

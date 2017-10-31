@@ -26,21 +26,13 @@ import java.util.stream.Collectors;
 import static org.apache.commons.lang.ArrayUtils.contains;
 import static org.apache.commons.lang.ArrayUtils.isEmpty;
 
-/**
- * User: dfedorov
- * Date: 7/26/12
- * Time: 9:32 AM
- */
 @Service
 public abstract class MethodsInvoker {
-
-    private static final String UNABLE_TO_CREATE_TEST_CLASS_INSTANCE = "Unable to create test class instance. ";
-    protected static ThreadLocal<Integer> retryCount = ThreadLocal.withInitial(() -> 0);
 
     abstract void invokeMethod(final AbstractTest instance, final Method method, TestClassContext context, boolean isBeforeAfterGroup);
 
     /**
-     * Called when using all project-specific annotations (E4BeforeGroups, E4AfterMethod, etc.)
+     * Called when using all project-specific annotations (OurBeforeGroups, OurAfterMethod, etc.)
      * We decided to catch all kind of exceptions here because
      * based on (https://groups.google.com/forum/#!topic/testng-users/0JhqmewMezM) we think that tests get skipped
      * in case of failure in any before/after method
@@ -189,16 +181,13 @@ public abstract class MethodsInvoker {
                 configurationLocationsList.addAll(Arrays.asList(testContextConfigurationLocations));
             }
 
-            final String[] locations = configurationLocationsList.stream().toArray(String[]::new);
-
+            final String[] locations = configurationLocationsList.toArray(new String[0]);
             final ApplicationContext applicationContext = new ClassPathXmlApplicationContext(locations);
-
             final T instance = applicationContext.getAutowireCapableBeanFactory().createBean(testClass);
-            final TestContextManager testContextManager = new TestContextManager(testClass);
-            testContextManager.prepareTestInstance(instance);
+            new TestContextManager(testClass).prepareTestInstance(instance);
             return instance;
         } catch (Exception e) {
-            new Report(UNABLE_TO_CREATE_TEST_CLASS_INSTANCE, e).jenkins();
+            new Report("Unable to create test class instance.", e).jenkins();
         }
 
         return null;

@@ -5,15 +5,12 @@ import com.wiley.autotest.selenium.elements.upgrade.v3.TeasyFluentWait;
 import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.PageLoaded;
 import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.window.WindowMatcher;
 import io.appium.java_client.AppiumDriver;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.*;
 
 import java.util.Iterator;
 
 /**
- * Created by vefimov on 30/05/2017.
+ * Represents browser window
  */
 public class TeasyWindow implements Window {
 
@@ -64,6 +61,21 @@ public class TeasyWindow implements Window {
     @Override
     public String getUrl() {
         return driver.getCurrentUrl();
+    }
+
+    @Override
+    public void changeSize(int width, int height) {
+        driver.manage().window().setSize(new Dimension(width, height));
+    }
+
+    @Override
+    public String getTitle() {
+        return driver.getTitle();
+    }
+
+    @Override
+    public void maximize() {
+        driver.manage().window().maximize();
     }
 
     public void scrollTo(TeasyElement element) {

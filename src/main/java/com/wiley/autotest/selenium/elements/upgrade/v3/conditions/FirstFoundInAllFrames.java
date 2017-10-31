@@ -1,6 +1,6 @@
 package com.wiley.autotest.selenium.elements.upgrade.v3.conditions;
 
-import com.wiley.autotest.ExpectedConditions2;
+import com.wiley.autotest.TeasyExpectedConditions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -16,21 +16,21 @@ public class FirstFoundInAllFrames implements ElementCondition {
 
     @Override
     public Function<WebDriver, List<WebElement>> visibilities(By locator) {
-        return ExpectedConditions2.visibilityOfFirstElementsInAllFrames(locator);
+        return TeasyExpectedConditions.visibilityOfFirstElementsInAllFrames(locator);
     }
 
     @Override
     public Function<WebDriver, WebElement> visibility(By locator) {
-        return ExpectedConditions2.visibilityOfElementLocatedBy(locator);
+        return TeasyExpectedConditions.visibilityOfElementLocatedBy(locator);
     }
 
     @Override
     public Function<WebDriver, List<WebElement>> presences(By locator) {
-        return ExpectedConditions2.presenceOfAllElementsInAllFrames(locator);
+        return TeasyExpectedConditions.presenceOfAllElementsInAllFrames(locator);
     }
 
     @Override
     public Function<WebDriver, WebElement> presence(By locator) {
-        return ExpectedConditions2.presenceOfElementLocatedBy(locator);
+        return TeasyExpectedConditions.presenceOfElementLocatedBy(locator);
     }
 }

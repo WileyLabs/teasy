@@ -1,16 +1,13 @@
 package com.wiley.autotest.selenium.context;
 
-import com.wiley.autotest.event.EventFilter;
-import com.wiley.autotest.event.Subscriber;
 import com.wiley.autotest.event.postpone.failure.PostponedFailureEvent;
-import com.wiley.autotest.event.postpone.failure.ScreenshotOnPostponeFailureSubscriber;
 import com.wiley.autotest.selenium.AllureStep2TestNG;
 import com.wiley.autotest.selenium.ParamsProvider;
 import com.wiley.autotest.selenium.Report;
+import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.elements.CheckBox;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import com.wiley.autotest.selenium.elements.upgrade.Window;
-import com.wiley.autotest.selenium.extensions.internal.DefaultElementFactory;
 import com.wiley.autotest.spring.Settings;
 import com.wiley.autotest.utils.DriverUtils;
 import com.wiley.autotest.utils.TestUtils;
@@ -39,12 +36,6 @@ import java.util.List;
  */
 public abstract class AbstractPageElement<P extends AbstractPageElement> extends TeasyElementProvider implements IPageElement, ErrorSender {
 
-    public static final int TIMEOUT_TO_WAIT_FOR_WINDOW = 2;
-    public static final int TIMEOUT_TO_WAIT_FOR_ABSENCE_OF_ELEMENT = 2000;
-    //VE added this to avoid No buffer space available exception. To be replaced with default value of 500 if does not work.
-    private static final long SLEEP_IN_MILLISECONDS = 1000;
-    private static final String DIGITS_WITHIN_PARENTHESIS = "\\(\\d+";
-
     private WebDriver driver;
 
     @Autowired
@@ -65,12 +56,6 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
     @Autowired
     private Settings settings;
 
-    private DefaultElementFactory elementFactory;
-
-    protected WebDriver getDriver() {
-        return driver;
-    }
-
     /**
      * Method is called by framework to complete navigation to the helper.
      * It is the best place to execute your wait-expressions to ensure that page has been completely loaded.
@@ -81,7 +66,6 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
     public final void init(WebDriver driver) {
         super.init(driver, timeout);
         this.driver = driver;
-        elementFactory = new DefaultElementFactory();
         init();
     }
 
@@ -117,7 +101,6 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
 
     protected final <E extends IPage> E navigateTo(final Class<E> target, final String url) {
         getDriver().get(url);
-        getDriver().manage().getCookies().forEach(cookie -> reportWithStep(cookie.toString()));
         return redirectTo(target);
     }
 
@@ -163,85 +146,6 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
     public void setPostponedTestFail(final String message) {
         postponeFailureEvent.fire(message);
     }
-
-    public void setPostponedTestFailWithoutScreenshot(final String message) {
-        postponeFailureEvent.fire(message, new EventFilter() {
-            @Override
-            public <MsgType> void fire(Subscriber<MsgType> each, MsgType message) {
-                if (!(each instanceof ScreenshotOnPostponeFailureSubscriber)) {
-                    each.notify(message);
-                }
-            }
-        });
-    }
-
-    public ErrorSender getErrorSender() {
-        return this;
-    }
-
-    protected void hoverOverElement(WebElement webElement) {
-        maximizeWindow();
-        Actions builder = new Actions(getDriver());
-        Actions hoverOverWebElement = builder.moveToElement(webElement);
-        hoverOverWebElement.perform();
-    }
-
-    public void maximizeWindow() {
-        try {
-            getDriver().manage().window().maximize();
-            waitForPageToLoad();
-        } catch (WebDriverException ignored) {
-            //If a frame is selected and then browser window is maximized, exception is thrown
-            //Selenium bug: Issue 3758: Exception upon maximizing browser window with frame selected
-        }
-    }
-
-    public P setWindowWidth(int width) {
-        new Report("set window width " + width).allure();
-        return setWindowSize(width, -1);
-    }
-
-    public P setWindowHeight(int height) {
-        return setWindowSize(-1, height);
-    }
-
-    public P setWindowSize(int width, int height) {
-        DriverUtils.setWindowSize(getDriver(), width, height);
-        waitForPageToLoad();
-        return (P) this;
-    }
-
-    protected Alert getAlert() {
-        try {
-            return getDriver().switchTo().alert();
-        } catch (NoAlertPresentException e) {
-            return null;
-        }
-    }
-
-    protected Alert getAlert(int timeoutForWait) {
-        try {
-            Alert alert = waitForAlertPresence(timeoutForWait);
-
-            //For some reason in Chrome v.30 alerts are not properly interacted with the first try
-            //We are trying to interact with it once more to avoid failures
-            if (getAlert() != null) {
-                return alert;
-            }
-        } catch (Exception ignored) {
-        }
-        return null;
-    }
-
-    @Deprecated// will be removed
-    protected String getCurrentWindowTitle() {
-        return driver.getTitle();
-    }
-
-    public void scrollIntoView(TeasyElement element) {
-        ((JavascriptExecutor) getDriver()).executeScript("arguments[0].scrollIntoView(true);", element);
-    }
-
 
 // ============ ASSERTIONS ===========
 
@@ -357,37 +261,6 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         }
     }
 
-    protected void assertElementIsAbsent(By locator, String errorMessage) {
-        TestUtils.waitForSomeTime(TIMEOUT_TO_WAIT_FOR_ABSENCE_OF_ELEMENT, "Wait for absence element");
-        WebElement element = findElementByNoThrow(locator);
-        assertTrue(element == null || !element.isDisplayed(), errorMessage);
-    }
-
-    protected void assertElementIsDisplayed(By locator, String errorMessage) {
-        WebElement element = waitForPresenceOfElementLocatedBy(locator, errorMessage);
-        assertTrue(element.isDisplayed(), errorMessage);
-    }
-
-    protected void assertElementsAreDisplayed(By locator, String errorMessage) {
-        try {
-            elementFinder.waitForVisibilityOfAllElementsLocatedBy(locator);
-        } catch (WebDriverException e) {
-            TestUtils.fail(errorMessage);
-        }
-    }
-
-    protected void assertElementsAreAbsent(By locator, String errorMessage) {
-        TestUtils.waitForSomeTime(TIMEOUT_TO_WAIT_FOR_ABSENCE_OF_ELEMENT, "Wait for elements are absent");
-        elementFinder.findElementsBy(locator)
-                .forEach(webElement -> assertFalse(webElement.isDisplayed(), errorMessage));
-    }
-
-    protected void assertContainsAll(List<? extends Object> actual, List<? extends Object> expected, String errorMessage) {
-        expected.stream()
-                .filter(object -> !actual.contains(object))
-                .forEach(object -> fail(errorMessage + " Element '" + object + "' not found in given list"));
-    }
-
     protected void assertNotNull(Object object) {
         assertNotNull(object, generateErrorMessage());
     }
@@ -436,22 +309,11 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         postponedAssertNotEquals(actual, expected, generateErrorMessage());
     }
 
-    protected void assertElementIsAbsent(By locator) {
-        assertElementIsAbsent(locator, generateErrorMessage());
-    }
+    // OLD code that is going to be removed by September 2017.
+    // Currently kept to give users some time to switch to new implementation
 
-    protected void assertElementIsDisplayed(By locator) {
-        assertElementIsDisplayed(locator, generateErrorMessage());
-    }
-
-    protected void assertElementsAreDisplayed(By locator) {
-        assertElementsAreDisplayed(locator, generateErrorMessage());
-    }
-
-    protected void assertElementsAreAbsent(By locator) {
-        assertElementsAreAbsent(locator, generateErrorMessage());
-    }
-
+    //will be deleted. implement in your project if you need it
+    @Deprecated
     protected void postponedAssertDateEquals(DateTime actualDate, DateTime expectedDate, String dateFieldName) {
         postponedAssertEquals(actualDate.year().get(), expectedDate.year().get(), "Incorrect field 'year' in " + dateFieldName);
         postponedAssertEquals(actualDate.monthOfYear().get(), expectedDate.monthOfYear().get(), "Incorrect field 'month' in " + dateFieldName);
@@ -464,9 +326,159 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
                 "Incorrect field 'halfdayOfDay' in start date" + dateFieldName);
     }
 
-    // OLD code that is going to be removed by September 2017.
-    // Currently kept to give users some time to switch to new implementation
+    /**
+     * use {@link SeleniumHolder#getWebDriver()}
+     */
+    @Deprecated
+    protected WebDriver getDriver() {
+        return driver;
+    }
 
+    //use element().should().beAbsent()
+    @Deprecated
+    protected void assertElementIsAbsent(By locator) {
+        assertElementIsAbsent(locator, generateErrorMessage());
+    }
+
+    //use element().should().beDisplayed()
+    @Deprecated
+    protected void assertElementIsDisplayed(By locator) {
+        assertElementIsDisplayed(locator, generateErrorMessage());
+    }
+
+    //use element().should().beDisplayed()
+    @Deprecated
+    protected void assertElementsAreDisplayed(By locator) {
+        assertElementsAreDisplayed(locator, generateErrorMessage());
+    }
+
+    //use element().should().beAbsent()
+    @Deprecated
+    protected void assertElementsAreAbsent(By locator) {
+        assertElementsAreAbsent(locator, generateErrorMessage());
+    }
+
+    //use element().should().beAbsent()
+    @Deprecated
+    protected void assertElementIsAbsent(By locator, String errorMessage) {
+        TestUtils.waitForSomeTime(2000, "Wait for absence element");
+        WebElement element = findElementByNoThrow(locator);
+        assertTrue(element == null || !element.isDisplayed(), errorMessage);
+    }
+
+    //use element().should().beDisplayed()
+    @Deprecated
+    protected void assertElementIsDisplayed(By locator, String errorMessage) {
+        WebElement element = waitForPresenceOfElementLocatedBy(locator, errorMessage);
+        assertTrue(element.isDisplayed(), errorMessage);
+    }
+
+    //use element().should().beDisplayed()
+    @Deprecated
+    protected void assertElementsAreDisplayed(By locator, String errorMessage) {
+        try {
+            elementFinder.waitForVisibilityOfAllElementsLocatedBy(locator);
+        } catch (WebDriverException e) {
+            TestUtils.fail(errorMessage);
+        }
+    }
+
+    //use element().should().beAbsent()
+    @Deprecated
+    protected void assertElementsAreAbsent(By locator, String errorMessage) {
+        TestUtils.waitForSomeTime(2000, "Wait for elements are absent");
+        elementFinder.findElementsBy(locator)
+                .forEach(webElement -> assertFalse(webElement.isDisplayed(), errorMessage));
+    }
+
+    //will be deleted. implement in your project if you need it
+    @Deprecated
+    protected void assertContainsAll(List<? extends Object> actual, List<? extends Object> expected, String errorMessage) {
+        expected.stream()
+                .filter(object -> !actual.contains(object))
+                .forEach(object -> fail(errorMessage + " Element '" + object + "' not found in given list"));
+    }
+
+    /**
+     * use {@link Window#maximize()}
+     */
+    @Deprecated
+    public void maximizeWindow() {
+        try {
+            getDriver().manage().window().maximize();
+            waitForPageToLoad();
+        } catch (WebDriverException ignored) {
+            //If a frame is selected and then browser window is maximized, exception is thrown
+            //Selenium bug: Issue 3758: Exception upon maximizing browser window with frame selected
+        }
+    }
+
+    /**
+     * use {@link Window#changeSize(int, int)}
+     */
+    @Deprecated
+    public P setWindowWidth(int width) {
+        new Report("set window width " + width).allure();
+        return setWindowSize(width, -1);
+    }
+
+    /**
+     * use {@link Window#changeSize(int, int)}
+     */
+    @Deprecated
+    public P setWindowHeight(int height) {
+        return setWindowSize(-1, height);
+    }
+
+    /**
+     * use {@link Window#changeSize(int, int)}
+     */
+    @Deprecated
+    public P setWindowSize(int width, int height) {
+        DriverUtils.setWindowSize(getDriver(), width, height);
+        waitForPageToLoad();
+        return (P) this;
+    }
+
+    /**
+     * use {@link TeasyElementProvider#alert()}
+     */
+    @Deprecated
+    protected Alert getAlert() {
+        try {
+            return getDriver().switchTo().alert();
+        } catch (NoAlertPresentException e) {
+            return null;
+        }
+    }
+
+    /**
+     * use {@link TeasyElementProvider#alert(SearchStrategy)}
+     */
+    @Deprecated
+    protected Alert getAlert(int timeoutForWait) {
+        try {
+            Alert alert = waitForAlertPresence(timeoutForWait);
+
+            //For some reason in Chrome v.30 alerts are not properly interacted with the first try
+            //We are trying to interact with it once more to avoid failures
+            if (getAlert() != null) {
+                return alert;
+            }
+        } catch (Exception ignored) {
+        }
+        return null;
+    }
+
+    /**
+     * use {@link Window#getTitle()}
+     *
+     * @return
+     */
+    @Deprecated
+    protected String getCurrentWindowTitle() {
+        return driver.getTitle();
+    }
 
     @Deprecated
     /**
@@ -505,13 +517,13 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
     @Deprecated
     //TODO: VE - will be removed from framework
     protected Alert waitForAlertPresence() {
-        return (new WebDriverWait(driver, timeout, SLEEP_IN_MILLISECONDS)).until(ExpectedConditions.alertIsPresent());
+        return (new WebDriverWait(driver, timeout, (long) 1000)).until(ExpectedConditions.alertIsPresent());
     }
 
     @Deprecated
     //TODO: VE - will be removed from framework
     protected Alert waitForAlertPresence(int timeoutForAlert) {
-        return (new WebDriverWait(driver, timeoutForAlert, SLEEP_IN_MILLISECONDS)).until(ExpectedConditions.alertIsPresent());
+        return (new WebDriverWait(driver, timeoutForAlert, (long) 1000)).until(ExpectedConditions.alertIsPresent());
     }
 
     @Deprecated
@@ -564,7 +576,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         final List<String> resultList = new ArrayList<String>();
         for (CheckBox checkBox : checkBoxList) {
             scrollIntoView(checkBox.getWrappedWebElement());
-            resultList.add(checkBox.getText().split(DIGITS_WITHIN_PARENTHESIS)[0].trim());
+            resultList.add(checkBox.getText().split("\\(\\d+")[0].trim());
         }
         return resultList;
     }
@@ -609,7 +621,7 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
     //TODO: VE - should be moved to utils
     protected boolean isWindowDisplayedByPartialUrl(String partialUrl) {
         try {
-            waitForWindowToBeAppearedByPartialUrlAndSwitchToIt(partialUrl, TIMEOUT_TO_WAIT_FOR_WINDOW);
+            waitForWindowToBeAppearedByPartialUrlAndSwitchToIt(partialUrl, 2);
             return true;
         } catch (WebDriverException e) {
             return false;
@@ -734,4 +746,20 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         Reporter.log(message);
         return (P) this;
     }
+
+    //will be deleted. implement in your project if you need it
+    @Deprecated
+    protected void hoverOverElement(WebElement webElement) {
+        maximizeWindow();
+        Actions builder = new Actions(getDriver());
+        Actions hoverOverWebElement = builder.moveToElement(webElement);
+        hoverOverWebElement.perform();
+    }
+
+    //will be deleted. implement in your project if you need it
+    @Deprecated
+    public void scrollIntoView(TeasyElement element) {
+        ((JavascriptExecutor) getDriver()).executeScript("arguments[0].scrollIntoView(true);", element);
+    }
+
 }
