@@ -7,9 +7,11 @@
 Test easy with Teasy - UI automation testing framework
 
 # Description
-Teasy is a Java-based testing framework built on Selenium, TestNG and Spring. Its aim is to make your web testing easier by providing solutions to a lot of things that you will face during UI automation testing.
+Teasy is a Java-based testing framework built on Selenium, TestNG and Spring. Its aim is to make your web testing easier by providing solutions to a lot of things that you will face during UI automation testing. Check out our [wiki page](https://github.com/WileyLabs/teasy/wiki) for more details.
 # Quickstart
-Coming soon...
+To start from scratch use our [Hello World project](https://github.com/WileyLabs/teasy-template-archetype)
+
+If you want to use teasy at existing project please contant us in a gitter chat. Detailed description will be added soon...
 # Usage
 You will need to have the following soft installed before using teasy:
 * java 8+
