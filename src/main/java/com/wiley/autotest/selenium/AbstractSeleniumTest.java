@@ -11,6 +11,7 @@ import com.wiley.autotest.screenshots.Screenshoter;
 import com.wiley.autotest.selenium.context.IPage;
 import com.wiley.autotest.services.CookiesService;
 import com.wiley.autotest.services.PageProvider;
+import com.wiley.autotest.services.ParamsHolder;
 import com.wiley.autotest.services.SeleniumMethodsInvoker;
 import com.wiley.autotest.spring.SeleniumTestExecutionListener;
 import com.wiley.autotest.utils.JavaUtils;
@@ -115,7 +116,7 @@ public abstract class AbstractSeleniumTest extends AbstractTest implements ITest
 
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
-        getParameterProvider().clear();
+        ParamsHolder.clear();
         postponeFailureEvent.unsubscribeAll();
     }
 
@@ -161,9 +162,7 @@ public abstract class AbstractSeleniumTest extends AbstractTest implements ITest
         } else {
             methodsInvoker.invokeGroupMethodsByAnnotation(OurAfterGroups.class, context);
         }
-        if (getParameterProviderForGroup() != null) {
-            getParameterProviderForGroup().clear();
-        }
+        ParamsHolder.clearForGroup();
     }
 
     public void addSubscribersForBeforeAfterGroupFailureEvents(ITestContext context) {
