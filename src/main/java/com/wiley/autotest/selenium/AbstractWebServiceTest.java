@@ -5,6 +5,7 @@ import com.wiley.autotest.event.postpone.failure.BeforeAfterGroupFailureEvent;
 import com.wiley.autotest.event.postpone.failure.PostponedFailureEvent;
 import com.wiley.autotest.event.postpone.failure.StorePostponeFailureSubscriber;
 import com.wiley.autotest.listeners.ProcessPostponedFailureListener;
+import com.wiley.autotest.services.ParamsHolder;
 import com.wiley.autotest.services.WebServiceMethodsInvoker;
 import com.wiley.autotest.utils.TestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +70,7 @@ public class AbstractWebServiceTest extends AbstractTest implements ITest {
 
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
-        getParameterProvider().clear();
+        ParamsHolder.clear();
         postponeFailureEvent.unsubscribeAll();
     }
 
@@ -108,9 +109,7 @@ public class AbstractWebServiceTest extends AbstractTest implements ITest {
         } else {
             methodsInvoker.invokeGroupMethodsByAnnotation(OurAfterGroups.class, context);
         }
-        if (getParameterProviderForGroup() != null) {
-            getParameterProviderForGroup().clear();
-        }
+        ParamsHolder.clearForGroup();
     }
 
     public void setPostponedTestFail(final String message) {

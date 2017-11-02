@@ -2,12 +2,12 @@ package com.wiley.autotest.selenium.context;
 
 import com.wiley.autotest.event.postpone.failure.PostponedFailureEvent;
 import com.wiley.autotest.selenium.AllureStep2TestNG;
-import com.wiley.autotest.selenium.ParamsProvider;
 import com.wiley.autotest.selenium.Report;
 import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.elements.CheckBox;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import com.wiley.autotest.selenium.elements.upgrade.Window;
+import com.wiley.autotest.services.ParamsHolder;
 import com.wiley.autotest.spring.Settings;
 import com.wiley.autotest.utils.DriverUtils;
 import com.wiley.autotest.utils.TestUtils;
@@ -40,12 +40,6 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
 
     @Autowired
     private HelperRegistry registry;
-
-    @Autowired
-    private ParamsProvider parameterProvider;
-
-    @Autowired
-    private ParamsProvider parameterProviderForGroup;
 
     @Autowired
     private PostponedFailureEvent postponeFailureEvent;
@@ -127,20 +121,20 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
         return !(loaded == null || !loaded || naturalWidth == null || naturalWidth.equals(Long.valueOf(0)));
     }
 
-    protected final Object getParameterForGroup(final String key) {
-        return parameterProviderForGroup.get(TestUtils.modifyKeyForCurrentThread(key));
+    protected final Object getParameter(final String key) {
+        return ParamsHolder.getParameter(key);
     }
 
-    protected void setParameterForGroup(final String key, final Object value) {
-        parameterProviderForGroup.put(TestUtils.modifyKeyForCurrentThread(key), value);
+    protected final Object getParameterForGroup(final String key) {
+        return ParamsHolder.getParameterForGroup(key);
     }
 
     protected void setParameter(final String key, final Object value) {
-        parameterProvider.put(TestUtils.modifyKeyForCurrentThread(key), value);
+        ParamsHolder.setParameter(key, value);
     }
 
-    public Object getParameter(final String key) {
-        return parameterProvider.get(TestUtils.modifyKeyForCurrentThread(key));
+    protected void setParameterForGroup(final String key, final Object value) {
+        ParamsHolder.setParameterForGroup(key, value);
     }
 
     public void setPostponedTestFail(final String message) {
@@ -761,5 +755,4 @@ public abstract class AbstractPageElement<P extends AbstractPageElement> extends
     public void scrollIntoView(TeasyElement element) {
         ((JavascriptExecutor) getDriver()).executeScript("arguments[0].scrollIntoView(true);", element);
     }
-
 }

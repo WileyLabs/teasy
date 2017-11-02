@@ -29,14 +29,6 @@
         <aop:scoped-proxy/>
     </bean>
 
-    <bean id="parameterProvider" class="com.wiley.autotest.selenium.ParamsProvider" scope="thread">
-        <aop:scoped-proxy/>
-    </bean>
-
-    <bean id="parameterProviderForGroup" class="com.wiley.autotest.selenium.ParamsProvider" scope="thread">
-        <aop:scoped-proxy/>
-    </bean>
-
     <bean id="registry" class="com.wiley.autotest.selenium.SpringBasedHelperRegistry"/>
 
     <util:list id="validatorPhrases" value-type="java.lang.String">
