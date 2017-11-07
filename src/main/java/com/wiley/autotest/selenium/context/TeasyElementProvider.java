@@ -35,17 +35,11 @@ import static com.wiley.autotest.selenium.elements.upgrade.TeasyElementWrapper.w
 import static com.wiley.autotest.utils.ExecutionUtils.isChrome;
 
 /**
- * Created by IntelliJ IDEA.
- * User: maxim
- * Date: 15.02.12
- * Time: 13:02
+ * Entry point to search for all elements on the screen
  */
 public abstract class TeasyElementProvider {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(TeasyElementProvider.class);
-
-    @Autowired
-    private long timeout;
 
     //default finder that uses timeout from pom
     private TeasyElementFinder finder;
@@ -59,7 +53,7 @@ public abstract class TeasyElementProvider {
 
     private TeasyElementFinder finder() {
         if (finder == null) {
-            finder = new TeasyElementFinder(getWebDriver(), new SearchStrategy(timeout));
+            finder = new TeasyElementFinder(getWebDriver(), new SearchStrategy());
         }
         return finder;
     }
