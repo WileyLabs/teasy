@@ -47,11 +47,11 @@ public abstract class TeasyElementProvider {
     //VE added this to avoid No buffer space available exception. To be replaced with default value of 500 if does not work.
     protected static final long SLEEP_IN_MILLISECONDS = 1000;
 
-    private TeasyElementFinder customFinder(SearchStrategy strategy) {
+    protected TeasyElementFinder customFinder(SearchStrategy strategy) {
         return new TeasyElementFinder(getWebDriver(), strategy);
     }
 
-    private TeasyElementFinder finder() {
+    protected TeasyElementFinder finder() {
         if (finder == null) {
             finder = new TeasyElementFinder(getWebDriver(), new SearchStrategy());
         }

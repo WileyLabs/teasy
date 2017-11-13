@@ -13,7 +13,7 @@ public class OpenPageTest extends BaseTest {
     @Test
     public void test() {
         openPage("main.html")
-                .checkIframeIsPresent()
+                .checkIframeIsDisplayed()
                 .checkIframeCountIsTwo();
     }
 }
