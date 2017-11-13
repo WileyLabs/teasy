@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class BasePage extends AbstractPage {
 
-    public BasePage checkIframeIsPresent() {
-        assertElementIsDisplayed(By.cssSelector("iframe"));
+    public BasePage checkIframeIsDisplayed() {
+        element(By.cssSelector("iframe")).should().beDisplayed();
         return this;
     }
 
