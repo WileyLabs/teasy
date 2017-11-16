@@ -2,7 +2,6 @@ package com.wiley.autotest.services;
 
 import com.wiley.autotest.screenshots.Screenshoter;
 import com.wiley.autotest.selenium.*;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.openqa.selenium.WebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,9 +10,8 @@ import org.testng.TestRunner;
 import org.testng.annotations.Test;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
-import static java.lang.String.format;
 
 /**
  * User: dfedorov
@@ -78,15 +76,23 @@ public class SeleniumMethodsInvoker extends MethodsInvoker {
             method.invoke(instance);
         } catch (Throwable e) {
             new Screenshoter().takeScreenshot(e.getMessage(), method.getName());
-            String errorMessage = format("Precondition method '%s' failed ", method.getName()) + "\n " + ExceptionUtils.getStackTrace(e);
+
+            Throwable exceptionForLog;
+            if (e instanceof InvocationTargetException) {
+                exceptionForLog = ((InvocationTargetException) e).getTargetException();
+            } else {
+                exceptionForLog = e;
+            }
+
+            String errorMessage = "Precondition method failed " + exceptionForLog.getMessage();
             if (isBeforeAfterGroup) {
                 abstractSeleniumTest.setPostponedBeforeAfterGroupFail(errorMessage, context.getTestContext());
             } else {
                 abstractSeleniumTest.setPostponedTestFail(errorMessage);
             }
 
-            new Report(errorMessage).allure();
-            throw new StopTestExecutionException(errorMessage, e);
+            new Report(errorMessage, exceptionForLog).allure();
+            throw new StopTestExecutionException(errorMessage, exceptionForLog);
         } finally {
             SeleniumHolder.setDriverName(mainDriverName);
             SeleniumHolder.setWebDriver(mainDriver);
