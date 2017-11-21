@@ -1,9 +1,8 @@
 package com.wiley.autotest.selenium.elements.upgrade;
 
 import com.wiley.autotest.selenium.Report;
-import com.wiley.autotest.selenium.elements.upgrade.v3.TeasyFluentWait;
-import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.PageLoaded;
-import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.window.WindowMatcher;
+import com.wiley.autotest.selenium.elements.upgrade.conditions.PageLoaded;
+import com.wiley.autotest.selenium.elements.upgrade.conditions.window.WindowMatcher;
 import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.*;
 

@@ -5,14 +5,11 @@ import com.wiley.autotest.WebDriverAwareElementFinder;
 import com.wiley.autotest.actions.Actions;
 import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.elements.*;
-import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
-import com.wiley.autotest.selenium.elements.upgrade.TeasyWindow;
-import com.wiley.autotest.selenium.elements.upgrade.Window;
-import com.wiley.autotest.selenium.elements.upgrade.v3.CustomWaitFor;
-import com.wiley.autotest.selenium.elements.upgrade.v3.TeasyElementFinder;
-import com.wiley.autotest.selenium.elements.upgrade.v3.VisibleElementWaitFor;
-import com.wiley.autotest.selenium.elements.upgrade.v3.VisibleShould;
-import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.window.WindowMatcher;
+import com.wiley.autotest.selenium.elements.upgrade.*;
+import com.wiley.autotest.selenium.elements.upgrade.waitfor.CustomWaitFor;
+import com.wiley.autotest.selenium.elements.upgrade.waitfor.VisibleElementWaitFor;
+import com.wiley.autotest.selenium.elements.upgrade.should.VisibleShould;
+import com.wiley.autotest.selenium.elements.upgrade.conditions.window.WindowMatcher;
 import com.wiley.autotest.utils.TestUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.remote.UnreachableBrowserException;
@@ -20,7 +17,6 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.Reporter;
 
 import java.util.ArrayList;
@@ -74,12 +70,12 @@ public abstract class TeasyElementProvider {
         return customFinder(strategy).visibleElement(locator);
     }
 
-    protected List<TeasyElement> elements(final By locator) {
-        return finder().visibleElements(locator);
+    protected TeasyElementList elements(final By locator) {
+        return new TeasyElementList(finder().visibleElements(locator));
     }
 
-    protected List<TeasyElement> elements(final By locator, SearchStrategy strategy) {
-        return customFinder(strategy).visibleElements(locator);
+    protected TeasyElementList elements(final By locator, SearchStrategy strategy) {
+        return new TeasyElementList(customFinder(strategy).visibleElements(locator));
     }
 
     protected TeasyElement domElement(By locator) {
@@ -90,12 +86,12 @@ public abstract class TeasyElementProvider {
         return customFinder(strategy).presentInDomElement(locator);
     }
 
-    protected List<TeasyElement> domElements(By locator) {
-        return finder().presentInDomElements(locator);
+    protected TeasyElementList domElements(By locator) {
+        return new TeasyElementList(finder().presentInDomElements(locator));
     }
 
-    protected List<TeasyElement> domElements(By locator, SearchStrategy strategy) {
-        return customFinder(strategy).presentInDomElements(locator);
+    protected TeasyElementList domElements(By locator, SearchStrategy strategy) {
+        return new TeasyElementList(customFinder(strategy).presentInDomElements(locator));
     }
 
     protected Alert alert() {

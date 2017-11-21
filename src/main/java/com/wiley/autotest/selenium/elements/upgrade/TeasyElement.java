@@ -1,8 +1,8 @@
 package com.wiley.autotest.selenium.elements.upgrade;
 
 import com.wiley.autotest.selenium.context.SearchStrategy;
-import com.wiley.autotest.selenium.elements.upgrade.v3.ElementWaitFor;
-import com.wiley.autotest.selenium.elements.upgrade.v3.Should;
+import com.wiley.autotest.selenium.elements.upgrade.should.Should;
+import com.wiley.autotest.selenium.elements.upgrade.waitfor.ElementWaitFor;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -18,7 +18,6 @@ public interface TeasyElement extends WebElement {
     @Override
     @Deprecated
     List<WebElement> findElements(By by);
-
 
     /**
      * Do not use this method. it does not fit TeasyElement concept and only here because
@@ -51,17 +50,15 @@ public interface TeasyElement extends WebElement {
 
     TeasyElement element(By by, SearchStrategy strategy);
 
-    List<TeasyElement> elements(By by);
+    TeasyElementList elements(By by);
 
-    List<TeasyElement> elements(By by, SearchStrategy strategy);
+    TeasyElementList elements(By by, SearchStrategy strategy);
 
     TeasyElement domElement(By by);
 
     TeasyElement domElement(By by, SearchStrategy strategy);
 
-    List<TeasyElement> domElements(By by);
+    TeasyElementList domElements(By by);
 
-    List<TeasyElement> domElements(By by, SearchStrategy strategy);
-
-    void click();
+    TeasyElementList domElements(By by, SearchStrategy strategy);
 }
