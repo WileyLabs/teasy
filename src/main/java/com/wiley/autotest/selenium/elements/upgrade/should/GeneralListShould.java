@@ -9,6 +9,11 @@ import org.openqa.selenium.WebDriver;
 import java.util.List;
 import java.util.function.Function;
 
+/**
+ * Temp solution as a POC
+ *
+ * most likely there will be VisibleListShould, DomListShould and EmptyListShould
+ */
 public class GeneralListShould implements ListShould {
 
     private final TeasyFluentWait<WebDriver> fluentWait;

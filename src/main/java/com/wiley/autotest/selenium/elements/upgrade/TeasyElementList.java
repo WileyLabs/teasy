@@ -13,8 +13,8 @@ import java.util.Collection;
  */
 public class TeasyElementList extends ArrayList<TeasyElement> {
 
-    public TeasyElementList(@NotNull Collection<? extends TeasyElement> c) {
-        super(c);
+    public TeasyElementList(@NotNull Collection<? extends TeasyElement> teasyElements) {
+        super(teasyElements);
     }
 
     public ListShould should() {
