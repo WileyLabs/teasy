@@ -2,7 +2,7 @@ package com.wiley.autotest.selenium.context;
 
 import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
-import com.wiley.autotest.selenium.elements.upgrade.v3.TeasyElementFinder;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyElementFinder;
 
 /**
  * Representation of an abstract block of a Page.

@@ -1,6 +1,6 @@
 package com.wiley.autotest.selenium.elements.upgrade;
 
-import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.window.WindowMatcher;
+import com.wiley.autotest.selenium.elements.upgrade.conditions.window.WindowMatcher;
 
 /**
  * Created by vefimov on 30/05/2017.
