@@ -20,8 +20,10 @@ import static ru.yandex.qatools.ashot.cropper.indent.IndentFilerFactory.monochro
 /**
  * @author <a href="mosadchiy@wiley.com">Mikhail Osadchiy</a>
  */
-
+@Deprecated
 /**
+ * This class will be deleted in jan 2018. Please use {@link }
+ *
  * Provides an opportunity to capture screenshot by the following options:
  * 1) Exclude and include locators
  * 2) Exclude locators
