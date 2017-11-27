@@ -80,20 +80,23 @@ public class TeasyScreenshot {
      * 2. after taking screenshot we set the page to default state returning the scrollbar
      */
     private class AShotChromeDecorator extends AShot {
+        private final boolean isChrome;
+
         AShotChromeDecorator() {
             super();
+            isChrome = isChrome();
         }
 
         @Override
         public Screenshot takeScreenshot(WebDriver driver, Collection<WebElement> elements) {
-            if (isChrome()) {
+            if (isChrome) {
                 hideScrollbar();
                 shootingStrategy(ShootingStrategies.viewportPasting(100));
             }
             try {
                 return super.takeScreenshot(driver, elements);
             } finally {
-                if (isChrome()) {
+                if (isChrome) {
                     revealScrollbar();
                 }
             }
@@ -101,14 +104,14 @@ public class TeasyScreenshot {
 
         @Override
         public Screenshot takeScreenshot(WebDriver driver) {
-            if (isChrome()) {
+            if (isChrome) {
                 hideScrollbar();
                 shootingStrategy(ShootingStrategies.viewportPasting(100));
             }
             try {
                 return super.takeScreenshot(driver);
             } finally {
-                if (isChrome()) {
+                if (isChrome) {
                     revealScrollbar();
                 }
             }
