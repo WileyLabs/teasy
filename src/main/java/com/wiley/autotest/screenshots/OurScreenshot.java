@@ -20,8 +20,10 @@ import static ru.yandex.qatools.ashot.cropper.indent.IndentFilerFactory.monochro
 /**
  * @author <a href="mosadchiy@wiley.com">Mikhail Osadchiy</a>
  */
-
+@Deprecated
 /**
+ * This class will be deleted in jan 2018. Please use {@link }
+ *
  * Provides an opportunity to capture screenshot by the following options:
  * 1) Exclude and include locators
  * 2) Exclude locators
@@ -30,6 +32,10 @@ import static ru.yandex.qatools.ashot.cropper.indent.IndentFilerFactory.monochro
  */
 public class OurScreenshot {
 
+    @Deprecated
+    /**
+     * use {@link TeasyScreenshot#excludeAndInclude(List, List)}
+     */
     public Screenshot excludeAndInclude(List<By> excludeLocators, List<By> includeLocators) {
         WebDriver driver = getWebDriver();
         AShot aShot = new AShot();
@@ -46,6 +52,10 @@ public class OurScreenshot {
         return screenshot;
     }
 
+    @Deprecated
+    /**
+     * use {@link TeasyScreenshot#exclude(List)}
+     */
     public Screenshot exclude(List<By> excludeLocators) {
         WebDriver driver = getWebDriver();
         AShot aShot = new AShot();
@@ -61,6 +71,10 @@ public class OurScreenshot {
         return screenshot;
     }
 
+    @Deprecated
+    /**
+     * use {@link TeasyScreenshot#include(List)}
+     */
     public Screenshot include(List<By> includeLocators) {
         WebDriver driver = getWebDriver();
         AShot aShot = new AShot();
@@ -76,6 +90,10 @@ public class OurScreenshot {
         return screenshot;
     }
 
+    @Deprecated
+    /**
+     * use {@link TeasyScreenshot#fullPage()}
+     */
     public Screenshot fullPage() {
         WebDriver driver = getWebDriver();
         AShot aShot = new AShot();

@@ -3,7 +3,6 @@ package com.wiley.autotest.selenium.elements.upgrade;
 import com.wiley.autotest.selenium.Report;
 import com.wiley.autotest.selenium.context.SearchStrategy;
 import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
-import com.wiley.autotest.selenium.elements.upgrade.v3.TeasyElementFinder;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.interactions.internal.Coordinates;
@@ -86,13 +85,13 @@ public abstract class BaseTeasyElement implements TeasyElement, Locatable {
     }
 
     @Override
-    public List<TeasyElement> elements(By by) {
-        return contextFinder.visibleElements(by);
+    public TeasyElementList elements(By by) {
+        return new TeasyElementList(contextFinder.visibleElements(by));
     }
 
     @Override
-    public List<TeasyElement> elements(By by, SearchStrategy strategy) {
-        return customContextFinder(strategy).visibleElements(by);
+    public TeasyElementList elements(By by, SearchStrategy strategy) {
+        return new TeasyElementList(customContextFinder(strategy).visibleElements(by));
     }
 
     @Override
@@ -106,13 +105,13 @@ public abstract class BaseTeasyElement implements TeasyElement, Locatable {
     }
 
     @Override
-    public List<TeasyElement> domElements(By by) {
-        return contextFinder.presentInDomElements(by);
+    public TeasyElementList domElements(By by) {
+        return new TeasyElementList(contextFinder.presentInDomElements(by));
     }
 
     @Override
-    public List<TeasyElement> domElements(By by, SearchStrategy strategy) {
-        return customContextFinder(strategy).presentInDomElements(by);
+    public TeasyElementList domElements(By by, SearchStrategy strategy) {
+        return new TeasyElementList(customContextFinder(strategy).presentInDomElements(by));
     }
 
     TeasyElementFinder customContextFinder(SearchStrategy strategy) {

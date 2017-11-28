@@ -3,7 +3,7 @@ package com.wiley.autotest;
 import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
 import com.wiley.autotest.selenium.elements.TextField;
-import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.PageLoaded;
+import com.wiley.autotest.selenium.elements.upgrade.conditions.PageLoaded;
 import com.wiley.autotest.utils.TestUtils;
 import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.*;

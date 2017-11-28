@@ -1,7 +1,13 @@
 package com.wiley.autotest.selenium.elements.upgrade;
 
+import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.context.SearchStrategy;
-import com.wiley.autotest.selenium.elements.upgrade.v3.*;
+import com.wiley.autotest.selenium.elements.upgrade.should.NullShould;
+import com.wiley.autotest.selenium.elements.upgrade.should.NullShouldImmediately;
+import com.wiley.autotest.selenium.elements.upgrade.should.Should;
+import com.wiley.autotest.selenium.elements.upgrade.waitfor.ElementWaitFor;
+import com.wiley.autotest.selenium.elements.upgrade.waitfor.NullElementWaitFor;
+import com.wiley.autotest.selenium.elements.upgrade.waitfor.NullElementWaitForImmediately;
 import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.internal.Coordinates;
@@ -10,7 +16,6 @@ import org.openqa.selenium.internal.Locatable;
 import java.util.List;
 
 import static com.wiley.autotest.selenium.SeleniumHolder.getWebDriver;
-
 
 /**
  * Represents element that is absent (not found)
@@ -32,7 +37,13 @@ public class NullTeasyElement implements TeasyElement, Locatable {
 
     @Override
     public Should should(SearchStrategy strategy) {
-        return new NullShould(elementData, strategy);
+        TeasyElementFinder finder;
+        if (elementData.getSearchContext() == null) {
+            finder = new TeasyElementFinder(SeleniumHolder.getWebDriver(), strategy);
+        } else {
+            finder = new TeasyElementFinder(SeleniumHolder.getWebDriver(), strategy, elementData.getSearchContext());
+        }
+        return new NullShould(elementData, new TeasyFluentWait<>(getWebDriver(), strategy), finder);
     }
 
     @Override
@@ -42,7 +53,13 @@ public class NullTeasyElement implements TeasyElement, Locatable {
 
     @Override
     public ElementWaitFor waitFor(SearchStrategy strategy) {
-        return new NullElementWaitFor(elementData, strategy);
+        TeasyElementFinder finder;
+        if (elementData.getSearchContext() == null) {
+            finder = new TeasyElementFinder(SeleniumHolder.getWebDriver(), strategy);
+        } else {
+            finder = new TeasyElementFinder(SeleniumHolder.getWebDriver(), strategy, elementData.getSearchContext());
+        }
+        return new NullElementWaitFor(elementData, new TeasyFluentWait<>(getWebDriver(), strategy), finder);
     }
 
     /*
@@ -166,12 +183,12 @@ public class NullTeasyElement implements TeasyElement, Locatable {
     }
 
     @Override
-    public List<TeasyElement> elements(By by) {
+    public TeasyElementList elements(By by) {
         throw noSuchElementException();
     }
 
     @Override
-    public List<TeasyElement> elements(By by, SearchStrategy strategy) {
+    public TeasyElementList elements(By by, SearchStrategy strategy) {
         throw noSuchElementException();
     }
 
@@ -186,12 +203,12 @@ public class NullTeasyElement implements TeasyElement, Locatable {
     }
 
     @Override
-    public List<TeasyElement> domElements(By by) {
+    public TeasyElementList domElements(By by) {
         throw noSuchElementException();
     }
 
     @Override
-    public List<TeasyElement> domElements(By by, SearchStrategy strategy) {
+    public TeasyElementList domElements(By by, SearchStrategy strategy) {
         throw noSuchElementException();
     }
 
