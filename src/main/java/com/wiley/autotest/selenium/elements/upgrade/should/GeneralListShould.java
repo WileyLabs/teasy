@@ -1,6 +1,7 @@
 package com.wiley.autotest.selenium.elements.upgrade.should;
 
 import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyElementList;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyFluentWait;
 import com.wiley.autotest.selenium.elements.upgrade.conditions.elements.ElementsDisplayed;
 import com.wiley.autotest.selenium.elements.upgrade.conditions.elements.ElementsHaveTexts;
@@ -17,9 +18,9 @@ import java.util.function.Function;
 public class GeneralListShould implements ListShould {
 
     private final TeasyFluentWait<WebDriver> fluentWait;
-    private final List<TeasyElement> elements;
+    private final TeasyElementList elements;
 
-    public GeneralListShould(List<TeasyElement> elements, TeasyFluentWait<WebDriver> fluentWait) {
+    public GeneralListShould(TeasyElementList elements, TeasyFluentWait<WebDriver> fluentWait) {
         this.elements = elements;
         this.fluentWait = fluentWait;
     }
