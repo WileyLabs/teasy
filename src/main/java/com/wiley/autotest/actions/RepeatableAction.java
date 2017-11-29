@@ -2,6 +2,8 @@ package com.wiley.autotest.actions;
 
 import com.wiley.autotest.utils.TestUtils;
 
+import java.util.function.Supplier;
+
 /**
  * Repeats action limited number of times until a boolean condition is true
  * waits for a timeout between attempts to perform an action
@@ -9,20 +11,37 @@ import com.wiley.autotest.utils.TestUtils;
  * If the condition does not become true after all attempts - AssertionError is thrown
  */
 public class RepeatableAction {
-    private final Actions action;
-    private final Conditions condition;
+    private Actions action;
+    private Conditions condition;
+    private Supplier<Boolean> supplier;
     private final int numberOfAttempts;
     private final int millisecondsBetweenAttempts;
     private int attemptCounter = 0;
+    private String errorMessage;
 
     /**
      * By default will try 5 types and sleep 3 seconds after each attempt
      *
-     * @param action    - any function you want yo be performed
+     * @param action    - any function you want to be performed
      * @param condition - any boolean function to check after action
      */
     public RepeatableAction(Actions action, Conditions condition) {
         this(action, condition, 5, 3000);
+    }
+
+    /**
+     * By default will try 5 types and sleep 3 seconds after each attempt
+     *
+     * @param action - any boolean function you want to be performed
+     */
+    public RepeatableAction(Supplier<Boolean> action) {
+        this(action, 5, 3000);
+    }
+
+    public RepeatableAction(Supplier<Boolean> supplier, int numberOfAttempts, int millisecondsBetweenAttempts) {
+        this.supplier = supplier;
+        this.numberOfAttempts = numberOfAttempts;
+        this.millisecondsBetweenAttempts = millisecondsBetweenAttempts;
     }
 
     public RepeatableAction(Actions action, Conditions condition, int numberOfAttempts, int millisecondsBetweenAttempts) {
@@ -32,19 +51,38 @@ public class RepeatableAction {
         this.millisecondsBetweenAttempts = millisecondsBetweenAttempts;
     }
 
+
+    public RepeatableAction message(String errorMessage) {
+        this.errorMessage = errorMessage;
+        return this;
+    }
+
     public void perform() {
         attemptCounter++;
-        action.execute();
-
-        if (condition.isTrue()) {
+        boolean localCondition;
+        if (supplier != null) {
+            localCondition = supplier.get();
+        } else {
+            action.execute();
+            localCondition = condition.isTrue();
+        }
+        if (localCondition) {
             attemptCounter = 0;
         } else {
             if (attemptCounter > numberOfAttempts) {
                 attemptCounter = 0;
-                TestUtils.fail("Unable to perform actions after " + numberOfAttempts + " attempts");
+                TestUtils.fail(getErrorMessage());
             }
             TestUtils.waitForSomeTime(millisecondsBetweenAttempts, "Sleeping inside action repeater");
             perform();
         }
+    }
+
+    private String getErrorMessage() {
+        String baseMessage = "Unable to perform actions after " + numberOfAttempts + " attempts";
+        if (errorMessage != null) {
+            baseMessage = baseMessage.concat("\n").concat(errorMessage);
+        }
+        return baseMessage;
     }
 }
