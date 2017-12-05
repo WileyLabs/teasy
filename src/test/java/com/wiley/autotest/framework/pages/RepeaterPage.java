@@ -23,20 +23,20 @@ public class RepeaterPage extends AbstractPage {
     }
 
     private boolean clickOnFailure() {
-        clickDiv("[id='testDiv1']");
-        return divIsNull();
+        clickElement("[id='testDiv1']");
+        return isElementDisplayed();
     }
 
     private boolean clickOnSuccess() {
-        clickDiv("[id='testDiv2']");
-        return divIsNull();
+        clickElement("[id='testDiv2']");
+        return isElementDisplayed();
     }
 
-    private void clickDiv(String locator) {
-        element(By.cssSelector(locator)).click();
+    private void clickElement(String cssSelector) {
+        element(By.cssSelector(cssSelector)).click();
     }
 
-    private boolean divIsNull() {
+    private boolean isElementDisplayed() {
         return element(By.cssSelector("[id='testDiv3']"), new SearchStrategy(1).nullOnFailure()) != null;
     }
 }

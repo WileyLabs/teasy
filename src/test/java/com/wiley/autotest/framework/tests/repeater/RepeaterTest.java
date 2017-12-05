@@ -5,10 +5,16 @@ import com.wiley.autotest.framework.pages.RepeaterPage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.Test;
 
-public class RepeaterPositiveTest extends BaseTest {
+public class RepeaterTest extends BaseTest {
 
     @Autowired
     private RepeaterPage page;
+
+    @Test(expectedExceptions = AssertionError.class)
+    public void unableToPerformAction() {
+        openPage("repeater.html");
+        page.negativeCheck();
+    }
 
     @Test()
     public void performAction() {

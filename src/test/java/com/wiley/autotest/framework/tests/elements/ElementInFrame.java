@@ -5,9 +5,7 @@ import com.wiley.autotest.framework.pages.TestElementPage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.Test;
 
-/**
- * Created by shekhavtsov on 20/07/2017.
- */
+
 public class ElementInFrame extends BaseTest {
 
     @Autowired

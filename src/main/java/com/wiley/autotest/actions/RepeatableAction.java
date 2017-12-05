@@ -32,10 +32,10 @@ public class RepeatableAction {
     /**
      * By default will try 5 types and sleep 3 seconds after each attempt
      *
-     * @param action - any boolean function you want to be performed
+     * @param supplier - any boolean function you want to be performed
      */
-    public RepeatableAction(Supplier<Boolean> action) {
-        this(action, 5, 3000);
+    public RepeatableAction(Supplier<Boolean> supplier) {
+        this(supplier, 5, 3000);
     }
 
     public RepeatableAction(Supplier<Boolean> supplier, int numberOfAttempts, int millisecondsBetweenAttempts) {
