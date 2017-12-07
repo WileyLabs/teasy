@@ -8,39 +8,37 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ElementsHaveTexts implements ExpectedCondition<Boolean> {
+public class ElementsNotHaveAttribute implements ExpectedCondition<Boolean> {
 
     private final List<TeasyElement> elements;
-    private final List<String> texts;
+    private final String attributeName;
     private List<TeasyElement> errorElements;
 
-    public ElementsHaveTexts(List<TeasyElement> elements, List<String> texts) {
+    public ElementsNotHaveAttribute(List<TeasyElement> elements, String attributeName) {
         this.elements = elements;
-        this.texts = texts;
+        this.attributeName = attributeName;
     }
 
     @Nullable
     @Override
     public Boolean apply(@Nullable WebDriver webDriver) {
-        List<String> actualTexts = new ArrayList<>();
         errorElements = new ArrayList<>();
-        boolean haveAllTexts = true;
+        boolean isCorrect = true;
         for (TeasyElement el : elements) {
-            actualTexts.add(el.getText());
-            if (!texts.contains(el.getText())) {
-                haveAllTexts = false;
+            if (el.getAttribute(attributeName) != null) {
+                isCorrect = false;
                 errorElements.add(el);
             }
         }
-        return haveAllTexts && actualTexts.size() == texts.size();
+        return isCorrect;
     }
 
     @Override
     public String toString() {
         StringBuilder error = new StringBuilder();
         for (TeasyElement el : errorElements) {
-            error.append(el.toString()).append(" with text '").append(el.getText()).append("'|");
+            error.append(el.toString()).append("|");
         }
-        return String.format("Elements |%s text is not present in the expected texts! Expected texts are %s", error.toString(), texts);
+        return String.format("Elements |%s have attribute '%s'!", error.toString(), attributeName);
     }
 }

@@ -15,10 +15,10 @@
 <script>
     var clickCount = 0;
 
-    function showElementByClick() {
+    function showElementByClick(numberOfClicks) {
         clickCount++;
         console.log("Click count = " + clickCount);
-        if (clickCount === arguments[0]) {
+        if (clickCount === numberOfClicks) {
             document.getElementById("testDiv3").style.display = "block";
         }
     }
