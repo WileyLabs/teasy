@@ -31,7 +31,7 @@ public class GeneralListShould implements ListShould {
 
     @Override
     public void beAbsent() {
-
+        waitFor(new ElementsAbsent(elements));
     }
 
     @Override

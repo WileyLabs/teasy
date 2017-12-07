@@ -8,27 +8,27 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ElementsDisplayed implements ExpectedCondition<Boolean> {
+public class ElementsAbsent implements ExpectedCondition<Boolean> {
 
     private final List<TeasyElement> elements;
     private List<TeasyElement> errorElements;
 
-    public ElementsDisplayed(List<TeasyElement> elements) {
+    public ElementsAbsent(List<TeasyElement> elements) {
         this.elements = elements;
     }
 
     @Nullable
     @Override
     public Boolean apply(@Nullable WebDriver webDriver) {
-        boolean allDisplayed = true;
+        boolean allAbsent = true;
         errorElements = new ArrayList<>();
         for (TeasyElement el : elements) {
-            if (!el.isDisplayed()) {
-                allDisplayed = false;
+            if (el.isDisplayed()) {
+                allAbsent = false;
                 errorElements.add(el);
             }
         }
-        return allDisplayed;
+        return allAbsent;
     }
 
     @Override
@@ -37,6 +37,6 @@ public class ElementsDisplayed implements ExpectedCondition<Boolean> {
         for (TeasyElement el : errorElements) {
             error.append(el.toString()).append("| ");
         }
-        return String.format("Elements |%s is not displayed!", error.toString());
+        return String.format("Elements |%s is not absent!", error.toString());
     }
 }
