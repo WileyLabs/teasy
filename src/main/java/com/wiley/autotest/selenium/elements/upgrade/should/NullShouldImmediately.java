@@ -31,6 +31,8 @@ public class NullShouldImmediately implements Should {
         throwException();
     }
 
+    public void haveText() { throwException(); }
+
     public void haveAttribute(String attributeName, String value) {
         throwException();
     }

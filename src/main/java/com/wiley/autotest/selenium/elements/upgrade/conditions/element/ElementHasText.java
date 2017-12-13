@@ -14,10 +14,10 @@ public class ElementHasText implements ExpectedCondition<Boolean> {
 
     @Nullable
     @Override
-    public Boolean apply(@Nullable WebDriver driver) { return element.getText() != null; }
+    public Boolean apply(@Nullable WebDriver driver) { return element.getText() != null && !element.getText().equals(""); }
 
     @Override
     public String toString() {
-        return String.format("Element has no text");
+        return String.format("Element has no text,");
     }
 }

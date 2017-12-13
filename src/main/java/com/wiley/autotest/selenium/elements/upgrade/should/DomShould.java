@@ -40,6 +40,9 @@ public class DomShould implements Should {
         waitFor(new ElementTextEquals(element, text));
     }
 
+    @Override
+    public void haveText() { waitFor(new ElementHasText(element)); }
+
     public void haveAttribute(String attributeName, String value) {
         waitFor(new ElementAttributeValue(element, attributeName, value));
     }

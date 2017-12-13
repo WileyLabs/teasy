@@ -1,12 +1,6 @@
 package com.wiley.autotest.selenium.elements.upgrade.should;
 
-import com.wiley.autotest.selenium.SeleniumHolder;
-import com.wiley.autotest.selenium.context.SearchStrategy;
-import com.wiley.autotest.selenium.elements.upgrade.NullTeasyElement;
-import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
-import com.wiley.autotest.selenium.elements.upgrade.TeasyElementData;
-import com.wiley.autotest.selenium.elements.upgrade.TeasyElementFinder;
-import com.wiley.autotest.selenium.elements.upgrade.TeasyFluentWait;
+import com.wiley.autotest.selenium.elements.upgrade.*;
 import com.wiley.autotest.selenium.elements.upgrade.conditions.element.*;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
@@ -39,6 +33,9 @@ public class NullShould implements Should {
     public void haveText(String text) {
         fluentWait.waitFor(new ElementTextEquals(getElement(), text));
     }
+
+    @Override
+    public void haveText() { fluentWait.waitFor(new ElementDisplayed(getElement())); }
 
     public void haveAttribute(String attributeName, String value) {
         fluentWait.waitFor(new ElementAttributeValue(getElement(), attributeName, value));
