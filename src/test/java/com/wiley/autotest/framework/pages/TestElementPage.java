@@ -7,9 +7,7 @@ import com.wiley.autotest.selenium.elements.upgrade.NullTeasyElement;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import com.wiley.autotest.selenium.elements.upgrade.VisibleTeasyElement;
 import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
 import org.springframework.stereotype.Component;
-import org.testng.Assert;
 
 /**
  * Created by shekhavtsov on 20/07/2017.
@@ -79,6 +77,11 @@ public class TestElementPage extends AbstractPage {
 
     public TestElementPage checkNonExistingElementClickFails() {
         element(By.cssSelector("not_present_element"), new SearchStrategy(1)).click();
+        return this;
+    }
+
+    public TestElementPage checkElemebtHasAnyText() {
+        element(By.xpath("//*[@id=\"men\"]/tbody/tr[1]/td[1]")).should().haveText();
         return this;
     }
 }

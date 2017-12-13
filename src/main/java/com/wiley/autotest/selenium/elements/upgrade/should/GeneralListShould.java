@@ -1,6 +1,5 @@
 package com.wiley.autotest.selenium.elements.upgrade.should;
 
-import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyElementList;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyFluentWait;
 import com.wiley.autotest.selenium.elements.upgrade.conditions.elements.*;
@@ -37,6 +36,10 @@ public class GeneralListShould implements ListShould {
     @Override
     public void haveText(String text) {
         waitFor(new ElementsHaveText(elements, text));
+    }
+
+    @Override
+    public void haveText() {
     }
 
     @Override
