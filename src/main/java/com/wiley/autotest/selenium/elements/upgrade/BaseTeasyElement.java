@@ -3,6 +3,7 @@ package com.wiley.autotest.selenium.elements.upgrade;
 import com.wiley.autotest.selenium.Report;
 import com.wiley.autotest.selenium.context.SearchStrategy;
 import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
+import com.wiley.autotest.services.StopTestExecutionException;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.interactions.internal.Coordinates;
@@ -17,9 +18,7 @@ import java.util.List;
 
 import static com.wiley.autotest.selenium.SeleniumHolder.getWebDriver;
 import static com.wiley.autotest.utils.ExecutionUtils.isChrome;
-import static com.wiley.autotest.utils.TestUtils.fail;
 import static com.wiley.autotest.utils.TestUtils.waitForSomeTime;
-
 
 /**
  * General implementation with all basic logic of an element
@@ -385,7 +384,7 @@ public abstract class BaseTeasyElement implements TeasyElement, Locatable {
 
     private void increment() {
         if (repeatLocateElementCounter > MAX_NUMBER_OF_REPEAT_LOCATE_ELEMENT) {
-            fail("Cannot interact properly with element with locator '" + locator.getBy() + "'" + (!wrappedElement.isDisplayed() ? "Element was not displayed!" : ""));
+            throw new StopTestExecutionException("Cannot interact properly with element with locator '" + locator.getBy() + "'" + (!wrappedElement.isDisplayed() ? "Element was not displayed!" : ""));
         } else {
             repeatLocateElementCounter++;
         }

@@ -1,5 +1,6 @@
 package com.wiley.autotest.actions;
 
+import com.wiley.autotest.services.StopTestExecutionException;
 import com.wiley.autotest.utils.TestUtils;
 
 import java.util.function.Supplier;
@@ -11,6 +12,7 @@ import java.util.function.Supplier;
  * If the condition does not become true after all attempts - AssertionError is thrown
  */
 public class RepeatableAction {
+
     private Actions action;
     private Conditions condition;
     private Supplier<Boolean> supplier;
@@ -51,7 +53,6 @@ public class RepeatableAction {
         this.millisecondsBetweenAttempts = millisecondsBetweenAttempts;
     }
 
-
     public RepeatableAction message(String errorMessage) {
         this.errorMessage = errorMessage;
         return this;
@@ -71,7 +72,7 @@ public class RepeatableAction {
         } else {
             if (attemptCounter > numberOfAttempts) {
                 attemptCounter = 0;
-                TestUtils.fail(getErrorMessage());
+                throw new StopTestExecutionException(getErrorMessage());
             }
             TestUtils.waitForSomeTime(millisecondsBetweenAttempts, "Sleeping inside action repeater");
             perform();
