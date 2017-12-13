@@ -4,6 +4,7 @@ import com.wiley.autotest.annotations.BrowserMobProxy;
 import com.wiley.autotest.annotations.FireBug;
 import com.wiley.autotest.annotations.NeedRestartDriver;
 import com.wiley.autotest.annotations.UnexpectedAlertCapability;
+import com.wiley.autotest.selenium.Report;
 import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.context.PageLoadingValidator;
 import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
@@ -15,19 +16,15 @@ import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
 import io.github.bonigarcia.wdm.ChromeDriverManager;
 import io.github.bonigarcia.wdm.EdgeDriverManager;
+import io.github.bonigarcia.wdm.FirefoxDriverManager;
 import io.github.bonigarcia.wdm.InternetExplorerDriverManager;
-import io.github.bonigarcia.wdm.PhantomJsDriverManager;
 import net.lightbody.bmp.proxy.ProxyServer;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicHttpEntityEnclosingRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
 import org.openqa.selenium.*;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -36,11 +33,9 @@ import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.firefox.internal.ProfilesIni;
-import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.LoggingPreferences;
-import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.remote.*;
 import org.openqa.selenium.safari.SafariOptions;
 import org.slf4j.Logger;
@@ -48,9 +43,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.net.*;
 import java.util.Arrays;
@@ -68,11 +61,10 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
     private static final int IE_WEB_DRIVER_NUMBER_OF_TESTS_LIMIT = 5;
     private static final int SAFARI_WEB_DRIVER_NUMBER_OF_TESTS_LIMIT = 1;
     private static final String FIREFOX = "firefox";
+    private static final String GECKO = "gecko";
     private static final String CHROME = "chrome";
     private static final String SAFARI = "safari";
     private static final String SAFARI_TECHNOLOGY_PREVIEW = "safariTechnologyPreview";
-    private static final String HTML_UNIT = "htmlunit";
-    private static final String PHANTOM_JS = "phantomjs";
     private static final String IE = "ie";
     private static final String EDGE = "edge";
     private static final String IE11 = "ie11";
@@ -95,74 +87,6 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
     private static ThreadLocal<Boolean> isUseFireBug = ThreadLocal.withInitial(() -> false);
     private String[] activeProfiles;
     private static final String STABLE_IE_DRIVER_VERSION = "3.4.0";
-
-    /**
-     * Checks whether browser is dead. Used to catch
-     * situations like "Error communicating with the remote browser. It may have died." exceptions
-     *
-     * @return true if browser is dead
-     */
-    public static boolean isBrowserDead() {
-        try {
-            if (((FramesTransparentWebDriver) getWebDriver()).getWrappedDriver() instanceof AppiumDriver) {
-                getWebDriver().getPageSource();
-            } else {
-                getWebDriver().getCurrentUrl();
-            }
-            return false;
-        } catch (Throwable t) {
-            LOGGER.error("*****BROWSER IS DEAD ERROR***** ", t);
-            return true;
-        }
-    }
-
-    private static String getNodeIpBySessionId(SessionId sessionId, String gridHubUrl) {
-        String[] gridHubIpAndPort = gridHubUrl.split("//")[1].split(":");
-        String gridIp = gridHubIpAndPort[0];
-        int gridPort = Integer.parseInt(gridHubIpAndPort[1].split("/")[0]);
-        try {
-            //check if grid hub stared on local host for appium
-            URL obj = new URL("http://" + gridIp + ":" + gridPort + "/grid/api/");
-            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-            con.setRequestMethod("GET");
-            int responseCode = con.getResponseCode();
-            if (responseCode != HttpStatus.SC_OK) {
-                return gridIp;
-            }
-
-            HttpHost host = new HttpHost(gridIp, gridPort);
-            HttpClient client = HttpClientBuilder.create().build();
-            URL testSessionApi = new URL("http://" + gridIp + ":" + gridPort + "/grid/api/testsession?session=" + sessionId);
-            BasicHttpEntityEnclosingRequest r = new BasicHttpEntityEnclosingRequest("POST", testSessionApi.toExternalForm());
-            HttpResponse response = client.execute(host, r);
-            JSONObject object = extractObject(response);
-            String[] nodeIpAndPort = ((String) object.get("proxyId")).split("//")[1].split(":");
-            return nodeIpAndPort[0];
-        } catch (JSONException e) {
-            LOGGER.error("*****JSONException occurs in getNodeIpBySessionId()*****", e);
-            throw new GridConnectException("*****JSONException occurs in getNodeIpBySessionId()*****", e);
-        } catch (MalformedURLException e) {
-            LOGGER.error("*****MalformedURLException occurs in getNodeIpBySessionId()*****", e);
-            throw new GridConnectException("*****MalformedURLException occurs in getNodeIpBySessionId()*****", e);
-        } catch (ClientProtocolException e) {
-            LOGGER.error("*****ClientProtocolException occurs in getNodeIpBySessionId()*****", e);
-            throw new GridConnectException("*****ClientProtocolException occurs in getNodeIpBySessionId()*****", e);
-        } catch (IOException e) {
-            LOGGER.error("*****IOException occurs in getNodeIpBySessionId()*****", e);
-            throw new GridConnectException("*****IOException occurs in getNodeIpBySessionId()*****", e);
-        }
-    }
-
-    private static JSONObject extractObject(HttpResponse resp) throws IOException, JSONException {
-        BufferedReader rd = new BufferedReader(new InputStreamReader(resp.getEntity().getContent()));
-        StringBuilder stringBuffer = new StringBuilder();
-        String line;
-        while ((line = rd.readLine()) != null) {
-            stringBuffer.append(line);
-        }
-        rd.close();
-        return new JSONObject(stringBuffer.toString());
-    }
 
     @Override
     public void prepareTestInstance(final TestContext context) throws Exception {
@@ -318,6 +242,26 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         }
     }
 
+    /**
+     * Checks whether browser is dead. Used to catch
+     * situations like "Error communicating with the remote browser. It may have died." exceptions
+     *
+     * @return true if browser is dead
+     */
+    public static boolean isBrowserDead() {
+        try {
+            if (((FramesTransparentWebDriver) getWebDriver()).getWrappedDriver() instanceof AppiumDriver) {
+                getWebDriver().getPageSource();
+            } else {
+                getWebDriver().getCurrentUrl();
+            }
+            return false;
+        } catch (Throwable t) {
+            LOGGER.error("*****BROWSER IS DEAD ERROR***** ", t);
+            return true;
+        }
+    }
+
     private void quitWebDriver() {
         count.set(1);
         try {
@@ -430,7 +374,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
             DesiredCapabilities desiredCapabilities;
             if (platformName.equals(WINDOWS)) {
                 if (StringUtils.equalsIgnoreCase(browserName, CHROME)) {
-                    desiredCapabilities = getChromeDesiredCapabilities();
+                    desiredCapabilities = getChromeDesiredCapabilities(settings);
                     SeleniumHolder.setDriverName(CHROME);
                     SeleniumHolder.setPlatform(WINDOWS);
                 } else if (StringUtils.equalsIgnoreCase(browserName, IE)) {
@@ -453,13 +397,9 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
                     desiredCapabilities = getEdgeDesiredCapabilities();
                     SeleniumHolder.setDriverName(EDGE);
                     SeleniumHolder.setPlatform(WINDOWS);
-                } else if (StringUtils.equalsIgnoreCase(browserName, HTML_UNIT)) {
-                    desiredCapabilities = getHtmlUnitDesiredCapabilities();
-                    SeleniumHolder.setDriverName(HTML_UNIT);
-                    SeleniumHolder.setPlatform(WINDOWS);
-                } else if (StringUtils.equalsIgnoreCase(browserName, PHANTOM_JS)) {
-                    desiredCapabilities = getPhantomJsDesiredCapabilities();
-                    SeleniumHolder.setDriverName(PHANTOM_JS);
+                } else if (StringUtils.equalsIgnoreCase(browserName, GECKO)) {
+                    desiredCapabilities = getGeckoDesiredCapabilities();
+                    SeleniumHolder.setDriverName(GECKO);
                     SeleniumHolder.setPlatform(WINDOWS);
                 } else if (StringUtils.equalsIgnoreCase(browserName, FIREFOX)) {
                     desiredCapabilities = getFireFoxDesiredCapabilities(settings);
@@ -505,7 +445,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
                 }
             } else if (platformName.equalsIgnoreCase(LINUX)) {
                 if (StringUtils.equalsIgnoreCase(browserName, CHROME)) {
-                    desiredCapabilities = getChromeDesiredCapabilities();
+                    desiredCapabilities = getChromeDesiredCapabilities(settings);
                     SeleniumHolder.setDriverName(CHROME);
                     SeleniumHolder.setPlatform(LINUX);
                 } else if (StringUtils.equalsIgnoreCase(browserName, FIREFOX)) {
@@ -531,10 +471,14 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
                 SeleniumHolder.setDriverName(FIREFOX);
                 SeleniumHolder.setPlatform(WINDOWS);
                 return firefox(settings, customDesiredCapabilities);
+            } else if (StringUtils.equalsIgnoreCase(browserName, GECKO)) {
+                SeleniumHolder.setDriverName(GECKO);
+                SeleniumHolder.setPlatform(WINDOWS);
+                return gecko(customDesiredCapabilities);
             } else if (StringUtils.equalsIgnoreCase(browserName, CHROME)) {
                 SeleniumHolder.setDriverName(CHROME);
                 SeleniumHolder.setPlatform(WINDOWS);
-                return chrome(customDesiredCapabilities);
+                return chrome(customDesiredCapabilities, settings);
             } else if (StringUtils.equalsIgnoreCase(browserName, IE)) {
                 SeleniumHolder.setDriverName(IE);
                 SeleniumHolder.setPlatform(WINDOWS);
@@ -555,12 +499,6 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
                 SeleniumHolder.setDriverName(SAFARI_TECHNOLOGY_PREVIEW);
                 SeleniumHolder.setPlatform(MAC);
                 return safariTechnologyPreview(settings);
-            } else if (StringUtils.equalsIgnoreCase(browserName, HTML_UNIT)) {
-                SeleniumHolder.setDriverName(HTML_UNIT);
-                return htmlUnit(customDesiredCapabilities);
-            } else if (StringUtils.equalsIgnoreCase(browserName, PHANTOM_JS)) {
-                SeleniumHolder.setDriverName(PHANTOM_JS);
-                return phantomJs(customDesiredCapabilities);
             } else {
                 throw new RuntimeException("Not supported browser: " + browserName + ", for platform: " + settings.getPlatform());
             }
@@ -575,9 +513,18 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         return new FirefoxDriver(desiredCapabilities);
     }
 
-    private WebDriver chrome(DesiredCapabilities customDesiredCapabilities) {
+    private WebDriver gecko(DesiredCapabilities customDesiredCapabilities) {
+        FirefoxDriverManager.getInstance().setup();
+        DesiredCapabilities desiredCapabilities = getGeckoDesiredCapabilities();
+        if (!customDesiredCapabilities.asMap().isEmpty()) {
+            desiredCapabilities.merge(customDesiredCapabilities);
+        }
+        return new FirefoxDriver(desiredCapabilities);
+    }
+
+    private WebDriver chrome(DesiredCapabilities customDesiredCapabilities, Settings settings) {
         ChromeDriverManager.getInstance().setup();
-        DesiredCapabilities desiredCapabilities = getChromeDesiredCapabilities();
+        DesiredCapabilities desiredCapabilities = getChromeDesiredCapabilities(settings);
         if (!customDesiredCapabilities.asMap().isEmpty()) {
             desiredCapabilities.merge(customDesiredCapabilities);
         }
@@ -622,23 +569,6 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         return remoteWebDriver;
     }
 
-    private WebDriver htmlUnit(DesiredCapabilities customDesiredCapabilities) {
-        DesiredCapabilities desiredCapabilities = getHtmlUnitDesiredCapabilities();
-        if (!customDesiredCapabilities.asMap().isEmpty()) {
-            desiredCapabilities.merge(customDesiredCapabilities);
-        }
-        return new HtmlUnitDriver(desiredCapabilities);
-    }
-
-    private WebDriver phantomJs(DesiredCapabilities customDesiredCapabilities) {
-        PhantomJsDriverManager.getInstance().setup();
-        DesiredCapabilities desiredCapabilities = getPhantomJsDesiredCapabilities();
-        if (!customDesiredCapabilities.asMap().isEmpty()) {
-            desiredCapabilities.merge(customDesiredCapabilities);
-        }
-        return new PhantomJSDriver(desiredCapabilities);
-    }
-
     public DesiredCapabilities getCustomDesiredCapabilities(Configuration configuration) {
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
         if (configuration.getDesiredCapabilities() != null) {
@@ -659,6 +589,19 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         capabilities.setCapability(FirefoxDriver.PROFILE, getFirefoxProfile(settings));
         capabilities.setPlatform(Platform.WINDOWS);
         capabilities.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
+        setLoggingPrefs(capabilities);
+        setProxy(capabilities);
+        return capabilities;
+    }
+
+    private DesiredCapabilities getGeckoDesiredCapabilities() {
+        DesiredCapabilities capabilities = DesiredCapabilities.firefox();
+        setAlertBehaviorCapabilities(capabilities);
+        capabilities.setCapability(FirefoxDriver.MARIONETTE, true);
+        capabilities.setPlatform(Platform.WINDOWS);
+        capabilities.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
+
+
         setLoggingPrefs(capabilities);
         setProxy(capabilities);
         return capabilities;
@@ -694,13 +637,18 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         return capabilities;
     }
 
-    private DesiredCapabilities getChromeDesiredCapabilities() {
+    private DesiredCapabilities getChromeDesiredCapabilities(Settings settings) {
         DesiredCapabilities capabilities = DesiredCapabilities.chrome();
         //Added to avoid yellow warning in chrome 35
         ChromeOptions options = new ChromeOptions();
 //        options.addArguments("test-type");
         //For view pdf in chrome
         options.setExperimentalOption("excludeSwitches", Arrays.asList("test-type", "--ignore-certificate-errors"));
+
+        if (settings.isHeadlessBrowser()) {
+            options.addArguments("headless");
+        }
+
         capabilities.setCapability(ChromeOptions.CAPABILITY, options);
         capabilities.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
         capabilities.setPlatform(Platform.WINDOWS);
@@ -708,16 +656,6 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         setLoggingPrefs(capabilities);
         setProxy(capabilities);
         return capabilities;
-    }
-
-    private DesiredCapabilities getHtmlUnitDesiredCapabilities() {
-        DesiredCapabilities desiredCapabilities = DesiredCapabilities.htmlUnitWithJs();
-        desiredCapabilities.setJavascriptEnabled(true);
-        return desiredCapabilities;
-    }
-
-    private DesiredCapabilities getPhantomJsDesiredCapabilities() {
-        return DesiredCapabilities.phantomjs();
     }
 
     private DesiredCapabilities getAndroidChromeDesiredCapabilities() {
@@ -841,17 +779,37 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         Runtime.getRuntime().addShutdownHook(new Thread(driver::quit));
     }
 
-    private boolean isRunLocal(String gridHubUrl) {
+    private static String getNodeIpBySessionId(SessionId sessionId, String gridHubUrl) {
+        String[] gridHubIpAndPort = gridHubUrl.split("//")[1].split(":");
+        String gridIp = gridHubIpAndPort[0];
+        int gridPort = Integer.parseInt(gridHubIpAndPort[1].split("/")[0]);
         try {
-            InetAddress[] ipList = InetAddress.getAllByName(InetAddress.getLocalHost().getHostName());
-            for (InetAddress ip : ipList) {
-                if (gridHubUrl.contains(ip.getHostAddress())) {
-                    return true;
-                }
-            }
-        } catch (UnknownHostException e) {
+            Connection.Response execute = Jsoup
+                    .connect("http://" + gridIp + ":" + gridPort + "/grid/api/")
+                    .ignoreContentType(true)
+                    .ignoreHttpErrors(true)
+                    .method(Connection.Method.GET)
+                    .execute();
 
+            if (execute.statusCode() != HttpStatus.SC_OK) {
+                return gridIp;
+            }
+
+            String json = Jsoup
+                    .connect("http://" + gridIp + ":" + gridPort + "/grid/api/testsession?session=" + sessionId)
+                    .ignoreContentType(true)
+                    .ignoreHttpErrors(true)
+                    .method(Connection.Method.POST)
+                    .execute()
+                    .parse()
+                    .text();
+
+            return new JSONObject(json).get("proxyId").toString().split("//")[1].split(":")[0];
+        } catch (JSONException e) {
+            new Report("JSONException in getNodeIpBySessionId", e).jenkins();
+        } catch (IOException e) {
+            new Report("IOException in getNodeIpBySessionId", e).jenkins();
         }
-        return false;
+        throw new GridConnectException("Cannot get node id by session from grid api.");
     }
 }
