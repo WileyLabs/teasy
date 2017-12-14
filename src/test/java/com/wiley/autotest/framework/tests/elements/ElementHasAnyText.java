@@ -13,8 +13,11 @@ public class ElementHasAnyText extends BaseTest {
 
     @Test
     public void test() {
-        openPage("main.html");
-        testElementPage.checkElemebtHasAnyText();
+        openPage("getTextFromElement.html");
+        testElementPage.checkSingleElementHasAnyText();
+        testElementPage.checkFewElementsHasAnyText();
+        testElementPage.checkSingleElementHasNotAnyText();
+        testElementPage.checkNotAllElementsHasAnyText();
     }
 
 }

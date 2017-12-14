@@ -1,6 +1,7 @@
 package com.wiley.autotest.selenium.elements.upgrade.conditions.elements;
 
 import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
+import com.wiley.autotest.selenium.elements.upgrade.conditions.element.ElementHaveAnyText;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 
@@ -25,11 +26,20 @@ public class ElementsHaveText implements ExpectedCondition<Boolean> {
         List<String> actualTexts = new ArrayList<>();
         errorElements = new ArrayList<>();
         boolean isCorrect = true;
-        for (TeasyElement el : elements) {
-            actualTexts.add(el.getText());
-            if (!text.equals(el.getText())) {
-                isCorrect = false;
-                errorElements.add(el);
+        if (text != null) {
+            for (TeasyElement el : elements) {
+                actualTexts.add(el.getText());
+                if (!text.equals(el.getText())) {
+                    isCorrect = false;
+                    errorElements.add(el);
+                }
+            }
+        } else {
+            for (TeasyElement el : elements) {
+                if (el.getText() == null || el.getText().equals("")){
+                    isCorrect = false;
+                    errorElements.add(el);
+                }
             }
         }
         return isCorrect;

@@ -6,11 +6,11 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 
 import javax.annotation.Nullable;
 
-public class ElementHasText implements ExpectedCondition<Boolean> {
+public class ElementHaveAnyText implements ExpectedCondition<Boolean> {
 
     private final TeasyElement element;
 
-    public ElementHasText(TeasyElement element) { this.element = element; }
+    public ElementHaveAnyText(TeasyElement element) { this.element = element; }
 
     @Nullable
     @Override

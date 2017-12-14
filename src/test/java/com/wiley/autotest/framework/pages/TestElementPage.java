@@ -80,8 +80,31 @@ public class TestElementPage extends AbstractPage {
         return this;
     }
 
-    public TestElementPage checkElemebtHasAnyText() {
-        element(By.xpath("//*[@id=\"men\"]/tbody/tr[1]/td[1]")).should().haveText();
+    public TestElementPage checkSingleElementHasAnyText() {
+        element(By.id("exist")).should().haveText();
+        return this;
+    }
+
+    public TestElementPage checkFewElementsHasAnyText() {
+        elements(By.className("someClassForExistElements")).should().haveText();
+        return this;
+    }
+
+    public TestElementPage checkSingleElementHasNotAnyText() {
+        try {
+            domElement(By.id("notExist")).should().haveText();
+        } catch (AssertionError e) {
+            e.printStackTrace();
+        }
+        return this;
+    }
+
+    public TestElementPage checkNotAllElementsHasAnyText() {
+        try {
+            domElements(By.className("someClassForOneNotExistElements")).should().haveText();
+        } catch (AssertionError e) {
+            e.printStackTrace();
+        }
         return this;
     }
 }
