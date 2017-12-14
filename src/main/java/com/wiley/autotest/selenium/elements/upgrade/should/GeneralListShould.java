@@ -38,6 +38,10 @@ public class GeneralListShould implements ListShould {
     public void haveText() {waitFor(new ElementsHaveText(elements, null)); }
 
     @Override
+    public void haveText() {
+    }
+
+    @Override
     public void haveTexts(List<String> texts) {
         waitFor(new ElementsHaveTexts(elements, texts));
     }
