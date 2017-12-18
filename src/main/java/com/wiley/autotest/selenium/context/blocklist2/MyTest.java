@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 
-public class MyTest {
+public class MyTest  {
 
 
     private BlockList<TestBlock> testBlocks;
