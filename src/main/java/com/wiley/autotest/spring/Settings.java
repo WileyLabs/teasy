@@ -21,6 +21,7 @@ public class Settings extends Properties {
     private static final String APPLICATION_PLATFORM_PROP_KEY = "application.platform";
     private static final String INVOCATION_COUNT_PROP_KEY = "invocation.count";
     private static final String RESTART_DRIVER_COUNT_PROP_KEY = "restart.driver.count";
+    private static final String HEADLESS_BROWSER_PROP_KEY = "headless.browser";
 
     public boolean getAsBoolean(String name) {
         return Boolean.valueOf(getProperty(name));
@@ -98,5 +99,9 @@ public class Settings extends Properties {
 
     public Integer getRestartDriverCount() {
         return getAsInteger(RESTART_DRIVER_COUNT_PROP_KEY);
+    }
+
+    public Boolean isHeadlessBrowser() {
+        return getAsBoolean(HEADLESS_BROWSER_PROP_KEY);
     }
 }

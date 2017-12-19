@@ -21,7 +21,7 @@ public class ElementAttributeValue implements ExpectedCondition<Boolean> {
     @Nullable
     @Override
     public Boolean apply(@Nullable WebDriver driver) {
-        return element.getAttribute(attributeName).equals(value);
+        return value.equals(element.getAttribute(attributeName));
     }
 
     @Override

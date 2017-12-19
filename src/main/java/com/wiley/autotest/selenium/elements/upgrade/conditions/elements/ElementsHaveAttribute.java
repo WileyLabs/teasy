@@ -8,35 +8,37 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ElementsDisplayed implements ExpectedCondition<Boolean> {
+public class ElementsHaveAttribute implements ExpectedCondition<Boolean> {
 
     private final List<TeasyElement> elements;
+    private final String attributeName;
     private List<TeasyElement> errorElements;
 
-    public ElementsDisplayed(List<TeasyElement> elements) {
+    public ElementsHaveAttribute(List<TeasyElement> elements, String attributeName) {
         this.elements = elements;
+        this.attributeName = attributeName;
     }
 
     @Nullable
     @Override
     public Boolean apply(@Nullable WebDriver webDriver) {
-        boolean allDisplayed = true;
         errorElements = new ArrayList<>();
+        boolean isCorrect = true;
         for (TeasyElement el : elements) {
-            if (!el.isDisplayed()) {
-                allDisplayed = false;
+            if (el.getAttribute(attributeName) == null) {
+                isCorrect = false;
                 errorElements.add(el);
             }
         }
-        return allDisplayed;
+        return isCorrect;
     }
 
     @Override
     public String toString() {
         StringBuilder error = new StringBuilder();
         for (TeasyElement el : errorElements) {
-            error.append(el.toString()).append("| ");
+            error.append(el.toString()).append("|");
         }
-        return String.format("Elements |%s is not displayed!", error.toString());
+        return String.format("Elements |%s does not have attribute '%s'!", error.toString(), attributeName);
     }
 }

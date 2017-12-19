@@ -3,8 +3,7 @@ package com.wiley.autotest.selenium.elements.upgrade.should;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyElementList;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyFluentWait;
-import com.wiley.autotest.selenium.elements.upgrade.conditions.elements.ElementsDisplayed;
-import com.wiley.autotest.selenium.elements.upgrade.conditions.elements.ElementsHaveTexts;
+import com.wiley.autotest.selenium.elements.upgrade.conditions.elements.*;
 import org.openqa.selenium.WebDriver;
 
 import java.util.List;
@@ -32,12 +31,12 @@ public class GeneralListShould implements ListShould {
 
     @Override
     public void beAbsent() {
-
+        waitFor(new ElementsAbsent(elements));
     }
 
     @Override
     public void haveText(String text) {
-
+        waitFor(new ElementsHaveText(elements, text));
     }
 
     @Override
@@ -47,22 +46,22 @@ public class GeneralListShould implements ListShould {
 
     @Override
     public void haveAttribute(String attributeName, String value) {
-
+        waitFor(new ElementsAttributeValue(elements, attributeName, value));
     }
 
     @Override
     public void haveAttribute(String attributeName) {
-
+        waitFor(new ElementsHaveAttribute(elements, attributeName));
     }
 
     @Override
     public void notHaveAttribute(String attributeName) {
-
+        waitFor(new ElementsNotHaveAttribute(elements, attributeName));
     }
 
     @Override
     public void customCondition(Function<WebDriver, Boolean> condition) {
-
+        waitFor(condition);
     }
 
     private void waitFor(Function<WebDriver, Boolean> condition) {

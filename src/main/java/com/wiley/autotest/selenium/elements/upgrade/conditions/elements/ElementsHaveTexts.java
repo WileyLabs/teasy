@@ -39,7 +39,7 @@ public class ElementsHaveTexts implements ExpectedCondition<Boolean> {
     public String toString() {
         StringBuilder error = new StringBuilder();
         for (TeasyElement el : errorElements) {
-            error.append(el.toString()).append(" with text '").append(el.getText()).append("|");
+            error.append(el.toString()).append(" with text '").append(el.getText()).append("'|");
         }
         return String.format("Elements |%s text is not present in the expected texts! Expected texts are %s", error.toString(), texts);
     }

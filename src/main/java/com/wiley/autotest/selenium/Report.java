@@ -2,6 +2,7 @@ package com.wiley.autotest.selenium;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.LoggerFactory;
+import org.slf4j.event.Level;
 import org.testng.Reporter;
 import ru.yandex.qatools.allure.annotations.Step;
 
@@ -12,14 +13,25 @@ import ru.yandex.qatools.allure.annotations.Step;
  * Jenkins console
  */
 public class Report {
+
     private String message;
+    private Level level = Level.INFO;
 
     public Report(String message) {
         this.message = message;
     }
 
+    public Report(String message, Level level) {
+        this.message = message;
+        this.level = level;
+    }
+
     public Report(String message, Throwable t) {
         this(message + "\n" + ExceptionUtils.getStackTrace(t));
+    }
+
+    public Report(String message, Throwable t, Level level) {
+        this(message + "\n" + ExceptionUtils.getStackTrace(t), level);
     }
 
     public void testNG() {
@@ -37,11 +49,21 @@ public class Report {
     private void allure(String message) {
     }
 
-    /**
-     * Making it an 'error' to guarantee that message will be shown with any log level settings
-     */
     public void jenkins() {
-        LoggerFactory.getLogger(this.getClass()).error(message);
+        switch (level) {
+            case INFO:
+                LoggerFactory.getLogger(this.getClass()).info(message);
+                break;
+            case WARN:
+                LoggerFactory.getLogger(this.getClass()).warn(message);
+                break;
+            case DEBUG:
+                LoggerFactory.getLogger(this.getClass()).debug(message);
+                break;
+            case ERROR:
+                LoggerFactory.getLogger(this.getClass()).error(message);
+                break;
+        }
     }
 
     public void everywhere() {
@@ -49,5 +71,4 @@ public class Report {
         allure();
         jenkins();
     }
-
 }

@@ -8,35 +8,39 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ElementsDisplayed implements ExpectedCondition<Boolean> {
+public class ElementsHaveText implements ExpectedCondition<Boolean> {
 
     private final List<TeasyElement> elements;
+    private final String text;
     private List<TeasyElement> errorElements;
 
-    public ElementsDisplayed(List<TeasyElement> elements) {
+    public ElementsHaveText(List<TeasyElement> elements, String text) {
         this.elements = elements;
+        this.text = text;
     }
 
     @Nullable
     @Override
     public Boolean apply(@Nullable WebDriver webDriver) {
-        boolean allDisplayed = true;
+        List<String> actualTexts = new ArrayList<>();
         errorElements = new ArrayList<>();
+        boolean isCorrect = true;
         for (TeasyElement el : elements) {
-            if (!el.isDisplayed()) {
-                allDisplayed = false;
+            actualTexts.add(el.getText());
+            if (!text.equals(el.getText())) {
+                isCorrect = false;
                 errorElements.add(el);
             }
         }
-        return allDisplayed;
+        return isCorrect;
     }
 
     @Override
     public String toString() {
         StringBuilder error = new StringBuilder();
         for (TeasyElement el : errorElements) {
-            error.append(el.toString()).append("| ");
+            error.append(el.toString()).append(" with text '").append(el.getText()).append("|");
         }
-        return String.format("Elements |%s is not displayed!", error.toString());
+        return String.format("Elements |%s text is wrong! Expected text is %s", error.toString(), text);
     }
 }
