@@ -12,7 +12,7 @@ public class NonexistentDomElementThrowsException extends BaseTest {
     @Autowired
     private TestDomElementPage testDomElementPage;
 
-    @Test(expectedExceptions = NoSuchElementException.class)
+    @Test(expectedExceptions = AssertionError.class)
     public void test() {
         openPage("mainTestElement.html");
         testDomElementPage.checkDomElementNotFound();

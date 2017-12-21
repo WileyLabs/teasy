@@ -12,7 +12,7 @@ public class NonexistentElementThrowsException extends BaseTest {
     @Autowired
     private TestElementPage testElementPage;
 
-    @Test(expectedExceptions = NoSuchElementException.class)
+    @Test(expectedExceptions = AssertionError.class)
     public void test() {
         openPage("mainTestElement.html");
         testElementPage.checkElementNotFound();
