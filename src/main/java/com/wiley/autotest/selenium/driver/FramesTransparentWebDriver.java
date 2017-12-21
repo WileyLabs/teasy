@@ -86,7 +86,7 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
             List<WebElement> found = findFirstElements(context, by, currentFramesPath);
             return found.get(0);
         } catch (IndexOutOfBoundsException e) {
-            throw new NoSuchElementException("Unable to locate element " + by + ", Exception - " + e);
+            throw new NoSuchElementException("Unable to find element " + by + ", Exception - " + e);
         }
     }
 
