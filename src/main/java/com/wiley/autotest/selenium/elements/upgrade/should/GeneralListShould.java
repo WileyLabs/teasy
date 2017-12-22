@@ -35,7 +35,9 @@ public class GeneralListShould implements ListShould {
     public void haveText(String text) { waitFor(new ElementsHaveText(elements, text)); }
 
     @Override
-    public void haveText() {waitFor(new ElementsHaveText(elements, null)); }
+    public void haveAnyText() {
+        waitFor(new ElementsHaveAnyText(elements));
+    }
 
     @Override
     public void haveTexts(List<String> texts) {

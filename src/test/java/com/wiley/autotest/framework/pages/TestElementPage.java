@@ -81,18 +81,18 @@ public class TestElementPage extends AbstractPage {
     }
 
     public TestElementPage checkSingleElementHasAnyText() {
-        element(By.id("exist")).should().haveText();
+        element(By.id("exist")).should().haveAnyText();
         return this;
     }
 
     public TestElementPage checkFewElementsHasAnyText() {
-        elements(By.className("someClassForExistElements")).should().haveText();
+        elements(By.className("someClassForExistElements")).should().haveAnyText();
         return this;
     }
 
     public TestElementPage checkSingleElementHasNotAnyText() {
         try {
-            domElement(By.id("notExist")).should().haveText();
+            domElement(By.id("notExist")).should().haveAnyText();
         } catch (AssertionError e) {
             e.printStackTrace();
         }
@@ -101,7 +101,7 @@ public class TestElementPage extends AbstractPage {
 
     public TestElementPage checkNotAllElementsHasAnyText() {
         try {
-            domElements(By.className("someClassForOneNotExistElements")).should().haveText();
+            domElements(By.className("someClassForOneNotExistElements")).should().haveAnyText();
         } catch (AssertionError e) {
             e.printStackTrace();
         }

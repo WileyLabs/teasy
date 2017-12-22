@@ -35,7 +35,9 @@ public class NullShould implements Should {
     }
 
     @Override
-    public void haveText() { fluentWait.waitFor(new ElementDisplayed(getElement())); }
+    public void haveAnyText() {
+        fluentWait.waitFor(new ElementDisplayed(getElement()));
+    }
 
     public void haveAttribute(String attributeName, String value) {
         fluentWait.waitFor(new ElementAttributeValue(getElement(), attributeName, value));

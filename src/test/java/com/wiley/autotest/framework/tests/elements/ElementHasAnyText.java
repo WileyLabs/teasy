@@ -19,5 +19,4 @@ public class ElementHasAnyText extends BaseTest {
         testElementPage.checkSingleElementHasNotAnyText();
         testElementPage.checkNotAllElementsHasAnyText();
     }
-
 }

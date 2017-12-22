@@ -8,26 +8,22 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ElementsHaveText implements ExpectedCondition<Boolean> {
+public class ElementsHaveAnyText implements ExpectedCondition<Boolean> {
 
     private final List<TeasyElement> elements;
-    private final String text;
     private List<TeasyElement> errorElements;
 
-    public ElementsHaveText(List<TeasyElement> elements, String text) {
+    public ElementsHaveAnyText(List<TeasyElement> elements) {
         this.elements = elements;
-        this.text = text;
     }
 
     @Nullable
     @Override
     public Boolean apply(@Nullable WebDriver webDriver) {
-        List<String> actualTexts = new ArrayList<>();
         errorElements = new ArrayList<>();
         boolean isCorrect = true;
         for (TeasyElement el : elements) {
-            actualTexts.add(el.getText());
-            if (!text.equals(el.getText())) {
+            if (el.getText() == null || el.getText().equals("")) {
                 isCorrect = false;
                 errorElements.add(el);
             }
@@ -39,8 +35,8 @@ public class ElementsHaveText implements ExpectedCondition<Boolean> {
     public String toString() {
         StringBuilder error = new StringBuilder();
         for (TeasyElement el : errorElements) {
-            error.append(el.toString()).append(" with text '").append(el.getText()).append("|");
+            error.append(el.toString()).append("|");
         }
-        return String.format("Elements |%s text is wrong! Expected text is %s", error.toString(), text);
+        return String.format("Elements |%s Element has no text! ", error.toString());
     }
 }
