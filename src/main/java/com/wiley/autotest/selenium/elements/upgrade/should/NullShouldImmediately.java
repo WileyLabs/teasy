@@ -19,7 +19,7 @@ public class NullShouldImmediately implements Should {
 
     //null element can't be displayed
     public void beDisplayed() {
-        throwException();
+        throw new AssertionError("Element is absent in DOM. Locator is '" + element.getLocator().getBy() + "'");
     }
 
     //null element is absent by default

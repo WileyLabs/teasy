@@ -18,7 +18,7 @@ public class ConditionsPage extends AbstractPage {
     public ConditionsPage checkElementsReturnAllVisibleElements() {
         TeasyElementList teasyElements = domElements(By.cssSelector(".test"));
         teasyElements.should().beDisplayed();
-        List<String> expectedTexts = Arrays.asList("Div1", "Div22", "Div3", "Div4", "Div5");
+        List<String> expectedTexts = Arrays.asList("Div1", "Div2", "Div3", "Div4", "Div5");
         teasyElements.should().haveTexts(expectedTexts);
 
         return this;
