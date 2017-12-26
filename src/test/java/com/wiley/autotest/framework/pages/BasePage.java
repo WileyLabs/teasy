@@ -1,7 +1,6 @@
 package com.wiley.autotest.framework.pages;
 
 import com.wiley.autotest.selenium.context.AbstractPage;
-import org.openqa.selenium.By;
 import org.springframework.stereotype.Component;
 
 /**
@@ -11,14 +10,4 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class BasePage extends AbstractPage {
-
-    public BasePage checkIframeIsDisplayed() {
-        element(By.cssSelector("iframe")).should().beDisplayed();
-        return this;
-    }
-
-    public BasePage checkIframeCountIsTwo() {
-        assertEquals(domElements(By.cssSelector("iframe")).size(), 2);
-        return this;
-    }
 }
