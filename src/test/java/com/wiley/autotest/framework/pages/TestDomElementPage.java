@@ -22,6 +22,12 @@ public class TestDomElementPage extends AbstractPage {
         return this;
     }
 
+    /**
+     * Checking that element with id "domDiv" is found.
+     * The "logic" implemented in the mainTestElement.html that element will be attached to dom after 6 seconds.
+     *
+     * @return
+     */
     public TestDomElementPage checkDomElementAppearAfterTimeout() {
         TeasyElement domDiv = domElement(By.id("domDiv"));
         assertTrue(domDiv instanceof DomTeasyElement);

@@ -1,6 +1,5 @@
 package com.wiley.autotest.selenium.elements.upgrade;
 
-import com.gargoylesoftware.htmlunit.ElementNotFoundException;
 import com.wiley.autotest.selenium.context.SearchStrategy;
 import org.jetbrains.annotations.Nullable;
 import org.openqa.selenium.support.ui.FluentWait;
