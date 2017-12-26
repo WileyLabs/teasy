@@ -78,7 +78,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
     private static final Logger LOGGER = LoggerFactory.getLogger(SeleniumTestExecutionListener.class);
     private static final Object SYNC_OBJECT = new Object();
     private static ProxyServer proxyServer;
-    private static ThreadLocal<Integer> count = ThreadLocal.withInitial(() -> 0);
+    private static ThreadLocal<Integer> count = ThreadLocal.withInitial(() -> -1);
     private static ThreadLocal<Integer> driverRestartCount = ThreadLocal.withInitial(() -> 0);
     private static ThreadLocal<Boolean> useProxy = ThreadLocal.withInitial(() -> false);
     private static ThreadLocal<UnexpectedAlertBehaviour> alertCapability = ThreadLocal.withInitial(() -> UnexpectedAlertBehaviour.ACCEPT);
@@ -208,7 +208,9 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
             quitWebDriver();
         }
 
-        prepareTestInstance(context);
+        if (getWebDriver() == null) {
+            prepareTestInstance(context);
+        }
     }
 
     private void setUseProxy(TestContext context) {
