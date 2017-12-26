@@ -8,8 +8,7 @@ public class ElementsDisplayedTest extends BaseTest {
 
     @Test
     public void test() {
-        openPage("conditions.html");
-        getPage(ConditionsPage.class)
+        openPage("conditions.html", ConditionsPage.class)
                 .checkElementsReturnAllVisibleElements();
     }
 }

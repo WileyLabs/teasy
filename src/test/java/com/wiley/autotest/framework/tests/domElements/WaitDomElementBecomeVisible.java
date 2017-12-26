@@ -8,8 +8,7 @@ public class WaitDomElementBecomeVisible extends BaseTest {
 
     @Test
     public void test() {
-        openPage("mainTestElement.html");
-        getPage(TestDomElementPage.class)
+        openPage("mainTestElement.html", TestDomElementPage.class)
                 .checkDomElementBecomeVisible();
     }
 }

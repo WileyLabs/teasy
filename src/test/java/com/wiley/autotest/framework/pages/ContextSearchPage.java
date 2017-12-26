@@ -15,7 +15,6 @@ public class ContextSearchPage extends AbstractPage {
         List<TeasyElement> elements = element(By.cssSelector(".test")).elements(By.cssSelector(".contextTest"));
         assertEquals(elements.size(), 1);
         elements.get(0).should().haveText("Hello context");
-
         return this;
     }
 }

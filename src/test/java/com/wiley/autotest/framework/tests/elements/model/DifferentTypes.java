@@ -12,8 +12,7 @@ public class DifferentTypes extends BaseTest {
 
     @Test
     public void test() {
-        openPage("mainTestElement.html");
-        getPage(TestElementPage.class)
+        openPage("mainTestElement.html", TestElementPage.class)
                 .checkElementInstanceOfVisibleElement()
                 .checkDomElementInstanceOfDomElement()
                 .checkNonExistingElementInstanceOfNullElement()
@@ -23,8 +22,7 @@ public class DifferentTypes extends BaseTest {
 
     @Test(expectedExceptions = {NoSuchElementException.class})
     public void nonExistingElementClickThrowException() {
-        openPage("mainTestElement.html");
-        getPage(TestElementPage.class)
+        openPage("mainTestElement.html", TestElementPage.class)
                 .checkNonExistingElementClickFails();
     }
 }

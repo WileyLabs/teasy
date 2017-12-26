@@ -8,8 +8,7 @@ public class ReturnFirstDomElement extends BaseTest {
 
     @Test
     public void test() {
-        openPage("mainTestElement.html");
-        getPage(TestDomElementPage.class)
+        openPage("mainTestElement.html", TestDomElementPage.class)
                 .checkFirstDomElement();
     }
 }

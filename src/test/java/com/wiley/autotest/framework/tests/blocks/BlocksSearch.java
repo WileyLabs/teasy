@@ -8,8 +8,7 @@ public class BlocksSearch extends BaseTest {
 
     @Test
     public void test() {
-        openPage("block.html");
-        getPage(BlocksPage.class)
+        openPage("block.html", BlocksPage.class)
                 .checkPageSearchesEntirePage()
                 .getTestBlock()
                 .checkElementIsSearchedWithinBlock();

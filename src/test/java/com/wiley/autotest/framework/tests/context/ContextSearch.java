@@ -11,8 +11,7 @@ public class ContextSearch extends BaseTest {
 
     @Test
     public void test() {
-        openPage("contextSearch.html");
-        getPage(ContextSearchPage.class)
+        openPage("contextSearch.html", ContextSearchPage.class)
                 .checkContextSearch();
     }
 }

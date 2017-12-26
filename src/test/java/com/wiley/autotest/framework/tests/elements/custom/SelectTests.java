@@ -8,8 +8,7 @@ public class SelectTests extends BaseTest {
 
     @Test
     public void testGetOptions() {
-        openPage("select.html");
-        getPage(SelectPage.class)
+        openPage("select.html", SelectPage.class)
                 .checkOptionsText();
     }
 }

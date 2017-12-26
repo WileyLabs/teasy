@@ -3,6 +3,7 @@ package com.wiley.autotest.framework.tests.drivers;
 import com.wiley.autotest.annotations.NeedRestartDriver;
 import com.wiley.autotest.annotations.OurAfterMethod;
 import com.wiley.autotest.framework.config.BaseTest;
+import com.wiley.autotest.framework.pages.BasePage;
 import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
 import com.wiley.autotest.services.Configuration;
@@ -33,7 +34,7 @@ public class ChromeConfigTest extends BaseTest {
     @Test
     @NeedRestartDriver
     public void chrome_config_test() {
-        openPage("main.html");
+        openPage("main.html", BasePage.class);
         WebDriver webDriver = ((FramesTransparentWebDriver) SeleniumHolder.getWebDriver()).getWrappedDriver();
 
         Assert.assertTrue(webDriver instanceof ChromeDriver);

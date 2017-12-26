@@ -9,15 +9,13 @@ public class RepeaterTest extends BaseTest {
 
     @Test()
     public void performAction() {
-        openPage("repeater.html");
-        getPage(RepeaterPage.class)
+        openPage("repeater.html", RepeaterPage.class)
                 .positiveCheck();
     }
 
     @Test(expectedExceptions = StopTestExecutionException.class)
     public void unableToPerformAction() {
-        openPage("repeater.html");
-        getPage(RepeaterPage.class)
+        openPage("repeater.html", RepeaterPage.class)
                 .negativeCheck();
     }
 }

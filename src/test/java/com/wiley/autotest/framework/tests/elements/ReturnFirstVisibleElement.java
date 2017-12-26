@@ -8,8 +8,7 @@ public class ReturnFirstVisibleElement extends BaseTest {
 
     @Test
     public void test() {
-        openPage("mainTestElement.html");
-        getPage(TestElementPage.class)
+        openPage("mainTestElement.html", TestElementPage.class)
                 .checkFirstVisibleElement();
     }
 }

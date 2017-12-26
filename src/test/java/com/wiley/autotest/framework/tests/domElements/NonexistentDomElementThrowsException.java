@@ -8,8 +8,7 @@ public class NonexistentDomElementThrowsException extends BaseTest {
 
     @Test(expectedExceptions = AssertionError.class)
     public void test() {
-        openPage("mainTestElement.html");
-        getPage(TestDomElementPage.class)
+        openPage("mainTestElement.html", TestDomElementPage.class)
                 .checkDomElementNotFound();
     }
 }
