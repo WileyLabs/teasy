@@ -360,17 +360,17 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
 
         DesiredCapabilities customDesiredCapabilities = getCustomDesiredCapabilities(configuration);
 
-        if (settings.isRunTestsWithGrid()) {
-            String platformName;
-            if (!getParameterPlatformName().equals("platform")) {
-                platformName = getParameterPlatformName();
-                setParameterPlatformName("platform");
-            } else if (!getPlatform().isEmpty() && !getPlatform().equals("platform")) {
-                platformName = getPlatform();
-            } else {
-                platformName = settings.getPlatform();
-            }
+        String platformName;
+        if (!getParameterPlatformName().equals("platform")) {
+            platformName = getParameterPlatformName();
+            setParameterPlatformName("platform");
+        } else if (!getPlatform().isEmpty() && !getPlatform().equals("platform")) {
+            platformName = getPlatform();
+        } else {
+            platformName = settings.getPlatform();
+        }
 
+        if (settings.isRunTestsWithGrid()) {
             DesiredCapabilities desiredCapabilities;
             if (platformName.equals(WINDOWS)) {
                 if (StringUtils.equalsIgnoreCase(browserName, CHROME)) {
@@ -424,7 +424,11 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
                     throw new RuntimeException("Not supported browser: " + browserName + ", for platform: " + platformName);
                 }
             } else if (StringUtils.equalsIgnoreCase(platformName, MAC)) {
-                if (StringUtils.equalsIgnoreCase(browserName, SAFARI_TECHNOLOGY_PREVIEW)) {
+                if (StringUtils.equalsIgnoreCase(browserName, CHROME)) {
+                    desiredCapabilities = getChromeDesiredCapabilities(settings);
+                    SeleniumHolder.setDriverName(CHROME);
+                    SeleniumHolder.setPlatform(MAC);
+                } else if (StringUtils.equalsIgnoreCase(browserName, SAFARI_TECHNOLOGY_PREVIEW)) {
                     SeleniumHolder.setDriverName(SAFARI_TECHNOLOGY_PREVIEW);
                     SeleniumHolder.setPlatform(MAC);
                     return safariTechnologyPreview(settings);
@@ -467,42 +471,65 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
             remoteWebDriver.setFileDetector(new LocalFileDetector());
             return remoteWebDriver;
         } else {
-            if (StringUtils.equalsIgnoreCase(browserName, FIREFOX)) {
-                SeleniumHolder.setDriverName(FIREFOX);
-                SeleniumHolder.setPlatform(WINDOWS);
-                return firefox(settings, customDesiredCapabilities);
-            } else if (StringUtils.equalsIgnoreCase(browserName, GECKO)) {
-                SeleniumHolder.setDriverName(GECKO);
-                SeleniumHolder.setPlatform(WINDOWS);
-                return gecko(customDesiredCapabilities);
-            } else if (StringUtils.equalsIgnoreCase(browserName, CHROME)) {
-                SeleniumHolder.setDriverName(CHROME);
-                SeleniumHolder.setPlatform(WINDOWS);
-                return chrome(customDesiredCapabilities, settings);
-            } else if (StringUtils.equalsIgnoreCase(browserName, IE)) {
-                SeleniumHolder.setDriverName(IE);
-                SeleniumHolder.setPlatform(WINDOWS);
-                return explorer(customDesiredCapabilities);
-            } else if (StringUtils.equalsIgnoreCase(browserName, EDGE)) {
-                SeleniumHolder.setDriverName(EDGE);
-                SeleniumHolder.setPlatform(WINDOWS);
-                return edge(customDesiredCapabilities);
-            } else if (StringUtils.equalsIgnoreCase(browserName, IE10)) {
-                SeleniumHolder.setDriverName(IE10);
-                SeleniumHolder.setPlatform(WINDOWS);
-                return explorer("10", customDesiredCapabilities);
-            } else if (StringUtils.equalsIgnoreCase(browserName, IE9)) {
-                SeleniumHolder.setDriverName(IE9);
-                SeleniumHolder.setPlatform(WINDOWS);
-                return explorer("9", customDesiredCapabilities);
-            } else if (StringUtils.equalsIgnoreCase(browserName, SAFARI_TECHNOLOGY_PREVIEW)) {
-                SeleniumHolder.setDriverName(SAFARI_TECHNOLOGY_PREVIEW);
-                SeleniumHolder.setPlatform(MAC);
-                return safariTechnologyPreview(settings);
-            } else {
-                throw new RuntimeException("Not supported browser: " + browserName + ", for platform: " + settings.getPlatform());
+            if (platformName.equals(WINDOWS)) {
+                if (StringUtils.equalsIgnoreCase(browserName, FIREFOX)) {
+                    SeleniumHolder.setDriverName(FIREFOX);
+                    SeleniumHolder.setPlatform(WINDOWS);
+                    return firefox(settings, customDesiredCapabilities);
+                } else if (StringUtils.equalsIgnoreCase(browserName, GECKO)) {
+                    SeleniumHolder.setDriverName(GECKO);
+                    SeleniumHolder.setPlatform(WINDOWS);
+                    return gecko(customDesiredCapabilities);
+                } else if (StringUtils.equalsIgnoreCase(browserName, CHROME)) {
+                    SeleniumHolder.setDriverName(CHROME);
+                    SeleniumHolder.setPlatform(WINDOWS);
+                    return chrome(settings, customDesiredCapabilities);
+                } else if (StringUtils.equalsIgnoreCase(browserName, IE)) {
+                    SeleniumHolder.setDriverName(IE);
+                    SeleniumHolder.setPlatform(WINDOWS);
+                    return explorer(customDesiredCapabilities);
+                } else if (StringUtils.equalsIgnoreCase(browserName, EDGE)) {
+                    SeleniumHolder.setDriverName(EDGE);
+                    SeleniumHolder.setPlatform(WINDOWS);
+                    return edge(customDesiredCapabilities);
+                } else if (StringUtils.equalsIgnoreCase(browserName, IE10)) {
+                    SeleniumHolder.setDriverName(IE10);
+                    SeleniumHolder.setPlatform(WINDOWS);
+                    return explorer("10", customDesiredCapabilities);
+                } else if (StringUtils.equalsIgnoreCase(browserName, IE9)) {
+                    SeleniumHolder.setDriverName(IE9);
+                    SeleniumHolder.setPlatform(WINDOWS);
+                    return explorer("9", customDesiredCapabilities);
+                }
+            }
+            if (platformName.equals(MAC)) {
+                if (StringUtils.equalsIgnoreCase(browserName, CHROME)) {
+                    SeleniumHolder.setDriverName(CHROME);
+                    SeleniumHolder.setPlatform(MAC);
+                    return chrome(settings, customDesiredCapabilities);
+                } else if (StringUtils.equalsIgnoreCase(browserName, FIREFOX)) {
+                    SeleniumHolder.setDriverName(FIREFOX);
+                    SeleniumHolder.setPlatform(MAC);
+                    return firefox(settings, customDesiredCapabilities);
+                } else if (StringUtils.equalsIgnoreCase(browserName, SAFARI_TECHNOLOGY_PREVIEW)) {
+                    SeleniumHolder.setDriverName(SAFARI_TECHNOLOGY_PREVIEW);
+                    SeleniumHolder.setPlatform(MAC);
+                    return safariTechnologyPreview(settings);
+                }
+            }
+            if (platformName.equals(LINUX)) {
+                if (StringUtils.equalsIgnoreCase(browserName, CHROME)) {
+                    SeleniumHolder.setDriverName(CHROME);
+                    SeleniumHolder.setPlatform(LINUX);
+                    return chrome(settings, customDesiredCapabilities);
+                } else if (StringUtils.equalsIgnoreCase(browserName, FIREFOX)) {
+                    SeleniumHolder.setDriverName(FIREFOX);
+                    SeleniumHolder.setPlatform(LINUX);
+                    return firefox(settings, customDesiredCapabilities);
+                }
             }
         }
+        throw new RuntimeException("Not supported browser: " + browserName + ", for platform: " + platformName);
     }
 
     private WebDriver firefox(final Settings settings, DesiredCapabilities customDesiredCapabilities) {
@@ -522,7 +549,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         return new FirefoxDriver(desiredCapabilities);
     }
 
-    private WebDriver chrome(DesiredCapabilities customDesiredCapabilities, Settings settings) {
+    private WebDriver chrome(Settings settings, DesiredCapabilities customDesiredCapabilities) {
         ChromeDriverManager.getInstance().setup();
         DesiredCapabilities desiredCapabilities = getChromeDesiredCapabilities(settings);
         if (!customDesiredCapabilities.asMap().isEmpty()) {
