@@ -32,7 +32,7 @@ public final class TeasyExpectedConditions {
         return new ExpectedCondition<WebElement>() {
             @Override
             public WebElement apply(final WebDriver driver) {
-                return searchContext.findElement(locator);
+                return searchContext.findElements(locator).isEmpty() ? null : searchContext.findElements(locator).get(0);
             }
 
             @Override
@@ -46,7 +46,7 @@ public final class TeasyExpectedConditions {
         return new ExpectedCondition<WebElement>() {
             @Override
             public WebElement apply(final WebDriver driver) {
-                return driver.findElement(locator);
+                return driver.findElements(locator).isEmpty() ? null : driver.findElements(locator).get(0);
             }
 
             @Override
