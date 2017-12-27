@@ -7,7 +7,7 @@
     <groupId>com.wiley</groupId>
     <artifactId>teasy</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.19-beta</version>
+    <version>1.0.21-beta</version>
 
     <name>Teasy</name>
     <description>Automation framework to make testing easy</description>

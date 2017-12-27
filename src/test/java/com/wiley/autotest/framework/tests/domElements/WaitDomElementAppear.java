@@ -4,11 +4,11 @@ import com.wiley.autotest.framework.config.BaseTest;
 import com.wiley.autotest.framework.pages.TestDomElementPage;
 import org.testng.annotations.Test;
 
-public class AnimationDomElement extends BaseTest {
+public class WaitDomElementAppear extends BaseTest {
 
     @Test
     public void test() {
         openPage("mainTestElement.html", TestDomElementPage.class)
-                .checkAnimationDomElement();
+                .checkDomElementAppearAfterTimeout();
     }
 }

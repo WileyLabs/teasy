@@ -2,19 +2,13 @@ package com.wiley.autotest.framework.tests.elements;
 
 import com.wiley.autotest.framework.config.BaseTest;
 import com.wiley.autotest.framework.pages.TestElementPage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.Test;
-
 
 public class ReturnFirstVisibleElement extends BaseTest {
 
-    @Autowired
-    private TestElementPage testElementPage;
-
     @Test
     public void test() {
-        openPage("mainTestElement.html");
-        testElementPage.checkFirstVisibleElement();
+        openPage("mainTestElement.html", TestElementPage.class)
+                .checkFirstVisibleElement();
     }
-
 }

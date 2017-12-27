@@ -1,7 +1,7 @@
 package com.wiley.autotest.framework.config;
 
-import com.wiley.autotest.framework.pages.BasePage;
 import com.wiley.autotest.selenium.AbstractSeleniumTest;
+import com.wiley.autotest.selenium.context.IPage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -18,7 +18,7 @@ public class BaseTest extends AbstractSeleniumTest {
     @Autowired
     private SeleniumSettings settings;
 
-    public BasePage openPage(String fileName) {
-        return getPage(BasePage.class, "file://" + getClass().getResource(settings.getHost()).getPath() + fileName);
+    public <E extends IPage> E openPage(String fileName, Class<E> page) {
+        return getPage(page, "file://" + getClass().getResource(settings.getHost()).getPath() + fileName);
     }
 }

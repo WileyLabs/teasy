@@ -1,6 +1,8 @@
 package com.wiley.autotest.framework.pages;
 
 import com.wiley.autotest.selenium.context.AbstractPage;
+import com.wiley.autotest.selenium.elements.upgrade.DomTeasyElement;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import org.openqa.selenium.By;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +19,19 @@ public class TestDomElementPage extends AbstractPage {
 
     public TestDomElementPage checkDomElementBecomeVisible() {
         domElement(By.id("waitElement")).should().beDisplayed();
+        return this;
+    }
+
+    /**
+     * Checking that element with id "domDiv" is found.
+     * The "logic" implemented in the mainTestElement.html that element will be attached to dom after 6 seconds.
+     *
+     * @return
+     */
+    public TestDomElementPage checkDomElementAppearAfterTimeout() {
+        TeasyElement domDiv = domElement(By.id("domDiv"));
+        assertTrue(domDiv instanceof DomTeasyElement);
+        domDiv.should().haveText("Im div added to dom");
         return this;
     }
 
