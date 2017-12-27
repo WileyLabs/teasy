@@ -7,7 +7,7 @@ import org.testng.Assert;
 
 public class TestBlock extends AbstractBlock {
 
-    TestBlock(TeasyElement element) {
+    public TestBlock(TeasyElement element) {
         super(element);
     }
 
