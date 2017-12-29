@@ -91,20 +91,24 @@ public class TestElementPage extends AbstractPage {
     }
 
     public TestElementPage checkSingleElementHasNotAnyText() {
+        Boolean elementHasNoText = false;
         try {
             domElement(By.id("notExist")).should().haveAnyText();
         } catch (AssertionError e) {
-            e.printStackTrace();
+            elementHasNoText = true;
         }
+        assertTrue(elementHasNoText);
         return this;
     }
 
     public TestElementPage checkNotAllElementsHasAnyText() {
+        Boolean elementHasNoText = false;
         try {
             domElements(By.className("someClassForOneNotExistElements")).should().haveAnyText();
         } catch (AssertionError e) {
-            e.printStackTrace();
+            elementHasNoText = true;
         }
+        assertTrue(elementHasNoText);
         return this;
     }
 }

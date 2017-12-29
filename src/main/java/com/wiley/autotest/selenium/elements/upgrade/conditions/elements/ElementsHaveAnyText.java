@@ -23,7 +23,7 @@ public class ElementsHaveAnyText implements ExpectedCondition<Boolean> {
         errorElements = new ArrayList<>();
         boolean isCorrect = true;
         for (TeasyElement el : elements) {
-            if (el.getText() == null || el.getText().equals("")) {
+            if (el.getText() == null || el.getText().trim().equals("")) {
                 isCorrect = false;
                 errorElements.add(el);
             }

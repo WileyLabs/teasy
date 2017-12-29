@@ -16,7 +16,9 @@ public class ElementHasAnyText implements ExpectedCondition<Boolean> {
 
     @Nullable
     @Override
-    public Boolean apply(@Nullable WebDriver driver) { return element.getText() != null && !element.getText().equals(""); }
+    public Boolean apply(@Nullable WebDriver driver) {
+        return element.getText() != null && !element.getText().trim().equals("");
+    }
 
     @Override
     public String toString() {

@@ -34,7 +34,6 @@ public class NullShould implements Should {
         fluentWait.waitFor(new ElementTextEquals(getElement(), text));
     }
 
-    @Override
     public void haveAnyText() {
         fluentWait.waitFor(new ElementDisplayed(getElement()));
     }
