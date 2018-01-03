@@ -413,12 +413,15 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
             } else if (StringUtils.equalsIgnoreCase(platformName, ANDROID)) {
                 SeleniumHolder.setPlatform(ANDROID);
                 if (StringUtils.equalsIgnoreCase(browserName, CHROME)) {
-                    desiredCapabilities = getAndroidChromeDesiredCapabilities();
                     SeleniumHolder.setDriverName(CHROME);
+                    desiredCapabilities = getAndroidChromeDesiredCapabilities();
+                    if (!customDesiredCapabilities.asMap().isEmpty()) {
+                        desiredCapabilities.merge(customDesiredCapabilities);
+                    }
                     AppiumDriver remoteWebDriver = new AndroidDriver(new URL(settings.getGridHubUrl()), desiredCapabilities);
                     remoteWebDriver.setFileDetector(new LocalFileDetector());
                     return remoteWebDriver;
-                } else if (customDesiredCapabilities != null && !customDesiredCapabilities.asMap().isEmpty()) {
+                } else if (!customDesiredCapabilities.asMap().isEmpty()) {
                     AppiumDriver remoteWebDriver = new AndroidDriver(new URL(settings.getGridHubUrl()), customDesiredCapabilities);
                     remoteWebDriver.setFileDetector(new LocalFileDetector());
                     return remoteWebDriver;
@@ -433,16 +436,24 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
                 } else if (StringUtils.equalsIgnoreCase(browserName, SAFARI_TECHNOLOGY_PREVIEW)) {
                     SeleniumHolder.setDriverName(SAFARI_TECHNOLOGY_PREVIEW);
                     SeleniumHolder.setPlatform(MAC);
-                    return safariTechnologyPreview(settings);
+                    return safariTechnologyPreview(settings, customDesiredCapabilities);
+                } else if (!customDesiredCapabilities.asMap().isEmpty()) {
+                    desiredCapabilities = customDesiredCapabilities;
                 } else {
                     throw new RuntimeException("Not supported browser: " + browserName + ", for platform: " + platformName);
                 }
             } else if (StringUtils.equalsIgnoreCase(platformName, IOS)) {
                 SeleniumHolder.setPlatform(IOS);
                 if (StringUtils.equalsIgnoreCase(browserName, SAFARI)) {
-                    desiredCapabilities = getIOSSafariDesiredCapabilities();
                     SeleniumHolder.setDriverName(SAFARI);
-                } else if (customDesiredCapabilities != null && !customDesiredCapabilities.asMap().isEmpty()) {
+                    desiredCapabilities = getIOSSafariDesiredCapabilities();
+                    if (!customDesiredCapabilities.asMap().isEmpty()) {
+                        desiredCapabilities.merge(customDesiredCapabilities);
+                    }
+                    AppiumDriver remoteWebDriver = new IOSDriver(new URL(settings.getGridHubUrl()), desiredCapabilities);
+                    remoteWebDriver.setFileDetector(new LocalFileDetector());
+                    return remoteWebDriver;
+                } else if (!customDesiredCapabilities.asMap().isEmpty()) {
                     AppiumDriver remoteWebDriver = new IOSDriver(new URL(settings.getGridHubUrl()), customDesiredCapabilities);
                     remoteWebDriver.setFileDetector(new LocalFileDetector());
                     return remoteWebDriver;
@@ -516,7 +527,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
                 } else if (StringUtils.equalsIgnoreCase(browserName, SAFARI_TECHNOLOGY_PREVIEW)) {
                     SeleniumHolder.setDriverName(SAFARI_TECHNOLOGY_PREVIEW);
                     SeleniumHolder.setPlatform(MAC);
-                    return safariTechnologyPreview(settings);
+                    return safariTechnologyPreview(settings, customDesiredCapabilities);
                 }
             }
             if (platformName.equals(LINUX)) {
@@ -587,12 +598,15 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         return new EdgeDriver(desiredCapabilities);
     }
 
-    private WebDriver safariTechnologyPreview(Settings settings) throws MalformedURLException {
+    private WebDriver safariTechnologyPreview(Settings settings, DesiredCapabilities customDesiredCapabilities) throws MalformedURLException {
         DesiredCapabilities desiredCapabilities = DesiredCapabilities.safari();
         SafariOptions safariOptions = new SafariOptions();
         safariOptions.setUseCleanSession(true);
         safariOptions.setUseTechnologyPreview(true);
         desiredCapabilities.setCapability(SafariOptions.CAPABILITY, safariOptions);
+        if (!customDesiredCapabilities.asMap().isEmpty()) {
+            desiredCapabilities.merge(customDesiredCapabilities);
+        }
         RemoteWebDriver remoteWebDriver = new RemoteWebDriver(new URL(settings.getGridHubUrl()), desiredCapabilities);
         remoteWebDriver.setFileDetector(new LocalFileDetector());
         return remoteWebDriver;
