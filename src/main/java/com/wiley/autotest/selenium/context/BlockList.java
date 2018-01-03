@@ -28,6 +28,12 @@ public class BlockList<T extends AbstractBlock> extends ArrayList<T> {
         elements.forEach(el -> add(createBlockInstance(el)));
     }
 
+    /**
+     * Filters a block list
+     *
+     * @param func - function to filter block list
+     * @return the desired block from list
+     */
     public T filter(Function<Collection<T>, T> func) {
         return func.apply(this);
     }
