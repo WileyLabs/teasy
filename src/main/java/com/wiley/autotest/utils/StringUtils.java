@@ -6,6 +6,8 @@ package com.wiley.autotest.utils;
  * Date: 10.02.12
  * Time: 8:26
  */
+//Will be deleted. If you need this class - copy it to your project.
+@Deprecated
 public final class StringUtils {
 
     /**

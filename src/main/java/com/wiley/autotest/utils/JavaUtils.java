@@ -5,7 +5,8 @@ import java.lang.reflect.Method;
 /**
  * Created by mosadchiy on 26.05.2016.
  */
-
+//Will be deleted. If you need this class - copy it to your project.
+@Deprecated
 public class JavaUtils {
     public static Method findMethodByAnnotation(Class clazz) throws NoSuchMethodException {
         StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
