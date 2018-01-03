@@ -25,8 +25,8 @@ import java.util.Map;
  */
 public class ParamsHolder {
 
-    private static ThreadLocal<Map<String, Object>> paramMap = ThreadLocal.withInitial(HashMap::new);
-    private static ThreadLocal<Map<String, Object>> paramMapForGroup = ThreadLocal.withInitial(HashMap::new);
+    private static ThreadLocal<Map<String, Object>> params = ThreadLocal.withInitial(HashMap::new);
+    private static ThreadLocal<Map<String, Object>> paramsForGroup = ThreadLocal.withInitial(HashMap::new);
 
     private ParamsHolder() {
     }
@@ -37,7 +37,7 @@ public class ParamsHolder {
      */
     @Deprecated
     public static void setParameter(String key, Object value) {
-        paramMap.get().put(key, value);
+        params.get().put(key, value);
     }
 
     /**
@@ -60,7 +60,7 @@ public class ParamsHolder {
      */
     @Deprecated
     public static Object getParameter(String key) {
-        return paramMap.get().get(key);
+        return params.get().get(key);
     }
 
     /**
@@ -69,7 +69,7 @@ public class ParamsHolder {
      */
     @Deprecated
     public static void setParameterForGroup(String key, Object value) {
-        paramMapForGroup.get().put(key, value);
+        paramsForGroup.get().put(key, value);
     }
 
     /**
@@ -85,7 +85,7 @@ public class ParamsHolder {
      */
     @Deprecated
     public static Object getParameterForGroup(String key) {
-        return paramMapForGroup.get().get(key);
+        return paramsForGroup.get().get(key);
     }
 
     /**
@@ -96,10 +96,10 @@ public class ParamsHolder {
     }
 
     public static void clear() {
-        paramMap.get().clear();
+        params.get().clear();
     }
 
     public static void clearForGroup() {
-        paramMap.get().clear();
+        params.get().clear();
     }
 }
