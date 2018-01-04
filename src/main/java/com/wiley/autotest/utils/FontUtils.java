@@ -3,7 +3,8 @@ package com.wiley.autotest.utils;
 /**
  * Created by mosadchiy on 26.05.2016.
  */
-
+//Will be deleted. If you need this class - copy it to your project.
+@Deprecated
 public class FontUtils {
 
     private static final double PX_TO_REM_FACTOR = 1. / 14.;
