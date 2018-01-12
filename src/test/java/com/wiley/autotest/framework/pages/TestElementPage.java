@@ -7,9 +7,7 @@ import com.wiley.autotest.selenium.elements.upgrade.NullTeasyElement;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import com.wiley.autotest.selenium.elements.upgrade.VisibleTeasyElement;
 import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
 import org.springframework.stereotype.Component;
-import org.testng.Assert;
 
 /**
  * Created by shekhavtsov on 20/07/2017.
@@ -79,6 +77,38 @@ public class TestElementPage extends AbstractPage {
 
     public TestElementPage checkNonExistingElementClickFails() {
         element(By.cssSelector("not_present_element"), new SearchStrategy(1)).click();
+        return this;
+    }
+
+    public TestElementPage checkSingleElementHasAnyText() {
+        element(By.id("exist")).should().haveAnyText();
+        return this;
+    }
+
+    public TestElementPage checkFewElementsHasAnyText() {
+        elements(By.className("someClassForExistElements")).should().haveAnyText();
+        return this;
+    }
+
+    public TestElementPage checkSingleElementHasNotAnyText() {
+        Boolean elementHasNoText = false;
+        try {
+            domElement(By.id("notExist")).should().haveAnyText();
+        } catch (AssertionError e) {
+            elementHasNoText = true;
+        }
+        assertTrue(elementHasNoText);
+        return this;
+    }
+
+    public TestElementPage checkNotAllElementsHasAnyText() {
+        Boolean elementHasNoText = false;
+        try {
+            domElements(By.className("someClassForOneNotExistElements")).should().haveAnyText();
+        } catch (AssertionError e) {
+            elementHasNoText = true;
+        }
+        assertTrue(elementHasNoText);
         return this;
     }
 }
