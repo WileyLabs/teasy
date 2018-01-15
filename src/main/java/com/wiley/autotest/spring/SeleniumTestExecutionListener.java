@@ -11,15 +11,10 @@ import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
 import com.wiley.autotest.selenium.driver.WebDriverDecorator;
 import com.wiley.autotest.services.Configuration;
 import com.wiley.autotest.spring.testexecution.TeasyDriver;
-import com.wiley.autotest.spring.testexecution.capabilities.FireFoxCaps;
 import com.wiley.autotest.utils.TestUtils;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
-import io.github.bonigarcia.wdm.ChromeDriverManager;
-import io.github.bonigarcia.wdm.EdgeDriverManager;
-import io.github.bonigarcia.wdm.FirefoxDriverManager;
-import io.github.bonigarcia.wdm.InternetExplorerDriverManager;
 import net.lightbody.bmp.proxy.ProxyServer;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.lang.StringUtils;
@@ -27,19 +22,18 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
-import org.openqa.selenium.*;
 import org.openqa.selenium.Proxy;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.edge.EdgeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.UnexpectedAlertBehaviour;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.firefox.internal.ProfilesIni;
-import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.LoggingPreferences;
-import org.openqa.selenium.remote.*;
-import org.openqa.selenium.safari.SafariOptions;
+import org.openqa.selenium.remote.CapabilityType;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.remote.SessionId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.TestContext;
@@ -47,9 +41,11 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.net.*;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.ServerSocket;
+import java.net.UnknownHostException;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.logging.Level;
 
 import static com.wiley.autotest.selenium.SeleniumHolder.*;
@@ -105,11 +101,8 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         driverRestartCount.set(driverRestartCount.get() + 1);
 
 
-
-
         //TODO NT - confirm if it the right place to call this method?
         setCurrentAlertCapability();
-
 
 
         boolean isRunWithGrid = settings.isRunTestsWithGrid();
@@ -361,7 +354,6 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
     private WebDriver initWebDriver(Settings settings, Configuration configuration) throws MalformedURLException {
         return new TeasyDriver(settings, configuration, alertCapability.get()).init();
     }
-
 
     private void setCurrentAlertCapability() {
         currentAlertCapability.set(alertCapability.get());

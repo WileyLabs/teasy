@@ -4,6 +4,8 @@ package com.wiley.autotest.utils;
  * User: ptsarev
  * Date: 29.06.2016
  */
+//Will be deleted. If you need this class - copy it to your project.
+@Deprecated
 public final class ChemPadUtils {
 
     /**

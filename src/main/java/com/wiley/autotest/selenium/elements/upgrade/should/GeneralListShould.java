@@ -1,6 +1,5 @@
 package com.wiley.autotest.selenium.elements.upgrade.should;
 
-import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyElementList;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyFluentWait;
 import com.wiley.autotest.selenium.elements.upgrade.conditions.elements.*;
@@ -11,7 +10,7 @@ import java.util.function.Function;
 
 /**
  * Temp solution as a POC
- *
+ * <p>
  * most likely there will be VisibleListShould, DomListShould and EmptyListShould
  */
 public class GeneralListShould implements ListShould {
@@ -30,13 +29,14 @@ public class GeneralListShould implements ListShould {
     }
 
     @Override
-    public void beAbsent() {
-        waitFor(new ElementsAbsent(elements));
-    }
+    public void beAbsent() { waitFor(new ElementsAbsent(elements)); }
 
     @Override
-    public void haveText(String text) {
-        waitFor(new ElementsHaveText(elements, text));
+    public void haveText(String text) { waitFor(new ElementsHaveText(elements, text)); }
+
+    @Override
+    public void haveAnyText() {
+        waitFor(new ElementsHaveAnyText(elements));
     }
 
     @Override
