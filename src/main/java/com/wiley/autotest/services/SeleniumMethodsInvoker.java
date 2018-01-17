@@ -1,11 +1,7 @@
 package com.wiley.autotest.services;
 
-import com.wiley.autotest.annotations.*;
-import com.wiley.autotest.selenium.AbstractSeleniumTest;
-import com.wiley.autotest.selenium.AbstractTest;
-import com.wiley.autotest.selenium.Group;
-import com.wiley.autotest.selenium.SeleniumHolder;
-import com.wiley.autotest.utils.DriverUtils;
+import com.wiley.autotest.screenshots.Screenshoter;
+import com.wiley.autotest.selenium.*;
 import org.openqa.selenium.WebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,15 +9,9 @@ import org.testng.ITestContext;
 import org.testng.TestRunner;
 import org.testng.annotations.Test;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
-import static java.lang.String.format;
-import static org.testng.Reporter.log;
 
 /**
  * User: dfedorov
@@ -47,20 +37,16 @@ public class SeleniumMethodsInvoker extends MethodsInvoker {
         this.cookiesService = cookiesService;
     }
 
-    private static ThreadLocal<Boolean> isFFDriver = new ThreadLocal<Boolean>() {
-        @Override
-        protected Boolean initialValue() {
-            return false;
-        }
-    };
-
     public <T extends Annotation> void invokeSuiteMethodsByAnnotation(final Class<T> annotationClass, final ITestContext testContext) {
         invokeGroupMethodsByAnnotation(annotationClass, testContext);
     }
 
     public <T extends Annotation> void invokeGroupMethodsByAnnotation(final Class<T> annotationClass, final ITestContext testContext) {
         initialize();
-        final TestClassContext testClassContext = new TestClassContext(((TestRunner) testContext).getTest().getXmlClasses().get(0).getSupportClass(), null, annotationClass, testContext);
+        final TestClassContext testClassContext = new TestClassContext(((TestRunner) testContext).getTest()
+                .getXmlClasses()
+                .get(0)
+                .getSupportClass(), null, annotationClass, testContext);
         invokeMethodsByAnnotation(testClassContext, true);
     }
 
@@ -78,75 +64,42 @@ public class SeleniumMethodsInvoker extends MethodsInvoker {
     void invokeMethod(AbstractTest instance, Method method, TestClassContext context, boolean isBeforeAfterGroup) {
         final WebDriver mainDriver = SeleniumHolder.getWebDriver();
         final String mainDriverName = SeleniumHolder.getDriverName();
-        String platformName = SeleniumHolder.getPlatform();
 
         AbstractSeleniumTest abstractSeleniumTest = (AbstractSeleniumTest) instance;
 
-        if (abstractSeleniumTest.getTestMethod() != null && isSkippedTest(abstractSeleniumTest)) {
+        if (abstractSeleniumTest.getTestMethod() != null && skipTest(abstractSeleniumTest)) {
             return;
         }
 
-        //For IE and Safari browser and @FireFoxOnly annotation setting specifically prepared FF driver
-        if ((mainDriverName.contains(IE) ||
-                mainDriverName.equals(SAFARI) ||
-                platformName.equals(ANDROID))
-                && method.getAnnotation(FireFoxOnly.class) != null) {
-            SeleniumHolder.setWebDriver(DriverUtils.getFFDriver());
-            SeleniumHolder.setDriverName(FIREFOX);
-            isFFDriver.set(true);
-        }
-
-        //Set FirefoxOnly for all after methods in safari, ie, android
-        if ((mainDriverName.equals(SAFARI) ||
-                mainDriverName.contains(IE) ||
-                platformName.equals(ANDROID)) &&
-                (method.getAnnotation(OurAfterMethod.class) != null ||
-                        method.getAnnotation(OurAfterClass.class) != null ||
-                        method.getAnnotation(OurAfterGroups.class) != null ||
-                        method.getAnnotation(OurAfterSuite.class) != null)) {
-            SeleniumHolder.setWebDriver(DriverUtils.getFFDriver());
-            SeleniumHolder.setDriverName(FIREFOX);
-            isFFDriver.set(true);
-        }
-
         try {
+            method.setAccessible(true);
             method.invoke(instance);
         } catch (Throwable e) {
-            abstractSeleniumTest.takeScreenshot(e.getMessage(), method.getName());
-            final Writer result = new StringWriter();
-            final PrintWriter printWriter = new PrintWriter(result);
-            ((InvocationTargetException) e).getTargetException().printStackTrace(printWriter);
-            String errorMessage = format("Precondition method '%s' failed ", method.getName()) + "\n " +
-                    result.toString();
+            new Screenshoter().takeScreenshot(e.getMessage(), method.getName());
+
+            Throwable exceptionForLog;
+            if (e instanceof InvocationTargetException) {
+                exceptionForLog = ((InvocationTargetException) e).getTargetException();
+            } else {
+                exceptionForLog = e;
+            }
+
+            String errorMessage = "Precondition method failed " + exceptionForLog.getMessage();
             if (isBeforeAfterGroup) {
                 abstractSeleniumTest.setPostponedBeforeAfterGroupFail(errorMessage, context.getTestContext());
             } else {
                 abstractSeleniumTest.setPostponedTestFail(errorMessage);
             }
 
-            if (method.getAnnotation(RetryPrecondition.class) != null) {
-                retryCount.set(retryCount.get() + 1);
-                if (method.getAnnotation(RetryPrecondition.class).retryCount() >= retryCount.get()) {
-                    LOGGER.error("*****ERROR***** Method '" + method.getDeclaringClass().getSimpleName() + "." + method.getName() + "' is failed. Retrying it. Current retryCount is " + retryCount.get());
-                    invokeMethod(instance, method, context, isBeforeAfterGroup);
-                }
-            }
-
-            log(errorMessage);
-
-            if (method.getAnnotation(RetryPrecondition.class) == null) {
-                throw new StopTestExecutionException(errorMessage, e);
-            }
+            new Report(errorMessage, exceptionForLog).allure();
+            throw new StopTestExecutionException(errorMessage, exceptionForLog);
         } finally {
-            if (isFFDriver.get() && mainDriverName.equals(FIREFOX)) {
-                SeleniumHolder.getWebDriver().quit();
-            }
             SeleniumHolder.setDriverName(mainDriverName);
             SeleniumHolder.setWebDriver(mainDriver);
         }
     }
 
-    public boolean isSkippedTest(AbstractSeleniumTest instance) {
+    private boolean skipTest(AbstractSeleniumTest instance) {
         Method method = instance.getTestMethod();
         String platform = SeleniumHolder.getPlatform();
         String driverName = SeleniumHolder.getDriverName();
@@ -175,7 +128,7 @@ public class SeleniumMethodsInvoker extends MethodsInvoker {
             return true;
         }
 
-        if (driverName.contains(IE) && isNoGroupTest(method, Group.noIE)) {
+        if (driverName.startsWith(IE) && isNoGroupTest(method, Group.noIE)) {
             return true;
         }
 

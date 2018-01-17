@@ -1,6 +1,6 @@
 package com.wiley.autotest.selenium.elements.upgrade;
 
-import com.wiley.autotest.selenium.elements.upgrade.v3.conditions.window.WindowMatcher;
+import com.wiley.autotest.selenium.elements.upgrade.conditions.window.WindowMatcher;
 
 /**
  * Created by vefimov on 30/05/2017.
@@ -13,10 +13,15 @@ public interface Window {
 
     void close();
 
-    //Todo implement common waitFor and should (similar to OurWebElement) but with limited functionality only required for window
+    //Todo implement common waitFor and should (similar to TeasyElement) but with limited functionality only required for window
     void waitForScriptsToLoad();
 
     String getUrl();
 
+    void changeSize(int width, int height);
+
+    String getTitle();
+
+    void maximize();
 
 }

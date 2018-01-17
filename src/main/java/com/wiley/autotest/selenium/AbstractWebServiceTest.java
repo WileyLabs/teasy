@@ -5,6 +5,7 @@ import com.wiley.autotest.event.postpone.failure.BeforeAfterGroupFailureEvent;
 import com.wiley.autotest.event.postpone.failure.PostponedFailureEvent;
 import com.wiley.autotest.event.postpone.failure.StorePostponeFailureSubscriber;
 import com.wiley.autotest.listeners.ProcessPostponedFailureListener;
+import com.wiley.autotest.services.ParamsHolder;
 import com.wiley.autotest.services.WebServiceMethodsInvoker;
 import com.wiley.autotest.utils.TestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,23 +64,14 @@ public class AbstractWebServiceTest extends AbstractTest implements ITest {
     }
 
     @BeforeMethod(alwaysRun = true)
-    public void setBugId(final Method test) {
-        Bug bugAnnotation = test.getAnnotation(Bug.class);
-        if (bugAnnotation != null && bugAnnotation.id() != null && !bugAnnotation.id().isEmpty()) {
-            SeleniumHolder.setBugId(bugAnnotation.id());
-        }
-    }
-
-    @BeforeMethod(alwaysRun = true)
     public void doBeforeMethods(final Method test, final ITestContext context) {
         methodsInvoker.invokeMethodsByAnnotation(this, OurBeforeMethod.class);
     }
 
     @AfterMethod(alwaysRun = true)
     public void afterMethod() {
-        getParameterProvider().clear();
+        ParamsHolder.clear();
         postponeFailureEvent.unsubscribeAll();
-        SeleniumHolder.setBugId(null);
     }
 
     @AfterMethod(alwaysRun = true)
@@ -117,9 +109,7 @@ public class AbstractWebServiceTest extends AbstractTest implements ITest {
         } else {
             methodsInvoker.invokeGroupMethodsByAnnotation(OurAfterGroups.class, context);
         }
-        if (getParameterProviderForGroup() != null) {
-            getParameterProviderForGroup().clear();
-        }
+        ParamsHolder.clearForGroup();
     }
 
     public void setPostponedTestFail(final String message) {

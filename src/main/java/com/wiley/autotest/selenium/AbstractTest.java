@@ -1,7 +1,7 @@
 package com.wiley.autotest.selenium;
 
+import com.wiley.autotest.services.ParamsHolder;
 import com.wiley.autotest.spring.Settings;
-import com.wiley.autotest.utils.TestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +24,6 @@ public class AbstractTest extends AbstractTestNGSpringContextTests {
     @Autowired
     private Settings settings;
 
-    @Autowired
-    private ParamsProvider parameterProvider;
-
-    @Autowired
-    private ParamsProvider parameterProviderForGroup;
-
     private ThreadLocal<Throwable> stopTextExecutionThrowableHolder = new ThreadLocal<>();
 
     /**
@@ -47,28 +41,20 @@ public class AbstractTest extends AbstractTestNGSpringContextTests {
         return settings;
     }
 
-    public ParamsProvider getParameterProviderForGroup() {
-        return parameterProviderForGroup;
-    }
-
-    public ParamsProvider getParameterProvider() {
-        return parameterProvider;
-    }
-
     protected final Object getParameter(final String key) {
-        return parameterProvider.get(TestUtils.modifyKeyForCurrentThread(key));
+        return ParamsHolder.getParameter(key);
     }
 
     protected final Object getParameterForGroup(final String key) {
-        return parameterProviderForGroup.get(TestUtils.modifyKeyForCurrentThread(key));
+        return ParamsHolder.getParameterForGroup(key);
     }
 
     protected void setParameter(final String key, final Object value) {
-        parameterProvider.put(TestUtils.modifyKeyForCurrentThread(key), value);
+        ParamsHolder.setParameter(key, value);
     }
 
     protected void setParameterForGroup(final String key, final Object value) {
-        parameterProviderForGroup.put(TestUtils.modifyKeyForCurrentThread(key), value);
+        ParamsHolder.setParameterForGroup(key, value);
     }
 
     public Throwable getStopTextExecutionThrowable() {

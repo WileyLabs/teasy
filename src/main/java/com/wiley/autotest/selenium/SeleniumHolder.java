@@ -18,6 +18,7 @@ public final class SeleniumHolder {
 
     private static String browser;
     private static final ThreadLocal<WebDriver> driverHolder = new ThreadLocal<>();
+    private static final ThreadLocal<Integer> timeoutHolder = new ThreadLocal<>();
     private static final ThreadLocal<String> driverName = ThreadLocal.withInitial(() -> "");
     private static final ThreadLocal<String> parameterBrowserName = ThreadLocal.withInitial(() -> "browser");
     private static final ThreadLocal<String> parameterPlatformName = ThreadLocal.withInitial(() -> "platform");
@@ -27,16 +28,13 @@ public final class SeleniumHolder {
     private static final ThreadLocal<String> mainWindowHandle = new ThreadLocal<>();
     private static final ThreadLocal<String> nodeIp = ThreadLocal.withInitial(() -> "localhost");
     private static final ThreadLocal<SessionId> sessionId = new ThreadLocal<>();
-    private static String ourWebElementClass;
+    private static String customElementFactoryClass;
     private static final ThreadLocal<AppiumDriver> appiumDriver = new ThreadLocal<>();
     private static final ThreadLocal<IOSDriver> iosDriverHolder = new ThreadLocal<>();
     private static final ThreadLocal<AndroidDriver> androidDriverHolder = new ThreadLocal<>();
     private static final ThreadLocal<List<String>> activeProfilesList = ThreadLocal.withInitial(ArrayList::new);
     private static final ThreadLocal<String> platformName = new ThreadLocal<String>();
 
-    /**
-     * private constructor for utils class
-     */
     private SeleniumHolder() {
     }
 
@@ -48,6 +46,14 @@ public final class SeleniumHolder {
         driverHolder.set(value);
     }
 
+    public static Integer getTimeoutInSeconds() {
+        return timeoutHolder.get();
+    }
+
+    public static void setTimeoutInSeconds(final Integer timeoutInSeconds) {
+        timeoutHolder.set(timeoutInSeconds);
+    }
+
     public static String getDriverName() {
         return driverName.get();
     }
@@ -56,8 +62,6 @@ public final class SeleniumHolder {
         setBrowser(value);
         driverName.set(value);
     }
-
-    private static final ThreadLocal<String> bugParameter = new ThreadLocal<>();
 
     public static ProxyServer getProxyServer() {
         return proxyServer.get();
@@ -131,20 +135,12 @@ public final class SeleniumHolder {
         return mainWindowHandle.get();
     }
 
-    public static void setBugId(String bugId) {
-        bugParameter.set(bugId);
+    public static String getCustomElementFactoryClass() {
+        return customElementFactoryClass;
     }
 
-    public static String getBugId() {
-        return bugParameter.get();
-    }
-
-    public static String getOurWebElementClass() {
-        return ourWebElementClass;
-    }
-
-    public static void setOurWebElementClass(String ourWebElementClass) {
-        SeleniumHolder.ourWebElementClass = ourWebElementClass;
+    public static void setCustomElementFactoryClass(String customElementFactoryClass) {
+        SeleniumHolder.customElementFactoryClass = customElementFactoryClass;
     }
 
     public static AppiumDriver getAppiumDriver() {

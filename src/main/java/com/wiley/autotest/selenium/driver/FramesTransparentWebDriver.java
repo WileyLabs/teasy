@@ -1,7 +1,7 @@
 package com.wiley.autotest.selenium.driver;
 
 import com.google.common.base.Function;
-import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import com.wiley.autotest.utils.TestUtils;
 import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.*;
@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
@@ -50,7 +51,7 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
         return findFirstElements(by);
     }
 
-    public List<WebElement> findElements(OurWebElement context, final By by) {
+    public List<WebElement> findElements(TeasyElement context, final By by) {
         firstCallInContext.set(true);
         Stack<WebElement> currentFramesPath = new Stack<>();
         return findFirstElements(context, by, currentFramesPath);
@@ -59,11 +60,18 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
     @Override
     public WebElement findElement(final By by) {
         try {
-            List<WebElement> found = newArrayList(transform(driverFindElements(by), toFrameAwareWebElements));
-            if (found.isEmpty()) {
-                switchToDefaultContext();
-                currentFramesPath.clear();
-                found = findFirstElements(by);
+            List<WebElement> found;
+
+            WebElement element = driverFindElement(by);
+            if (element != null) {
+                found = newArrayList(transform(Collections.singletonList(element), toFrameAwareWebElements));
+            } else {
+                found = newArrayList(transform(driverFindElements(by), toFrameAwareWebElements));
+                if (found.isEmpty()) {
+                    switchToDefaultContext();
+                    currentFramesPath.clear();
+                    found = findFirstElements(by);
+                }
             }
             return found.get(0);
         } catch (IndexOutOfBoundsException e) {
@@ -71,14 +79,14 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
         }
     }
 
-    public WebElement findElement(OurWebElement context, final By by) {
+    public WebElement findElement(TeasyElement context, final By by) {
         try {
             firstCallInContext.set(true);
             Stack<WebElement> currentFramesPath = new Stack<>();
             List<WebElement> found = findFirstElements(context, by, currentFramesPath);
             return found.get(0);
         } catch (IndexOutOfBoundsException e) {
-            throw new NoSuchElementException("Unable to locate element " + by + ", Exception - " + e);
+            throw new NoSuchElementException("Unable to find element " + by + ", Exception - " + e);
         }
     }
 
@@ -88,7 +96,7 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
         return getAllElementsInFrames(by);
     }
 
-    public List<WebElement> findAllElementsInFrames(OurWebElement context, final By by) {
+    public List<WebElement> findAllElementsInFrames(TeasyElement context, final By by) {
         Stack<WebElement> currentFramesPath = new Stack<>();
         firstCallInContext.set(true);
         return getAllElementsInFrames(context, by, currentFramesPath);
@@ -154,13 +162,11 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
         return emptyList();
     }
 
-    private List<WebElement> findFirstElements(OurWebElement context, final By by, Stack<WebElement> currentFramesPath) {
+    private List<WebElement> findFirstElements(TeasyElement context, final By by, Stack<WebElement> currentFramesPath) {
         if (firstCallInContext.get()) {
-            try {
-                context.isEnabled();
-            } catch (StaleElementReferenceException e) {
-                context.againLocate();
-            }
+
+            avoidStaleness(context);
+
             List<WebElement> elements = context.getWrappedWebElement().findElements(by);
             if (!elements.isEmpty()) {
                 return elements;
@@ -215,14 +221,11 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
         return foundInCurrentFrame;
     }
 
-    private List<WebElement> getAllElementsInFrames(OurWebElement context, final By by, Stack<WebElement> currentFramesPath) {
+    private List<WebElement> getAllElementsInFrames(TeasyElement context, final By by, Stack<WebElement> currentFramesPath) {
         List<WebElement> foundInCurrentFrame = newArrayList();
         if (firstCallInContext.get()) {
-            try {
-                context.isEnabled();
-            } catch (StaleElementReferenceException e) {
-                context.againLocate();
-            }
+            avoidStaleness(context);
+
             List<WebElement> elements = context.getWrappedWebElement().findElements(by);
             if (!elements.isEmpty()) {
                 foundInCurrentFrame.addAll(elements);
@@ -252,7 +255,18 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
         return foundInCurrentFrame;
     }
 
-    private List<WebElement> getFramesForContext(OurWebElement context) {
+    /**
+     * Quite hacky workaround to make sure element is not stale before searching inside it
+     * we call getText() method which takes care of StaleElementReferenceException and calls
+     * for againLocate() method inside TeasyElement.
+     *
+     * @param element - TeasyElement which might be stale.
+     */
+    private void avoidStaleness(TeasyElement element) {
+        element.getText();
+    }
+
+    private List<WebElement> getFramesForContext(TeasyElement context) {
         List<WebElement> currentFrames;
         if (firstCallInContext.get()) {
             currentFrames = context.getWrappedWebElement().findElements(By.tagName("iframe"));
@@ -276,12 +290,26 @@ public class FramesTransparentWebDriver extends WebDriverDecorator {
             } catch (Exception e1) {
                 return new ArrayList<>();
             }
-        } catch (WebDriverException e) {
-            //this exception can be thrown if current frame is already detached.
-            return new ArrayList<>();
         } catch (Exception e) {
             //In some cases IE driver can throw InvalidSelectorException or NullPointerException
             return new ArrayList<>();
+        }
+    }
+
+    private WebElement driverFindElement(By by) {
+        try {
+            return getDriver().findElement(by);
+        } catch (NoSuchWindowException e) {
+            //chrome driver throws this exception if current window is closed
+            try {
+                switchToMainWindow();
+                return getDriver().findElement(by);
+            } catch (Exception e1) {
+                return null;
+            }
+        } catch (Exception e) {
+            //In some cases IE driver can throw InvalidSelectorException or NullPointerException
+            return null;
         }
     }
 

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<table border="0">
+    <tr>
+        <td><b>Elements has text: |</b></td>
+        <td><b>Elements has no text: |</b></td>
+        <td><b>One element has no text: </b></td>
+    </tr>
+    <tr></tr>
+    <tr>
+        <td>
+            <div id="exist" class="someClassForExistElements">Lorem ipsum 1</div>
+            <div class="someClassForExistElements">Lorem ipsum 2</div>
+            <div class="someClassForExistElements">Lorem ipsum 3</div>
+            <div class="someClassForExistElements">Lorem ipsum 4</div>
+            <div class="someClassForExistElements">Lorem ipsum 5</div>
+        </td>
+        <td>
+            <div id="notExist" class="someClassForNotExistElements"></div>
+            <div class="someClassForNotExistElements"></div>
+            <div class="someClassForNotExistElements"></div>
+            <div class="someClassForNotExistElements"></div>
+            <div class="someClassForNotExistElements"></div>
+        </td>
+        <td>
+            <div class="someClassForOneNotExistElements">Lorem ipsum 6</div>
+            <div id="oneNotExist" class="someClassForOneNotExistElements">Lorem ipsum 7</div>
+            <div class="someClassForOneNotExistElements"><br></div>
+            <div class="someClassForOneNotExistElements">Lorem ipsum 9</div>
+            <div class="someClassForOneNotExistElements">Lorem ipsum 10</div>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

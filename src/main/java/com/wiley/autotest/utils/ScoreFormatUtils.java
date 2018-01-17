@@ -3,6 +3,8 @@ package com.wiley.autotest.utils;
 /**
  * @author ptsarev
  */
+//Will be deleted. If you need this class - copy it to your project.
+@Deprecated
 public final class ScoreFormatUtils {
 
     private ScoreFormatUtils() {

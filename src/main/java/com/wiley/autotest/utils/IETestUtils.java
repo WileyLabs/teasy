@@ -7,6 +7,8 @@ import org.openqa.selenium.WebElement;
  * Date: 05.09.2014
  * Time: 15:48
  */
+//Will be deleted. If you need this class - copy it to your project.
+@Deprecated
 public class IETestUtils {
     public static boolean isActionElements(WebElement element) {
         return "input".equals(element.getTagName()) && "checkbox".equals(element.getAttribute("type"));

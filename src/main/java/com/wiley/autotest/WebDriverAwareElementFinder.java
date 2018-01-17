@@ -3,6 +3,7 @@ package com.wiley.autotest;
 import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
 import com.wiley.autotest.selenium.elements.TextField;
+import com.wiley.autotest.selenium.elements.upgrade.conditions.PageLoaded;
 import com.wiley.autotest.utils.TestUtils;
 import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.*;
@@ -17,8 +18,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import static com.wiley.autotest.ExpectedConditions2.*;
-import static com.wiley.autotest.ExpectedConditions2.textToBePresentInElement;
+import static com.wiley.autotest.TeasyExpectedConditions.*;
+import static com.wiley.autotest.TeasyExpectedConditions.textToBePresentInElement;
 import static org.openqa.selenium.support.ui.ExpectedConditions.*;
 
 public class WebDriverAwareElementFinder implements ElementFinder {
@@ -74,7 +75,7 @@ public class WebDriverAwareElementFinder implements ElementFinder {
 
     @Override
     public WebElement waitForVisibilityOfElementLocatedBy(final By locator) {
-        return waitFor(ExpectedConditions2.visibilityOfElementLocatedBy(locator));
+        return waitFor(TeasyExpectedConditions.visibilityOfElementLocatedBy(locator));
     }
 
     @Override
@@ -89,7 +90,7 @@ public class WebDriverAwareElementFinder implements ElementFinder {
 
     @Override
     public Boolean waitForTextToBePresentInElement(final By locator) {
-        return waitFor(ExpectedConditions2.textToBePresentInElement(locator));
+        return waitFor(TeasyExpectedConditions.textToBePresentInElement(locator));
     }
 
     @Override
@@ -104,37 +105,37 @@ public class WebDriverAwareElementFinder implements ElementFinder {
 
     @Override
     public void waitForVisibilityOf(final WebElement element) {
-        waitFor(ExpectedConditions2.visibilityOf(element));
+        waitFor(TeasyExpectedConditions.visibilityOf(element));
     }
 
     @Override
     public List<WebElement> waitForVisibilityOfAllElementsLocatedByInFrames(final By locator) {
-        return waitFor(ExpectedConditions2.visibilityOfFirstElementsInAllFrames(locator));
+        return waitFor(TeasyExpectedConditions.visibilityOfFirstElementsInAllFrames(locator));
     }
 
     @Override
     public List<WebElement> waitForVisibilityOfAllElementsLocatedByInFrames(final By locator, final long timeOutInSeconds) {
-        return waitFor(ExpectedConditions2.visibilityOfFirstElementsInAllFrames(locator), timeOutInSeconds);
+        return waitFor(TeasyExpectedConditions.visibilityOfFirstElementsInAllFrames(locator), timeOutInSeconds);
     }
 
     @Override
     public List<WebElement> waitForPresenceOfAllElementsLocatedByInFrames(final By locator) {
-        return waitFor(ExpectedConditions2.presenceOfAllElementsInAllFrames(locator));
+        return waitFor(TeasyExpectedConditions.presenceOfAllElementsInAllFrames(locator));
     }
 
     @Override
     public List<WebElement> waitForPresenceOfAllElementsLocatedByInFrames(final By locator, final long timeOutInSeconds) {
-        return waitFor(ExpectedConditions2.presenceOfAllElementsInAllFrames(locator), timeOutInSeconds);
+        return waitFor(TeasyExpectedConditions.presenceOfAllElementsInAllFrames(locator), timeOutInSeconds);
     }
 
     @Override
     public List<WebElement> waitForPresenceOfAllElementsLocatedBy(final By locator) {
-        return waitFor(ExpectedConditions2.presenceOfAllElementsLocatedBy(locator));
+        return waitFor(TeasyExpectedConditions.presenceOfAllElementsLocatedBy(locator));
     }
 
     @Override
     public List<WebElement> waitForPresenceOfAllElementsLocatedBy(final By locator, long timeOutInSeconds) {
-        return waitFor(ExpectedConditions2.presenceOfAllElementsLocatedBy(locator), timeOutInSeconds);
+        return waitFor(TeasyExpectedConditions.presenceOfAllElementsLocatedBy(locator), timeOutInSeconds);
     }
 
     @Override
@@ -144,12 +145,12 @@ public class WebDriverAwareElementFinder implements ElementFinder {
 
     @Override
     public WebElement waitForPresenceOfElementLocatedBy(final SearchContext searchContext, final By locator) {
-        return waitFor(ExpectedConditions2.presenceOfElementLocatedBy(searchContext, locator));
+        return waitFor(TeasyExpectedConditions.presenceOfElementLocatedBy(searchContext, locator));
     }
 
     @Override
     public List<WebElement> waitForPresenceOfAllElementsLocatedBy(final SearchContext searchContext, final By locator) {
-        return waitFor(ExpectedConditions2.presenceOfAllElementsLocatedBy(searchContext, locator));
+        return waitFor(TeasyExpectedConditions.presenceOfAllElementsLocatedBy(searchContext, locator));
     }
 
     @Override
@@ -261,7 +262,7 @@ public class WebDriverAwareElementFinder implements ElementFinder {
             return;
         }
         try {
-            waitFor(ExpectedConditions2.pageToLoad());
+            waitFor(new PageLoaded());
         } catch (TimeoutException expected) {
             String readyState = ((JavascriptExecutor) driver).executeScript("return document.readyState").toString();
             LOGGER.error("*****ERROR***** TimeoutException occurred while waiting for page to load! return document.readyState value is '" + readyState + "' But expected to be 'complete'");
@@ -272,7 +273,7 @@ public class WebDriverAwareElementFinder implements ElementFinder {
 
     @Override
     public void waitForPresenceOfElementCount(By locator, int expectedNumberOfElements, long timeOutInSeconds) {
-        waitFor(ExpectedConditions2.presenceOfElementCount(locator, expectedNumberOfElements), timeOutInSeconds);
+        waitFor(TeasyExpectedConditions.presenceOfElementCount(locator, expectedNumberOfElements), timeOutInSeconds);
     }
 
     @Override
@@ -282,31 +283,31 @@ public class WebDriverAwareElementFinder implements ElementFinder {
 
     @Override
     public WebElement waitForInvisibilityOfElement(final WebElement element) {
-        return waitFor(ExpectedConditions2.invisibleOf(element));
+        return waitFor(TeasyExpectedConditions.invisibleOf(element));
     }
 
     @Override
     public List<WebElement> waitForVisibilityOfAllElementsLocatedBy(final By locator) {
-        return waitFor(ExpectedConditions2.visibilityOfFirstElements(locator));
+        return waitFor(TeasyExpectedConditions.visibilityOfFirstElements(locator));
     }
 
     @Override
     public List<WebElement> waitForVisibilityOfAllElementsLocatedBy(final SearchContext searchContext, final By locator) {
         throw new RuntimeException("REPLACE WITH NEW APPROACH IMMEDIATELY! METHOD IMPLEMENTATION WAD DELETED! CONTACT Vladimir Efimov vefimov@wiley.com");
 
-//        return waitFor(ExpectedConditions2.visibilityOfFirstElements(searchContext, locator));
+//        return waitFor(TeasyExpectedConditions.visibilityOfFirstElements(searchContext, locator));
     }
 
     @Override
     public List<WebElement> waitForVisibilityOfAllElementsLocatedBy(final SearchContext searchContext, final By locator, long timeOutInSeconds) {
         throw new RuntimeException("REPLACE WITH NEW APPROACH IMMEDIATELY! METHOD IMPLEMENTATION WAD DELETED! CONTACT Vladimir Efimov vefimov@wiley.com");
 
-        //        return waitFor(ExpectedConditions2.visibilityOfFirstElements(searchContext, locator), timeOutInSeconds);
+        //        return waitFor(TeasyExpectedConditions.visibilityOfFirstElements(searchContext, locator), timeOutInSeconds);
     }
 
     @Override
     public List<WebElement> waitForVisibilityOfAllElementsLocatedBy(final By locator, long timeOutInSeconds) {
-        return waitFor(ExpectedConditions2.visibilityOfFirstElements(locator), timeOutInSeconds);
+        return waitFor(TeasyExpectedConditions.visibilityOfFirstElements(locator), timeOutInSeconds);
     }
 
     @Override

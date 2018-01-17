@@ -4,12 +4,10 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 /**
- * User: vefimov
- * Date: 27.08.2014
- * Time: 15:48
+ * Provides the logic to find element
  */
 public interface Locator {
     WebElement find();
 
-    By getLocator();
+    By getBy();
 }

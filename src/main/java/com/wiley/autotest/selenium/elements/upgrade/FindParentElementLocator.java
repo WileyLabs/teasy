@@ -4,9 +4,7 @@ import com.wiley.autotest.utils.ExecutionUtils;
 import org.openqa.selenium.*;
 
 /**
- * User: vefimov
- * Date: 27.08.2014
- * Time: 15:50
+ * Find parent element
  */
 public class FindParentElementLocator implements Locator {
     private SearchContext searchContext;
@@ -23,7 +21,7 @@ public class FindParentElementLocator implements Locator {
     }
 
     @Override
-    public By getLocator() {
+    public By getBy() {
         return by;
     }
 }

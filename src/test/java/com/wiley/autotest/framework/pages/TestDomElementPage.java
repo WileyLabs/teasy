@@ -1,0 +1,61 @@
+package com.wiley.autotest.framework.pages;
+
+import com.wiley.autotest.selenium.context.AbstractPage;
+import com.wiley.autotest.selenium.elements.upgrade.DomTeasyElement;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
+import org.openqa.selenium.By;
+import org.springframework.stereotype.Component;
+
+/**
+ * Created by shekhavtsov on 29/09/2017.
+ */
+@Component
+public class TestDomElementPage extends AbstractPage {
+
+    public TestDomElementPage checkFirstDomElement() {
+        domElement(By.cssSelector("li")).should().haveAttribute("id", "first_li_element");
+        return this;
+    }
+
+    public TestDomElementPage checkDomElementBecomeVisible() {
+        domElement(By.id("waitElement")).should().beDisplayed();
+        return this;
+    }
+
+    /**
+     * Checking that element with id "domDiv" is found.
+     * The "logic" implemented in the mainTestElement.html that element will be attached to dom after 6 seconds.
+     *
+     * @return
+     */
+    public TestDomElementPage checkDomElementAppearAfterTimeout() {
+        TeasyElement domDiv = domElement(By.id("domDiv"));
+        assertTrue(domDiv instanceof DomTeasyElement);
+        domDiv.should().haveText("Im div added to dom");
+        return this;
+    }
+
+    //    The element changes coordinates. Each check validates element with different x, y.
+    public TestDomElementPage checkAnimationDomElement() {
+        domElement(By.id("myAnimation")).should().beDisplayed();
+        domElement(By.id("myAnimation")).should().beDisplayed();
+        domElement(By.id("myAnimation")).should().beDisplayed();
+        return this;
+    }
+
+    public TestDomElementPage checkDomElementInFrame() {
+        domElement(By.id("elementInFrame")).should().beDisplayed();
+        domElement(By.id("elementInFrame")).should().haveText("This page is displayed in an iframe #3");
+        return this;
+    }
+
+    public TestDomElementPage checkDomElementNotFound() {
+        domElement(By.id("elementNonexistent")).should().beDisplayed();
+        return this;
+    }
+
+    public TestDomElementPage checkDomElementsReturnAll() {
+        assertTrue(domElements(By.tagName("li")).size() == 5);
+        return this;
+    }
+}

@@ -1,18 +1,18 @@
 package com.wiley.autotest.selenium.extensions.internal;
 
 import com.wiley.autotest.selenium.elements.CheckBox;
-import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 import java.util.List;
 
 public class CheckBoxImpl extends AbstractEnabledElement implements CheckBox {
-    protected CheckBoxImpl(final OurWebElement wrappedElement) {
+    protected CheckBoxImpl(final TeasyElement wrappedElement) {
         super(wrappedElement);
     }
 
-    protected CheckBoxImpl(final OurWebElement wrappedElement, By by) {
+    protected CheckBoxImpl(final TeasyElement wrappedElement, By by) {
         super(wrappedElement, by);
     }
 
@@ -38,7 +38,7 @@ public class CheckBoxImpl extends AbstractEnabledElement implements CheckBox {
 
     @Override
     public boolean isSelected() {
-        List<WebElement> inputTags = getWrappedWebElement().findElements(By.xpath("./../input"));
+        List<TeasyElement> inputTags = getWrappedWebElement().domElements(By.xpath("./../input"));
         if (!inputTags.isEmpty()) {
             if (inputTags.get(0).getAttribute("class").contains("customCheckbox")) {
                 String inputId = inputTags.get(0).getAttribute("id");
@@ -49,13 +49,13 @@ public class CheckBoxImpl extends AbstractEnabledElement implements CheckBox {
     }
 
     @Override
-    public OurWebElement getWrappedWebElement() {
+    public TeasyElement getWrappedWebElement() {
         return getWrappedElement();
     }
 
     @Override
     public boolean isEnabled() {
-        List<WebElement> inputTags = getWrappedWebElement().findElements(By.xpath("./../input"));
+        List<TeasyElement> inputTags = getWrappedWebElement().domElements(By.xpath("./../input"));
         if (!inputTags.isEmpty()) {
             if (inputTags.get(0).getAttribute("class").contains("customCheckbox")) {
                 String inputId = inputTags.get(0).getAttribute("id");

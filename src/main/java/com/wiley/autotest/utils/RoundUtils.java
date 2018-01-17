@@ -7,6 +7,8 @@ import java.math.BigDecimal;
  * Date: 03.07.13
  * Time: 16:15
  */
+//Will be deleted. If you need this class - copy it to your project.
+@Deprecated
 public final class RoundUtils {
 
     private static final double MIN_DIFFERENCE = 0.011;

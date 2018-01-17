@@ -1,19 +1,18 @@
 package com.wiley.autotest.selenium.extensions.internal;
 
 import com.wiley.autotest.selenium.elements.RadioButton;
-import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 
 import java.util.List;
 
 public class RadioButtonImpl extends AbstractEnabledElement implements RadioButton {
-    protected RadioButtonImpl(final OurWebElement wrappedElement) {
+    protected RadioButtonImpl(final TeasyElement wrappedElement) {
         super(wrappedElement);
     }
 
-    protected RadioButtonImpl(final OurWebElement wrappedElement, By by) {
+    protected RadioButtonImpl(final TeasyElement wrappedElement, By by) {
         super(wrappedElement, by);
     }
 
@@ -40,7 +39,7 @@ public class RadioButtonImpl extends AbstractEnabledElement implements RadioButt
 
     @Override
     public boolean isSelected() {
-        List<WebElement> inputTags = getWrappedWebElement().findElements(By.xpath("./../input"));
+        List<TeasyElement> inputTags = getWrappedWebElement().domElements(By.xpath("./../input"));
         if (!inputTags.isEmpty()) {
             if (inputTags.get(0).getAttribute("class").contains("customRadio")) {
                 String inputId = inputTags.get(0).getAttribute("id");
@@ -52,7 +51,7 @@ public class RadioButtonImpl extends AbstractEnabledElement implements RadioButt
 
     @Override
     public boolean isEnabled() {
-        List<WebElement> inputTags = getWrappedWebElement().findElements(By.xpath("./../input"));
+        List<TeasyElement> inputTags = getWrappedWebElement().domElements(By.xpath("./../input"));
         if (!inputTags.isEmpty()) {
             if (inputTags.get(0).getAttribute("class").contains("customRadio")) {
                 String inputId = inputTags.get(0).getAttribute("id");
@@ -63,7 +62,7 @@ public class RadioButtonImpl extends AbstractEnabledElement implements RadioButt
     }
 
     @Override
-    public OurWebElement getWrappedWebElement() {
+    public TeasyElement getWrappedWebElement() {
         return getWrappedElement();
     }
 }

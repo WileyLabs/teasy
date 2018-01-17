@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 @Deprecated
-//Use different approach with OurElementProvider
+//Use different approach with TeasyElementProvider
 public interface ElementFinder {
     void waitForCondition(ExpectedCondition<Boolean> condition, long timeOutInSeconds);
 

@@ -5,8 +5,11 @@ import com.wiley.autotest.WebDriverAwareElementFinder;
 import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.context.ErrorSender;
 import com.wiley.autotest.selenium.elements.Element;
-import com.wiley.autotest.selenium.elements.upgrade.OurWebElement;
-import org.openqa.selenium.*;
+import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +17,7 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractElement implements Element {
 
     private static final long WAIT_TIME_OUT_IN_SECONDS = 10;
-    private OurWebElement wrappedElement;
+    private TeasyElement wrappedElement;
     private By locator;
     private ErrorSender errorSender;
     private ElementFinder elementFinder;
@@ -23,12 +26,12 @@ public abstract class AbstractElement implements Element {
     private static final long SLEEP_IN_MILLISECONDS = 1000;
     protected static final String EXPLANATION_MESSAGE_FOR_WAIT = "Wait for reload element";
 
-    protected AbstractElement(final OurWebElement element) {
+    protected AbstractElement(final TeasyElement element) {
         this.wrappedElement = element;
         init(getDriver(), WAIT_TIME_OUT_IN_SECONDS);
     }
 
-    protected AbstractElement(final OurWebElement element, final By locator) {
+    protected AbstractElement(final TeasyElement element, final By locator) {
         this(element);
         this.locator = locator;
     }
@@ -38,7 +41,7 @@ public abstract class AbstractElement implements Element {
     }
 
     //TODO VE rename this to something more meaningful
-    public OurWebElement getWrappedElement() {
+    public TeasyElement getWrappedElement() {
         return wrappedElement;
     }
 
@@ -62,7 +65,7 @@ public abstract class AbstractElement implements Element {
     }
 
     @Override
-    public OurWebElement getWrappedWebElement() {
+    public TeasyElement getWrappedWebElement() {
         return wrappedElement;
     }
 

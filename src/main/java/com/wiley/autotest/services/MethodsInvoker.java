@@ -5,9 +5,8 @@ import com.wiley.autotest.annotations.OurAfterSuite;
 import com.wiley.autotest.annotations.OurBeforeGroups;
 import com.wiley.autotest.annotations.OurBeforeSuite;
 import com.wiley.autotest.selenium.AbstractTest;
+import com.wiley.autotest.selenium.Report;
 import org.apache.commons.lang.ArrayUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
@@ -22,27 +21,18 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang.ArrayUtils.contains;
 import static org.apache.commons.lang.ArrayUtils.isEmpty;
-import static org.testng.Reporter.log;
 
-/**
- * User: dfedorov
- * Date: 7/26/12
- * Time: 9:32 AM
- */
 @Service
 public abstract class MethodsInvoker {
-
-    protected static final Logger LOGGER = LoggerFactory.getLogger(MethodsInvoker.class);
-    private static final String UNABLE_TO_CREATE_TEST_CLASS_INSTANCE = "Unable to create test class instance. ";
-    protected static ThreadLocal<Integer> retryCount = ThreadLocal.withInitial(() -> 0);
 
     abstract void invokeMethod(final AbstractTest instance, final Method method, TestClassContext context, boolean isBeforeAfterGroup);
 
     /**
-     * Called when using all project-specific annotations (E4BeforeGroups, E4AfterMethod, etc.)
+     * Called when using all project-specific annotations (OurBeforeGroups, OurAfterMethod, etc.)
      * We decided to catch all kind of exceptions here because
      * based on (https://groups.google.com/forum/#!topic/testng-users/0JhqmewMezM) we think that tests get skipped
      * in case of failure in any before/after method
@@ -52,17 +42,36 @@ public abstract class MethodsInvoker {
      */
     protected void invokeMethodsByAnnotation(final TestClassContext context, boolean isBeforeAfterGroup) {
         try {
-            final Method[] methods = context.getTestClass().getMethods();
+
+            //for invoke all public methods with @OurBefore... and @OurAfter... from super or this class
+            Method[] publicMethods = context.getTestClass().getMethods();
+
+            //for invoke private methods with @OurBefore... and @OurAfter... from this class
+            Method[] privateMethods = context.getTestClass().getDeclaredMethods();
+
+            //remove public methods of test class
+            List<Method> filteredMethods = Arrays.asList(publicMethods).stream()
+                    .filter(name -> !name.getDeclaringClass().getName().contains(context.getTestClass().getName()))
+                    .collect(Collectors.toList());
+
+            //paste all methods from test class to top of the list
+            for (int i = 0; i < privateMethods.length; i++) {
+                filteredMethods.add(i, privateMethods[i]);
+            }
+
+            Method[] allMethods = new Method[filteredMethods.size()];
+            filteredMethods.toArray(allMethods);
+
             //reverse methods array for correct invoke order if TestClass extends SuperClass with @Before methods
             if (context.getAnnotationToInvokeMethod().getName().contains("OurBefore")) {
-                ArrayUtils.reverse(methods);
+                ArrayUtils.reverse(allMethods);
             }
-            for (Method method : methods) {
+            for (Method method : allMethods) {
                 if (isMethodShouldBeInvoked(method, context)) {
                     AbstractTest testInstance = context.getTestInstance();
                     if (testInstance != null || (testInstance = createTestClassInstance(context.getTestClass())) != null) {
-                        //hack for E4 project only (@LoginAs and @LoginTo) by default the method will do nothing untill you override it
-                        //and add some specific logic. For example handle your special anotations
+                        //hack for E4 project only (@LoginAs and @LoginTo) by default the method will do nothing until you override it
+                        //and add some specific logic. For example handle your special annotations
                         testInstance.handleBeforeAfterAnnotations(method);
 
                         invokeMethod(testInstance, method, context, isBeforeAfterGroup);
@@ -72,16 +81,16 @@ public abstract class MethodsInvoker {
         } catch (StopTestExecutionException e) {
             if (e.getCause() instanceof InvocationTargetException) {
                 Throwable targetException = ((InvocationTargetException) e.getCause()).getTargetException();
-                LOGGER.error("*****StopTestExecutionException*****" + context.getTestClass() + " " + targetException.getCause());
+                new Report("*****StopTestExecutionException*****" + context.getTestClass() + " " + targetException.getCause(), e).jenkins();
             } else {
-                LOGGER.error("*****StopTestExecutionException*****" + context.getTestClass() + " " + e.getCause());
+                new Report("*****StopTestExecutionException*****" + context.getTestClass() + " " + e.getCause(), e).jenkins();
             }
             try {
                 context.getTestInstance().setStopTextExecutionThrowable(e);
             } catch (NullPointerException ignored) {
             }
         } catch (Throwable t) {
-            LOGGER.error("*****THROWABLE*****" + context.getTestClass() + " " + t.getCause());
+            new Report("*****Throwable*****" + context.getTestClass(), t).jenkins();
         }
     }
 
@@ -172,17 +181,13 @@ public abstract class MethodsInvoker {
                 configurationLocationsList.addAll(Arrays.asList(testContextConfigurationLocations));
             }
 
-            final String[] locations = configurationLocationsList.stream().toArray(String[]::new);
-
+            final String[] locations = configurationLocationsList.toArray(new String[0]);
             final ApplicationContext applicationContext = new ClassPathXmlApplicationContext(locations);
-
             final T instance = applicationContext.getAutowireCapableBeanFactory().createBean(testClass);
-            final TestContextManager testContextManager = new TestContextManager(testClass);
-            testContextManager.prepareTestInstance(instance);
+            new TestContextManager(testClass).prepareTestInstance(instance);
             return instance;
         } catch (Exception e) {
-            log(UNABLE_TO_CREATE_TEST_CLASS_INSTANCE + e.getMessage());
-            LOGGER.error(UNABLE_TO_CREATE_TEST_CLASS_INSTANCE, e);
+            new Report("Unable to create test class instance.", e).jenkins();
         }
 
         return null;

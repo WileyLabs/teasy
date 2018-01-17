@@ -14,6 +14,8 @@ import java.util.TimeZone;
 /**
  * Class DateUtils
  */
+//Will be deleted. If you need this class - copy it to your project.
+@Deprecated
 public final class DateUtils {
     private static final int END_INDEX = 3;
     private static final int MULTIPLICATION_FACTOR_TO_CONVERT_MINUTE_TO_MILLISECONDS = 1000;

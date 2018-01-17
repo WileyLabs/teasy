@@ -5,16 +5,14 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 /**
- * User: vefimov
- * Date: 27.08.2014
- * Time: 15:50
+ * Find element
  */
 public class FindElementLocator implements Locator {
-    private OurWebElement searchContext;
+    private TeasyElement searchContext;
     private WebDriver driver;
     private By by;
 
-    public FindElementLocator(OurWebElement searchContext, By by) {
+    public FindElementLocator(TeasyElement searchContext, By by) {
         this.searchContext = searchContext;
         this.by = by;
     }
@@ -26,11 +24,11 @@ public class FindElementLocator implements Locator {
 
     @Override
     public WebElement find() {
-        return driver != null ? driver.findElement(by) : searchContext.findElement(by);
+        return driver != null ? driver.findElement(by) : searchContext.domElement(by).getWrappedWebElement();
     }
 
     @Override
-    public By getLocator() {
+    public By getBy() {
         return by;
     }
 }

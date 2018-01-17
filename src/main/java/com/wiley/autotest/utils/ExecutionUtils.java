@@ -14,7 +14,11 @@ public final class ExecutionUtils {
     }
 
     public static boolean isFF() {
-        return getDriverName().equals("firefox");
+        return getDriverName().equals("firefox") || getDriverName().equals("gecko");
+    }
+
+    public static boolean isGecko() {
+        return getDriverName().equals("gecko");
     }
 
     public static boolean isChrome() {
