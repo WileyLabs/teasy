@@ -11,7 +11,7 @@ Teasy is a Java-based testing framework built on Selenium, TestNG and Spring. It
 # Quickstart
 To start from scratch use our [Hello World project](https://github.com/WileyLabs/teasy-template-archetype)
 
-If you want to use teasy at existing project please contant us in a gitter chat. Detailed description will be added soon...
+If you want to use teasy at existing project please contaсt us in a gitter chat. Detailed description will be added soon...
 # Usage
 You will need to have the following soft installed before using teasy:
 * java 8+
