@@ -12,6 +12,7 @@ import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
 import org.apache.commons.httpclient.HttpStatus;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Connection;
@@ -32,17 +33,13 @@ import java.net.InetAddress;
 import java.util.Arrays;
 
 import static com.wiley.autotest.selenium.SeleniumHolder.*;
+import static com.wiley.autotest.spring.testexecution.DriverFactory.*;
 
 public class SeleniumTestExecutionListener extends AbstractTestExecutionListener {
 
     private static final int ANDROID_WEB_DRIVER_NUMBER_OF_TESTS_LIMIT = 5;
     private static final int IE_WEB_DRIVER_NUMBER_OF_TESTS_LIMIT = 5;
     private static final int SAFARI_WEB_DRIVER_NUMBER_OF_TESTS_LIMIT = 1;
-    private static final String SAFARI = "safari";
-    private static final String IE = "ie";
-    private static final String IE10 = "ie10";
-    private static final String IE9 = "ie9";
-    private static final String ANDROID = "android";
     private static final Logger LOGGER = LoggerFactory.getLogger(SeleniumTestExecutionListener.class);
     private static ThreadLocal<Integer> count = ThreadLocal.withInitial(() -> -1);
     private static ThreadLocal<Integer> driverRestartCount = ThreadLocal.withInitial(() -> 0);
@@ -52,10 +49,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
 
     @Override
     public void prepareTestInstance(final TestContext context) {
-        if (activeProfiles == null || activeProfiles.length == 0) {
-            activeProfiles = context.getApplicationContext().getEnvironment().getActiveProfiles();
-            SeleniumHolder.setActiveProfilesList(Arrays.asList(activeProfiles));
-        }
+        setActiveSpringProfiles(context);
 
         final Settings settings = getBean(context, Settings.class);
         final Configuration configuration = getBean(context, Configuration.class);
@@ -64,86 +58,122 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         count.set(count.get() + 1);
         driverRestartCount.set(driverRestartCount.get() + 1);
 
-
         //TODO NT - confirm if it the right place to call this method?
         currentAlertCapability.set(alertCapability.get());
-
 
         boolean isRunWithGrid = settings.isRunTestsWithGrid();
         Integer restartDriverCount = settings.getRestartDriverCount() != null ? settings.getRestartDriverCount() : 0;
 
+        restartDriverIfItsTimeToRestart(settings, restartDriverCount);
+        restartDriverIfNewBrowserTypeWasRequested();
+        restartDriverIfNewPlatformWasRequested();
+
+
+        if (getWebDriver() == null || isBrowserDead()) {
+            try {
+                FramesTransparentWebDriver driver = createDriver(settings, configuration);
+                addShutdownHook(driver);
+
+                setGridParams(settings, isRunWithGrid, driver);
+                setDriverParams(settings, driver);
+                setMobileParams(driver);
+                setCustomElementFactory(configuration);
+            } catch (Throwable t) {
+                lastTryToCreateDriver(context, t);
+            }
+        }
+    }
+
+    private void setDriverParams(Settings settings, FramesTransparentWebDriver driver) {
+        SeleniumHolder.setWebDriver(driver);
+        SeleniumHolder.setTimeoutInSeconds(settings.getTimeout());
+    }
+
+    private void setActiveSpringProfiles(TestContext context) {
+        if (activeProfiles == null || activeProfiles.length == 0) {
+            activeProfiles = context.getApplicationContext().getEnvironment().getActiveProfiles();
+            SeleniumHolder.setActiveProfilesList(Arrays.asList(activeProfiles));
+        }
+    }
+
+    private void restartDriverIfItsTimeToRestart(Settings settings, Integer restartDriverCount) {
         if (restartDriverCount > 0) {
             if (count.get() > (settings.getPlatform().equals(ANDROID) ? ANDROID_WEB_DRIVER_NUMBER_OF_TESTS_LIMIT :
                     settings.getDriverName().equals(SAFARI) ? SAFARI_WEB_DRIVER_NUMBER_OF_TESTS_LIMIT :
-                            (settings.getDriverName().equals(IE) || settings.getDriverName().equals(IE9) || settings.getDriverName()
+                            (settings.getDriverName().equals(IE) || settings.getDriverName().equals(IE11) || settings.getDriverName()
                                     .equals(IE10)) ? IE_WEB_DRIVER_NUMBER_OF_TESTS_LIMIT :
                                     restartDriverCount)) {
                 quitWebDriver();
             }
         }
+    }
 
-        //for set browser from xml parameters
-        if (getWebDriver() != null && !getParameterBrowserName().equals("browser") && !getParameterBrowserName().equals(getDriverName())) {
-            quitWebDriver();
-        }
-
+    private void restartDriverIfNewPlatformWasRequested() {
         //for set platform from xml parameters
         if (getWebDriver() != null && !getParameterPlatformName().equals("platform") && !getParameterPlatformName().equals(getPlatform())) {
             quitWebDriver();
         }
+    }
 
-        if (getWebDriver() == null || isBrowserDead()) {
-            FramesTransparentWebDriver driver = null;
-            try {
-                //TODO VE this should be replaced with the better solution
-                if (settings.getDriverName().equals(SAFARI)) {
-                    TestUtils.waitForSomeTime(5000, "Wait for create safari driver");
-                }
+    private void restartDriverIfNewBrowserTypeWasRequested() {
+        //for set browser from xml parameters
+        if (getWebDriver() != null && !getParameterBrowserName().equals("browser") && !getParameterBrowserName().equals(getDriverName())) {
+            quitWebDriver();
+        }
+    }
 
-                driver = new FramesTransparentWebDriver(new TeasyDriver(settings, configuration, alertCapability.get()).init());
+    @NotNull
+    private FramesTransparentWebDriver createDriver(Settings settings, Configuration configuration) {
+        sleepForSafari(settings);
+        TeasyDriver teasyDriver = new TeasyDriver(settings, configuration, alertCapability.get());
+        FramesTransparentWebDriver driver = new FramesTransparentWebDriver(teasyDriver.init());
+        alertCapability.set(UnexpectedAlertBehaviour.ACCEPT);
+        sleepForSafari(settings);
+        return driver;
+    }
 
-                alertCapability.set(UnexpectedAlertBehaviour.ACCEPT);
+    private void sleepForSafari(Settings settings) {
+        if (settings.getDriverName().equals(SAFARI)) {
+            TestUtils.waitForSomeTime(5000, "Wait for create safari driver");
+        }
+    }
 
-                //TODO VE this should be replaced with the better solution
-                if (settings.getDriverName().equals(SAFARI)) {
-                    TestUtils.waitForSomeTime(5000, "Wait for create safari driver");
-                }
-            } catch (Throwable t) {
-                LOGGER.error("*****" + t.getClass().toString() + " occurred when initializing webdriver***** -- ERROR -- " + t.getMessage());
-                //TODO VE remove this sleep when the issue become clear
-                if (driverRestartCount.get() < 5) {
-                    TestUtils.waitForSomeTime(5000, "Wait for retry create driver");
-                    LOGGER.error("*****Try to wrap driver, count - " + driverRestartCount.get() + " *****");
-                    prepareTestInstance(context);
-                } else {
-                    throw new WebDriverException("*****Unable to wrap driver after " + driverRestartCount.get() + " attempts!***** " + t.getMessage(), t);
-                }
-            }
+    private void lastTryToCreateDriver(TestContext context, Throwable t) {
+        LOGGER.error("*****" + t.getClass().toString() + " occurred when initializing webdriver***** -- ERROR -- " + t.getMessage());
+        //TODO VE remove this sleep when the issue become clear
+        if (driverRestartCount.get() < 5) {
+            TestUtils.waitForSomeTime(5000, "Wait for retry create driver");
+            new Report("*****Try to wrap driver, count - " + driverRestartCount.get() + " *****").jenkins();
+            prepareTestInstance(context);
+        } else {
+            throw new WebDriverException("*****Unable to wrap driver after " + driverRestartCount.get() + " attempts!***** " + t.getMessage(), t);
+        }
+    }
 
-            try {
-                SessionId sessionId = ((RemoteWebDriver) driver.getDriver()).getSessionId();
-                SeleniumHolder.setSessionId(sessionId);
-                String nodeIp = isRunWithGrid ? getNodeIpBySessionId(sessionId, settings.getGridHubUrl()) : InetAddress.getLocalHost().getHostAddress();
-                SeleniumHolder.setNodeIp(nodeIp);
-            } catch (Throwable ignored) {
-                LOGGER.error("*****Throwable occurs when set node id*****", ignored.getMessage());
-            }
+    private void setCustomElementFactory(Configuration configuration) {
+        if (configuration.getCustomElementFactoryClass() != null) {
+            SeleniumHolder.setCustomElementFactoryClass(configuration.getCustomElementFactoryClass().getName());
+        }
+    }
 
-            addShutdownHook(driver);
-            SeleniumHolder.setWebDriver(driver);
-            SeleniumHolder.setTimeoutInSeconds(settings.getTimeout());
+    private void setMobileParams(FramesTransparentWebDriver driver) {
+        AndroidDriver androidDriver = castToAndroidDriver(driver);
+        IOSDriver iosDriver = castToIOSDriver(driver);
+        if (androidDriver != null || iosDriver != null) {
+            SeleniumHolder.setAppiumDriver((AppiumDriver) castToWebDriverDecorator(driver));
+            SeleniumHolder.setAndroidDriver(androidDriver);
+            SeleniumHolder.setIOSDriver(iosDriver);
+        }
+    }
 
-            AndroidDriver androidDriver = castToAndroidDriver(driver);
-            IOSDriver iosDriver = castToIOSDriver(driver);
-            if (androidDriver != null || iosDriver != null) {
-                SeleniumHolder.setAppiumDriver((AppiumDriver) castToWebDriverDecorator(driver));
-                SeleniumHolder.setAndroidDriver(androidDriver);
-                SeleniumHolder.setIOSDriver(iosDriver);
-            }
-
-            if (configuration.getCustomElementFactoryClass() != null) {
-                SeleniumHolder.setCustomElementFactoryClass(configuration.getCustomElementFactoryClass().getName());
-            }
+    private void setGridParams(Settings settings, boolean isRunWithGrid, FramesTransparentWebDriver driver) {
+        try {
+            SessionId sessionId = ((RemoteWebDriver) driver.getDriver()).getSessionId();
+            SeleniumHolder.setSessionId(sessionId);
+            String nodeIp = isRunWithGrid ? getNodeIpBySessionId(sessionId, settings.getGridHubUrl()) : InetAddress.getLocalHost().getHostAddress();
+            SeleniumHolder.setNodeIp(nodeIp);
+        } catch (Throwable ignored) {
+            new Report("*****Throwable occurs when set node id*****", ignored).everywhere();
         }
     }
 
@@ -185,7 +215,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
             }
             return false;
         } catch (Throwable t) {
-            LOGGER.error("*****BROWSER IS DEAD ERROR***** ", t);
+            new Report("*****BROWSER IS DEAD ERROR***** ", t).everywhere();
             return true;
         }
     }
@@ -195,7 +225,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         try {
             getWebDriver().quit();
         } catch (Throwable t) {
-            LOGGER.error("*****ERROR***** TRYING TO QUIT DRIVER " + t.getMessage());
+            new Report("*****ERROR***** TRYING TO QUIT DRIVER ", t).everywhere();
         }
         SeleniumHolder.setWebDriver(null);
     }
@@ -230,6 +260,13 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         Runtime.getRuntime().addShutdownHook(new Thread(driver::quit));
     }
 
+    /**
+     * Gets ip address of a node that
+     *
+     * @param sessionId
+     * @param gridHubUrl
+     * @return
+     */
     private static String getNodeIpBySessionId(SessionId sessionId, String gridHubUrl) {
         String[] gridHubIpAndPort = gridHubUrl.split("//")[1].split(":");
         String gridIp = gridHubIpAndPort[0];
