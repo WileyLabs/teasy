@@ -6,13 +6,15 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
-public class GeckoCaps extends TeasyCaps{
+/**
+ * Caps for Gecko browser
+ */
+public class GeckoCaps extends TeasyCaps {
 
-    private final DesiredCapabilities customCaps;
     private final UnexpectedAlertBehaviour alertBehaviour;
 
     public GeckoCaps(DesiredCapabilities customCaps, UnexpectedAlertBehaviour alertBehaviour) {
-        this.customCaps = customCaps;
+        super(customCaps);
         this.alertBehaviour = alertBehaviour;
     }
 

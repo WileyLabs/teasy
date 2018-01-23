@@ -2,12 +2,13 @@ package com.wiley.autotest.spring.testexecution.capabilities;
 
 import org.openqa.selenium.remote.DesiredCapabilities;
 
+/**
+ * Caps for Safari on IOS
+ */
 public class IosSafariCaps extends TeasyCaps {
 
-    private final DesiredCapabilities customCaps;
-
     public IosSafariCaps(DesiredCapabilities customCaps) {
-        this.customCaps = customCaps;
+        super(customCaps);
     }
 
     public DesiredCapabilities get() {
@@ -19,10 +20,11 @@ public class IosSafariCaps extends TeasyCaps {
     }
 
     private DesiredCapabilities getIOSSafariCaps() {
-        DesiredCapabilities capabilities = new DesiredCapabilities();
-        capabilities.setCapability("app", "Safari");
-        capabilities.setCapability("platformName", "iOS");
-        capabilities.setCapability("newCommandTimeout", "900");
-        return capabilities;
+        DesiredCapabilities caps = new DesiredCapabilities();
+        caps.setCapability("app", "Safari");
+        caps.setCapability("platformName", "iOS");
+        caps.setCapability("newCommandTimeout", "900");
+        setLoggingPrefs(caps);
+        return caps;
     }
 }

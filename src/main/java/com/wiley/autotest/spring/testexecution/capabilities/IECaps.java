@@ -6,20 +6,16 @@ import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
+/**
+ * Caps for IE driver
+ */
 public class IECaps extends TeasyCaps {
 
-    private final DesiredCapabilities customCaps;
     private final UnexpectedAlertBehaviour alertBehaviour;
     private final String version;
 
-    private static final String STABLE_IE_DRIVER_VERSION = "3.4.0";
-
-    public IECaps(DesiredCapabilities customCaps, UnexpectedAlertBehaviour alertBehaviour) {
-        this(customCaps, "", alertBehaviour);
-    }
-
     public IECaps(DesiredCapabilities customCaps, String version, UnexpectedAlertBehaviour alertBehaviour) {
-        this.customCaps = customCaps;
+        super(customCaps);
         this.version = version;
         this.alertBehaviour = alertBehaviour;
     }
@@ -46,6 +42,7 @@ public class IECaps extends TeasyCaps {
 
         //Found that setting this capability could increase IE tests speed. Should be checked.
         caps.setCapability(InternetExplorerDriver.REQUIRE_WINDOW_FOCUS, true);
+        setLoggingPrefs(caps);
         return caps;
     }
 }

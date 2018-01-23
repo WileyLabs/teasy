@@ -5,13 +5,15 @@ import org.openqa.selenium.UnexpectedAlertBehaviour;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
+/**
+ * Caps for Edge browser
+ */
 public class EdgeCaps extends TeasyCaps {
 
-    private final DesiredCapabilities customCaps;
     private final UnexpectedAlertBehaviour alertBehaviour;
 
     public EdgeCaps(DesiredCapabilities customCaps, UnexpectedAlertBehaviour alertBehaviour) {
-        this.customCaps = customCaps;
+        super(customCaps);
         this.alertBehaviour = alertBehaviour;
     }
 
@@ -27,6 +29,7 @@ public class EdgeCaps extends TeasyCaps {
         DesiredCapabilities caps = DesiredCapabilities.edge();
         caps.setPlatform(Platform.WINDOWS);
         caps.setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, this.alertBehaviour);
+        setLoggingPrefs(caps);
         return caps;
     }
 }

@@ -1,6 +1,7 @@
 package com.wiley.autotest.framework.pages;
 
 import com.wiley.autotest.selenium.context.AbstractPage;
+import com.wiley.autotest.selenium.elements.upgrade.conditions.window.WindowMatcher;
 import org.openqa.selenium.By;
 import org.springframework.stereotype.Component;
 

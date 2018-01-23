@@ -1,12 +1,8 @@
 package com.wiley.autotest.spring;
 
-import com.wiley.autotest.annotations.BrowserMobProxy;
-import com.wiley.autotest.annotations.FireBug;
-import com.wiley.autotest.annotations.NeedRestartDriver;
 import com.wiley.autotest.annotations.UnexpectedAlertCapability;
 import com.wiley.autotest.selenium.Report;
 import com.wiley.autotest.selenium.SeleniumHolder;
-import com.wiley.autotest.selenium.context.PageLoadingValidator;
 import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
 import com.wiley.autotest.selenium.driver.WebDriverDecorator;
 import com.wiley.autotest.services.Configuration;
@@ -15,23 +11,14 @@ import com.wiley.autotest.utils.TestUtils;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
-import net.lightbody.bmp.proxy.ProxyServer;
 import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.lang.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
-import org.openqa.selenium.Proxy;
 import org.openqa.selenium.UnexpectedAlertBehaviour;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.firefox.FirefoxProfile;
-import org.openqa.selenium.firefox.internal.ProfilesIni;
-import org.openqa.selenium.logging.LogType;
-import org.openqa.selenium.logging.LoggingPreferences;
-import org.openqa.selenium.remote.CapabilityType;
-import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.SessionId;
 import org.slf4j.Logger;
@@ -42,52 +29,29 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.ServerSocket;
-import java.net.UnknownHostException;
 import java.util.Arrays;
-import java.util.logging.Level;
 
 import static com.wiley.autotest.selenium.SeleniumHolder.*;
 
 public class SeleniumTestExecutionListener extends AbstractTestExecutionListener {
 
-    private static final String EXTENSIONS_FIREBUG_XPI_PATH = "/extensions/firebug.xpi";
-    private static final String EXTENSIONS_NET_EXPORT_XPI_PATH = "/extensions/netExport.xpi";
-    private static final String EXTENSIONS_FIRE_STARTER_XPI_PATH = "/extensions/fireStarter.xpi";
     private static final int ANDROID_WEB_DRIVER_NUMBER_OF_TESTS_LIMIT = 5;
     private static final int IE_WEB_DRIVER_NUMBER_OF_TESTS_LIMIT = 5;
     private static final int SAFARI_WEB_DRIVER_NUMBER_OF_TESTS_LIMIT = 1;
-    private static final String FIREFOX = "firefox";
-    private static final String GECKO = "gecko";
-    private static final String CHROME = "chrome";
     private static final String SAFARI = "safari";
-    private static final String SAFARI_TECHNOLOGY_PREVIEW = "safariTechnologyPreview";
     private static final String IE = "ie";
-    private static final String EDGE = "edge";
-    private static final String IE11 = "ie11";
     private static final String IE10 = "ie10";
     private static final String IE9 = "ie9";
-    private static final String IOS = "ios";
     private static final String ANDROID = "android";
-    private static final String WINDOWS = "windows";
-    private static final String LINUX = "LINUX";
-    private static final String MAC = "mac";
     private static final Logger LOGGER = LoggerFactory.getLogger(SeleniumTestExecutionListener.class);
-    private static final Object SYNC_OBJECT = new Object();
-    private static ProxyServer proxyServer;
     private static ThreadLocal<Integer> count = ThreadLocal.withInitial(() -> -1);
     private static ThreadLocal<Integer> driverRestartCount = ThreadLocal.withInitial(() -> 0);
-    private static ThreadLocal<Boolean> useProxy = ThreadLocal.withInitial(() -> false);
     private static ThreadLocal<UnexpectedAlertBehaviour> alertCapability = ThreadLocal.withInitial(() -> UnexpectedAlertBehaviour.ACCEPT);
     private static ThreadLocal<UnexpectedAlertBehaviour> currentAlertCapability = ThreadLocal.withInitial(() -> UnexpectedAlertBehaviour.ACCEPT);
-    private static ThreadLocal<Boolean> isNeedToRestart = ThreadLocal.withInitial(() -> false);
-    private static ThreadLocal<Boolean> isUseFireBug = ThreadLocal.withInitial(() -> false);
     private String[] activeProfiles;
-    private static final String STABLE_IE_DRIVER_VERSION = "3.4.0";
 
     @Override
-    public void prepareTestInstance(final TestContext context) throws Exception {
+    public void prepareTestInstance(final TestContext context) {
         if (activeProfiles == null || activeProfiles.length == 0) {
             activeProfiles = context.getApplicationContext().getEnvironment().getActiveProfiles();
             SeleniumHolder.setActiveProfilesList(Arrays.asList(activeProfiles));
@@ -102,7 +66,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
 
 
         //TODO NT - confirm if it the right place to call this method?
-        setCurrentAlertCapability();
+        currentAlertCapability.set(alertCapability.get());
 
 
         boolean isRunWithGrid = settings.isRunTestsWithGrid();
@@ -136,13 +100,9 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
                     TestUtils.waitForSomeTime(5000, "Wait for create safari driver");
                 }
 
-                driver = new FramesTransparentWebDriver(initWebDriver(settings, configuration));
+                driver = new FramesTransparentWebDriver(new TeasyDriver(settings, configuration, alertCapability.get()).init());
 
                 alertCapability.set(UnexpectedAlertBehaviour.ACCEPT);
-
-                isNeedToRestart.set(false);
-
-                isUseFireBug.set(false);
 
                 //TODO VE this should be replaced with the better solution
                 if (settings.getDriverName().equals(SAFARI)) {
@@ -188,38 +148,15 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
     }
 
     @Override
-    public void beforeTestMethod(TestContext context) throws Exception {
-        setUseProxy(context);
+    public void beforeTestMethod(TestContext context) {
         setAlertCapability(context);
-        setNeedToRestart(context);
-        setUseFireBug(context);
-
-        if (getWebDriver() != null && useProxy.get()) {
-            quitWebDriver();
-        }
 
         if (getWebDriver() != null && !alertCapability.get().equals(currentAlertCapability.get())) {
             quitWebDriver();
         }
 
-        //for force restart driver before start test
-        if (getWebDriver() != null && isNeedToRestart.get()) {
-            quitWebDriver();
-        }
-
-        if (getWebDriver() != null && isUseFireBug.get()) {
-            quitWebDriver();
-        }
-
         if (getWebDriver() == null) {
             prepareTestInstance(context);
-        }
-    }
-
-    private void setUseProxy(TestContext context) {
-        Method testMethod = context.getTestMethod();
-        if (testMethod != null && testMethod.getAnnotation(BrowserMobProxy.class) != null) {
-            useProxy.set(true);
         }
     }
 
@@ -230,20 +167,6 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
             if (capability != null) {
                 alertCapability.set(capability.capability());
             }
-        }
-    }
-
-    private void setNeedToRestart(TestContext context) {
-        Method testMethod = context.getTestMethod();
-        if (testMethod != null && testMethod.getAnnotation(NeedRestartDriver.class) != null) {
-            isNeedToRestart.set(true);
-        }
-    }
-
-    private void setUseFireBug(TestContext context) {
-        Method testMethod = context.getTestMethod();
-        if (testMethod != null && testMethod.getAnnotation(FireBug.class) != null) {
-            isUseFireBug.set(true);
         }
     }
 
@@ -275,158 +198,6 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
             LOGGER.error("*****ERROR***** TRYING TO QUIT DRIVER " + t.getMessage());
         }
         SeleniumHolder.setWebDriver(null);
-    }
-
-    private boolean isPortAvailable(int port) {
-        try {
-            ServerSocket srv = new ServerSocket(port);
-            srv.close();
-            return true;
-        } catch (IOException e) {
-            LOGGER.error("IOException occurs", e);
-            return false;
-        }
-    }
-
-    //get random port from interval 6000-6100
-    //It's need for run tests on VMs
-    private int getRandom() {
-        return 6000 + (int) (Math.random() * 100);
-    }
-
-    private int getRandomAvailablePort() {
-        int random = getRandom();
-        for (int i = random; i < 6100; i++) {
-            if (isPortAvailable(i)) {
-                return i;
-            }
-        }
-        return getRandomAvailablePort();
-    }
-
-    private ProxyServer getServer() {
-        synchronized (SYNC_OBJECT) {
-            if (proxyServer == null) {
-                try {
-                    proxyServer = new ProxyServer(getRandomAvailablePort());
-                    proxyServer.start();
-                    return proxyServer;
-                } catch (Exception e) {
-                    LOGGER.error("Exception occurs", e);
-                }
-                return null;
-            } else {
-                return proxyServer;
-            }
-        }
-    }
-
-    private Proxy getProxy() {
-        ProxyServer server = getServer();
-
-        server.setCaptureContent(true);
-        server.setCaptureHeaders(true);
-
-        SeleniumHolder.setProxyServer(server);
-
-        Proxy proxy = new Proxy();
-
-        try {
-            proxy = server.seleniumProxy();
-            String localIp = InetAddress.getLocalHost().getHostAddress();
-            String proxyStr = String.format("%s:%d", localIp, server.getPort());
-            proxy.setHttpProxy(proxyStr);
-            proxy.setSslProxy("trustAllSSLCertificates");
-            proxy.setFtpProxy(proxyStr);
-            SeleniumHolder.setProxy(proxy);
-        } catch (UnknownHostException e) {
-            LOGGER.error("UnknownHostException occurs", e);
-        }
-        return proxy;
-    }
-
-    private void setProxy(DesiredCapabilities capabilities) {
-        if (useProxy.get()) {
-            capabilities.setCapability(CapabilityType.PROXY, getProxy());
-        }
-    }
-
-    private WebDriver initWebDriver(Settings settings, Configuration configuration) throws MalformedURLException {
-        return new TeasyDriver(settings, configuration, alertCapability.get()).init();
-    }
-
-    private void setCurrentAlertCapability() {
-        currentAlertCapability.set(alertCapability.get());
-    }
-
-    private void setLoggingPrefs(DesiredCapabilities capabilities) {
-        LoggingPreferences logPrefs = new LoggingPreferences();
-        logPrefs.enable(LogType.BROWSER, Level.ALL);
-        capabilities.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
-    }
-
-    private FirefoxProfile getFirefoxProfile(Settings settings) {
-        final FirefoxProfile profile;
-        if (StringUtils.isBlank(settings.getBrowserProfileName())) {
-            profile = new FirefoxProfile();
-        } else {
-            profile = new ProfilesIni().getProfile(settings.getBrowserProfileName());
-        }
-        profile.setPreference("dom.max_chrome_script_run_time", 999);
-        profile.setPreference("dom.max_script_run_time", 999);
-
-        //Disable plugin container, it should fix problem with 'FF plugin-container has stopped working'.
-        //But i'm not sure about this on 100%
-        profile.setPreference("dom.ipc.plugins.enabled", false);
-        profile.setPreference("dom.ipc.plugins.enabled.npctrl.dll", false);
-        profile.setPreference("dom.ipc.plugins.enabled.npqtplugin.dll", false);
-        profile.setPreference("dom.ipc.plugins.enabled.npswf32.dll", false);
-        profile.setPreference("dom.ipc.plugins.enabled.nptest.dll", false);
-        profile.setPreference("dom.ipc.plugins.timeoutSecs", -1);
-        //Add this to avoid JAVA plugin certificate warnings
-        profile.setAcceptUntrustedCertificates(true);
-        profile.setAssumeUntrustedCertificateIssuer(true);
-        //   profile.setPreference("security.enable_java", true);
-        profile.setPreference("plugin.state.java", 2);
-
-        //for disable  Advocacy/heartbeat in Firefox 37
-        //http://selenium2.ru/news/131-rekomenduetsya-otklyuchit-advocacy-heartbeat-v-firefox-37.html
-        profile.setPreference("browser.selfsupport.url", "");
-
-        //for use with sso auth
-        profile.setPreference("network.http.phishy-userpass-length", 255);
-        profile.setPreference("network.automatic-ntlm-auth.trusted-uris", "http://,https://");
-
-        if (isUseFireBug.get()) {
-            //Using this way of adding extension because otherwise extensions could not be converted to Java File from selenium jar file.
-            profile.addExtension(this.getClass(), EXTENSIONS_FIREBUG_XPI_PATH);
-            profile.addExtension(this.getClass(), EXTENSIONS_NET_EXPORT_XPI_PATH);
-            profile.addExtension(this.getClass(), EXTENSIONS_FIRE_STARTER_XPI_PATH);
-
-            profile.setPreference("extensions.firebug.currentVersion", "2.0.11");
-            profile.setPreference("extensions.firebug.DBG_NETEXPORT", false);
-            profile.setPreference("extensions.firebug.onByDefault", true);
-            profile.setPreference("extensions.firebug.defaultPanelName", "net");
-            profile.setPreference("extensions.firebug.net.enableSites", true);
-            profile.setPreference("extensions.firebug.net.persistent", true);
-            profile.setPreference("extensions.firebug.netexport.alwaysEnableAutoExport", true);
-            profile.setPreference("extensions.firebug.netexport.autoExportToFile", true);
-            profile.setPreference("extensions.firebug.netexport.autoExportToServer", false);
-            profile.setPreference("extensions.firebug.netexport.defaultLogDir", TestUtils.getTempDirectoryLocation());
-            profile.setPreference("extensions.firebug.netexport.showPreview", false);
-            profile.setPreference("extensions.firebug.netexport.sendToConfirmation", false);
-            profile.setPreference("extensions.firebug.netexport.pageLoadedTimeout", 150000);
-            profile.setPreference("extensions.firebug.netexport.Automation", true);
-        }
-
-        //for debug with mobile user agent
-        //profile.setPreference("general.useragent.override", "Android");
-
-        return profile;
-    }
-
-    private PageLoadingValidator getValidator(final TestContext context) {
-        return context.getApplicationContext().getBean(PageLoadingValidator.class);
     }
 
     private <T> T getBean(final TestContext context, Class<T> requiredType) {

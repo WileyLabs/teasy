@@ -4,21 +4,19 @@ import org.openqa.selenium.Platform;
 import org.openqa.selenium.UnexpectedAlertBehaviour;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
-import org.openqa.selenium.logging.LogType;
-import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
-import java.util.logging.Level;
+/**
+ * Caps for Firefox browser
+ */
+public class FireFoxCaps extends TeasyCaps {
 
-public class FireFoxCaps extends TeasyCaps{
-
-    private final DesiredCapabilities customCaps;
     private final UnexpectedAlertBehaviour alertBehaviour;
 
     public FireFoxCaps(DesiredCapabilities customCaps, UnexpectedAlertBehaviour alertBehaviour) {
+        super(customCaps);
         this.alertBehaviour = alertBehaviour;
-        this.customCaps = customCaps;
     }
 
     public DesiredCapabilities get() {

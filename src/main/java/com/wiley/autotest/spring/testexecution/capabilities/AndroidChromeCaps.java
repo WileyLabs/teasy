@@ -4,13 +4,13 @@ import org.openqa.selenium.Platform;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
+/**
+ * Caps for Chrome browser on Android
+ */
 public class AndroidChromeCaps extends TeasyCaps {
 
-    private final DesiredCapabilities customCaps;
-    private static final String CHROME = "chrome";
-
     public AndroidChromeCaps(DesiredCapabilities customCaps) {
-        this.customCaps = customCaps;
+        super(customCaps);
     }
 
     public DesiredCapabilities get() {
@@ -22,10 +22,10 @@ public class AndroidChromeCaps extends TeasyCaps {
     }
 
     private DesiredCapabilities getAndroidChromeCaps() {
-        DesiredCapabilities capabilities = new DesiredCapabilities();
-        capabilities.setCapability("newCommandTimeout", "900");
-        capabilities.setPlatform(Platform.ANDROID);
-        capabilities.setCapability(CapabilityType.BROWSER_NAME, CHROME);
-        return capabilities;
+        DesiredCapabilities caps = new DesiredCapabilities();
+        caps.setCapability("newCommandTimeout", "900");
+        caps.setPlatform(Platform.ANDROID);
+        caps.setCapability(CapabilityType.BROWSER_NAME, "chrome");
+        return caps;
     }
 }

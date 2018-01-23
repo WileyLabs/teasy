@@ -3,25 +3,21 @@ package com.wiley.autotest.spring.testexecution.capabilities;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.UnexpectedAlertBehaviour;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.logging.LogType;
-import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.util.Arrays;
-import java.util.logging.Level;
 
-import static com.wiley.autotest.selenium.SeleniumHolder.setProxy;
-
+/**
+ * Caps for Chrome browser on any platform (Windows, Linux, Mac)
+ */
 public class ChromeCaps extends TeasyCaps {
 
-    private final DesiredCapabilities customCaps;
     private final UnexpectedAlertBehaviour alertBehaviour;
     private final boolean isHeadless;
 
     public ChromeCaps(DesiredCapabilities customCaps, UnexpectedAlertBehaviour alertBehaviour, boolean isHeadless) {
-        this.customCaps = customCaps;
+        super(customCaps);
         this.alertBehaviour = alertBehaviour;
         this.isHeadless = isHeadless;
     }
@@ -33,6 +29,7 @@ public class ChromeCaps extends TeasyCaps {
         }
         return caps;
     }
+
     private DesiredCapabilities getChromeCaps() {
         DesiredCapabilities caps = DesiredCapabilities.chrome();
         caps.setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, this.alertBehaviour);
@@ -53,5 +50,4 @@ public class ChromeCaps extends TeasyCaps {
         setLoggingPrefs(caps);
         return caps;
     }
-
 }
