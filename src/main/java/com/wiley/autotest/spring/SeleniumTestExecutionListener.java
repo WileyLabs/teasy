@@ -41,10 +41,10 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
     private static final int IE_WEB_DRIVER_NUMBER_OF_TESTS_LIMIT = 5;
     private static final int SAFARI_WEB_DRIVER_NUMBER_OF_TESTS_LIMIT = 1;
     private static final Logger LOGGER = LoggerFactory.getLogger(SeleniumTestExecutionListener.class);
-    private static ThreadLocal<Integer> count = ThreadLocal.withInitial(() -> -1);
-    private static ThreadLocal<Integer> driverRestartCount = ThreadLocal.withInitial(() -> 0);
-    private static ThreadLocal<UnexpectedAlertBehaviour> alertCapability = ThreadLocal.withInitial(() -> UnexpectedAlertBehaviour.ACCEPT);
-    private static ThreadLocal<UnexpectedAlertBehaviour> currentAlertCapability = ThreadLocal.withInitial(() -> UnexpectedAlertBehaviour.ACCEPT);
+    private static final ThreadLocal<Integer> count = ThreadLocal.withInitial(() -> -1);
+    private static final ThreadLocal<Integer> driverRestartCount = ThreadLocal.withInitial(() -> 0);
+    private static final ThreadLocal<UnexpectedAlertBehaviour> alertCapability = ThreadLocal.withInitial(() -> UnexpectedAlertBehaviour.ACCEPT);
+    private static final ThreadLocal<UnexpectedAlertBehaviour> currentAlertCapability = ThreadLocal.withInitial(() -> UnexpectedAlertBehaviour.ACCEPT);
     private String[] activeProfiles;
 
     @Override
