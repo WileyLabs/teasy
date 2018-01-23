@@ -206,7 +206,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
      *
      * @return true if browser is dead
      */
-    public static boolean isBrowserDead() {
+    private static boolean isBrowserDead() {
         try {
             if (((FramesTransparentWebDriver) getWebDriver()).getWrappedDriver() instanceof AppiumDriver) {
                 getWebDriver().getPageSource();
@@ -261,11 +261,11 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
     }
 
     /**
-     * Gets ip address of a node that
+     * Gets ip address of a node that is currently used by a test
      *
-     * @param sessionId
-     * @param gridHubUrl
-     * @return
+     * @param sessionId  id of a web driver session
+     * @param gridHubUrl url of grid hub
+     * @return ip of a taken node
      */
     private static String getNodeIpBySessionId(SessionId sessionId, String gridHubUrl) {
         String[] gridHubIpAndPort = gridHubUrl.split("//")[1].split(":");
