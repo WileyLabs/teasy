@@ -2,15 +2,12 @@ package com.wiley.autotest.screenshots;
 
 import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import org.openqa.selenium.*;
-import ru.yandex.qatools.ashot.AShot;
-import ru.yandex.qatools.ashot.Screenshot;
-import ru.yandex.qatools.ashot.coordinates.Coords;
+import ru.yandex.qatools.ashot.*;
+import ru.yandex.qatools.ashot.coordinates.*;
 import ru.yandex.qatools.ashot.cropper.indent.IndentCropper;
 import ru.yandex.qatools.ashot.shooting.ShootingStrategies;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 import static com.wiley.autotest.utils.ExecutionUtils.isChrome;
 import static ru.yandex.qatools.ashot.cropper.indent.IndentFilerFactory.monochrome;
@@ -26,32 +23,50 @@ import static ru.yandex.qatools.ashot.cropper.indent.IndentFilerFactory.monochro
 public class TeasyScreenshot {
 
     private final WebDriver driver;
+    private final CoordsProvider coordsProvider;
 
+    /**
+     * Create TeasyScreenshot with default {@link JqueryCoordsProvider}
+     *
+     * @param driver see {@link WebDriver}
+     */
     public TeasyScreenshot(WebDriver driver) {
         this.driver = driver;
+        this.coordsProvider = CoordsProviderEnum.JQUERY.getCoordsProvider();
+    }
+
+    /**
+     * Create TeasyScreenshot, can be selected which provider will be used
+     *
+     * @param driver         see {@link WebDriver}
+     * @param coordsProvider see {@link CoordsProviderEnum}
+     */
+    public TeasyScreenshot(WebDriver driver, CoordsProvider coordsProvider) {
+        this.driver = driver;
+        this.coordsProvider = coordsProvider;
     }
 
     public Screenshot excludeAndInclude(List<TeasyElement> excludeElements, List<TeasyElement> includeElements) {
-        AShot aShot = new AShotChromeDecorator();
+        AShot aShot = new AShotChromeDecorator().coordsProvider(coordsProvider);
         addIgnoredAreas(excludeElements, aShot);
         addMonochromeIndentFilter(aShot);
         return aShot.takeScreenshot(driver, asWebElements(includeElements));
     }
 
     public Screenshot exclude(List<TeasyElement> elements) {
-        AShot aShot = new AShotChromeDecorator();
+        AShot aShot = new AShotChromeDecorator().coordsProvider(coordsProvider);
         addIgnoredAreas(elements, aShot);
         return aShot.takeScreenshot(driver);
     }
 
     public Screenshot include(List<TeasyElement> elements) {
-        AShot aShot = new AShotChromeDecorator();
+        AShot aShot = new AShotChromeDecorator().coordsProvider(coordsProvider);
         addMonochromeIndentFilter(aShot);
         return aShot.takeScreenshot(driver, asWebElements(elements));
     }
 
     public Screenshot fullPage() {
-        AShot aShot = new AShotChromeDecorator();
+        AShot aShot = new AShotChromeDecorator().coordsProvider(coordsProvider);
         return aShot.takeScreenshot(driver);
     }
 
@@ -85,6 +100,11 @@ public class TeasyScreenshot {
         AShotChromeDecorator() {
             super();
             isChrome = isChrome();
+        }
+
+        @Override
+        public AShot coordsProvider(CoordsProvider coordsProvider) {
+            return super.coordsProvider(coordsProvider);
         }
 
         @Override
@@ -123,6 +143,21 @@ public class TeasyScreenshot {
 
         private void revealScrollbar() {
             ((JavascriptExecutor) driver).executeScript("document.body.style.overflow = 'visible';");
+        }
+    }
+
+    public enum CoordsProviderEnum {
+        JQUERY(new JqueryCoordsProvider()),
+        NO_JQUERY(new WebDriverCoordsProvider());
+
+        private CoordsProvider coordsProvider;
+
+        CoordsProviderEnum(CoordsProvider coordsProvider) {
+            this.coordsProvider = coordsProvider;
+        }
+
+        public CoordsProvider getCoordsProvider() {
+            return coordsProvider;
         }
     }
 }
