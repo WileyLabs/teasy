@@ -2,15 +2,12 @@ package com.wiley.autotest.screenshots;
 
 import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import org.openqa.selenium.*;
-import ru.yandex.qatools.ashot.AShot;
-import ru.yandex.qatools.ashot.Screenshot;
-import ru.yandex.qatools.ashot.coordinates.Coords;
+import ru.yandex.qatools.ashot.*;
+import ru.yandex.qatools.ashot.coordinates.*;
 import ru.yandex.qatools.ashot.cropper.indent.IndentCropper;
 import ru.yandex.qatools.ashot.shooting.ShootingStrategies;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 import static com.wiley.autotest.utils.ExecutionUtils.isChrome;
 import static ru.yandex.qatools.ashot.cropper.indent.IndentFilerFactory.monochrome;
@@ -26,32 +23,50 @@ import static ru.yandex.qatools.ashot.cropper.indent.IndentFilerFactory.monochro
 public class TeasyScreenshot {
 
     private final WebDriver driver;
+    private final CoordsProvider coordsProvider;
 
+    /**
+     * Create TeasyScreenshot with default coordinates provider set to {@link JqueryCoordsProvider}
+     *
+     * @param driver see {@link WebDriver}
+     */
     public TeasyScreenshot(WebDriver driver) {
         this.driver = driver;
+        this.coordsProvider = new JqueryCoordsProvider();
+    }
+
+    /**
+     * Create TeasyScreenshot with any type of coordinates provider
+     *
+     * @param driver         see {@link WebDriver}
+     * @param coordsProvider see {@link CoordsProvider}
+     */
+    public TeasyScreenshot(WebDriver driver, CoordsProvider coordsProvider) {
+        this.driver = driver;
+        this.coordsProvider = coordsProvider;
     }
 
     public Screenshot excludeAndInclude(List<TeasyElement> excludeElements, List<TeasyElement> includeElements) {
-        AShot aShot = new AShotChromeDecorator();
+        AShot aShot = new AShotChromeDecorator(coordsProvider);
         addIgnoredAreas(excludeElements, aShot);
         addMonochromeIndentFilter(aShot);
         return aShot.takeScreenshot(driver, asWebElements(includeElements));
     }
 
     public Screenshot exclude(List<TeasyElement> elements) {
-        AShot aShot = new AShotChromeDecorator();
+        AShot aShot = new AShotChromeDecorator(coordsProvider);
         addIgnoredAreas(elements, aShot);
         return aShot.takeScreenshot(driver);
     }
 
     public Screenshot include(List<TeasyElement> elements) {
-        AShot aShot = new AShotChromeDecorator();
+        AShot aShot = new AShotChromeDecorator(coordsProvider);
         addMonochromeIndentFilter(aShot);
         return aShot.takeScreenshot(driver, asWebElements(elements));
     }
 
     public Screenshot fullPage() {
-        AShot aShot = new AShotChromeDecorator();
+        AShot aShot = new AShotChromeDecorator(coordsProvider);
         return aShot.takeScreenshot(driver);
     }
 
@@ -82,16 +97,17 @@ public class TeasyScreenshot {
     private class AShotChromeDecorator extends AShot {
         private final boolean isChrome;
 
-        AShotChromeDecorator() {
+        AShotChromeDecorator(CoordsProvider coordsProvider) {
             super();
-            isChrome = isChrome();
+            super.coordsProvider(coordsProvider);
+            this.isChrome = isChrome();
         }
 
         @Override
         public Screenshot takeScreenshot(WebDriver driver, Collection<WebElement> elements) {
             if (isChrome) {
                 hideScrollbar();
-                shootingStrategy(ShootingStrategies.viewportPasting(100));
+                super.shootingStrategy(ShootingStrategies.viewportPasting(100));
             }
             try {
                 return super.takeScreenshot(driver, elements);
@@ -106,7 +122,7 @@ public class TeasyScreenshot {
         public Screenshot takeScreenshot(WebDriver driver) {
             if (isChrome) {
                 hideScrollbar();
-                shootingStrategy(ShootingStrategies.viewportPasting(100));
+                super.shootingStrategy(ShootingStrategies.viewportPasting(100));
             }
             try {
                 return super.takeScreenshot(driver);
