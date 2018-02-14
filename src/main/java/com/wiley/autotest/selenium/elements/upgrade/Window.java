@@ -2,6 +2,8 @@ package com.wiley.autotest.selenium.elements.upgrade;
 
 import com.wiley.autotest.selenium.elements.upgrade.conditions.window.WindowMatcher;
 
+import java.net.URL;
+
 /**
  * Created by vefimov on 30/05/2017.
  */
@@ -23,5 +25,15 @@ public interface Window {
     String getTitle();
 
     void maximize();
+
+    void back();
+
+    void forward();
+
+    void refresh();
+
+    void to(String url);
+
+    void to(URL url);
 
 }
