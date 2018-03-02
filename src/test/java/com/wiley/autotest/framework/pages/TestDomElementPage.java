@@ -3,6 +3,7 @@ package com.wiley.autotest.framework.pages;
 import com.wiley.autotest.selenium.context.AbstractPage;
 import com.wiley.autotest.selenium.elements.upgrade.DomTeasyElement;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
+import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
 import org.springframework.stereotype.Component;
 
@@ -30,7 +31,7 @@ public class TestDomElementPage extends AbstractPage {
      */
     public TestDomElementPage checkDomElementAppearAfterTimeout() {
         TeasyElement domDiv = domElement(By.id("domDiv"));
-        assertTrue(domDiv instanceof DomTeasyElement);
+        Assertions.assertThat(domDiv).isInstanceOf(DomTeasyElement.class);
         domDiv.should().haveText("Im div added to dom");
         return this;
     }
@@ -55,7 +56,7 @@ public class TestDomElementPage extends AbstractPage {
     }
 
     public TestDomElementPage checkDomElementsReturnAll() {
-        assertTrue(domElements(By.tagName("li")).size() == 5);
+        Assertions.assertThat(domElements(By.tagName("li")).size()).isEqualTo(5);
         return this;
     }
 }

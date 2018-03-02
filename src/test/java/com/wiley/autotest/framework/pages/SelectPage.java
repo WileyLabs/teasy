@@ -6,10 +6,9 @@ import org.openqa.selenium.By;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.function.Function;
 
 @Component
-public class SelectPage extends AbstractPage{
+public class SelectPage extends AbstractPage {
 
     public SelectPage checkOptionsText() {
         List<TeasyElement> options = select(By.tagName("select")).getOptions();

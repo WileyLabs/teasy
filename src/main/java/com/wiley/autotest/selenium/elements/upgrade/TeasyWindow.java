@@ -58,12 +58,12 @@ public class TeasyWindow implements Window {
     }
 
     @Override
-    public void to(String url) {
+    public void navigateTo(String url) {
         driver.navigate().to(url);
     }
 
     @Override
-    public void to(URL url) {
+    public void navigateTo(URL url) {
         driver.navigate().to(url);
     }
 

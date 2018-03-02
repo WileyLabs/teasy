@@ -1,7 +1,6 @@
 package com.wiley.autotest.framework.pages;
 
 import com.wiley.autotest.selenium.context.AbstractPage;
-import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyElementList;
 import org.openqa.selenium.By;
 import org.springframework.stereotype.Component;
@@ -23,5 +22,4 @@ public class ConditionsPage extends AbstractPage {
 
         return this;
     }
-
 }
