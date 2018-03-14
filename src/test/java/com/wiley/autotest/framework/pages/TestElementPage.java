@@ -6,10 +6,9 @@ import com.wiley.autotest.selenium.elements.upgrade.DomTeasyElement;
 import com.wiley.autotest.selenium.elements.upgrade.NullTeasyElement;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import com.wiley.autotest.selenium.elements.upgrade.VisibleTeasyElement;
+import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
 import org.springframework.stereotype.Component;
-import org.testng.Assert;
 
 /**
  * Created by shekhavtsov on 20/07/2017.
@@ -48,37 +47,69 @@ public class TestElementPage extends AbstractPage {
     }
 
     public TestElementPage checkElementInstanceOfVisibleElement() {
-        TeasyElement element = element(By.cssSelector("li"));
-        assertTrue(element instanceof VisibleTeasyElement);
+        TeasyElement el = element(By.cssSelector("li"));
+        Assertions.assertThat(el).isInstanceOf(VisibleTeasyElement.class);
         return this;
     }
 
     public TestElementPage checkDomElementInstanceOfDomElement() {
-        TeasyElement element = domElement(By.cssSelector("li"));
-        assertTrue(element instanceof DomTeasyElement);
+        TeasyElement el = domElement(By.cssSelector("li"));
+        Assertions.assertThat(el).isInstanceOf(DomTeasyElement.class);
         return this;
     }
 
     public TestElementPage checkNonExistingElementInstanceOfNullElement() {
-        TeasyElement element = element(By.cssSelector("not_present_element"), new SearchStrategy(1));
-        assertTrue(element instanceof NullTeasyElement);
+        TeasyElement el = element(By.cssSelector("not_present_element"), new SearchStrategy(1));
+        Assertions.assertThat(el).isInstanceOf(NullTeasyElement.class);
         return this;
     }
 
     public TestElementPage checkNonExistingElementWithNullOnFailure() {
-        TeasyElement element = element(By.cssSelector("not_present_element"), new SearchStrategy(1).nullOnFailure());
-        assertNull(element);
+        TeasyElement el = element(By.cssSelector("not_present_element"), new SearchStrategy(1).nullOnFailure());
+        Assertions.assertThat(el).isNull();
         return this;
     }
 
     public TestElementPage checkNonExistingElementShouldBeAbsent() {
-        TeasyElement element = element(By.cssSelector("not_present_element"), new SearchStrategy(1));
-        element.should().beAbsent();
+        TeasyElement el = element(By.cssSelector("not_present_element"), new SearchStrategy(1));
+        el.should().beAbsent();
         return this;
     }
 
     public TestElementPage checkNonExistingElementClickFails() {
         element(By.cssSelector("not_present_element"), new SearchStrategy(1)).click();
+        return this;
+    }
+
+    public TestElementPage checkSingleElementHasAnyText() {
+        element(By.id("exist")).should().haveAnyText();
+        return this;
+    }
+
+    public TestElementPage checkFewElementsHasAnyText() {
+        elements(By.className("someClassForExistElements")).should().haveAnyText();
+        return this;
+    }
+
+    public TestElementPage checkSingleElementHasNotAnyText() {
+        Boolean elementHasNoText = false;
+        try {
+            domElement(By.id("notExist")).should().haveAnyText();
+        } catch (AssertionError e) {
+            elementHasNoText = true;
+        }
+        Assertions.assertThat(elementHasNoText).isTrue();
+        return this;
+    }
+
+    public TestElementPage checkNotAllElementsHasAnyText() {
+        Boolean elementHasNoText = false;
+        try {
+            domElements(By.className("someClassForOneNotExistElements")).should().haveAnyText();
+        } catch (AssertionError e) {
+            elementHasNoText = true;
+        }
+        Assertions.assertThat(elementHasNoText).isTrue();
         return this;
     }
 }

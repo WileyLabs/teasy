@@ -13,6 +13,11 @@ import java.util.Collection;
  */
 public class TeasyElementList extends ArrayList<TeasyElement> {
 
+    //This constructor is needed for better streams api support
+    public TeasyElementList() {
+        super();
+    }
+
     public TeasyElementList(@NotNull Collection<? extends TeasyElement> teasyElements) {
         super(teasyElements);
     }

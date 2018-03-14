@@ -15,6 +15,8 @@ public interface Should {
 
     void haveText(String text);
 
+    void haveAnyText();
+
     void haveAttribute(String attributeName, String value);
 
     void haveAttribute(String attributeName);

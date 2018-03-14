@@ -5,6 +5,8 @@ import java.awt.*;
 /**
  * Created by kamalakannan.r on 4/15/14.
  */
+//Will be deleted. If you need this class - copy it to your project.
+@Deprecated
 public final class ColorUtils {
 
     private ColorUtils() {

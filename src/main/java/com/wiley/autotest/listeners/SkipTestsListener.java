@@ -47,11 +47,11 @@ public class SkipTestsListener implements IInvokedMethodListener {
                 throw new SkipException("Test skipped because of noChrome group");
             }
 
-            if (SETTINGS.getDriverName().equals(SAFARI) && isNoGroupTest(iTestResult, Group.noSafari)) {
+            if (SETTINGS.getDriverName().toLowerCase().startsWith(SAFARI) && isNoGroupTest(iTestResult, Group.noSafari)) {
                 throw new SkipException("Test skipped because of noSafari group");
             }
 
-            if (SETTINGS.getDriverName().contains(IE) && isNoGroupTest(iTestResult, Group.noIE)) {
+            if (SETTINGS.getDriverName().toLowerCase().startsWith(IE) && isNoGroupTest(iTestResult, Group.noIE)) {
                 throw new SkipException("Test skipped because of noIE group");
             }
 

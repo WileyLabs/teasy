@@ -1,6 +1,8 @@
 package com.wiley.autotest.framework.pages;
 
 import com.wiley.autotest.selenium.context.AbstractPage;
+import com.wiley.autotest.selenium.context.BlockList;
+import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
 import org.springframework.stereotype.Component;
 
@@ -11,8 +13,12 @@ public class BlocksPage extends AbstractPage<BlocksPage> {
         return new TestBlock(element(By.id("block2")));
     }
 
+    public BlockList<TestBlock> getTestBlockList() {
+        return new BlockList<>(elements(By.cssSelector(".blockFromList")), TestBlock.class);
+    }
+
     public BlocksPage checkPageSearchesEntirePage() {
-        assertEquals(elements(By.id("someDiv")).size(), 3);
+        Assertions.assertThat(elements(By.id("someDiv")).size()).isEqualTo(3);
         return this;
     }
 }

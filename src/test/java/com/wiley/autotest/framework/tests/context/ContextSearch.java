@@ -2,7 +2,6 @@ package com.wiley.autotest.framework.tests.context;
 
 import com.wiley.autotest.framework.config.BaseTest;
 import com.wiley.autotest.framework.pages.ContextSearchPage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.Test;
 
 /**
@@ -10,13 +9,9 @@ import org.testng.annotations.Test;
  */
 public class ContextSearch extends BaseTest {
 
-    @Autowired
-    private ContextSearchPage contextSearchPage;
-
     @Test
     public void test() {
-        openPage("contextSearch.html");
-        contextSearchPage.checkContextSearch();
+        openPage("contextSearch.html", ContextSearchPage.class)
+                .checkContextSearch();
     }
-
 }

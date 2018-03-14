@@ -6,6 +6,7 @@ import com.wiley.autotest.selenium.elements.upgrade.conditions.window.WindowMatc
 import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.*;
 
+import java.net.URL;
 import java.util.Iterator;
 
 /**
@@ -39,6 +40,31 @@ public class TeasyWindow implements Window {
     @Override
     public void close() {
         driver.close();
+    }
+
+    @Override
+    public void back() {
+        driver.navigate().back();
+    }
+
+    @Override
+    public void forward() {
+        driver.navigate().forward();
+    }
+
+    @Override
+    public void refresh() {
+        driver.navigate().refresh();
+    }
+
+    @Override
+    public void navigateTo(String url) {
+        driver.navigate().to(url);
+    }
+
+    @Override
+    public void navigateTo(URL url) {
+        driver.navigate().to(url);
     }
 
     @Override

@@ -2,8 +2,10 @@ package com.wiley.autotest.selenium.elements.upgrade;
 
 import com.wiley.autotest.selenium.elements.upgrade.conditions.window.WindowMatcher;
 
+import java.net.URL;
+
 /**
- * Created by vefimov on 30/05/2017.
+ * Represents Browser Window and all possible actions of it
  */
 public interface Window {
 
@@ -13,7 +15,6 @@ public interface Window {
 
     void close();
 
-    //Todo implement common waitFor and should (similar to TeasyElement) but with limited functionality only required for window
     void waitForScriptsToLoad();
 
     String getUrl();
@@ -24,6 +25,13 @@ public interface Window {
 
     void maximize();
 
+    void back();
+
+    void forward();
+
     void refresh();
 
+    void navigateTo(String url);
+
+    void navigateTo(URL url);
 }

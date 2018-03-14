@@ -128,7 +128,7 @@ public class SeleniumMethodsInvoker extends MethodsInvoker {
             return true;
         }
 
-        if (driverName.contains(IE) && isNoGroupTest(method, Group.noIE)) {
+        if (driverName.startsWith(IE) && isNoGroupTest(method, Group.noIE)) {
             return true;
         }
 

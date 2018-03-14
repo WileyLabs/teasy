@@ -17,9 +17,17 @@
 
 <script>
     setTimeout(becomeVisible, 6000);
+    setTimeout(addToDom, 6000);
 
     function becomeVisible() {
         document.getElementById("waitElement").style.display = "block";
+    }
+
+    function addToDom() {
+        var newdiv = document.createElement("DIV");
+        newdiv.setAttribute("id", "domDiv");
+        newdiv.appendChild(document.createTextNode("Im div added to dom"));
+        document.body.appendChild(newdiv);
     }
 </script>
 </body>

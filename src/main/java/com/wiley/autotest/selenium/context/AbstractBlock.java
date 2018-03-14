@@ -1,8 +1,8 @@
 package com.wiley.autotest.selenium.context;
 
 import com.wiley.autotest.selenium.SeleniumHolder;
-import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
-import com.wiley.autotest.selenium.elements.upgrade.TeasyElementFinder;
+import com.wiley.autotest.selenium.elements.upgrade.*;
+import org.openqa.selenium.NoSuchElementException;
 
 /**
  * Representation of an abstract block of a Page.
@@ -13,6 +13,10 @@ public abstract class AbstractBlock extends TeasyElementProvider {
     private final TeasyElement mainElement;
 
     public AbstractBlock(TeasyElement element) {
+        //in case not-found-element is passed it does not make sense to create new block
+        if (element instanceof NullTeasyElement) {
+            throwException();
+        }
         mainElement = element;
     }
 
@@ -49,5 +53,10 @@ public abstract class AbstractBlock extends TeasyElementProvider {
     protected TeasyElement getMainElement() {
         return mainElement;
     }
+
+    private void throwException() {
+        throw new NoSuchElementException("Failed to create Block. Unable to find main element of a block with locator '" + mainElement.getLocator().getBy() + "'");
+    }
+
 }
 

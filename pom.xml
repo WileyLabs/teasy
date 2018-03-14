@@ -7,7 +7,7 @@
     <groupId>com.wiley</groupId>
     <artifactId>teasy</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.19-beta</version>
+    <version>1.0.22-beta</version>
 
     <name>Teasy</name>
     <description>Automation framework to make testing easy</description>
@@ -435,6 +435,12 @@
             <groupId>ru.yandex.qatools.ashot</groupId>
             <artifactId>ashot</artifactId>
             <version>1.5.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.9.0</version>
         </dependency>
     </dependencies>
 
