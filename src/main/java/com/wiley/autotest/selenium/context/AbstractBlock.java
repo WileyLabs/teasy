@@ -14,10 +14,10 @@ public abstract class AbstractBlock extends TeasyElementProvider {
 
     public AbstractBlock(TeasyElement element) {
         //in case not-found-element is passed it does not make sense to create new block
+        mainElement = element;
         if (element instanceof NullTeasyElement) {
             throwException();
         }
-        mainElement = element;
     }
 
     private TeasyElementFinder finder;
