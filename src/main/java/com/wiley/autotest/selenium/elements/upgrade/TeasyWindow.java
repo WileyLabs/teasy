@@ -106,9 +106,4 @@ public class TeasyWindow implements Window {
     public void scrollTo(TeasyElement element) {
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
     }
-
-    @Override
-    public void refresh() {
-        driver.navigate().refresh();
-    }
 }
