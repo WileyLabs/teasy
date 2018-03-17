@@ -1,13 +1,16 @@
 package com.wiley.autotest.selenium.elements.upgrade;
 
 import com.wiley.autotest.selenium.Report;
+import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.elements.upgrade.conditions.PageLoaded;
 import com.wiley.autotest.selenium.elements.upgrade.conditions.window.WindowMatcher;
+import com.wiley.autotest.selenium.elements.upgrade.waitfor.CustomWaitFor;
 import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.*;
 
 import java.net.URL;
 import java.util.Iterator;
+import java.util.function.Function;
 
 /**
  * Represents browser window
@@ -24,6 +27,7 @@ public class TeasyWindow implements Window {
 
     @Override
     public void switchToLast() {
+        waitForNewWindowAppeared();
         Iterator<String> iterator = driver.getWindowHandles().iterator();
         String window = null;
         while (iterator.hasNext()) {
@@ -105,5 +109,17 @@ public class TeasyWindow implements Window {
 
     public void scrollTo(TeasyElement element) {
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
+    }
+
+    private void waitForNewWindowAppeared() {
+        int windowCount = SeleniumHolder.getWebDriver().getWindowHandles().size();
+        new CustomWaitFor().condition(newWindowAppeared(), windowCount);
+    }
+
+    private Function<Integer, Boolean> newWindowAppeared() {
+        return count -> {
+            int currentWindowsCount = driver.getWindowHandles().size();
+            return count != currentWindowsCount;
+        };
     }
 }
