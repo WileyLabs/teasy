@@ -1,7 +1,6 @@
 package com.wiley.autotest.selenium.elements.upgrade;
 
 import com.wiley.autotest.selenium.Report;
-import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.elements.upgrade.conditions.PageLoaded;
 import com.wiley.autotest.selenium.elements.upgrade.conditions.window.WindowMatcher;
 import com.wiley.autotest.selenium.elements.upgrade.waitfor.CustomWaitFor;
@@ -112,7 +111,7 @@ public class TeasyWindow implements Window {
     }
 
     private void waitForNewWindowAppeared() {
-        int windowCount = SeleniumHolder.getWebDriver().getWindowHandles().size();
+        int windowCount = driver.getWindowHandles().size();
         new CustomWaitFor().condition(newWindowAppeared(), windowCount);
     }
 
