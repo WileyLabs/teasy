@@ -53,6 +53,18 @@ public class TeasyWindow implements Window {
         switchToLast();
     }
 
+    /**
+     * To be sure that new window appeared after click on element.
+     * For example, after clicking on a link with new
+     * window target.
+     *
+     * @param element - an element to click to new window switch.
+     */
+    @Override
+    public void switchToLastAfter(TeasyElement element) {
+        switchToLastAfter(element::click);
+    }
+
     @Override
     public void switchTo(WindowMatcher matcher) {
         fluentWait.waitFor(matcher.get().findAndSwitch());

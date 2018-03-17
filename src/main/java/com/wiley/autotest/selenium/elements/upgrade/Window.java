@@ -13,6 +13,7 @@ public interface Window {
     void switchToLast();
 
     void switchToLastAfter(Actions action);
+    void switchToLastAfter(TeasyElement element);
 
     void switchTo(WindowMatcher matcher);
 
