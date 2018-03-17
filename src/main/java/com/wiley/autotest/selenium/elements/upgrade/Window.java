@@ -1,5 +1,6 @@
 package com.wiley.autotest.selenium.elements.upgrade;
 
+import com.wiley.autotest.actions.Actions;
 import com.wiley.autotest.selenium.elements.upgrade.conditions.window.WindowMatcher;
 
 import java.net.URL;
@@ -10,6 +11,8 @@ import java.net.URL;
 public interface Window {
 
     void switchToLast();
+
+    void switchToLastAfter(Actions action);
 
     void switchTo(WindowMatcher matcher);
 

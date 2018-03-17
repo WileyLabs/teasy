@@ -1,5 +1,6 @@
 package com.wiley.autotest.selenium.elements.upgrade;
 
+import com.wiley.autotest.actions.Actions;
 import com.wiley.autotest.selenium.Report;
 import com.wiley.autotest.selenium.elements.upgrade.conditions.PageLoaded;
 import com.wiley.autotest.selenium.elements.upgrade.conditions.window.WindowMatcher;
@@ -26,13 +27,30 @@ public class TeasyWindow implements Window {
 
     @Override
     public void switchToLast() {
-        waitForNewWindowAppeared();
         Iterator<String> iterator = driver.getWindowHandles().iterator();
         String window = null;
         while (iterator.hasNext()) {
             window = iterator.next();
         }
         driver.switchTo().window(window);
+    }
+
+    /**
+     * To be sure that new window appeared after an action.
+     * For example, after clicking on a link with new
+     * window target.
+     *
+     * Example usage: switchToLastAfter(() -> element.click());
+     *
+     * @param action - an action to do before new window appeared
+     *               and before switching.
+     */
+    @Override
+    public void switchToLastAfter(Actions action) {
+        int windowCount = driver.getWindowHandles().size();
+        action.execute();
+        new CustomWaitFor().condition(newWindowAppeared(), windowCount);
+        switchToLast();
     }
 
     @Override
@@ -108,11 +126,6 @@ public class TeasyWindow implements Window {
 
     public void scrollTo(TeasyElement element) {
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
-    }
-
-    private void waitForNewWindowAppeared() {
-        int windowCount = driver.getWindowHandles().size();
-        new CustomWaitFor().condition(newWindowAppeared(), windowCount);
     }
 
     private Function<Integer, Boolean> newWindowAppeared() {
