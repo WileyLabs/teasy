@@ -1,6 +1,7 @@
 package com.wiley.autotest.selenium.elements.upgrade;
 
 import com.wiley.autotest.selenium.SeleniumHolder;
+import com.wiley.autotest.selenium.elements.upgrade.should.EmptyListShould;
 import com.wiley.autotest.selenium.elements.upgrade.should.GeneralListShould;
 import com.wiley.autotest.selenium.elements.upgrade.should.ListShould;
 import org.jetbrains.annotations.NotNull;
@@ -13,7 +14,7 @@ import java.util.Collection;
  */
 public class TeasyElementList extends ArrayList<TeasyElement> {
 
-    //This constructor is needed for better streams api support
+    //This constructor is needed for streams api support
     public TeasyElementList() {
         super();
     }
@@ -23,6 +24,12 @@ public class TeasyElementList extends ArrayList<TeasyElement> {
     }
 
     public ListShould should() {
-        return new GeneralListShould(this, new TeasyFluentWait<>(SeleniumHolder.getWebDriver()));
+        ListShould should;
+        if (this.size() == 0) {
+            should = new EmptyListShould(this, new TeasyFluentWait<>(SeleniumHolder.getWebDriver()));
+        } else {
+            should = new GeneralListShould(this, new TeasyFluentWait<>(SeleniumHolder.getWebDriver()));
+        }
+        return should;
     }
 }
