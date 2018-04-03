@@ -59,6 +59,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         driverRestartCount.set(driverRestartCount.get() + 1);
 
         //TODO NT - confirm if it the right place to call this method?
+        // from github NT: I think need move this to beforeTestMethod after 'if' where check alertCapability
         currentAlertCapability.set(alertCapability.get());
 
         boolean isRunWithGrid = settings.isRunTestsWithGrid();
