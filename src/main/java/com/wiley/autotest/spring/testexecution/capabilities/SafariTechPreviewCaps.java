@@ -15,7 +15,6 @@ public class SafariTechPreviewCaps extends TeasyCaps {
     public DesiredCapabilities get() {
         DesiredCapabilities caps = DesiredCapabilities.safari();
         SafariOptions safariOptions = new SafariOptions();
-        safariOptions.setUseCleanSession(true);
         safariOptions.setUseTechnologyPreview(true);
         caps.setCapability(SafariOptions.CAPABILITY, safariOptions);
         setLoggingPrefs(caps);

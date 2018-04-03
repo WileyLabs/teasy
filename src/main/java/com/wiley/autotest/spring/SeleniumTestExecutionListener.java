@@ -58,10 +58,6 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         count.set(count.get() + 1);
         driverRestartCount.set(driverRestartCount.get() + 1);
 
-        //TODO NT - confirm if it the right place to call this method?
-        // from github NT: I think need move this to beforeTestMethod after 'if' where check alertCapability
-        currentAlertCapability.set(alertCapability.get());
-
         boolean isRunWithGrid = settings.isRunTestsWithGrid();
         Integer restartDriverCount = settings.getRestartDriverCount() != null ? settings.getRestartDriverCount() : 0;
 
@@ -185,6 +181,9 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         if (getWebDriver() != null && !alertCapability.get().equals(currentAlertCapability.get())) {
             quitWebDriver();
         }
+
+        //TODO NT. Need to clarify it's right place or not.
+        currentAlertCapability.set(alertCapability.get());
 
         if (getWebDriver() == null) {
             prepareTestInstance(context);
