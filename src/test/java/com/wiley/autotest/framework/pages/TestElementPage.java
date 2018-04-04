@@ -112,4 +112,9 @@ public class TestElementPage extends AbstractPage {
         Assertions.assertThat(elementHasNoText).isTrue();
         return this;
     }
+
+    public TestElementPage checkIfElementsListIsEmptyShouldThrowException(){
+        elements(By.cssSelector("incorrect_locator"), new SearchStrategy(0)).should().beDisplayed();
+        return this;
+    }
 }
