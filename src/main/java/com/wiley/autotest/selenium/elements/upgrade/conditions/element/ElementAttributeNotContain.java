@@ -8,25 +8,26 @@ import javax.annotation.Nullable;
 
 public class ElementAttributeNotContain implements ExpectedCondition<Boolean> {
 
-    private final TeasyElement element;
-    private final String attributeName;
+    private final TeasyElement el;
+    private final String attrName;
     private final String value;
 
-    public ElementAttributeNotContain(TeasyElement element, String attributeName, String value) {
-        this.element = element;
-        this.attributeName = attributeName;
+    public ElementAttributeNotContain(TeasyElement el, String attrName, String value) {
+        this.el = el;
+        this.attrName = attrName;
         this.value = value;
     }
 
     @Nullable
     @Override
     public Boolean apply(@Nullable WebDriver driver) {
-        String attribute = element.getAttribute(attributeName);
+        String attribute = el.getAttribute(attrName);
         return attribute != null && !attribute.contains(value);
     }
 
     @Override
     public String toString() {
-        return String.format("Element '%s' attribute '%s' contains value '%s'!", element.toString(), attributeName, value);
+        return String.format("Element '%s' attribute '%s' contains value '%s'! Actual value '%s'.",
+                el.toString(), attrName, value, el.getAttribute(attrName));
     }
 }

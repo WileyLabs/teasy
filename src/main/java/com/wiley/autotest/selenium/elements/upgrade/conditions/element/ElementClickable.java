@@ -22,7 +22,7 @@ public class ElementClickable implements ExpectedCondition<Boolean> {
 
     @Override
     public String toString() {
-        return String.format("Element '%s' is not clickable", element.toString());
+        return String.format("Element '%s' is not clickable!", element.toString());
     }
 
 }
