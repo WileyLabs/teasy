@@ -3,8 +3,6 @@ package com.wiley.autotest.selenium;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
-import net.lightbody.bmp.proxy.ProxyServer;
-import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.SessionId;
 
@@ -22,8 +20,6 @@ public final class SeleniumHolder {
     private static final ThreadLocal<String> driverName = ThreadLocal.withInitial(() -> "");
     private static final ThreadLocal<String> parameterBrowserName = ThreadLocal.withInitial(() -> "browser");
     private static final ThreadLocal<String> parameterPlatformName = ThreadLocal.withInitial(() -> "platform");
-    private static final ThreadLocal<ProxyServer> proxyServer = new ThreadLocal<>();
-    private static final ThreadLocal<Proxy> proxy = new ThreadLocal<>();
     private static final ThreadLocal<String> platform = ThreadLocal.withInitial(() -> "platform");
     private static final ThreadLocal<String> mainWindowHandle = new ThreadLocal<>();
     private static final ThreadLocal<String> nodeIp = ThreadLocal.withInitial(() -> "localhost");
@@ -61,22 +57,6 @@ public final class SeleniumHolder {
     public static void setDriverName(String value) {
         setBrowser(value);
         driverName.set(value);
-    }
-
-    public static ProxyServer getProxyServer() {
-        return proxyServer.get();
-    }
-
-    public static void setProxyServer(ProxyServer value) {
-        proxyServer.set(value);
-    }
-
-    public static Proxy getProxy() {
-        return proxy.get();
-    }
-
-    public static void setProxy(Proxy value) {
-        proxy.set(value);
     }
 
     public static String getBrowser() {
