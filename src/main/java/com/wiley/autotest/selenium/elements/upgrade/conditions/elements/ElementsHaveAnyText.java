@@ -10,22 +10,22 @@ import java.util.List;
 
 public class ElementsHaveAnyText implements ExpectedCondition<Boolean> {
 
-    private final List<TeasyElement> elements;
-    private List<TeasyElement> errorElements;
+    private final List<TeasyElement> els;
+    private List<TeasyElement> errorEls;
 
-    public ElementsHaveAnyText(List<TeasyElement> elements) {
-        this.elements = elements;
+    public ElementsHaveAnyText(List<TeasyElement> els) {
+        this.els = els;
     }
 
     @Nullable
     @Override
     public Boolean apply(@Nullable WebDriver webDriver) {
-        errorElements = new ArrayList<>();
+        errorEls = new ArrayList<>();
         boolean isCorrect = true;
-        for (TeasyElement el : elements) {
+        for (TeasyElement el : els) {
             if (el.getText() == null || el.getText().trim().equals("")) {
                 isCorrect = false;
-                errorElements.add(el);
+                errorEls.add(el);
             }
         }
         return isCorrect;
@@ -34,9 +34,11 @@ public class ElementsHaveAnyText implements ExpectedCondition<Boolean> {
     @Override
     public String toString() {
         StringBuilder error = new StringBuilder();
-        for (TeasyElement el : errorElements) {
-            error.append(el.toString()).append("|");
+        for (TeasyElement el : errorEls) {
+            error
+                    .append(String.format("Element |%s| does not have any text! Actual text is '%s'.",
+                            el, el.getText()));
         }
-        return String.format("Elements |%s Element has no text! ", error.toString());
+        return error.toString();
     }
 }

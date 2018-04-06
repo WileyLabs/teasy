@@ -31,7 +31,7 @@ public class NullShould implements Should {
     }
 
     public void haveText(String text) {
-        fluentWait.waitFor(new ElementTextEquals(getElement(), text));
+        fluentWait.waitFor(new ElementHasText(getElement(), text));
     }
 
     public void haveAnyText() {
