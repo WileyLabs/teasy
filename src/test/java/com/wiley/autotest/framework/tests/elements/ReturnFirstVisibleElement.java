@@ -10,6 +10,5 @@ public class ReturnFirstVisibleElement extends BaseTest {
     public void test() {
         openPage("mainTestElement.html", TestElementPage.class)
                 .checkFirstVisibleElement();
-        setPostponedTestFail("asd");
     }
 }
