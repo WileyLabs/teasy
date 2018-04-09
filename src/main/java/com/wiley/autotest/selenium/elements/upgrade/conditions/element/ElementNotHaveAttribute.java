@@ -8,23 +8,24 @@ import javax.annotation.Nullable;
 
 public class ElementNotHaveAttribute implements ExpectedCondition<Boolean> {
 
-    private final TeasyElement element;
-    private String attributeName;
+    private final TeasyElement el;
+    private String attrName;
 
-    public ElementNotHaveAttribute(TeasyElement element, String attributeName) {
-        this.element = element;
-        this.attributeName = attributeName;
+    public ElementNotHaveAttribute(TeasyElement el, String attrName) {
+        this.el = el;
+        this.attrName = attrName;
     }
 
     @Nullable
     @Override
     public Boolean apply(@Nullable WebDriver driver) {
-        return element.getAttribute(attributeName) == null;
+        return el.getAttribute(attrName) == null;
     }
 
     @Override
     public String toString() {
-        return String.format("Element '%s' has attribute '%s'", element.toString(), attributeName);
+        return String.format("Element '%s' has attribute '%s'!",
+                el.toString(), attrName);
     }
 
 }

@@ -8,20 +8,21 @@ import javax.annotation.Nullable;
 
 public class ElementHasAnyText implements ExpectedCondition<Boolean> {
 
-    private final TeasyElement element;
+    private final TeasyElement el;
 
-    public ElementHasAnyText(TeasyElement element) {
-        this.element = element;
+    public ElementHasAnyText(TeasyElement el) {
+        this.el = el;
     }
 
     @Nullable
     @Override
     public Boolean apply(@Nullable WebDriver driver) {
-        return element.getText() != null && !element.getText().trim().equals("");
+        return el.getText() != null && !el.getText().trim().equals("");
     }
 
     @Override
     public String toString() {
-        return String.format("Element has no text,");
+        return String.format("Element does not have any text! Actual text is '%s'.",
+                el.getText());
     }
 }
