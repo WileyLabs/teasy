@@ -4,7 +4,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
 import org.testng.Reporter;
-import ru.yandex.qatools.allure.annotations.Step;
+import io.qameta.allure.Step;
 
 /**
  * Transfers message to necessary end point

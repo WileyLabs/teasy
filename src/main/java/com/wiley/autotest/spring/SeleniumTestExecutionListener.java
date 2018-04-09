@@ -11,7 +11,6 @@ import com.wiley.autotest.utils.TestUtils;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
-import org.apache.commons.httpclient.HttpStatus;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -279,7 +278,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
                     .method(Connection.Method.GET)
                     .execute();
 
-            if (execute.statusCode() != HttpStatus.SC_OK) {
+            if (execute.statusCode() != 200) {
                 return gridIp;
             }
 

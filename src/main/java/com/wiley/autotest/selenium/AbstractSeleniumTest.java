@@ -16,7 +16,6 @@ import com.wiley.autotest.services.SeleniumMethodsInvoker;
 import com.wiley.autotest.spring.SeleniumTestExecutionListener;
 import com.wiley.autotest.utils.JavaUtils;
 import com.wiley.autotest.utils.TestUtils;
-import net.lightbody.bmp.proxy.ProxyServer;
 import org.openqa.selenium.JavascriptExecutor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestExecutionListeners;
@@ -207,10 +206,6 @@ public abstract class AbstractSeleniumTest extends AbstractTest implements ITest
                 log("Couldn't take screenshot. Error: " + e.getMessage());
             }
         }
-    }
-
-    public ProxyServer getProxyServer() {
-        return SeleniumHolder.getProxyServer();
     }
 
     /**

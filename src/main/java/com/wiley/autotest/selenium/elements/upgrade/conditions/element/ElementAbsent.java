@@ -8,17 +8,17 @@ import javax.annotation.Nullable;
 
 public class ElementAbsent implements ExpectedCondition<Boolean> {
 
-    private final TeasyElement element;
+    private final TeasyElement el;
 
-    public ElementAbsent(TeasyElement element) {
-        this.element = element;
+    public ElementAbsent(TeasyElement el) {
+        this.el = el;
     }
 
     @Nullable
     @Override
     public Boolean apply(@Nullable WebDriver driver) {
         try {
-            return !element.isDisplayed();
+            return !el.isDisplayed();
         } catch (Throwable ignored) {
             //in case of any exception in TeasyElement considering that element is absent
             return true;
@@ -27,6 +27,6 @@ public class ElementAbsent implements ExpectedCondition<Boolean> {
 
     @Override
     public String toString() {
-        return String.format("Element '%s' is not absent!", element.toString());
+        return String.format("Element '%s' is not absent!", el.toString());
     }
 }

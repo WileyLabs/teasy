@@ -10,12 +10,12 @@ import java.util.List;
 
 public class ElementsHaveTexts implements ExpectedCondition<Boolean> {
 
-    private final List<TeasyElement> elements;
+    private final List<TeasyElement> els;
     private final List<String> texts;
-    private List<TeasyElement> errorElements;
+    private List<TeasyElement> errorEls;
 
-    public ElementsHaveTexts(List<TeasyElement> elements, List<String> texts) {
-        this.elements = elements;
+    public ElementsHaveTexts(List<TeasyElement> els, List<String> texts) {
+        this.els = els;
         this.texts = texts;
     }
 
@@ -23,13 +23,13 @@ public class ElementsHaveTexts implements ExpectedCondition<Boolean> {
     @Override
     public Boolean apply(@Nullable WebDriver webDriver) {
         List<String> actualTexts = new ArrayList<>();
-        errorElements = new ArrayList<>();
+        errorEls = new ArrayList<>();
         boolean haveAllTexts = true;
-        for (TeasyElement el : elements) {
+        for (TeasyElement el : els) {
             actualTexts.add(el.getText());
             if (!texts.contains(el.getText())) {
                 haveAllTexts = false;
-                errorElements.add(el);
+                errorEls.add(el);
             }
         }
         return haveAllTexts && actualTexts.size() == texts.size();
@@ -38,9 +38,13 @@ public class ElementsHaveTexts implements ExpectedCondition<Boolean> {
     @Override
     public String toString() {
         StringBuilder error = new StringBuilder();
-        for (TeasyElement el : errorElements) {
-            error.append(el.toString()).append(" with text '").append(el.getText()).append("'|");
+        for (TeasyElement el : errorEls) {
+            error
+                    .append(el.toString())
+                    .append(" with text '")
+                    .append(el.getText())
+                    .append("'|");
         }
-        return String.format("Elements |%s text is not present in the expected texts! Expected texts are %s", error.toString(), texts);
+        return String.format("Elements |%s text are not present in the expected texts! Expected texts are %s", error.toString(), texts);
     }
 }

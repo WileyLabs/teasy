@@ -10,24 +10,24 @@ import java.util.List;
 
 public class ElementsNotHaveAttribute implements ExpectedCondition<Boolean> {
 
-    private final List<TeasyElement> elements;
-    private final String attributeName;
-    private List<TeasyElement> errorElements;
+    private final List<TeasyElement> els;
+    private final String attrName;
+    private List<TeasyElement> errorEls;
 
-    public ElementsNotHaveAttribute(List<TeasyElement> elements, String attributeName) {
-        this.elements = elements;
-        this.attributeName = attributeName;
+    public ElementsNotHaveAttribute(List<TeasyElement> els, String attrName) {
+        this.els = els;
+        this.attrName = attrName;
     }
 
     @Nullable
     @Override
     public Boolean apply(@Nullable WebDriver webDriver) {
-        errorElements = new ArrayList<>();
+        errorEls = new ArrayList<>();
         boolean isCorrect = true;
-        for (TeasyElement el : elements) {
-            if (el.getAttribute(attributeName) != null) {
+        for (TeasyElement el : els) {
+            if (el.getAttribute(attrName) != null) {
                 isCorrect = false;
-                errorElements.add(el);
+                errorEls.add(el);
             }
         }
         return isCorrect;
@@ -36,9 +36,11 @@ public class ElementsNotHaveAttribute implements ExpectedCondition<Boolean> {
     @Override
     public String toString() {
         StringBuilder error = new StringBuilder();
-        for (TeasyElement el : errorElements) {
-            error.append(el.toString()).append("|");
+        for (TeasyElement el : errorEls) {
+            error
+                    .append(el.toString())
+                    .append("|");
         }
-        return String.format("Elements |%s have attribute '%s'!", error.toString(), attributeName);
+        return String.format("Elements |%s have attribute '%s'!", error.toString(), attrName);
     }
 }

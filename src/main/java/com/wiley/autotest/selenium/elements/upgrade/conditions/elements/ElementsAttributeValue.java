@@ -10,26 +10,26 @@ import java.util.List;
 
 public class ElementsAttributeValue implements ExpectedCondition<Boolean> {
 
-    private final List<TeasyElement> elements;
+    private final List<TeasyElement> els;
     private final String attributeName;
     private final String value;
-    private List<TeasyElement> errorElements;
+    private List<TeasyElement> errorEls;
 
-    public ElementsAttributeValue(List<TeasyElement> elements, String attributeName, String value) {
-        this.elements = elements;
-        this.attributeName = attributeName;
+    public ElementsAttributeValue(List<TeasyElement> els, String attrName, String value) {
+        this.els = els;
+        this.attributeName = attrName;
         this.value = value;
     }
 
     @Nullable
     @Override
     public Boolean apply(@Nullable WebDriver webDriver) {
-        errorElements = new ArrayList<>();
+        errorEls = new ArrayList<>();
         boolean isCorrect = true;
-        for (TeasyElement el : elements) {
+        for (TeasyElement el : els) {
             if (value.equals(el.getAttribute(attributeName))) {
                 isCorrect = false;
-                errorElements.add(el);
+                errorEls.add(el);
             }
         }
         return isCorrect;
@@ -38,9 +38,10 @@ public class ElementsAttributeValue implements ExpectedCondition<Boolean> {
     @Override
     public String toString() {
         StringBuilder error = new StringBuilder();
-        for (TeasyElement el : errorElements) {
-            error.append(el.toString()).append("|");
+        for (TeasyElement el : errorEls) {
+            error.append(String.format("Element |%s| does not have attribute '%s'!",
+                            el.toString(), attributeName));
         }
-        return String.format("Elements |%s does not have attribute '%s'!", error.toString(), attributeName);
+        return error.toString();
     }
 }

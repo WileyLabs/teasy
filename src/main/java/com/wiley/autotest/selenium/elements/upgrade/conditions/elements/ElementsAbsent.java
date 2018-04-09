@@ -10,22 +10,22 @@ import java.util.List;
 
 public class ElementsAbsent implements ExpectedCondition<Boolean> {
 
-    private final List<TeasyElement> elements;
-    private List<TeasyElement> errorElements;
+    private final List<TeasyElement> els;
+    private List<TeasyElement> errorEls;
 
-    public ElementsAbsent(List<TeasyElement> elements) {
-        this.elements = elements;
+    public ElementsAbsent(List<TeasyElement> els) {
+        this.els = els;
     }
 
     @Nullable
     @Override
     public Boolean apply(@Nullable WebDriver webDriver) {
         boolean allAbsent = true;
-        errorElements = new ArrayList<>();
-        for (TeasyElement el : elements) {
+        errorEls = new ArrayList<>();
+        for (TeasyElement el : els) {
             if (el.isDisplayed()) {
                 allAbsent = false;
-                errorElements.add(el);
+                errorEls.add(el);
             }
         }
         return allAbsent;
@@ -34,9 +34,11 @@ public class ElementsAbsent implements ExpectedCondition<Boolean> {
     @Override
     public String toString() {
         StringBuilder error = new StringBuilder();
-        for (TeasyElement el : errorElements) {
-            error.append(el.toString()).append("| ");
+        for (TeasyElement el : errorEls) {
+            error
+                    .append(el.toString())
+                    .append("| ");
         }
-        return String.format("Elements |%s is not absent!", error.toString());
+        return String.format("Elements |%s are not absent!", error.toString());
     }
 }

@@ -4,14 +4,13 @@ import com.wiley.autotest.actions.Actions;
 import com.wiley.autotest.actions.Conditions;
 import com.wiley.autotest.actions.RepeatableAction;
 import com.wiley.autotest.selenium.Report;
-import com.wiley.autotest.selenium.SeleniumHolder;
 import com.wiley.autotest.selenium.elements.upgrade.Window;
+import io.qameta.allure.Step;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.testng.Reporter;
-import ru.yandex.qatools.allure.annotations.Step;
 
 import static com.wiley.autotest.utils.DateUtils.waitForAssignmentDate;
 import static org.apache.commons.lang.StringUtils.isNotBlank;

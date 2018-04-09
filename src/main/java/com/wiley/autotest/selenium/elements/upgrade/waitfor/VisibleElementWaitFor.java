@@ -37,7 +37,7 @@ public class VisibleElementWaitFor implements ElementWaitFor {
     }
 
     public void text(String text) {
-        fluentWait.waitFor(new ElementTextEquals(element, text));
+        fluentWait.waitFor(new ElementHasText(element, text));
     }
 
     public void attribute(String attributeName, String value) {
