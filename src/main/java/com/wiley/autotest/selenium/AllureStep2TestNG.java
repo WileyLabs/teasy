@@ -6,11 +6,10 @@
 package com.wiley.autotest.selenium;
 
 import com.wiley.autotest.utils.ReadableMethodName;
-import com.wiley.autotest.utils.StringUtils;
+import io.qameta.allure.Step;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
-import ru.yandex.qatools.allure.annotations.Step;
 
 import java.lang.reflect.Method;
 
