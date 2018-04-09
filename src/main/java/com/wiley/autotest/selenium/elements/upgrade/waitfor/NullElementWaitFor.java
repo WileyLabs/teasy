@@ -35,7 +35,7 @@ public class NullElementWaitFor implements ElementWaitFor {
     }
 
     public void text(String text) {
-        fluentWait.waitFor(new ElementTextEquals(getElement(), text));
+        fluentWait.waitFor(new ElementHasText(getElement(), text));
     }
 
     public void attribute(String attributeName, String value) {

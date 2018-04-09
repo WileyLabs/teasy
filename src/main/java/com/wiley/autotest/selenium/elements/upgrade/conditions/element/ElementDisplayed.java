@@ -8,20 +8,20 @@ import javax.annotation.Nullable;
 
 public class ElementDisplayed implements ExpectedCondition<Boolean> {
 
-    private final TeasyElement element;
+    private final TeasyElement el;
 
-    public ElementDisplayed(TeasyElement element) {
-        this.element = element;
+    public ElementDisplayed(TeasyElement el) {
+        this.el = el;
     }
 
     @Nullable
     @Override
     public Boolean apply(@Nullable WebDriver driver) {
-        return element.isDisplayed();
+        return el.isDisplayed();
     }
 
     @Override
     public String toString() {
-        return String.format("Element '%s' is not displayed!", element.toString());
+        return String.format("Element '%s' is not displayed!", el.toString());
     }
 }

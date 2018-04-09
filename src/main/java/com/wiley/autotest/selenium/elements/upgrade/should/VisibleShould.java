@@ -37,7 +37,7 @@ public class VisibleShould implements Should {
     }
 
     public void haveText(String text) {
-        waitFor(new ElementTextEquals(element, text));
+        waitFor(new ElementHasText(element, text));
     }
 
     public void haveAnyText() {

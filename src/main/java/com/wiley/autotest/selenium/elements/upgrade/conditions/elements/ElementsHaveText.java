@@ -10,26 +10,24 @@ import java.util.List;
 
 public class ElementsHaveText implements ExpectedCondition<Boolean> {
 
-    private final List<TeasyElement> elements;
+    private final List<TeasyElement> els;
     private final String text;
-    private List<TeasyElement> errorElements;
+    private List<TeasyElement> errorEls;
 
-    public ElementsHaveText(List<TeasyElement> elements, String text) {
-        this.elements = elements;
+    public ElementsHaveText(List<TeasyElement> els, String text) {
+        this.els = els;
         this.text = text;
     }
 
     @Nullable
     @Override
     public Boolean apply(@Nullable WebDriver webDriver) {
-        List<String> actualTexts = new ArrayList<>();
-        errorElements = new ArrayList<>();
+        errorEls = new ArrayList<>();
         boolean isCorrect = true;
-        for (TeasyElement el : elements) {
-            actualTexts.add(el.getText());
+        for (TeasyElement el : els) {
             if (!text.equals(el.getText())) {
                 isCorrect = false;
-                errorElements.add(el);
+                errorEls.add(el);
             }
         }
         return isCorrect;
@@ -38,9 +36,12 @@ public class ElementsHaveText implements ExpectedCondition<Boolean> {
     @Override
     public String toString() {
         StringBuilder error = new StringBuilder();
-        for (TeasyElement el : errorElements) {
-            error.append(el.toString()).append(" with text '").append(el.getText()).append("|");
+        for (TeasyElement el : errorEls) {
+            error
+                    .append(String.format("%s text is incorrect! Expected text is '%s'.", el.toString(), text))
+                    .append(String.format("Actual text is '%s'", el.getText()))
+                    .append("\n");
         }
-        return String.format("Elements |%s text is wrong! Expected text is %s", error.toString(), text);
+        return error.toString();
     }
 }
