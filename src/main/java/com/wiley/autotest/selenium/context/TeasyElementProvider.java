@@ -71,11 +71,11 @@ public abstract class TeasyElementProvider {
     }
 
     protected TeasyElementList elements(final By locator) {
-        return new TeasyElementList(finder().visibleElements(locator));
+        return new TeasyElementList(finder().visibleElements(locator), locator);
     }
 
     protected TeasyElementList elements(final By locator, SearchStrategy strategy) {
-        return new TeasyElementList(customFinder(strategy).visibleElements(locator));
+        return new TeasyElementList(customFinder(strategy).visibleElements(locator), locator);
     }
 
     protected TeasyElement domElement(By locator) {
@@ -87,11 +87,11 @@ public abstract class TeasyElementProvider {
     }
 
     protected TeasyElementList domElements(By locator) {
-        return new TeasyElementList(finder().presentInDomElements(locator));
+        return new TeasyElementList(finder().presentInDomElements(locator), locator);
     }
 
     protected TeasyElementList domElements(By locator, SearchStrategy strategy) {
-        return new TeasyElementList(customFinder(strategy).presentInDomElements(locator));
+        return new TeasyElementList(customFinder(strategy).presentInDomElements(locator), locator);
     }
 
     protected Alert alert() {

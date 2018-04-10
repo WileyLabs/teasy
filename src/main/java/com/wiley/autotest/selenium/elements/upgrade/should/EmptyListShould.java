@@ -2,30 +2,35 @@ package com.wiley.autotest.selenium.elements.upgrade.should;
 
 import com.wiley.autotest.selenium.elements.upgrade.TeasyElementList;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyFluentWait;
-import com.wiley.autotest.selenium.elements.upgrade.conditions.elements.*;
+import com.wiley.autotest.selenium.elements.upgrade.conditions.elements.ElementsAbsent;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 
 import java.util.List;
 import java.util.function.Function;
 
 /**
- * Temp solution as a POC
+ * Assertions for an empty list (list with size == 0)
  * <p>
- * most likely there will be VisibleListShould, DomListShould and EmptyListShould
+ * Pretty much for every case assertions will throw exception
+ * as it does not make sense to check anything for an empty list
+ * <p>
+ * The exclusion is beAbsent() method - which will return "OK"
+ * as if we want no elements to be present - empty list matches the condition
  */
-public class GeneralListShould implements ListShould {
+public class EmptyListShould implements ListShould {
 
     private final TeasyFluentWait<WebDriver> fluentWait;
     private final TeasyElementList elements;
 
-    public GeneralListShould(TeasyElementList elements, TeasyFluentWait<WebDriver> fluentWait) {
+    public EmptyListShould(TeasyElementList elements, TeasyFluentWait<WebDriver> fluentWait) {
         this.elements = elements;
         this.fluentWait = fluentWait;
     }
 
     @Override
     public void beDisplayed() {
-        waitFor(new ElementsDisplayed(elements));
+        throwException();
     }
 
     @Override
@@ -35,32 +40,32 @@ public class GeneralListShould implements ListShould {
 
     @Override
     public void haveText(String text) {
-        waitFor(new ElementsHaveText(elements, text));
+        throwException();
     }
 
     @Override
     public void haveAnyText() {
-        waitFor(new ElementsHaveAnyText(elements));
+        throwException();
     }
 
     @Override
     public void haveTexts(List<String> texts) {
-        waitFor(new ElementsHaveTexts(elements, texts));
+        throwException();
     }
 
     @Override
     public void haveAttribute(String attributeName, String value) {
-        waitFor(new ElementsAttributeValue(elements, attributeName, value));
+        throwException();
     }
 
     @Override
     public void haveAttribute(String attributeName) {
-        waitFor(new ElementsHaveAttribute(elements, attributeName));
+        throwException();
     }
 
     @Override
     public void notHaveAttribute(String attributeName) {
-        waitFor(new ElementsNotHaveAttribute(elements, attributeName));
+        throwException();
     }
 
     @Override
@@ -70,5 +75,9 @@ public class GeneralListShould implements ListShould {
 
     private void waitFor(Function<WebDriver, Boolean> condition) {
         fluentWait.waitFor(condition);
+    }
+
+    private void throwException() {
+        throw new NoSuchElementException("Didn't find any elements with locator '" + elements.getLocator() + "'!");
     }
 }

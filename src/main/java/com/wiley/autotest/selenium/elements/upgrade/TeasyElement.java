@@ -175,7 +175,7 @@ public interface TeasyElement extends WebElement {
      * which is not necessarily visible
      *
      * @param by - locator
-     * @return {@link TeasyElement}
+     * @return {@link TeasyElementList}
      */
     TeasyElementList domElements(By by);
 
@@ -188,7 +188,7 @@ public interface TeasyElement extends WebElement {
      *
      * @param by       - locator
      * @param strategy - custom search strategy
-     * @return
+     * @return {@link TeasyElementList}
      */
     TeasyElementList domElements(By by, SearchStrategy strategy);
 }
