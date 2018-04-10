@@ -9,9 +9,13 @@ import io.github.bonigarcia.wdm.InternetExplorerDriverManager;
 import org.openqa.selenium.UnexpectedAlertBehaviour;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.ie.InternetExplorerOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.LocalFileDetector;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -67,6 +71,9 @@ public class StandaloneDriverFactory implements DriverFactory {
             case FIREFOX: {
                 return firefox(customCaps);
             }
+            case GECKO: {
+                return gecko(customCaps);
+            }
             default: {
                 return throwException(browserName, LINUX);
             }
@@ -81,6 +88,9 @@ public class StandaloneDriverFactory implements DriverFactory {
             }
             case FIREFOX: {
                 return firefox(customCaps);
+            }
+            case GECKO: {
+                return gecko(customCaps);
             }
             case SAFARI_TECHNOLOGY_PREVIEW: {
                 return safariTechnologyPreview();
@@ -98,7 +108,6 @@ public class StandaloneDriverFactory implements DriverFactory {
                 return firefox(customCaps);
             }
             case GECKO: {
-                SeleniumHolder.setDriverName(GECKO);
                 return gecko(customCaps);
             }
             case CHROME: {
@@ -111,7 +120,7 @@ public class StandaloneDriverFactory implements DriverFactory {
                 return ie(customCaps);
             }
             default: {
-                return throwException(browserName, MAC);
+                return throwException(browserName, WINDOWS);
             }
         }
     }
@@ -122,30 +131,51 @@ public class StandaloneDriverFactory implements DriverFactory {
 
     private WebDriver firefox(DesiredCapabilities customCaps) {
         SeleniumHolder.setDriverName(FIREFOX);
-        return new FirefoxDriver(new FireFoxCaps(customCaps, this.alertBehaviour).get());
+        return new FirefoxDriver(
+                new FirefoxOptions(
+                        new FireFoxCaps(customCaps, this.alertBehaviour).get()
+                )
+        );
     }
 
     private WebDriver gecko(DesiredCapabilities customCaps) {
+        SeleniumHolder.setDriverName(GECKO);
         FirefoxDriverManager.getInstance().setup();
-        return new FirefoxDriver(new GeckoCaps(customCaps, this.alertBehaviour).get());
+        return new FirefoxDriver(
+                new FirefoxOptions(
+                        new GeckoCaps(customCaps, this.alertBehaviour).get()
+                )
+        );
     }
 
     private WebDriver chrome(DesiredCapabilities customCaps) {
         SeleniumHolder.setDriverName(CHROME);
         ChromeDriverManager.getInstance().setup();
-        return new ChromeDriver(new ChromeCaps(customCaps, this.alertBehaviour, this.isHeadless).get());
+        return new ChromeDriver(
+                new ChromeOptions().merge(
+                        new ChromeCaps(customCaps, this.alertBehaviour, this.isHeadless).get()
+                )
+        );
     }
 
     private WebDriver ie(DesiredCapabilities customCaps) {
         SeleniumHolder.setDriverName(IE);
         InternetExplorerDriverManager.getInstance().version(STABLE_IE_DRIVER_VERSION).setup();
-        return new InternetExplorerDriver(new IECaps(customCaps, "", this.alertBehaviour).get());
+        return new InternetExplorerDriver(
+                new InternetExplorerOptions(
+                        new IECaps(customCaps, "", this.alertBehaviour).get()
+                )
+        );
     }
 
     private WebDriver edge(DesiredCapabilities customCaps) {
         SeleniumHolder.setDriverName(EDGE);
         EdgeDriverManager.getInstance().setup();
-        return new EdgeDriver(new EdgeCaps(customCaps, this.alertBehaviour).get());
+        return new EdgeDriver(
+                new EdgeOptions().merge(
+                        new EdgeCaps(customCaps, this.alertBehaviour).get()
+                )
+        );
     }
 
     private WebDriver safariTechnologyPreview() {
