@@ -78,6 +78,6 @@ public class EmptyListShould implements ListShould {
     }
 
     private void throwException() {
-        throw new NoSuchElementException("Unable to find any elements with locator '"  + "'");
+        throw new NoSuchElementException("Didn't find any elements with locator '" + elements.getLocator() + "'!");
     }
 }

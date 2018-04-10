@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="jf_implemented" verbose="1" parallel="tests" thread-count="10">
+
+    <test name="should run separately">
+        <classes>
+            <class name="com.wiley.autotest.framework.tests.annotations.OurBeforeAfterAnnotationsOrderTest"/>
+        </classes>
+    </test>
+    <test name="all other tests">
+        <packages>
+            <package name="com.wiley.autotest.framework.tests.blocks.*"/>
+            <package name="com.wiley.autotest.framework.tests.conditions.*"/>
+            <package name="com.wiley.autotest.framework.tests.context.*"/>
+            <package name="com.wiley.autotest.framework.tests.domElements.*"/>
+            <package name="com.wiley.autotest.framework.tests.elements.*"/>
+            <package name="com.wiley.autotest.framework.tests.repeater.*"/>
+            <package name="com.wiley.autotest.framework.tests.window.*"/>
+        </packages>
+    </test>
+
+</suite>

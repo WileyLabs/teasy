@@ -85,12 +85,12 @@ public abstract class BaseTeasyElement implements TeasyElement, Locatable {
 
     @Override
     public TeasyElementList elements(By by) {
-        return new TeasyElementList(contextFinder.visibleElements(by));
+        return new TeasyElementList(contextFinder.visibleElements(by), by);
     }
 
     @Override
     public TeasyElementList elements(By by, SearchStrategy strategy) {
-        return new TeasyElementList(customContextFinder(strategy).visibleElements(by));
+        return new TeasyElementList(customContextFinder(strategy).visibleElements(by), by);
     }
 
     @Override
@@ -105,12 +105,12 @@ public abstract class BaseTeasyElement implements TeasyElement, Locatable {
 
     @Override
     public TeasyElementList domElements(By by) {
-        return new TeasyElementList(contextFinder.presentInDomElements(by));
+        return new TeasyElementList(contextFinder.presentInDomElements(by), by);
     }
 
     @Override
     public TeasyElementList domElements(By by, SearchStrategy strategy) {
-        return new TeasyElementList(customContextFinder(strategy).presentInDomElements(by));
+        return new TeasyElementList(customContextFinder(strategy).presentInDomElements(by), by);
     }
 
     TeasyElementFinder customContextFinder(SearchStrategy strategy) {
@@ -130,7 +130,8 @@ public abstract class BaseTeasyElement implements TeasyElement, Locatable {
                 //doing this because for FireFox for some reason browser becomes unresponsive after click
                 //but actually it is alive so it worth to try to continue test
                 //it will fail on the next method after click if some real error happened
-                new Report("*****ERROR*****UnreachableBrowserException***** during click! Doing nothing just trying to continue the test. Locator=" + locator.getBy()).jenkins();
+                new Report("*****ERROR*****UnreachableBrowserException***** during click! Doing nothing just trying to continue the test. Locator=" + locator.getBy())
+                        .jenkins();
             } catch (ElementNotVisibleException needToScroll) {
                 clickForNeedToScroll();
             } catch (WebDriverException ignoredOrNeedToScroll) {
