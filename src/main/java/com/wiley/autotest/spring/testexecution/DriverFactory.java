@@ -3,7 +3,7 @@ package com.wiley.autotest.spring.testexecution;
 import org.openqa.selenium.WebDriver;
 
 /**
- * Abstraction to provide instance of WebDriver
+ * Abstract factory to provide instance of WebDriver
  */
 public interface DriverFactory {
 

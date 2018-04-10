@@ -14,7 +14,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import java.net.URL;
 
 /**
- * Factory to create Driver for usage on Selenium Grid
+ * Factory to create Driver for usage with Selenium Grid
  */
 public class RemoteDriverFactory implements DriverFactory {
 
@@ -65,6 +65,9 @@ public class RemoteDriverFactory implements DriverFactory {
             case CHROME: {
                 return createRemoteDriver(new ChromeCaps(customCaps, this.alertBehaviour, this.isHeadless), CHROME);
             }
+            case GECKO: {
+                return createRemoteDriver(new GeckoCaps(customCaps, this.alertBehaviour), GECKO);
+            }
             case SAFARI_TECHNOLOGY_PREVIEW: {
                 return createRemoteDriver(new SafariTechPreviewCaps(customCaps), SAFARI_TECHNOLOGY_PREVIEW);
             }
@@ -97,6 +100,9 @@ public class RemoteDriverFactory implements DriverFactory {
             }
             case FIREFOX: {
                 return createRemoteDriver(new FireFoxCaps(customCaps, this.alertBehaviour), FIREFOX);
+            }
+            case GECKO: {
+                return createRemoteDriver(new GeckoCaps(customCaps, this.alertBehaviour), GECKO);
             }
             default: {
                 return throwException(browserName, LINUX);
