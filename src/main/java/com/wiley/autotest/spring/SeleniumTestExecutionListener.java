@@ -57,10 +57,9 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         count.set(count.get() + 1);
         driverRestartCount.set(driverRestartCount.get() + 1);
 
-        boolean isRunWithGrid = settings.isRunTestsWithGrid();
         Integer restartDriverCount = settings.getRestartDriverCount() != null ? settings.getRestartDriverCount() : 0;
 
-        restartDriverIfItsTimeToRestart(settings, restartDriverCount);
+        restartDriverIfItsTimeToRestart(restartDriverCount, settings.getPlatform(), settings.getDriverName());
         restartDriverIfNewBrowserTypeWasRequested();
         restartDriverIfNewPlatformWasRequested();
 
@@ -70,8 +69,9 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
                 FramesTransparentWebDriver driver = createDriver(settings, configuration);
                 addShutdownHook(driver);
 
-                setGridParams(settings, isRunWithGrid, driver);
-                setDriverParams(settings, driver);
+                boolean isRunWithGrid = settings.isRunTestsWithGrid();
+                setGridParams(isRunWithGrid, settings.getGridHubUrl(), driver);
+                setDriverParams(driver, settings.getTimeout());
                 setMobileParams(driver);
                 setCustomElementFactory(configuration);
             } catch (Throwable t) {
@@ -80,9 +80,9 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         }
     }
 
-    private void setDriverParams(Settings settings, FramesTransparentWebDriver driver) {
+    private void setDriverParams(FramesTransparentWebDriver driver, Integer timeout) {
         SeleniumHolder.setWebDriver(driver);
-        SeleniumHolder.setTimeoutInSeconds(settings.getTimeout());
+        SeleniumHolder.setTimeoutInSeconds(timeout);
     }
 
     private void setActiveSpringProfiles(TestContext context) {
@@ -92,12 +92,11 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         }
     }
 
-    private void restartDriverIfItsTimeToRestart(Settings settings, Integer restartDriverCount) {
+    private void restartDriverIfItsTimeToRestart(Integer restartDriverCount, String platform, String driverName) {
         if (restartDriverCount > 0) {
-            if (count.get() > (settings.getPlatform().equals(ANDROID) ? ANDROID_WEB_DRIVER_NUMBER_OF_TESTS_LIMIT :
-                    settings.getDriverName().equals(SAFARI) ? SAFARI_WEB_DRIVER_NUMBER_OF_TESTS_LIMIT :
-                            (settings.getDriverName().equals(IE) || settings.getDriverName().equals(IE11) || settings.getDriverName()
-                                    .equals(IE10)) ? IE_WEB_DRIVER_NUMBER_OF_TESTS_LIMIT :
+            if (count.get() > (platform.equals(ANDROID) ? ANDROID_WEB_DRIVER_NUMBER_OF_TESTS_LIMIT :
+                    driverName.equals(SAFARI) ? SAFARI_WEB_DRIVER_NUMBER_OF_TESTS_LIMIT :
+                            (driverName.equals(IE) || driverName.equals(IE11) || driverName.equals(IE10)) ? IE_WEB_DRIVER_NUMBER_OF_TESTS_LIMIT :
                                     restartDriverCount)) {
                 quitWebDriver();
             }
@@ -106,32 +105,28 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
 
     private void restartDriverIfNewPlatformWasRequested() {
         //for set platform from xml parameters
-        if (getWebDriver() != null && !getParameterPlatformName().equals("platform") && !getParameterPlatformName().equals(getPlatform())) {
+        if (getWebDriver() != null &&
+                !getParameterPlatformName().equals("platform") &&
+                !getParameterPlatformName().equals(getPlatform())) {
             quitWebDriver();
         }
     }
 
     private void restartDriverIfNewBrowserTypeWasRequested() {
         //for set browser from xml parameters
-        if (getWebDriver() != null && !getParameterBrowserName().equals("browser") && !getParameterBrowserName().equals(getDriverName())) {
+        if (getWebDriver() != null &&
+                !getParameterBrowserName().equals("browser") &&
+                !getParameterBrowserName().equals(getDriverName())) {
             quitWebDriver();
         }
     }
 
     @NotNull
     private FramesTransparentWebDriver createDriver(Settings settings, Configuration configuration) {
-        sleepForSafari(settings);
         TeasyDriver teasyDriver = new TeasyDriver(settings, configuration, alertCapability.get());
         FramesTransparentWebDriver driver = new FramesTransparentWebDriver(teasyDriver.init());
         alertCapability.set(UnexpectedAlertBehaviour.ACCEPT);
-        sleepForSafari(settings);
         return driver;
-    }
-
-    private void sleepForSafari(Settings settings) {
-        if (settings.getDriverName().equals(SAFARI)) {
-            TestUtils.waitForSomeTime(5000, "Wait for create safari driver");
-        }
     }
 
     private void lastTryToCreateDriver(TestContext context, Throwable t) {
@@ -162,11 +157,11 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
         }
     }
 
-    private void setGridParams(Settings settings, boolean isRunWithGrid, FramesTransparentWebDriver driver) {
+    private void setGridParams(boolean isRunWithGrid, String gridHubUrl, FramesTransparentWebDriver driver) {
         try {
             SessionId sessionId = ((RemoteWebDriver) driver.getDriver()).getSessionId();
             SeleniumHolder.setSessionId(sessionId);
-            String nodeIp = isRunWithGrid ? getNodeIpBySessionId(sessionId, settings.getGridHubUrl()) : InetAddress.getLocalHost().getHostAddress();
+            String nodeIp = isRunWithGrid ? getNodeIpBySessionId(sessionId, gridHubUrl) : InetAddress.getLocalHost().getHostAddress();
             SeleniumHolder.setNodeIp(nodeIp);
         } catch (Throwable ignored) {
             new Report("*****Throwable occurs when set node id*****", ignored).everywhere();
@@ -234,18 +229,18 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
     }
 
     private AndroidDriver castToAndroidDriver(WebDriver driver) {
-        WebDriver castToWebDriverDecorator = castToWebDriverDecorator(driver);
-        if (castToWebDriverDecorator instanceof AndroidDriver) {
-            return (AndroidDriver) castToWebDriverDecorator;
+        WebDriver decoratedDriver = castToWebDriverDecorator(driver);
+        if (decoratedDriver instanceof AndroidDriver) {
+            return (AndroidDriver) decoratedDriver;
         } else {
             return null;
         }
     }
 
     private IOSDriver castToIOSDriver(WebDriver driver) {
-        WebDriver castToWebDriverDecorator = castToWebDriverDecorator(driver);
-        if (castToWebDriverDecorator instanceof IOSDriver) {
-            return (IOSDriver) castToWebDriverDecorator;
+        WebDriver decoratedDriver = castToWebDriverDecorator(driver);
+        if (decoratedDriver instanceof IOSDriver) {
+            return (IOSDriver) decoratedDriver;
         } else {
             return null;
         }
