@@ -21,7 +21,6 @@ public abstract class AbstractWebContainer extends TeasyElementProvider implemen
     @Override
     public void init(final TeasyElement wrappedElement) {
         this.wrappedElement = wrappedElement;
-        elementFinder = new WebDriverAwareElementFinder(getDriver(), new WebDriverWait(getDriver(), WAIT_TIME_OUT_IN_SECONDS, SLEEP_IN_MILLISECONDS));
     }
 
     public TeasyElement getWrappedElement() {

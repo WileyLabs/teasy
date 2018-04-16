@@ -4,15 +4,9 @@ import com.wiley.autotest.actions.Actions;
 import com.wiley.autotest.actions.Conditions;
 import com.wiley.autotest.actions.RepeatableAction;
 import com.wiley.autotest.selenium.Report;
-import com.wiley.autotest.selenium.elements.upgrade.Window;
+import com.wiley.autotest.selenium.SeleniumHolder;
 import io.qameta.allure.Step;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Dimension;
-import org.testng.Reporter;
 
-import static com.wiley.autotest.utils.DateUtils.waitForAssignmentDate;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 /**
@@ -22,19 +16,12 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
  */
 public abstract class AbstractPage<P extends AbstractPage> extends AbstractPageElement<P> implements IPage {
 
-    private final String path;
-
     public AbstractPage() {
-        path = null;
-    }
-
-    public void load() {
-        load(path);
     }
 
     public void load(final String pathString) {
         if (isNotBlank(pathString)) {
-            getDriver().get(pathString);
+            SeleniumHolder.getWebDriver().get(pathString);
         }
     }
 
@@ -72,109 +59,4 @@ public abstract class AbstractPage<P extends AbstractPage> extends AbstractPageE
         new RepeatableAction(action, condition, numberOfAttempts, millisecondsBetweenAttempts).perform();
         return (P) this;
     }
-
-    /**
-     * use {@link Report#allure()}
-     */
-    @Deprecated
-    protected final void log(final String message) {
-        Reporter.log(message);
-    }
-
-    /**
-     * use {@link Report#allure()}
-     */
-    @Deprecated
-    protected final void log(final String format, final Object... args) {
-        log(String.format(format, args));
-    }
-
-    /**
-     * use {@link Window#close()}
-     */
-    @Deprecated
-    @Step
-    public <P extends AbstractPage> P closeCurrentWindow(final Class<P> target) {
-        closeBrowserWindow();
-        return redirectTo(target);
-    }
-
-    /**
-     * use {@link Window#close()} {@link Window#switchToLast()}
-     */
-    @Deprecated
-    @Step
-    public <P extends AbstractPage> P closeCurrentWindowAndSwitchToLastWindow(final Class<P> target) {
-        closeBrowserWindow();
-        switchToLastWindow();
-        return redirectTo(target);
-    }
-
-    /**
-     * {@link Window#changeSize(int, int)}
-     */
-    @Deprecated
-    @Step
-    public P setBrowserDimensions(int width, int height) {
-        Dimension dimension = new Dimension(width, height);
-        getDriver().manage().window().setSize(dimension);
-        return (P) this;
-    }
-
-    //Copy this to your project if you use it. The method will be deleted
-    @Deprecated
-    public static By getLinkByXpath(String linkText) {
-        return By.xpath("//a[text()='" + linkText + "']");
-    }
-
-    //Copy this to your project if you use it. The method will be deleted
-    @Deprecated
-    @Step
-    public P waitForDate(DateTimeZone dateTimeZone, DateTime dueDate) {
-        waitForAssignmentDate(dateTimeZone, dueDate);
-        return (P) this;
-    }
-
-    //Copy this to your project if you use it. The method will be deleted
-    @Deprecated
-    @Step
-    public <T extends AbstractPage> T waitForDate(DateTimeZone dateTimeZone, DateTime dueDate, Class<T> target) {
-        waitForAssignmentDate(dateTimeZone, dueDate);
-        return redirectTo(target);
-    }
-
-    //Copy this to your project if you use it. The method will be deleted
-    @Step
-    @Deprecated
-    public P checkTitleOfBrowserWindow(String expectedTitle) {
-        postponedAssertEquals(getDriver().getTitle(), expectedTitle, "Incorrect title of browser window");
-        return (P) this;
-    }
-
-    @Deprecated // move to your project. constant will be deleted
-    public static final By TABLE_LOCATOR = By.tagName("table");
-    @Deprecated // move to your project. constant will be deleted
-    public static final By TR_LOCATOR = By.tagName("tr");
-    @Deprecated // move to your project. constant will be deleted
-    public static final By TD_LOCATOR = By.tagName("td");
-    @Deprecated // move to your project. constant will be deleted
-    public static final By TH_LOCATOR = By.tagName("th");
-    @Deprecated // move to your project. constant will be deleted
-    public static final By SELECT_LOCATOR = By.tagName("select");
-    @Deprecated // move to your project. constant will be deleted
-    public static final By SPAN_LOCATOR = By.tagName("span");
-    @Deprecated // move to your project. constant will be deleted
-    public static final By DIV_LOCATOR = By.tagName("div");
-    @Deprecated // move to your project. constant will be deleted
-    public static final By P_LOCATOR = By.tagName("p");
-    @Deprecated // move to your project. constant will be deleted
-    public static final By A_LOCATOR = By.tagName("a");
-    @Deprecated // move to your project. constant will be deleted
-    public static final By B_LOCATOR = By.tagName("b");
-    @Deprecated // move to your project. constant will be deleted
-    public static final By INPUT_LOCATOR = By.tagName("input");
-    @Deprecated // move to your project. constant will be deleted
-    public static final By IMG_LOCATOR = By.tagName("img");
-    @Deprecated // move to your project. constant will be deleted
-    protected static final String CLASS_ATTRIBUTE = "class";
 }
