@@ -3,6 +3,7 @@ package com.wiley.autotest.spring.testexecution.capabilities;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.UnexpectedAlertBehaviour;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -19,23 +20,23 @@ public class FireFoxCaps extends TeasyCaps {
         this.alertBehaviour = alertBehaviour;
     }
 
-    public DesiredCapabilities get() {
-        DesiredCapabilities caps = getFireFoxDesiredCapabilities();
+    public FirefoxOptions get() {
+        FirefoxOptions firefoxOptions = getFirefoxOptions();
         if (!this.customCaps.asMap().isEmpty()) {
-            caps.merge(this.customCaps);
+            firefoxOptions.merge(this.customCaps);
         }
-        return caps;
+        return firefoxOptions;
     }
 
-    private DesiredCapabilities getFireFoxDesiredCapabilities() {
-        DesiredCapabilities caps = DesiredCapabilities.firefox();
-        caps.setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, this.alertBehaviour);
-        caps.setCapability(FirefoxDriver.MARIONETTE, false);
-        caps.setCapability(FirefoxDriver.PROFILE, createFirefoxProfile());
-        caps.setPlatform(Platform.WINDOWS);
-        caps.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
-        setLoggingPrefs(caps);
-        return caps;
+    private FirefoxOptions getFirefoxOptions() {
+        FirefoxOptions options = new FirefoxOptions();
+        options.setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, this.alertBehaviour);
+        options.setCapability(FirefoxDriver.MARIONETTE, false);
+        options.setCapability(FirefoxDriver.PROFILE, createFirefoxProfile());
+        options.setCapability("platform", Platform.WINDOWS);
+        options.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
+        setLoggingPrefs(options);
+        return options;
     }
 
     private FirefoxProfile createFirefoxProfile() {
