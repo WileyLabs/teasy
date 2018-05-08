@@ -42,19 +42,19 @@ public class AbstractTest extends AbstractTestNGSpringContextTests {
     }
 
     protected final Object getParameter(final String key) {
-        return ParamsHolder.getParameter(key);
+        return ParamsHolder.get(key);
     }
 
     protected final Object getParameterForGroup(final String key) {
-        return ParamsHolder.getParameterForGroup(key);
+        return ParamsHolder.getForGroup(key);
     }
 
     protected void setParameter(final String key, final Object value) {
-        ParamsHolder.setParameter(key, value);
+        ParamsHolder.set(key, value);
     }
 
     protected void setParameterForGroup(final String key, final Object value) {
-        ParamsHolder.setParameterForGroup(key, value);
+        ParamsHolder.setForGroup(key, value);
     }
 
     public Throwable getStopTextExecutionThrowable() {

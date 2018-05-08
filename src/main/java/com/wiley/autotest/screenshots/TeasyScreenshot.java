@@ -1,15 +1,24 @@
 package com.wiley.autotest.screenshots;
 
 import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
-import org.openqa.selenium.*;
-import ru.yandex.qatools.ashot.*;
-import ru.yandex.qatools.ashot.coordinates.*;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.Point;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import ru.yandex.qatools.ashot.AShot;
+import ru.yandex.qatools.ashot.Screenshot;
+import ru.yandex.qatools.ashot.coordinates.Coords;
+import ru.yandex.qatools.ashot.coordinates.CoordsProvider;
+import ru.yandex.qatools.ashot.coordinates.JqueryCoordsProvider;
 import ru.yandex.qatools.ashot.cropper.indent.IndentCropper;
 import ru.yandex.qatools.ashot.shooting.ShootingStrategies;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import static com.wiley.autotest.utils.ExecutionUtils.isChrome;
+import static com.wiley.autotest.utils.JsActions.executeScript;
 import static ru.yandex.qatools.ashot.cropper.indent.IndentFilerFactory.monochrome;
 
 /**
@@ -134,11 +143,11 @@ public class TeasyScreenshot {
         }
 
         private void hideScrollbar() {
-            ((JavascriptExecutor) driver).executeScript("document.body.style.overflow = 'hidden';");
+            executeScript("document.body.style.overflow = 'hidden';");
         }
 
         private void revealScrollbar() {
-            ((JavascriptExecutor) driver).executeScript("document.body.style.overflow = 'visible';");
+            executeScript("document.body.style.overflow = 'visible';");
         }
     }
 }
