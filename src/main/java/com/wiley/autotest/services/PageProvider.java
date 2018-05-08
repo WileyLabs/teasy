@@ -28,25 +28,4 @@ public class PageProvider {
         helper.load(urlToOpen);
         return helper;
     }
-
-    /**
-     * Please use get()
-     */
-    @Deprecated
-    public <E extends IPage> E getPage(final Class<E> helperClass) {
-        E helper = registry.getPageHelper(helperClass);
-        //TODO VE implement proper support of ScreenshotHelper. As for now it's only used for screenshot base tests passing it as null
-        helper.init(getWebDriver());
-        return helper;
-    }
-
-    /**
-     * Please use get()
-     */
-    @Deprecated
-    public <E extends IPage> E getPage(final Class<E> helperClass, final String urlToOpen) {
-        E helper = get(helperClass);
-        helper.load(urlToOpen);
-        return helper;
-    }
 }

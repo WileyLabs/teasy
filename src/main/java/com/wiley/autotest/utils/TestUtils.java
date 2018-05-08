@@ -37,14 +37,6 @@ public final class TestUtils {
         return testName;
     }
 
-    public static String getBoldValue() {
-        if (ExecutionUtils.isChrome()) {
-            return "bold";
-        } else {
-            return "700";
-        }
-    }
-
     /**
      * Do not use this method!
      * Ok at least try to avoid using it.
@@ -60,23 +52,6 @@ public final class TestUtils {
         } catch (InterruptedException e) {
             throw new AssertionError("InterruptedException occurred while calling Thread.sleep for " + milliseconds + " milliseconds. " + explanationMessage, e);
         }
-    }
-
-    @Deprecated
-    public static void waitForSomeTime(int milliseconds) {
-        try {
-            Thread.sleep(milliseconds);
-        } catch (InterruptedException e) {
-            throw new AssertionError("InterruptedException occurred while calling Thread.sleep for " + milliseconds + " milliseconds.", e);
-        }
-    }
-
-
-    /**
-     * Custom wait for Mac Safari yet we haven't found the better way to work with it
-     */
-    public static void waitForSafari() {
-        waitForSomeTime(3000, "Special wait for Safari");
     }
 
     /**
@@ -108,9 +83,4 @@ public final class TestUtils {
         return null;
     }
 
-    public static String getTestCaseNumber(ITest testClass) {
-        String testName = testClass.getTestName();
-        return testName.contains("E4_") ? testName.split("E4")[1].split("_")[1] :
-                testName.split("TC")[1].split("_")[1];
-    }
 }
