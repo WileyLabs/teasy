@@ -103,6 +103,7 @@ public class TeasyWindow implements Window {
         driver.manage().window().maximize();
     }
 
+    @Override
     public void scrollTo(TeasyElement element) {
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
     }

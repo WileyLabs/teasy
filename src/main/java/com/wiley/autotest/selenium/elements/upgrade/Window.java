@@ -25,6 +25,8 @@ public interface Window {
 
     void maximize();
 
+    void scrollTo(TeasyElement element);
+
     void back();
 
     void forward();
