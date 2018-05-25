@@ -1,18 +1,14 @@
 package com.wiley.autotest.selenium.context;
 
-import com.wiley.autotest.actions.Actions;
-import com.wiley.autotest.actions.Conditions;
-import com.wiley.autotest.actions.RepeatableAction;
-import com.wiley.autotest.selenium.Report;
-import com.wiley.autotest.selenium.elements.upgrade.Window;
-import io.qameta.allure.Step;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Dimension;
-import org.testng.Reporter;
+import com.wiley.autotest.event.postpone.failure.PostponedFailureEvent;
+import com.wiley.autotest.selenium.AllureStep2TestNG;
+import com.wiley.autotest.selenium.SeleniumHolder;
+import com.wiley.autotest.services.ParamsHolder;
+import com.wiley.autotest.spring.Settings;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import static com.wiley.autotest.utils.DateUtils.waitForAssignmentDate;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 /**
@@ -20,161 +16,92 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
  * Date: 1/5/12
  * Time: 12:34 PM
  */
-public abstract class AbstractPage<P extends AbstractPage> extends AbstractPageElement<P> implements IPage {
+public abstract class AbstractPage extends TeasyElementProvider implements IPageElement, ErrorSender, IPage {
 
-    private final String path;
+    @Autowired
+    private HelperRegistry registry;
+
+    @Autowired
+    private PostponedFailureEvent postponeFailureEvent;
+
+    @Autowired
+    private Long timeout;
+
+    @Autowired
+    private Settings settings;
 
     public AbstractPage() {
-        path = null;
-    }
-
-    public void load() {
-        load(path);
     }
 
     public void load(final String pathString) {
         if (isNotBlank(pathString)) {
-            getDriver().get(pathString);
+            SeleniumHolder.getWebDriver().get(pathString);
         }
     }
 
     /**
-     * This method has to be added in every test that fails because of bug
-     * This method has to be added right before the method which fails because of bug
-     * If after this method test does not fail, it probably means that the bug was fixed
-     * and this method call has to be removed as well as bug annotation and group from the test
-     *
-     * @param bugId - id of a bug
-     * @return current page
+     * Method is called by framework to complete navigation to the helper.
+     * It is the best place to execute your wait-expressions to ensure that page has been completely loaded.
      */
-    @Step
-    public P bugInNextStepReportAlert(String bugId) {
-        new Report("The next step will fail because of bug with id '" + bugId + "'!").allure();
-        return (P) this;
+    public void handleRedirect() {
     }
 
-    /**
-     * Performs an action until a condition is true.
-     * <p>
-     * example:
-     * action(element(By.cssSelector("a"))::click, element(By.cssSelector("div"))::isDisplayed);
-     *
-     * @param action    - any action to perform
-     * @param condition - condition to make after action
-     * @return current page
-     */
-    public P action(Actions action, Conditions condition) {
-        new RepeatableAction(action, condition).perform();
-        return (P) this;
+    public final void init(WebDriver driver) {
+        init();
     }
 
-    public P action(Actions action, Conditions condition, int numberOfAttempts, int millisecondsBetweenAttempts) {
-        new RepeatableAction(action, condition, numberOfAttempts, millisecondsBetweenAttempts).perform();
-        return (P) this;
+    protected Long getTimeout() {
+        return timeout;
     }
 
-    /**
-     * use {@link Report#allure()}
-     */
-    @Deprecated
-    protected final void log(final String message) {
-        Reporter.log(message);
+    protected Settings getSettings() {
+        return settings;
     }
 
-    /**
-     * use {@link Report#allure()}
-     */
-    @Deprecated
-    protected final void log(final String format, final Object... args) {
-        log(String.format(format, args));
+    protected void init() {
     }
 
-    /**
-     * use {@link Window#close()}
-     */
-    @Deprecated
-    @Step
-    public <P extends AbstractPage> P closeCurrentWindow(final Class<P> target) {
-        closeBrowserWindow();
+    protected <E extends IPage> E redirectTo(final Class<E> target) {
+        final E page = getHelper(target);
+        page.handleRedirect();
+        window().waitForScriptsToLoad();
+        return page;
+    }
+
+    protected final <E extends IPage> E redirectToWithoutWaitToLoad(final Class<E> target) {
+        final E page = getHelper(target);
+        page.handleRedirect();
+        return page;
+    }
+
+    protected final <E extends IPage> E getHelper(final Class<E> target) {
+        final E helper = registry.getPageHelper(target);
+        helper.init(SeleniumHolder.getWebDriver());
+        return AllureStep2TestNG.addInterceptor(target, helper);
+    }
+
+    protected final <E extends IPage> E navigateTo(final Class<E> target, final String url) {
+        SeleniumHolder.getWebDriver().get(url);
         return redirectTo(target);
     }
 
-    /**
-     * use {@link Window#close()} {@link Window#switchToLast()}
-     */
-    @Deprecated
-    @Step
-    public <P extends AbstractPage> P closeCurrentWindowAndSwitchToLastWindow(final Class<P> target) {
-        closeBrowserWindow();
-        switchToLastWindow();
-        return redirectTo(target);
+    protected final Object getParameter(final String key) {
+        return ParamsHolder.getParameter(key);
     }
 
-    /**
-     * {@link Window#changeSize(int, int)}
-     */
-    @Deprecated
-    @Step
-    public P setBrowserDimensions(int width, int height) {
-        Dimension dimension = new Dimension(width, height);
-        getDriver().manage().window().setSize(dimension);
-        return (P) this;
+    protected final Object getParameterForGroup(final String key) {
+        return ParamsHolder.getParameterForGroup(key);
     }
 
-    //Copy this to your project if you use it. The method will be deleted
-    @Deprecated
-    public static By getLinkByXpath(String linkText) {
-        return By.xpath("//a[text()='" + linkText + "']");
+    protected void setParameter(final String key, final Object value) {
+        ParamsHolder.setParameter(key, value);
     }
 
-    //Copy this to your project if you use it. The method will be deleted
-    @Deprecated
-    @Step
-    public P waitForDate(DateTimeZone dateTimeZone, DateTime dueDate) {
-        waitForAssignmentDate(dateTimeZone, dueDate);
-        return (P) this;
+    protected void setParameterForGroup(final String key, final Object value) {
+        ParamsHolder.setParameterForGroup(key, value);
     }
 
-    //Copy this to your project if you use it. The method will be deleted
-    @Deprecated
-    @Step
-    public <T extends AbstractPage> T waitForDate(DateTimeZone dateTimeZone, DateTime dueDate, Class<T> target) {
-        waitForAssignmentDate(dateTimeZone, dueDate);
-        return redirectTo(target);
+    public void setPostponedTestFail(final String message) {
+        postponeFailureEvent.fire(message);
     }
-
-    //Copy this to your project if you use it. The method will be deleted
-    @Step
-    @Deprecated
-    public P checkTitleOfBrowserWindow(String expectedTitle) {
-        postponedAssertEquals(getDriver().getTitle(), expectedTitle, "Incorrect title of browser window");
-        return (P) this;
-    }
-
-    @Deprecated // move to your project. constant will be deleted
-    public static final By TABLE_LOCATOR = By.tagName("table");
-    @Deprecated // move to your project. constant will be deleted
-    public static final By TR_LOCATOR = By.tagName("tr");
-    @Deprecated // move to your project. constant will be deleted
-    public static final By TD_LOCATOR = By.tagName("td");
-    @Deprecated // move to your project. constant will be deleted
-    public static final By TH_LOCATOR = By.tagName("th");
-    @Deprecated // move to your project. constant will be deleted
-    public static final By SELECT_LOCATOR = By.tagName("select");
-    @Deprecated // move to your project. constant will be deleted
-    public static final By SPAN_LOCATOR = By.tagName("span");
-    @Deprecated // move to your project. constant will be deleted
-    public static final By DIV_LOCATOR = By.tagName("div");
-    @Deprecated // move to your project. constant will be deleted
-    public static final By P_LOCATOR = By.tagName("p");
-    @Deprecated // move to your project. constant will be deleted
-    public static final By A_LOCATOR = By.tagName("a");
-    @Deprecated // move to your project. constant will be deleted
-    public static final By B_LOCATOR = By.tagName("b");
-    @Deprecated // move to your project. constant will be deleted
-    public static final By INPUT_LOCATOR = By.tagName("input");
-    @Deprecated // move to your project. constant will be deleted
-    public static final By IMG_LOCATOR = By.tagName("img");
-    @Deprecated // move to your project. constant will be deleted
-    protected static final String CLASS_ATTRIBUTE = "class";
 }

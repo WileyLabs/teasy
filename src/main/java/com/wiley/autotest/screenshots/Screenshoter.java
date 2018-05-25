@@ -1,11 +1,11 @@
 package com.wiley.autotest.screenshots;
 
+import io.qameta.allure.Attachment;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.UnhandledAlertException;
 import org.testng.Reporter;
-import io.qameta.allure.Attachment;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -35,7 +35,7 @@ public class Screenshoter {
 //This probably could be used someday (do not delete)
 //            int jsErrorNumber = JavaScriptError.readErrors(getWebDriver()).size();
 //            printStrings(image, removeNL(testName, errorMessage, "The following number of JS errors appeared during the test: " + jsErrorNumber));
-            BufferedImage image = new OurScreenshot().fullPage().getImage();
+            BufferedImage image = new TeasyScreenshot(getWebDriver()).fullPage().getImage();
             printStrings(image, removeNL(testName, errorMessage));
 
             final String pathName = getFilenameFor(testName);
@@ -51,7 +51,6 @@ public class Screenshoter {
             String pathToImage = "../../test-reports/test-classes/" + screenShotWithProjectPath.getName();
 
             Reporter.log("<br/><a href='" + pathToImage + "' target='_blank'> <img src='" + pathToImage + "' height='100' width='100'/> </a><br/>");
-
         } catch (IOException e) {
             LOGGER.error("IOException occurs", e);
         } catch (UnhandledAlertException alertException) {
@@ -90,7 +89,8 @@ public class Screenshoter {
 
     private String getFilenameFor(final String currentTest) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH-mm-ss", Locale.US);
-        return String.format("%s%s_%s.png", getClass().getResource("/").getFile(), currentTest, "(time_" + simpleDateFormat.format(new Date()) + ")");
+        return String.format("%s%s_%s.png", getClass().getResource("/")
+                .getFile(), currentTest, "(time_" + simpleDateFormat.format(new Date()) + ")");
     }
 
     private String getOriginalTestName(final String testName) {

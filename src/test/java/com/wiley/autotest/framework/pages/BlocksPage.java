@@ -7,7 +7,7 @@ import org.openqa.selenium.By;
 import org.springframework.stereotype.Component;
 
 @Component
-public class BlocksPage extends AbstractPage<BlocksPage> {
+public class BlocksPage extends AbstractPage {
 
     public TestBlock getTestBlock() {
         return new TestBlock(element(By.id("block2")));

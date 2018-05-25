@@ -1,35 +1,29 @@
 package com.wiley.autotest.selenium.extensions.internal;
 
-import com.wiley.autotest.selenium.elements.Link;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import com.wiley.autotest.utils.TestUtils;
-import org.openqa.selenium.By;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriverException;
 
-class LinkImpl extends AbstractElement implements Link {
-    protected LinkImpl(final TeasyElement wrappedElement) {
-        super(wrappedElement);
+import static com.wiley.autotest.utils.JsActions.executeScript;
+
+public class Button extends AbstractElement {
+
+    public Button(final TeasyElement element) {
+        super(element);
     }
 
-    protected LinkImpl(final TeasyElement wrappedElement, By by) {
-        super(wrappedElement, by);
+    public void clickWithJavaScript() {
+        executeScript("arguments[0].click();", getWrappedElement());
     }
 
-    @Override
     public void click() {
         getWrappedElement().click();
     }
 
-    @Override
-    public void clickWithJavaScript() {
-        executeScript("arguments[0].click();", getWrappedWebElement());
-    }
-
-    @Override
     public void clickWithReload() {
         int iterationCount = 0;
-        TeasyElement element = getWrappedWebElement();
+        TeasyElement element = getWrappedElement();
         while (iterationCount < 3) {
             element.click();
             try {
@@ -44,7 +38,7 @@ class LinkImpl extends AbstractElement implements Link {
             } catch (WebDriverException ignored) {
                 return;
             }
-            TestUtils.waitForSomeTime(3000, EXPLANATION_MESSAGE_FOR_WAIT);
+            TestUtils.waitForSomeTime(3000, "");
             iterationCount++;
         }
         clickWithJavaScript();
@@ -53,16 +47,10 @@ class LinkImpl extends AbstractElement implements Link {
             return;
         } catch (TimeoutException ignored) {
         }
-        throw new WebDriverException("Link is not reloaded after click");
+        throw new WebDriverException("Button is not reloaded after click");
     }
 
-    @Override
     public boolean isClickable() {
-        return true;
-    }
-
-    @Override
-    public TeasyElement getWrappedWebElement() {
-        return getWrappedElement();
+        return getWrappedElement().isDisplayed() && getWrappedElement().isEnabled();
     }
 }

@@ -18,6 +18,7 @@ import java.util.List;
 
 import static com.wiley.autotest.selenium.SeleniumHolder.getWebDriver;
 import static com.wiley.autotest.utils.ExecutionUtils.isChrome;
+import static com.wiley.autotest.utils.JsActions.executeScript;
 import static com.wiley.autotest.utils.TestUtils.waitForSomeTime;
 
 /**
@@ -407,10 +408,6 @@ public abstract class BaseTeasyElement implements TeasyElement, Locatable {
             //If a frame is selected and then browser window is maximized, exception is thrown
             //Selenium bug: Issue 3758: Exception upon maximizing browser window with frame selected
         }
-    }
-
-    private Object executeScript(String script, Object... args) {
-        return ((JavascriptExecutor) getWebDriver()).executeScript(script, args);
     }
 
     private List<WebElement> finds(By by) {

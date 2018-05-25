@@ -14,9 +14,7 @@ import com.wiley.autotest.services.PageProvider;
 import com.wiley.autotest.services.ParamsHolder;
 import com.wiley.autotest.services.SeleniumMethodsInvoker;
 import com.wiley.autotest.spring.SeleniumTestExecutionListener;
-import com.wiley.autotest.utils.JavaUtils;
 import com.wiley.autotest.utils.TestUtils;
-import org.openqa.selenium.JavascriptExecutor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestExecutionListeners;
 import org.testng.IHookCallBack;
@@ -28,6 +26,7 @@ import org.testng.annotations.*;
 import java.lang.reflect.Method;
 
 import static com.wiley.autotest.selenium.SeleniumHolder.getWebDriver;
+import static com.wiley.autotest.utils.JsActions.executeScript;
 import static org.testng.Reporter.log;
 
 /**
@@ -124,8 +123,8 @@ public abstract class AbstractSeleniumTest extends AbstractTest implements ITest
         //TODO VE: sometimes local data may be needed so it's worth to make it optional/configurable
         cookiesService.deleteAllCookies();
         try {
-            ((JavascriptExecutor) getWebDriver()).executeScript("window.localStorage.clear();");
-            ((JavascriptExecutor) getWebDriver()).executeScript("window.sessionStorage.clear();");
+            executeScript("window.localStorage.clear();");
+            executeScript("window.sessionStorage.clear();");
         } catch (Exception ignored) {
         }
         methodsInvoker.invokeMethodsByAnnotation(this, OurAfterMethod.class);
@@ -206,25 +205,6 @@ public abstract class AbstractSeleniumTest extends AbstractTest implements ITest
                 log("Couldn't take screenshot. Error: " + e.getMessage());
             }
         }
-    }
-
-    /**
-     * This method is used for sub-methods not marked with @Test TestNG annotation, but have @LoginTo and @LoginAs annotation.
-     * This lets us to use multiple logins for different users in one particular TestNG test method.
-     * For test methods marked with @Test TestNG annotation please use login() method.
-     */
-    protected Method findMethodByAnnotation(Class clazz) throws NoSuchMethodException {
-        try {
-            return JavaUtils.findMethodByAnnotation(clazz);
-        } catch (NoSuchMethodException e) {
-            Method[] methods = this.getClass().getDeclaredMethods();
-            for (Method method : methods) {
-                if (method.getAnnotation(clazz) != null) {
-                    return method;
-                }
-            }
-        }
-        throw new NoSuchMethodException();
     }
 
     public Method getTestMethod() {

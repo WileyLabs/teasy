@@ -1,6 +1,5 @@
 package com.wiley.autotest.selenium.extensions.internal;
 
-import com.wiley.autotest.selenium.elements.Select;
 import com.wiley.autotest.selenium.elements.upgrade.DomTeasyElement;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyElementData;
@@ -12,42 +11,32 @@ import org.openqa.selenium.WebElement;
 import org.testng.Reporter;
 
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang.math.RandomUtils.nextInt;
 
-class SelectImpl extends AbstractEnabledElement implements Select {
-    protected SelectImpl(final TeasyElement wrappedElement) {
-        super(wrappedElement);
+public class Select extends AbstractElement {
+    public Select(final TeasyElement element) {
+        super(element);
     }
 
-    protected SelectImpl(final TeasyElement wrappedElement, By by) {
-        super(wrappedElement, by);
-    }
-
-    @Override
     public void selectByText(final String text) {
         wrappedSelect().selectByVisibleText(text);
     }
 
-    @Override
     public void selectByTextWithoutWait(final String text) {
         selectByText(text);
     }
 
-    @Override
     public void selectByIndex(final int index) {
         wrappedSelect().selectByIndex(index);
     }
 
-    @Override
     public void selectByValue(final String value) {
         wrappedSelect().selectByValue(value);
     }
 
-    @Override
     public void selectByText(final String text, final String errorMessage) {
         try {
             selectByText(text);
@@ -57,7 +46,6 @@ class SelectImpl extends AbstractEnabledElement implements Select {
         }
     }
 
-    @Override
     public void selectByIndex(final int index, final String errorMessage) {
         try {
             selectByIndex(index);
@@ -67,7 +55,6 @@ class SelectImpl extends AbstractEnabledElement implements Select {
         }
     }
 
-    @Override
     public void selectByValue(final String value, final String errorMessage) {
         try {
             selectByValue(value);
@@ -77,17 +64,10 @@ class SelectImpl extends AbstractEnabledElement implements Select {
         }
     }
 
-    @Override
     public String getText() {
         return wrappedSelect().getFirstSelectedOption().getText();
     }
 
-    @Override
-    public TeasyElement getWrappedWebElement() {
-        return getWrappedElement();
-    }
-
-    @Override
     public void selectByAnotherTextThan(final String text) {
         final org.openqa.selenium.support.ui.Select select = wrappedSelect();
         final List<WebElement> options = select.getOptions();
@@ -100,10 +80,10 @@ class SelectImpl extends AbstractEnabledElement implements Select {
         }
     }
 
-    @Override
     public void selectRandom() {
         int count = 0;
         while (count < 5) {
+            count++;
             try {
                 final org.openqa.selenium.support.ui.Select wrapped = wrappedSelect();
                 int optionsSize = getOptions().size();
@@ -116,24 +96,24 @@ class SelectImpl extends AbstractEnabledElement implements Select {
                 }
                 break;
             } catch (StaleElementReferenceException e) {
-                TestUtils.waitForSomeTime(1000, EXPLANATION_MESSAGE_FOR_WAIT);
+                TestUtils.waitForSomeTime(1000,
+                        "StaleElementReferenceException. Sleeping 1 sec before retry.");
             }
         }
     }
 
-    @Override
     public void selectRandomByAnotherTextThan(String text) {
         int optionsSize = getOptions().size();
         if (optionsSize > 1) {
             int optionIndex = nextInt(optionsSize);
-            while (getOptions().get(optionIndex).isSelected() || text.equals(getOptions().get(optionIndex).getText())) {
+            while (getOptions().get(optionIndex)
+                    .isSelected() || text.equals(getOptions().get(optionIndex).getText())) {
                 optionIndex = nextInt(optionsSize);
             }
             selectByIndex(optionIndex);
         }
     }
 
-    @Override
     public void selectByPartialText(String partialText) {
         for (TeasyElement option : getOptions()) {
             if (option.getText().contains(partialText)) {
@@ -147,22 +127,19 @@ class SelectImpl extends AbstractEnabledElement implements Select {
         return new org.openqa.selenium.support.ui.Select(getWrappedElement().getWrappedWebElement());
     }
 
-    @Override
     public TeasyElement getSelectedOption() {
-        return new DomTeasyElement(new TeasyElementData(wrappedSelect().getFirstSelectedOption(), By.tagName("option")));
+        return new DomTeasyElement(new TeasyElementData(wrappedSelect().getFirstSelectedOption(), By
+                .tagName("option")));
     }
 
-    @Override
     public String getSelectedText() {
         return wrappedSelect().getFirstSelectedOption().getText();
     }
 
-    @Override
     public String getSelectedValue() {
         return getWrappedElement().getAttribute("value");
     }
 
-    @Override
     public List<TeasyElement> getOptions() {
         try {
             return wrappedSelect().getOptions()
@@ -170,9 +147,8 @@ class SelectImpl extends AbstractEnabledElement implements Select {
                     .map(option -> new DomTeasyElement(new TeasyElementData(option, By.tagName("option"))))
                     .collect(Collectors.toList());
         } catch (UndeclaredThrowableException ignored) {
-            //TODO VF fix it in other places
-            //Sometimes this test fails in ie due to such exception
-            TestUtils.waitForSomeTime(3000, EXPLANATION_MESSAGE_FOR_WAIT);
+            TestUtils.waitForSomeTime(3000,
+                    "Unknown issue. Sleeping 3 sec before retry.");
             return wrappedSelect().getOptions()
                     .stream()
                     .map(option -> new DomTeasyElement(new TeasyElementData(option, By.tagName("option"))))
@@ -180,14 +156,6 @@ class SelectImpl extends AbstractEnabledElement implements Select {
         }
     }
 
-    @Override
-    @Deprecated
-    public List<TeasyElement> getValues() {
-        //TODO VF Need to complete
-        return new ArrayList<>();
-    }
-
-    @Override
     public int getSelectedIndex() {
         return Integer.parseInt(getSelectedOption().getAttribute("index"));
     }
@@ -197,7 +165,7 @@ class SelectImpl extends AbstractEnabledElement implements Select {
      * That appears from time to time
      * Using our standard mechanism of 5 attempts with sleeping for 1 sec between them.
      */
-    @Override
+
     public void deselectAll() {
         int counter = 0;
         while (counter <= 5) {
@@ -206,12 +174,12 @@ class SelectImpl extends AbstractEnabledElement implements Select {
                 break;
             } catch (StaleElementReferenceException e) {
                 counter++;
-                TestUtils.waitForSomeTime(1000, EXPLANATION_MESSAGE_FOR_WAIT);
+                TestUtils.waitForSomeTime(1000,
+                        "StaleElementReferenceException. Sleeping 1 sec before retry.");
             }
         }
     }
 
-    @Override
     public void selectAll() {
         //TODO NT: need to check work
         for (TeasyElement option : getOptions()) {

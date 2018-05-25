@@ -31,33 +31,6 @@
 
     <bean id="registry" class="com.wiley.autotest.selenium.SpringBasedHelperRegistry"/>
 
-    <util:list id="validatorPhrases" value-type="java.lang.String">
-        <!-- <value>Exception</value>
-       <value>exception</value> -->
-        <value>Service Unavailable</value>
-        <value>Internal Server Error</value>
-        <value>Bad Request</value>
-        <value>Bad Gateway</value>
-        <value>An unexpected error has occurred</value>
-
-        <!-- Below taken from checkPageFrames -->
-        <value>400 Bad Request</value>
-        <value>401 Unauthorized</value>
-        <value>403 Forbidden</value>
-        <value>404 Not Found</value>
-        <value>502 Bad Gateway</value>
-        <value>503 Service Unavailable</value>
-        <value>500 Internal Server Error</value>
-        <value>420 Enhance Your Calm:</value>
-
-        <value>HTTP Status 404</value>
-        <value>HTTP Status 500</value>
-    </util:list>
-
-    <bean id="validator" class="com.wiley.autotest.selenium.context.WordsBasedPageLoadingValidator">
-        <property name="words" ref="validatorPhrases"/>
-    </bean>
-
     <context:component-scan base-package="com.wiley.wat.pages"
                             scope-resolver="com.wiley.autotest.selenium.HardCodedPrototypeScopeResolver"/>
 

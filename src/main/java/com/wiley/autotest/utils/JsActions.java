@@ -15,15 +15,15 @@ public final class JsActions {
     /**
      * {@link JavascriptExecutor#executeScript(String, Object...)}
      */
-    public static void executeScript(String script, Object... args) {
-        driver().executeScript(script, args);
+    public static Object executeScript(String script, Object... args) {
+        return driver().executeScript(script, args);
     }
 
     /**
      * {@link JavascriptExecutor#executeAsyncScript(String, Object...)}
      */
-    public static void executeAsyncScript(String script, Object... args) {
-        driver().executeAsyncScript(script, args);
+    public static Object executeAsyncScript(String script, Object... args) {
+        return driver().executeAsyncScript(script, args);
     }
 
     private static JavascriptExecutor driver() {

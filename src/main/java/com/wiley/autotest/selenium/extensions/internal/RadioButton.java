@@ -1,46 +1,37 @@
 package com.wiley.autotest.selenium.extensions.internal;
 
-import com.wiley.autotest.selenium.elements.CheckBox;
 import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 
 import java.util.List;
 
-public class CheckBoxImpl extends AbstractEnabledElement implements CheckBox {
-    protected CheckBoxImpl(final TeasyElement wrappedElement) {
-        super(wrappedElement);
+import static com.wiley.autotest.utils.JsActions.executeScript;
+
+public class RadioButton extends AbstractElement {
+    public RadioButton(final TeasyElement element) {
+        super(element);
     }
 
-    protected CheckBoxImpl(final TeasyElement wrappedElement, By by) {
-        super(wrappedElement, by);
-    }
-
-    @Override
     public void clickWithJavaScript() {
-        executeScript("arguments[0].click();", getWrappedWebElement());
+        executeScript("arguments[0].click();", getWrappedElement());
     }
 
-    @Override
     public void click() {
-        getWrappedWebElement().click();
+        getWrappedElement().click();
     }
 
-    @Override
     public void clickWithReload() {
         getWrappedElement().click();
     }
 
-    @Override
     public boolean isClickable() {
         return isEnabled() && isSelected();
     }
 
-    @Override
     public boolean isSelected() {
-        List<TeasyElement> inputTags = getWrappedWebElement().domElements(By.xpath("./../input"));
+        List<TeasyElement> inputTags = getWrappedElement().domElements(By.xpath("./../input"));
         if (!inputTags.isEmpty()) {
-            if (inputTags.get(0).getAttribute("class").contains("customCheckbox")) {
+            if (inputTags.get(0).getAttribute("class").contains("customRadio")) {
                 String inputId = inputTags.get(0).getAttribute("id");
                 return (Boolean) executeScript("return document.getElementById('" + inputId + "').checked;");
             }
@@ -48,16 +39,10 @@ public class CheckBoxImpl extends AbstractEnabledElement implements CheckBox {
         return getWrappedElement().isSelected();
     }
 
-    @Override
-    public TeasyElement getWrappedWebElement() {
-        return getWrappedElement();
-    }
-
-    @Override
     public boolean isEnabled() {
-        List<TeasyElement> inputTags = getWrappedWebElement().domElements(By.xpath("./../input"));
+        List<TeasyElement> inputTags = getWrappedElement().domElements(By.xpath("./../input"));
         if (!inputTags.isEmpty()) {
-            if (inputTags.get(0).getAttribute("class").contains("customCheckbox")) {
+            if (inputTags.get(0).getAttribute("class").contains("customRadio")) {
                 String inputId = inputTags.get(0).getAttribute("id");
                 return !(Boolean) executeScript("return document.getElementById('" + inputId + "').disabled;");
             }

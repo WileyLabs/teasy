@@ -18,14 +18,6 @@ public class TeasyElementWrapper {
         return wrapBase(new TeasyElementData(webElement, by), type);
     }
 
-    @Deprecated
-    /**
-     * will be deleted. just a temp workaround to keep old version supported
-     */
-    public static <T extends TeasyElement> T wrap_to_be_deleted(WebElement webElement, By by) {
-        return wrapBase(new TeasyElementData(webElement, by), TeasyElementType.DOM);
-    }
-
     public static <T extends TeasyElement> T wrap(TeasyElement searchContext, WebElement webElement, By by, TeasyElementType type) {
         return wrapBase(new TeasyElementData(searchContext, webElement, by), type);
     }
