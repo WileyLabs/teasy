@@ -2,6 +2,7 @@ package com.wiley.autotest.spring.testexecution.capabilities;
 
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.UnexpectedAlertBehaviour;
+import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
@@ -17,19 +18,19 @@ public class EdgeCaps extends TeasyCaps {
         this.alertBehaviour = alertBehaviour;
     }
 
-    public DesiredCapabilities get() {
-        DesiredCapabilities caps = getEdgeCaps();
+    public EdgeOptions get() {
+        EdgeOptions caps = getEdgeOptions();
         if (!this.customCaps.asMap().isEmpty()) {
             caps.merge(this.customCaps);
         }
         return caps;
     }
 
-    private DesiredCapabilities getEdgeCaps() {
-        DesiredCapabilities caps = DesiredCapabilities.edge();
-        caps.setPlatform(Platform.WINDOWS);
-        caps.setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, this.alertBehaviour);
-        setLoggingPrefs(caps);
-        return caps;
+    private EdgeOptions getEdgeOptions() {
+        EdgeOptions options = new EdgeOptions();
+        options.setCapability("platform", Platform.WINDOWS);
+        options.setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, this.alertBehaviour);
+        setLoggingPrefs(options);
+        return options;
     }
 }

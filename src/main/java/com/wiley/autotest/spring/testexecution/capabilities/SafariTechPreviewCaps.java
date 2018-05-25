@@ -12,15 +12,15 @@ public class SafariTechPreviewCaps extends TeasyCaps {
         super(customCaps);
     }
 
-    public DesiredCapabilities get() {
-        DesiredCapabilities caps = DesiredCapabilities.safari();
+    public SafariOptions get() {
+        SafariOptions options = new SafariOptions();
         SafariOptions safariOptions = new SafariOptions();
         safariOptions.setUseTechnologyPreview(true);
-        caps.setCapability(SafariOptions.CAPABILITY, safariOptions);
-        setLoggingPrefs(caps);
+        options.setCapability(SafariOptions.CAPABILITY, safariOptions);
+        setLoggingPrefs(options);
         if (!this.customCaps.asMap().isEmpty()) {
-            caps.merge(this.customCaps);
+            options.merge(this.customCaps);
         }
-        return caps;
+        return options;
     }
 }

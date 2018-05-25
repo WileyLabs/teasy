@@ -22,32 +22,32 @@ public class ChromeCaps extends TeasyCaps {
         this.isHeadless = isHeadless;
     }
 
-    public DesiredCapabilities get() {
-        DesiredCapabilities caps = getChromeCaps();
+    public ChromeOptions get() {
+        ChromeOptions caps = getChromeOptions();
         if (!this.customCaps.asMap().isEmpty()) {
             caps.merge(this.customCaps);
         }
         return caps;
     }
 
-    private DesiredCapabilities getChromeCaps() {
-        DesiredCapabilities caps = DesiredCapabilities.chrome();
-        caps.setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, this.alertBehaviour);
+    private ChromeOptions getChromeOptions() {
+        ChromeOptions options = new ChromeOptions();
+
+        options.setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, this.alertBehaviour);
 
         //To view pdf in chrome
-        ChromeOptions options = new ChromeOptions();
         options.setExperimentalOption("excludeSwitches", Arrays.asList("test-type", "--ignore-certificate-errors"));
 
         if (this.isHeadless) {
             options.addArguments("headless");
         }
 
-        caps.setCapability(ChromeOptions.CAPABILITY, options);
-        caps.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
+        options.setCapability(ChromeOptions.CAPABILITY, options);
+        options.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
 
         //TODO NT we probably set a correct platform here or don't set it at all.
-        caps.setPlatform(Platform.WINDOWS);
-        setLoggingPrefs(caps);
-        return caps;
+        options.setCapability("platform", Platform.WINDOWS);
+        setLoggingPrefs(options);
+        return options;
     }
 }
