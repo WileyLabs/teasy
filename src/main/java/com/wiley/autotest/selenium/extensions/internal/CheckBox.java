@@ -8,7 +8,7 @@ import java.util.List;
 import static com.wiley.autotest.utils.JsActions.executeScript;
 
 public class CheckBox extends AbstractElement {
-    protected CheckBox(final TeasyElement element) {
+    public CheckBox(final TeasyElement element) {
         super(element);
     }
 

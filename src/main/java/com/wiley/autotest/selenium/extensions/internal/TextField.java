@@ -6,7 +6,7 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.UnhandledAlertException;
 
 class TextField extends AbstractElement {
-    protected TextField(final TeasyElement el) {
+    public TextField(final TeasyElement el) {
         super(el);
     }
 
