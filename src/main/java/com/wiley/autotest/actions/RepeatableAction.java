@@ -3,6 +3,7 @@ package com.wiley.autotest.actions;
 import com.wiley.autotest.services.StopTestExecutionException;
 import com.wiley.autotest.utils.TestUtils;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -11,7 +12,7 @@ import java.util.function.Supplier;
  * <p>
  * If the condition does not become true after all attempts - AssertionError is thrown
  */
-public class RepeatableAction {
+public class RepeatableAction<T> {
 
     private Actions action;
     private Conditions condition;
@@ -20,6 +21,8 @@ public class RepeatableAction {
     private final int millisecondsBetweenAttempts;
     private int attemptCounter = 0;
     private String errorMessage;
+    private Supplier<T> output;
+    private Function<T, Boolean> dependedCondition;
 
     /**
      * By default will try 5 types and sleep 3 seconds after each attempt
@@ -53,7 +56,18 @@ public class RepeatableAction {
         this.millisecondsBetweenAttempts = millisecondsBetweenAttempts;
     }
 
-    public RepeatableAction message(String errorMessage) {
+    public RepeatableAction(Supplier<T> output, Function<T, Boolean> condition, int millisecondsBetweenAttempts) {
+        this(output, condition, 5, millisecondsBetweenAttempts);
+    }
+
+    public RepeatableAction(Supplier<T> output, Function<T, Boolean> condition, int numberOfAttempts, int millisecondsBetweenAttempts) {
+        this.output = output;
+        this.dependedCondition = condition;
+        this.numberOfAttempts = numberOfAttempts;
+        this.millisecondsBetweenAttempts = millisecondsBetweenAttempts;
+    }
+
+    public RepeatableAction<T> message(String errorMessage) {
         this.errorMessage = errorMessage;
         return this;
     }
@@ -77,6 +91,22 @@ public class RepeatableAction {
             TestUtils.waitForSomeTime(millisecondsBetweenAttempts, "Sleeping inside action repeater");
             perform();
         }
+    }
+
+    public T performAndGet() {
+        T result = null;
+        for (int i = 0; i < numberOfAttempts; i++) {
+            T localResult = output.get();
+            if (dependedCondition.apply(localResult)) {
+                result = localResult;
+                break;
+            } else {
+                TestUtils.waitForSomeTime(millisecondsBetweenAttempts, "Sleeping inside action repeater");
+            }
+        }
+        if (result == null) {
+            throw new StopTestExecutionException(getErrorMessage());
+        } else return result;
     }
 
     private String getErrorMessage() {

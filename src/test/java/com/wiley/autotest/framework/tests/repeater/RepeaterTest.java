@@ -13,9 +13,16 @@ public class RepeaterTest extends BaseTest {
                 .positiveCheck();
     }
 
+    @Test()
+    public void performActionWithOutput() {
+        openPage("repeater.html", RepeaterPage.class)
+                .outputCheck();
+    }
+
     @Test(expectedExceptions = StopTestExecutionException.class)
     public void unableToPerformAction() {
         openPage("repeater.html", RepeaterPage.class)
                 .negativeCheck();
     }
+
 }
