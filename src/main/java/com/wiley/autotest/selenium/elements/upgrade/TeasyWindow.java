@@ -74,9 +74,9 @@ public class TeasyWindow implements Window {
         }
         try {
             fluentWait.waitFor(new PageLoaded());
-        } catch (TimeoutException expected) {
+        } catch (AssertionError expected) {
             String readyState = ((JavascriptExecutor) driver).executeScript("return document.readyState").toString();
-            new Report("*****ERROR***** TimeoutException occurred while waiting for page to load! return document.readyState value is '"
+            new Report("*****ERROR***** AssertionError occurred while waiting for page to load! return document.readyState value is '"
                     + readyState + "' But expected to be 'complete'").jenkins();
         } catch (WebDriverException e) {
             new Report("*****ERROR***** WebDriverException occurred while waiting for page to load!").jenkins();
