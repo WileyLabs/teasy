@@ -31,7 +31,8 @@ public final class TeasyExpectedConditions {
         return new ExpectedCondition<WebElement>() {
             @Override
             public WebElement apply(final WebDriver driver) {
-                return searchContext.findElements(locator).isEmpty() ? null : searchContext.findElements(locator).get(0);
+                List<WebElement> result = searchContext.findElements(locator);
+                return result.isEmpty() ? null : result.get(0);
             }
 
             @Override
@@ -45,7 +46,8 @@ public final class TeasyExpectedConditions {
         return new ExpectedCondition<WebElement>() {
             @Override
             public WebElement apply(final WebDriver driver) {
-                return driver.findElements(locator).isEmpty() ? null : driver.findElements(locator).get(0);
+                List<WebElement> result = driver.findElements(locator);
+                return result.isEmpty() ? null : result.get(0);
             }
 
             @Override
@@ -59,7 +61,8 @@ public final class TeasyExpectedConditions {
         return new ExpectedCondition<List<WebElement>>() {
             @Override
             public List<WebElement> apply(final WebDriver driver) {
-                return searchContext.findElements(locator).isEmpty() ? null : searchContext.findElements(locator);
+                List<WebElement> result = searchContext.findElements(locator);
+                return result.isEmpty() ? null : result;
             }
 
             @Override
@@ -73,7 +76,8 @@ public final class TeasyExpectedConditions {
         return new ExpectedCondition<List<WebElement>>() {
             @Override
             public List<WebElement> apply(final WebDriver driver) {
-                return driver.findElements(locator).isEmpty() ? null : driver.findElements(locator);
+                List<WebElement> result = driver.findElements(locator);
+                return result.isEmpty() ? null : result;
             }
 
             @Override
