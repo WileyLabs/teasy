@@ -2,6 +2,7 @@
 *.iml
 *.jar
 .idea/
+/target/*
 .classpath
 .project
 .settings
