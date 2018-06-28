@@ -53,6 +53,10 @@ public class RepeatableAction {
         this.millisecondsBetweenAttempts = millisecondsBetweenAttempts;
     }
 
+    public RepeatableAction(Actions action, Conditions condition, int numberOfAttempts) {
+        this(action, condition, numberOfAttempts, 3000);
+    }
+
     public RepeatableAction message(String errorMessage) {
         this.errorMessage = errorMessage;
         return this;
