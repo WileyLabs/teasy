@@ -18,6 +18,16 @@ You will need to have the following soft installed before using teasy:
 * maven 3+
 
 and you will need to add the following dependency to your project's *pom.xml* file
+
+Latest teasy
+```xml
+<dependency>
+  <groupId>com.wiley</groupId>
+  <artifactId>teasy</artifactId>
+  <version>2.0</version>
+</dependency>
+```
+Old spring-based teasy will be available in 1.x versions
 ```xml
 <dependency>
   <groupId>com.wiley</groupId>
