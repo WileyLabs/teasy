@@ -1,13 +1,13 @@
 package com.wiley.autotest.framework.tests.blocks;
 
-import com.wiley.autotest.framework.config.BaseTest;
+import com.wiley.autotest.framework.config.BaseUnitTest;
 import com.wiley.autotest.framework.pages.BlocksPage;
 import com.wiley.autotest.framework.pages.TestBlock;
-import com.wiley.autotest.selenium.context.BlockList;
+import com.wiley.page.BlockList;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-public class BlockListTest extends BaseTest {
+public class BlockListTest extends BaseUnitTest {
 
     @Test
     public void test() {

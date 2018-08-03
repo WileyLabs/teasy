@@ -1,11 +1,11 @@
 package com.wiley.autotest.framework.tests.repeater;
 
-import com.wiley.autotest.framework.config.BaseTest;
+import com.wiley.autotest.framework.config.BaseUnitTest;
 import com.wiley.autotest.framework.pages.RepeaterPage;
-import com.wiley.autotest.services.StopTestExecutionException;
+import com.wiley.actions.StopTestExecutionException;
 import org.testng.annotations.Test;
 
-public class RepeaterTest extends BaseTest {
+public class RepeaterTest extends BaseUnitTest {
 
     @Test()
     public void performAction() {

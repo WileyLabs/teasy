@@ -1,16 +1,14 @@
 package com.wiley.autotest.framework.pages;
 
-import com.wiley.autotest.actions.RepeatableAction;
-import com.wiley.autotest.selenium.context.AbstractPage;
-import com.wiley.autotest.selenium.context.SearchStrategy;
+import com.wiley.page.BasePage;
+import com.wiley.actions.RepeatableAction;
+import com.wiley.elements.SearchStrategy;
 import org.openqa.selenium.By;
-import org.springframework.stereotype.Component;
 
 /**
  * Created by shekhavtsov on 29/09/2017.
  */
-@Component
-public class RepeaterPage extends AbstractPage {
+public class RepeaterPage extends BasePage {
 
     public RepeaterPage negativeCheck() {
         new RepeatableAction(this::clickOnFailure).perform();

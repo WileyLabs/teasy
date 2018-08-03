@@ -1,20 +1,17 @@
 package com.wiley.autotest.framework.pages;
 
-import com.wiley.autotest.selenium.context.AbstractPage;
-import com.wiley.autotest.selenium.context.SearchStrategy;
-import com.wiley.autotest.selenium.elements.upgrade.DomTeasyElement;
-import com.wiley.autotest.selenium.elements.upgrade.NullTeasyElement;
-import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
-import com.wiley.autotest.selenium.elements.upgrade.VisibleTeasyElement;
+import com.wiley.elements.types.DomTeasyElement;
+import com.wiley.elements.types.NullTeasyElement;
+import com.wiley.elements.types.VisibleTeasyElement;
+import com.wiley.page.BasePage;
+import com.wiley.elements.*;
 import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
-import org.springframework.stereotype.Component;
 
 /**
  * Created by shekhavtsov on 20/07/2017.
  */
-@Component
-public class TestElementPage extends AbstractPage {
+public class TestElementPage extends BasePage {
 
     public TestElementPage checkFirstVisibleElement() {
         element(By.cssSelector("li")).should().beDisplayed();
@@ -94,7 +91,7 @@ public class TestElementPage extends AbstractPage {
     public TestElementPage checkSingleElementHasNotAnyText() {
         Boolean elementHasNoText = false;
         try {
-            domElement(By.id("notExist")).should().haveAnyText();
+            domElement(By.id("notExist")).should(new SearchStrategy(3)).haveAnyText();
         } catch (AssertionError e) {
             elementHasNoText = true;
         }
@@ -105,7 +102,7 @@ public class TestElementPage extends AbstractPage {
     public TestElementPage checkNotAllElementsHasAnyText() {
         Boolean elementHasNoText = false;
         try {
-            domElements(By.className("someClassForOneNotExistElements")).should().haveAnyText();
+            domElements(By.className("someClassForOneNotExistElements")).should(new SearchStrategy(3)).haveAnyText();
         } catch (AssertionError e) {
             elementHasNoText = true;
         }
@@ -113,7 +110,7 @@ public class TestElementPage extends AbstractPage {
         return this;
     }
 
-    public TestElementPage checkIfElementsListIsEmptyShouldThrowException(){
+    public TestElementPage checkIfElementsListIsEmptyShouldThrowException() {
         elements(By.cssSelector("incorrect_locator"), new SearchStrategy(0)).should().beDisplayed();
         return this;
     }

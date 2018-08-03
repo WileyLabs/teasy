@@ -1,15 +1,13 @@
 package com.wiley.autotest.framework.pages;
 
-import com.wiley.autotest.selenium.context.AbstractPage;
-import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
+import com.wiley.page.BasePage;
+import com.wiley.elements.TeasyElement;
 import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
-import org.springframework.stereotype.Component;
 
 import java.net.URL;
 
-@Component
-public class WindowPage extends AbstractPage {
+public class WindowPage extends BasePage {
 
     public WindowPage checkRefreshElIsDisplayed() {
         getRefreshEl().should().beDisplayed();

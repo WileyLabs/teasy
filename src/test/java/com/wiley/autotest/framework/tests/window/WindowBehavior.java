@@ -1,13 +1,13 @@
 package com.wiley.autotest.framework.tests.window;
 
-import com.wiley.autotest.framework.config.BaseTest;
+import com.wiley.autotest.framework.config.BaseUnitTest;
 import com.wiley.autotest.framework.pages.WindowPage;
 import org.testng.annotations.Test;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class WindowBehavior extends BaseTest {
+public class WindowBehavior extends BaseUnitTest {
 
     @Test
     public void refresh() {

@@ -1,10 +1,9 @@
 package com.wiley.autotest.framework.pages;
 
-import com.wiley.autotest.selenium.context.AbstractPage;
-import com.wiley.autotest.selenium.context.SearchStrategy;
-import com.wiley.autotest.selenium.elements.upgrade.TeasyElementList;
+import com.wiley.page.BasePage;
+import com.wiley.elements.SearchStrategy;
+import com.wiley.elements.types.TeasyElementList;
 import org.openqa.selenium.By;
-import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.List;
@@ -12,8 +11,7 @@ import java.util.List;
 /**
  * Created by shekhavtsov on 29/09/2017.
  */
-@Component
-public class ConditionsPage extends AbstractPage {
+public class ConditionsPage extends BasePage {
 
     public ConditionsPage checkElementsReturnAllVisibleElements() {
         TeasyElementList teasyElements = domElements(By.cssSelector(".test"));

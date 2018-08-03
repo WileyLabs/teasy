@@ -1,13 +1,11 @@
 package com.wiley.autotest.framework.pages;
 
-import com.wiley.autotest.selenium.context.AbstractPage;
-import com.wiley.autotest.selenium.context.BlockList;
+import com.wiley.page.BasePage;
+import com.wiley.page.BlockList;
 import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
-import org.springframework.stereotype.Component;
 
-@Component
-public class BlocksPage extends AbstractPage {
+public class BlocksPage extends BasePage {
 
     public TestBlock getTestBlock() {
         return new TestBlock(element(By.id("block2")));

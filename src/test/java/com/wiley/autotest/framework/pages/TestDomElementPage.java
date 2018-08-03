@@ -1,17 +1,15 @@
 package com.wiley.autotest.framework.pages;
 
-import com.wiley.autotest.selenium.context.AbstractPage;
-import com.wiley.autotest.selenium.elements.upgrade.DomTeasyElement;
-import com.wiley.autotest.selenium.elements.upgrade.TeasyElement;
+import com.wiley.page.BasePage;
+import com.wiley.elements.types.DomTeasyElement;
+import com.wiley.elements.TeasyElement;
 import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
-import org.springframework.stereotype.Component;
 
 /**
  * Created by shekhavtsov on 29/09/2017.
  */
-@Component
-public class TestDomElementPage extends AbstractPage {
+public class TestDomElementPage extends BasePage {
 
     public TestDomElementPage checkFirstDomElement() {
         domElement(By.cssSelector("li")).should().haveAttribute("id", "first_li_element");
