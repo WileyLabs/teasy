@@ -68,8 +68,8 @@ public class RemoteDriverFactory implements DriverFactory {
             case GECKO: {
                 return createRemoteDriver(new GeckoCaps(customCaps, this.alertBehaviour, Platform.MAC), GECKO);
             }
-            case SAFARI_TECHNOLOGY_PREVIEW: {
-                return createRemoteDriver(new SafariTechPreviewCaps(customCaps), SAFARI_TECHNOLOGY_PREVIEW);
+            case SAFARI_TECH_PREVIEW: {
+                return createRemoteDriver(new SafariTechPreviewCaps(customCaps), SAFARI_TECH_PREVIEW_DIVER_NAME);
             }
             default: {
                 return throwException(browserName, MAC);

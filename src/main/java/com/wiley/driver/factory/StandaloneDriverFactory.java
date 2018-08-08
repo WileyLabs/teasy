@@ -93,7 +93,7 @@ public class StandaloneDriverFactory implements DriverFactory {
             case GECKO: {
                 return gecko(customCaps, Platform.MAC);
             }
-            case SAFARI_TECHNOLOGY_PREVIEW: {
+            case SAFARI_TECH_PREVIEW: {
                 return safariTechnologyPreview();
             }
             default: {
@@ -183,7 +183,7 @@ public class StandaloneDriverFactory implements DriverFactory {
     }
 
     private WebDriver safariTechnologyPreview() {
-        DriverHolder.setDriverName(SAFARI_TECHNOLOGY_PREVIEW);
+        DriverHolder.setDriverName(SAFARI_TECH_PREVIEW_DIVER_NAME);
         RemoteWebDriver driver = new RemoteWebDriver(this.gridUrl, new SafariTechPreviewCaps(customCaps).get());
         driver.setFileDetector(new LocalFileDetector());
         return driver;
