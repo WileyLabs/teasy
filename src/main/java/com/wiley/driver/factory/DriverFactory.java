@@ -11,7 +11,10 @@ public interface DriverFactory {
     String GECKO = "gecko";
     String CHROME = "chrome";
     String SAFARI = "safari";
-    String SAFARI_TECHNOLOGY_PREVIEW = "safariTechnologyPreview";
+    //constant to be set as a Driver Name
+    String SAFARI_TECH_PREVIEW_DIVER_NAME = "safariTechnologyPreview";
+    //constant for comparison with passed driver name. (lower-cased as we compare it with a lower-cased value)
+    String SAFARI_TECH_PREVIEW = "safaritechnologypreview";
     String IE = "ie";
     String EDGE = "edge";
     String IE11 = "ie11";
