@@ -1,17 +1,12 @@
 # Teasy
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.wiley/teasy/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.wiley/teasy)
-[![Join the chat at https://gitter.im/teasy-test-framework/Lobby](https://img.shields.io/badge/GITTER-join%20chat-green.svg)](https://gitter.im/teasy-test-framework/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
-
+[![Maven Central](https://img.shields.io/maven-central/v/com.wiley/teasy.svg?label=Maven%20Central)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.wiley%22%20a%3A%22teasy%22)
 
 Test easy with Teasy - UI automation testing framework
 
 # Description
 Teasy is a Java-based testing framework built on Selenium and TestNG. Its aim is to make your web testing easier by providing solutions to a lot of things that you will face during UI automation testing. Check out our [wiki page](https://github.com/WileyLabs/teasy/wiki) for more details.
 # Quickstart
-To start from scratch use our [Hello World project](https://github.com/WileyLabs/teasy-template-archetype)
-
-If you want to use teasy at existing project please contaсt us in a gitter chat. Detailed description will be added soon...
+Extend your tests from ```SeleniumBaseTest``` and extend your Pages from ```BasePage```. Detailed description will be added soon...
 # Usage
 You will need to have the following soft installed before using teasy:
 * java 8+
@@ -39,9 +34,6 @@ Old spring-based teasy will be available in 1.x versions
 # Contributing
 
 We're just getting started here, but please post issues if you have any!
-
-Feel free to join our gitter chat:
-[![Join the chat at https://gitter.im/teasy-test-framework/Lobby](https://img.shields.io/badge/GITTER-join%20chat-green.svg)](https://gitter.im/teasy-test-framework/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 # License
 
