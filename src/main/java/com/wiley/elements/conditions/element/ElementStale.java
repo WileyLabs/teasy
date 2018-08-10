@@ -1,7 +1,6 @@
 package com.wiley.elements.conditions.element;
 
 import com.wiley.elements.TeasyElement;
-import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 
@@ -18,12 +17,7 @@ public class ElementStale implements ExpectedCondition<Boolean> {
     @Nullable
     @Override
     public Boolean apply(@Nullable WebDriver driver) {
-        try {
-            el.isEnabled();
-            return false;
-        } catch (StaleElementReferenceException expectedWhenStale) {
-            return true;
-        }
+        return el.isStale();
     }
 
     public String toString() {
