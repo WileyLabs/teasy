@@ -1,5 +1,6 @@
 package com.wiley.driver.factory.capabilities;
 
+import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.safari.SafariOptions;
 
@@ -12,15 +13,15 @@ public class SafariTechPreviewCaps extends TeasyCaps {
         super(customCaps);
     }
 
-    public SafariOptions get() {
+    public MutableCapabilities get() {
+        DesiredCapabilities safariCaps = DesiredCapabilities.safari();
         SafariOptions options = new SafariOptions();
-        SafariOptions safariOptions = new SafariOptions();
-        safariOptions.setUseTechnologyPreview(true);
-        options.setCapability(SafariOptions.CAPABILITY, safariOptions);
-        setLoggingPrefs(options);
+        options.setUseTechnologyPreview(true);
+        safariCaps.setCapability(SafariOptions.CAPABILITY, options);
+        setLoggingPrefs(safariCaps);
         if (!this.customCaps.asMap().isEmpty()) {
-            options.merge(this.customCaps);
+            safariCaps.merge(this.customCaps);
         }
-        return options;
+        return safariCaps;
     }
 }
