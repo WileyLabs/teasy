@@ -22,12 +22,6 @@ public abstract class TeasyCaps {
 
     public abstract MutableCapabilities get();
 
-    void setLoggingPrefs(DesiredCapabilities caps) {
-        LoggingPreferences logPrefs = new LoggingPreferences();
-        logPrefs.enable(LogType.BROWSER, Level.ALL);
-        caps.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
-    }
-
     void setLoggingPrefs(MutableCapabilities options) {
         LoggingPreferences logPrefs = new LoggingPreferences();
         logPrefs.enable(LogType.BROWSER, Level.ALL);
