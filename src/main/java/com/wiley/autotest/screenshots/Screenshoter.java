@@ -1,10 +1,12 @@
 package com.wiley.autotest.screenshots;
 
+import com.wiley.autotest.selenium.driver.FramesTransparentWebDriver;
 import io.qameta.allure.Attachment;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.UnhandledAlertException;
+import org.openqa.selenium.WebDriver;
 import org.testng.Reporter;
 
 import javax.imageio.ImageIO;
@@ -35,6 +37,11 @@ public class Screenshoter {
 //This probably could be used someday (do not delete)
 //            int jsErrorNumber = JavaScriptError.readErrors(getWebDriver()).size();
 //            printStrings(image, removeNL(testName, errorMessage, "The following number of JS errors appeared during the test: " + jsErrorNumber));
+
+            //switch to default context to avoid issue when being in a frame screenshot coordinates are wrong
+            WebDriver driver = ((FramesTransparentWebDriver) getWebDriver()).getDriver();
+            driver.switchTo().defaultContent();
+
             BufferedImage image = new TeasyScreenshot(getWebDriver()).fullPage().getImage();
             printStrings(image, removeNL(testName, errorMessage));
 
