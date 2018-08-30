@@ -5,6 +5,7 @@ import com.wiley.elements.types.NullTeasyElement;
 import com.wiley.elements.types.VisibleTeasyElement;
 import com.wiley.page.BasePage;
 import com.wiley.elements.*;
+import com.wiley.utils.JsActions;
 import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
 
@@ -112,6 +113,14 @@ public class TestElementPage extends BasePage {
 
     public TestElementPage checkIfElementsListIsEmptyShouldThrowException() {
         elements(By.cssSelector("incorrect_locator"), new SearchStrategy(0)).should().beDisplayed();
+        return this;
+    }
+
+    public TestElementPage checkDragAndDrop() {
+        TeasyElement target = element(By.id("div1"));
+        target.element(By.id("drag1")).should().beAbsent();
+        JsActions.dragAndDrop(element(By.id("drag1")), element(By.id("div1")));
+        target.element(By.id("drag1")).should().beDisplayed();
         return this;
     }
 }
