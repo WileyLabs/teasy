@@ -39,11 +39,6 @@ public class TestElementPage extends BasePage {
         return this;
     }
 
-    public TestElementPage checkElementOnFrameAndHiddenOnMainFrame(){
-        element(By.cssSelector(".forFindInFrameTest"), new SearchStrategy().frameStrategy(SearchStrategy.FrameStrategy.IN_ALL_FRAMES)).should().beDisplayed();
-        return this;
-    }
-
     public TestElementPage checkElementNotFound() {
         element(By.id("elementNonexistent")).should().beDisplayed();
         return this;
