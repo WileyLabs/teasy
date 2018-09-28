@@ -1,8 +1,8 @@
 package com.wiley.utils;
 
-import com.wiley.elements.TeasyElement;
 import com.wiley.holders.DriverHolder;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebElement;
 
 /**
  * Javascript actions through WebDriver
@@ -13,7 +13,7 @@ public final class JsActions {
     private JsActions() {
     }
 
-    public static void dragAndDrop(TeasyElement dragElement, TeasyElement dropTo) {
+    public static void dragAndDrop(WebElement dragElement, WebElement dropTo) {
         executeScript(
                 "function dnd(elemDrag, elemDrop) {\n" +
                         "    var DELAY_INTERVAL_MS = 100;\n" +
