@@ -5,6 +5,7 @@ import com.wiley.autotest.spring.testexecution.capabilities.*;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
+import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.UnexpectedAlertBehaviour;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -20,15 +21,18 @@ public class RemoteDriverFactory implements DriverFactory {
 
     private final String browserName;
     private final String platformName;
+    private final boolean pureCapsRequired;
     private final DesiredCapabilities customCaps;
     private final UnexpectedAlertBehaviour alertBehaviour;
     private final boolean isHeadless;
     private final URL gridUrl;
 
-    RemoteDriverFactory(String browserName, String platformName, DesiredCapabilities customCaps,
-                        UnexpectedAlertBehaviour alertBehaviour, boolean isHeadless, URL gridUrl) {
+    public RemoteDriverFactory(String browserName, String platformName, boolean pureCapsRequired,
+                               DesiredCapabilities customCaps, UnexpectedAlertBehaviour alertBehaviour,
+                               boolean isHeadless, URL gridUrl) {
         this.browserName = browserName;
         this.platformName = platformName;
+        this.pureCapsRequired = pureCapsRequired;
         this.customCaps = customCaps;
         this.alertBehaviour = alertBehaviour;
         this.isHeadless = isHeadless;
@@ -61,111 +65,152 @@ public class RemoteDriverFactory implements DriverFactory {
 
     private WebDriver macDriver() {
         SeleniumHolder.setPlatform(MAC);
-        switch (browserName.toLowerCase().trim()) {
-            case CHROME: {
-                return createRemoteDriver(new ChromeCaps(customCaps, this.alertBehaviour, this.isHeadless), CHROME);
-            }
-            case GECKO: {
-                return createRemoteDriver(new GeckoCaps(customCaps, this.alertBehaviour), GECKO);
-            }
-            case SAFARI_TECHNOLOGY_PREVIEW: {
-                return createRemoteDriver(new SafariTechPreviewCaps(customCaps), SAFARI_TECHNOLOGY_PREVIEW);
-            }
-            default: {
-                return throwException(browserName, MAC);
+        String name = browserName.toLowerCase().trim();
+        Capabilities caps = customCaps;
+        if (!this.pureCapsRequired) {
+            switch (name) {
+                case CHROME: {
+                    caps = new ChromeCaps(customCaps, this.alertBehaviour, this.isHeadless).get();
+                    break;
+                }
+                case FIREFOX: {
+                    caps = new FireFoxCaps(customCaps, this.alertBehaviour).get();
+                    break;
+                }
+                case SAFARI_TECHNOLOGY_PREVIEW: {
+                    caps = new SafariTechPreviewCaps(customCaps).get();
+                    break;
+                }
+                default: {
+                    return throwException(browserName, MAC);
+                }
             }
         }
+        return createRemoteDriver(caps, name);
     }
 
     private WebDriver iosDriver() {
         SeleniumHolder.setPlatform(IOS);
-        switch (browserName.toLowerCase().trim()) {
-            case SAFARI: {
-                return createIosDriver(new IosSafariCaps(customCaps), SAFARI);
-            }
-            case NATIVE_APP: {
-                return createIosDriver(new IosNativeAppCaps(customCaps), NATIVE_APP);
-            }
-            default: {
-                return throwException(browserName, IOS);
+        String name = browserName.toLowerCase().trim();
+        Capabilities caps = customCaps;
+        if (!this.pureCapsRequired) {
+            switch (name) {
+                case SAFARI: {
+                    caps = new IosSafariCaps(customCaps).get();
+                    break;
+                }
+                case NATIVE_APP: {
+                    caps = new IosNativeAppCaps(customCaps).get();
+                    break;
+                }
+                default: {
+                    return throwException(browserName, IOS);
+                }
             }
         }
+        return createIosDriver(caps, name);
     }
 
     private WebDriver linuxDriver() {
         SeleniumHolder.setPlatform(LINUX);
-        switch (browserName.toLowerCase().trim()) {
-            case CHROME: {
-                return createRemoteDriver(new ChromeCaps(customCaps, this.alertBehaviour, this.isHeadless), CHROME);
-            }
-            case FIREFOX: {
-                return createRemoteDriver(new FireFoxCaps(customCaps, this.alertBehaviour), FIREFOX);
-            }
-            case GECKO: {
-                return createRemoteDriver(new GeckoCaps(customCaps, this.alertBehaviour), GECKO);
-            }
-            default: {
-                return throwException(browserName, LINUX);
+        String name = browserName.toLowerCase().trim();
+        Capabilities caps = customCaps;
+        if (!this.pureCapsRequired) {
+            switch (name) {
+                case CHROME: {
+                    caps = new ChromeCaps(customCaps, this.alertBehaviour, this.isHeadless).get();
+                    break;
+                }
+                case FIREFOX: {
+                    caps = new FireFoxCaps(customCaps, this.alertBehaviour).get();
+                    break;
+                }
+                case GECKO: {
+                    caps = new GeckoCaps(customCaps, this.alertBehaviour).get();
+                    break;
+                }
+                default: {
+                    return throwException(browserName, LINUX);
+                }
             }
         }
+        return createRemoteDriver(caps, name);
     }
 
     private WebDriver androidDriver() {
         SeleniumHolder.setPlatform(ANDROID);
-        switch (browserName.toLowerCase().trim()) {
-            case CHROME: {
-                return createAndroidDriver(new AndroidChromeCaps(customCaps), CHROME);
-            }
-            case NATIVE_APP: {
-                return createAndroidDriver(new AndroidNativeAppCaps(customCaps), NATIVE_APP);
-            }
-            default: {
-                return throwException(browserName, ANDROID);
+        String name = browserName.toLowerCase().trim();
+        Capabilities caps = customCaps;
+        if (!this.pureCapsRequired) {
+            switch (name) {
+                case CHROME: {
+                    caps = new AndroidChromeCaps(customCaps).get();
+                    break;
+                }
+                case NATIVE_APP: {
+                    caps = new AndroidNativeAppCaps(customCaps).get();
+                    break;
+                }
+                default: {
+                    return throwException(browserName, ANDROID);
+                }
             }
         }
+        return createAndroidDriver(caps, name);
     }
 
     private WebDriver windowsDriver() {
         SeleniumHolder.setPlatform(WINDOWS);
-
-        switch (browserName.toLowerCase().trim()) {
-            case CHROME: {
-                return createRemoteDriver(new ChromeCaps(customCaps, this.alertBehaviour, this.isHeadless), CHROME);
-            }
-            case FIREFOX: {
-                return createRemoteDriver(new FireFoxCaps(customCaps, this.alertBehaviour), FIREFOX);
-            }
-            case GECKO: {
-                return createRemoteDriver(new GeckoCaps(customCaps, this.alertBehaviour), GECKO);
-            }
-            case EDGE: {
-                return createRemoteDriver(new EdgeCaps(customCaps, this.alertBehaviour), EDGE);
-            }
-            case IE: {
-                return createRemoteDriver(new IECaps(customCaps, "", this.alertBehaviour), IE);
-            }
-            case IE11: {
-                return createRemoteDriver(new IECaps(customCaps, "11", this.alertBehaviour), IE11);
-            }
-            case IE10: {
-                return createRemoteDriver(new IECaps(customCaps, "10", this.alertBehaviour), IE10);
-            }
-            default: {
-                return throwException(browserName, WINDOWS);
+        String name = browserName.toLowerCase().trim();
+        Capabilities caps = customCaps;
+        if (!this.pureCapsRequired) {
+            switch (name) {
+                case CHROME: {
+                    caps = new ChromeCaps(customCaps, this.alertBehaviour, this.isHeadless).get();
+                    break;
+                }
+                case FIREFOX: {
+                    caps = new FireFoxCaps(customCaps, this.alertBehaviour).get();
+                    break;
+                }
+                case GECKO: {
+                    caps = new GeckoCaps(customCaps, this.alertBehaviour).get();
+                    break;
+                }
+                case EDGE: {
+                    caps = new EdgeCaps(customCaps, this.alertBehaviour).get();
+                    break;
+                }
+                case IE: {
+                    caps = new IECaps(customCaps, "", this.alertBehaviour).get();
+                    break;
+                }
+                case IE11: {
+                    caps = new IECaps(customCaps, "11", this.alertBehaviour).get();
+                    break;
+                }
+                case IE10: {
+                    caps = new IECaps(customCaps, "10", this.alertBehaviour).get();
+                    break;
+                }
+                default: {
+                    return throwException(browserName, WINDOWS);
+                }
             }
         }
+        return createRemoteDriver(caps, name);
     }
 
-    private RemoteWebDriver createRemoteDriver(TeasyCaps caps, String name) {
-        return tuneDriver(new RemoteWebDriver(this.gridUrl, caps.get()), name);
+    private RemoteWebDriver createRemoteDriver(Capabilities caps, String name) {
+        return tuneDriver(new RemoteWebDriver(this.gridUrl, caps), name);
     }
 
-    private AppiumDriver createAndroidDriver(TeasyCaps caps, String name) {
-        return (AppiumDriver) tuneDriver(new AndroidDriver(this.gridUrl, caps.get()), name);
+    private AppiumDriver createAndroidDriver(Capabilities caps, String name) {
+        return (AppiumDriver) tuneDriver(new AndroidDriver(this.gridUrl, caps), name);
     }
 
-    private AppiumDriver createIosDriver(TeasyCaps caps, String name) {
-        return (AppiumDriver) tuneDriver(new IOSDriver(this.gridUrl, caps.get()), name);
+    private AppiumDriver createIosDriver(Capabilities caps, String name) {
+        return (AppiumDriver) tuneDriver(new IOSDriver(this.gridUrl, caps), name);
     }
 
     /**

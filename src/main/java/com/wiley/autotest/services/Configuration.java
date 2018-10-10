@@ -14,6 +14,7 @@ import java.util.Map;
 public class Configuration {
 
     private DesiredCapabilities desiredCapabilities;
+    private boolean pure = false;
     private Map<String, Object> capabilities = new HashMap<>();
     private Class<? extends TeasyElementFactory> customElementFactoryClass;
 
@@ -22,7 +23,17 @@ public class Configuration {
     }
 
     public void setDesiredCapabilities(DesiredCapabilities desiredCapabilities) {
+        this.pure = false;
         this.desiredCapabilities = desiredCapabilities;
+    }
+
+    public void setDesiredCapabilitiesAsPure(DesiredCapabilities desiredCapabilities) {
+        this.pure = true;
+        this.desiredCapabilities = desiredCapabilities;
+    }
+
+    public boolean isPure() {
+        return pure;
     }
 
     public Map<String, Object> getCapabilities() {

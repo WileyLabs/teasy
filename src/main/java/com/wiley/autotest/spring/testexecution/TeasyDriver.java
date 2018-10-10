@@ -34,7 +34,8 @@ public class TeasyDriver {
         URL gridUrl = getGridHubUrl();
         boolean isHeadless = settings.isHeadlessBrowser();
         if (settings.isRunTestsWithGrid()) {
-            driverFactory = new RemoteDriverFactory(browser, platform, customCaps, alertBehaviour, isHeadless, gridUrl);
+            driverFactory = new RemoteDriverFactory(browser, platform, this.configuration.isPure(), customCaps,
+                    alertBehaviour, isHeadless, gridUrl);
         } else {
             driverFactory = new StandaloneDriverFactory(browser, platform, customCaps, alertBehaviour, isHeadless, gridUrl);
         }
