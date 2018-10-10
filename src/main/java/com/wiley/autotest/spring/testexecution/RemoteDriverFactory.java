@@ -65,10 +65,10 @@ public class RemoteDriverFactory implements DriverFactory {
 
     private WebDriver macDriver() {
         SeleniumHolder.setPlatform(MAC);
-        String name = browserName.toLowerCase().trim();
+        String browserName = this.browserName.toLowerCase().trim();
         Capabilities caps = customCaps;
         if (!this.pureCapsRequired) {
-            switch (name) {
+            switch (browserName) {
                 case CHROME: {
                     caps = new ChromeCaps(customCaps, this.alertBehaviour, this.isHeadless).get();
                     break;
@@ -82,19 +82,19 @@ public class RemoteDriverFactory implements DriverFactory {
                     break;
                 }
                 default: {
-                    return throwException(browserName, MAC);
+                    return throwException(this.browserName, MAC);
                 }
             }
         }
-        return createRemoteDriver(caps, name);
+        return createRemoteDriver(caps, browserName);
     }
 
     private WebDriver iosDriver() {
         SeleniumHolder.setPlatform(IOS);
-        String name = browserName.toLowerCase().trim();
+        String browserName = this.browserName.toLowerCase().trim();
         Capabilities caps = customCaps;
         if (!this.pureCapsRequired) {
-            switch (name) {
+            switch (browserName) {
                 case SAFARI: {
                     caps = new IosSafariCaps(customCaps).get();
                     break;
@@ -104,19 +104,19 @@ public class RemoteDriverFactory implements DriverFactory {
                     break;
                 }
                 default: {
-                    return throwException(browserName, IOS);
+                    return throwException(this.browserName, IOS);
                 }
             }
         }
-        return createIosDriver(caps, name);
+        return createIosDriver(caps, browserName);
     }
 
     private WebDriver linuxDriver() {
         SeleniumHolder.setPlatform(LINUX);
-        String name = browserName.toLowerCase().trim();
+        String browserName = this.browserName.toLowerCase().trim();
         Capabilities caps = customCaps;
         if (!this.pureCapsRequired) {
-            switch (name) {
+            switch (browserName) {
                 case CHROME: {
                     caps = new ChromeCaps(customCaps, this.alertBehaviour, this.isHeadless).get();
                     break;
@@ -130,19 +130,19 @@ public class RemoteDriverFactory implements DriverFactory {
                     break;
                 }
                 default: {
-                    return throwException(browserName, LINUX);
+                    return throwException(this.browserName, LINUX);
                 }
             }
         }
-        return createRemoteDriver(caps, name);
+        return createRemoteDriver(caps, browserName);
     }
 
     private WebDriver androidDriver() {
         SeleniumHolder.setPlatform(ANDROID);
-        String name = browserName.toLowerCase().trim();
+        String browserName = this.browserName.toLowerCase().trim();
         Capabilities caps = customCaps;
         if (!this.pureCapsRequired) {
-            switch (name) {
+            switch (browserName) {
                 case CHROME: {
                     caps = new AndroidChromeCaps(customCaps).get();
                     break;
@@ -152,19 +152,19 @@ public class RemoteDriverFactory implements DriverFactory {
                     break;
                 }
                 default: {
-                    return throwException(browserName, ANDROID);
+                    return throwException(this.browserName, ANDROID);
                 }
             }
         }
-        return createAndroidDriver(caps, name);
+        return createAndroidDriver(caps, browserName);
     }
 
     private WebDriver windowsDriver() {
         SeleniumHolder.setPlatform(WINDOWS);
-        String name = browserName.toLowerCase().trim();
+        String browserName = this.browserName.toLowerCase().trim();
         Capabilities caps = customCaps;
         if (!this.pureCapsRequired) {
-            switch (name) {
+            switch (browserName) {
                 case CHROME: {
                     caps = new ChromeCaps(customCaps, this.alertBehaviour, this.isHeadless).get();
                     break;
@@ -194,11 +194,11 @@ public class RemoteDriverFactory implements DriverFactory {
                     break;
                 }
                 default: {
-                    return throwException(browserName, WINDOWS);
+                    return throwException(this.browserName, WINDOWS);
                 }
             }
         }
-        return createRemoteDriver(caps, name);
+        return createRemoteDriver(caps, browserName);
     }
 
     private RemoteWebDriver createRemoteDriver(Capabilities caps, String name) {

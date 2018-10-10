@@ -14,7 +14,7 @@ import java.util.Map;
 public class Configuration {
 
     private DesiredCapabilities desiredCapabilities;
-    private boolean pure = false;
+    private boolean pureMode;
     private Map<String, Object> capabilities = new HashMap<>();
     private Class<? extends TeasyElementFactory> customElementFactoryClass;
 
@@ -23,17 +23,19 @@ public class Configuration {
     }
 
     public void setDesiredCapabilities(DesiredCapabilities desiredCapabilities) {
-        this.pure = false;
         this.desiredCapabilities = desiredCapabilities;
     }
 
-    public void setDesiredCapabilitiesAsPure(DesiredCapabilities desiredCapabilities) {
-        this.pure = true;
-        this.desiredCapabilities = desiredCapabilities;
+    public void setPureMode(boolean pure) {
+        this.pureMode = pure;
     }
 
-    public boolean isPure() {
-        return pure;
+    /**
+     * If true then a Teasy capabilities wrapper will be ignored during the webdriver initialization process.
+     * The standalone driver launcher is not supporting this mode. {@link UnsupportedOperationException} will be thrown.
+     */
+    public boolean isPureMode() {
+        return pureMode;
     }
 
     public Map<String, Object> getCapabilities() {
