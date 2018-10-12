@@ -33,9 +33,13 @@ public class TeasyDriver {
         DriverFactory driverFactory;
         URL gridUrl = getGridHubUrl();
         boolean isHeadless = settings.isHeadlessBrowser();
+        boolean isPureMode = configuration.isPureMode();
         if (settings.isRunTestsWithGrid()) {
-            driverFactory = new RemoteDriverFactory(browser, platform, customCaps, alertBehaviour, isHeadless, gridUrl);
+            driverFactory = new RemoteDriverFactory(browser, platform, isPureMode, customCaps, alertBehaviour, isHeadless, gridUrl);
         } else {
+            if (isPureMode) {
+                throw new UnsupportedOperationException("Pure mode is not supported for the standalone driver launching");
+            }
             driverFactory = new StandaloneDriverFactory(browser, platform, customCaps, alertBehaviour, isHeadless, gridUrl);
         }
 
