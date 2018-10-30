@@ -27,7 +27,7 @@ Old spring-based teasy will be available in 1.x versions
 <dependency>
   <groupId>com.wiley</groupId>
   <artifactId>teasy</artifactId>
-  <version>1.1.4</version>
+  <version>1.1.5</version>
 </dependency>
 ```
 
