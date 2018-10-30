@@ -3,9 +3,9 @@ package com.wiley.autotest.framework.config;
 import com.wiley.actions.StopTestExecutionException;
 import com.wiley.assertions.MethodType;
 import com.wiley.basetests.SeleniumBaseTest;
+import com.wiley.elements.NotFoundElException;
 import com.wiley.holders.AssertionsHolder;
 import com.wiley.page.BasePage;
-import org.openqa.selenium.NoSuchElementException;
 import org.testng.ITestResult;
 
 /**
@@ -23,7 +23,7 @@ public class BaseUnitTest extends SeleniumBaseTest {
         final Throwable testResultThrowable = testResult.getThrowable();
 
         if (!(testResultThrowable.getCause() instanceof StopTestExecutionException)
-                && !(testResultThrowable.getCause() instanceof NoSuchElementException)) {
+                && !(testResultThrowable.getCause() instanceof NotFoundElException)) {
             AssertionsHolder.softAssert().add(testResultThrowable, MethodType.TEST);
         }
     }

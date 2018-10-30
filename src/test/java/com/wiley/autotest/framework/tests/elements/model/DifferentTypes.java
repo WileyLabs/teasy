@@ -2,7 +2,7 @@ package com.wiley.autotest.framework.tests.elements.model;
 
 import com.wiley.autotest.framework.config.BaseUnitTest;
 import com.wiley.autotest.framework.pages.TestElementPage;
-import org.openqa.selenium.NoSuchElementException;
+import com.wiley.elements.NotFoundElException;
 import org.testng.annotations.Test;
 
 /**
@@ -20,7 +20,7 @@ public class DifferentTypes extends BaseUnitTest {
                 .checkNonExistingElementShouldBeAbsent();
     }
 
-    @Test(expectedExceptions = {NoSuchElementException.class})
+    @Test(expectedExceptions = {NotFoundElException.class})
     public void nonExistingElementClickThrowException() {
         openPage("mainTestElement.html", TestElementPage.class)
                 .checkNonExistingElementClickFails();

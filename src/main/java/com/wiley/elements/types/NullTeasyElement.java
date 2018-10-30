@@ -208,7 +208,7 @@ public class NullTeasyElement implements TeasyElement, org.openqa.selenium.inter
         throw noSuchElementException();
     }
 
-    private NoSuchElementException noSuchElementException() {
-        return new NoSuchElementException("Unable to find element with locatable '" + elementData.getBy() + "'");
+    private NotFoundElException noSuchElementException() {
+        throw new NotFoundElException(elementData.getBy());
     }
 }

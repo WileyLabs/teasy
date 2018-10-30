@@ -1,9 +1,9 @@
 package com.wiley.elements.should;
 
+import com.wiley.elements.NotFoundElException;
 import com.wiley.elements.TeasyFluentWait;
 import com.wiley.elements.conditions.elements.ElementsAbsent;
 import com.wiley.elements.types.TeasyElementList;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 
 import java.util.List;
@@ -93,6 +93,6 @@ public class EmptyListShould implements ListShould {
     }
 
     private void throwException() {
-        throw new NoSuchElementException("Didn't find any elements with locator '" + elements.getLocator() + "'!");
+        throw new NotFoundElException(elements.getLocator());
     }
 }

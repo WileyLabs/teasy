@@ -1,10 +1,10 @@
 package com.wiley.elements.should;
 
+import com.wiley.elements.NotFoundElException;
 import com.wiley.elements.SearchStrategy;
 import com.wiley.elements.TeasyElement;
 import com.wiley.elements.TeasyFluentWait;
 import com.wiley.holders.DriverHolder;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 
 import java.util.function.Function;
@@ -60,7 +60,7 @@ public class NullShouldImmediately implements Should {
     }
 
     private void throwException() {
-        throw new NoSuchElementException("Unable to find element with locator '" + element.getLocatable().getBy() + "'");
+        throw new NotFoundElException(element.getLocatable().getBy());
     }
 
     //We can log something here... or just keep it as empty(delete)

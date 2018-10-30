@@ -1,13 +1,9 @@
 package com.wiley.elements.should;
 
-import com.wiley.elements.SearchStrategy;
-import com.wiley.elements.TeasyElement;
-import com.wiley.elements.TeasyElementData;
-import com.wiley.elements.TeasyFluentWait;
+import com.wiley.elements.*;
 import com.wiley.elements.conditions.element.*;
 import com.wiley.elements.find.DomElementLookUp;
 import com.wiley.elements.types.NullTeasyElement;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 
 import java.util.function.Function;
@@ -71,7 +67,7 @@ public class NullShould implements Should {
     }
 
     private void throwException() {
-        throw new NoSuchElementException("Unable to find element with locator '" + elementData.getBy() + "'");
+        throw new NotFoundElException(elementData.getBy());
     }
 
     private TeasyElement getElement() {
