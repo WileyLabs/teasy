@@ -19,7 +19,7 @@ Latest teasy
 <dependency>
   <groupId>com.wiley</groupId>
   <artifactId>teasy</artifactId>
-  <version>2.0.3</version>
+  <version>2.0.4</version>
 </dependency>
 ```
 Old spring-based teasy will be available in 1.x versions
@@ -27,7 +27,7 @@ Old spring-based teasy will be available in 1.x versions
 <dependency>
   <groupId>com.wiley</groupId>
   <artifactId>teasy</artifactId>
-  <version>1.1.3</version>
+  <version>1.1.4</version>
 </dependency>
 ```
 
