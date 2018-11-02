@@ -12,13 +12,9 @@ import org.openqa.selenium.UnexpectedAlertBehaviour;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
-import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.ie.InternetExplorerDriver;
-import org.openqa.selenium.ie.InternetExplorerOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.LocalFileDetector;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -133,9 +129,7 @@ public class StandaloneDriverFactory implements DriverFactory {
     private WebDriver firefox(DesiredCapabilities customCaps, Platform platform) {
         DriverHolder.setDriverName(FIREFOX);
         return new FirefoxDriver(
-                new FirefoxOptions(
-                        new FireFoxCaps(customCaps, this.alertBehaviour, platform).get()
-                )
+                new FireFoxCaps(customCaps, this.alertBehaviour, platform).get()
         );
     }
 
@@ -143,22 +137,19 @@ public class StandaloneDriverFactory implements DriverFactory {
         DriverHolder.setDriverName(GECKO);
         FirefoxDriverManager.getInstance().setup();
         return new FirefoxDriver(
-                new FirefoxOptions(
-                        new GeckoCaps(customCaps, this.alertBehaviour, platform).get()
-                )
+                new GeckoCaps(customCaps, this.alertBehaviour, platform).get()
         );
     }
 
     private WebDriver chrome(DesiredCapabilities customCaps, Platform platform) {
         DriverHolder.setDriverName(CHROME);
         ChromeDriverManager.getInstance().setup();
-        ChromeDriverService defaultService = ChromeDriverService.createDefaultService();
-        ChromeDriver chromeDriver = new ChromeDriver(defaultService,
-                new ChromeOptions().merge(
-                        new ChromeCaps(customCaps, this.alertBehaviour, this.isHeadless, platform).get()
-                )
+        ChromeDriverService service = ChromeDriverService.createDefaultService();
+        ChromeDriver chromeDriver = new ChromeDriver(
+                service,
+                new ChromeCaps(customCaps, this.alertBehaviour, this.isHeadless, platform).get()
         );
-        TestParamsHolder.setChromePort(defaultService.getUrl().getPort());
+        TestParamsHolder.setChromePort(service.getUrl().getPort());
         return chromeDriver;
     }
 
@@ -166,25 +157,21 @@ public class StandaloneDriverFactory implements DriverFactory {
         DriverHolder.setDriverName(IE);
         InternetExplorerDriverManager.getInstance().version(STABLE_IE_DRIVER_VERSION).setup();
         return new InternetExplorerDriver(
-                new InternetExplorerOptions(
-                        new IECaps(customCaps, "", this.alertBehaviour).get()
-                )
-        );
+                new IECaps(customCaps, "", this.alertBehaviour).get());
     }
 
     private WebDriver edge(DesiredCapabilities customCaps) {
         DriverHolder.setDriverName(EDGE);
         EdgeDriverManager.getInstance().setup();
         return new EdgeDriver(
-                new EdgeOptions().merge(
-                        new EdgeCaps(customCaps, this.alertBehaviour).get()
-                )
-        );
+                new EdgeCaps(customCaps, this.alertBehaviour).get());
     }
 
     private WebDriver safariTechnologyPreview() {
         DriverHolder.setDriverName(SAFARI_TECH_PREVIEW_DIVER_NAME);
-        RemoteWebDriver driver = new RemoteWebDriver(this.gridUrl, new SafariTechPreviewCaps(customCaps).get());
+        RemoteWebDriver driver = new RemoteWebDriver(
+                this.gridUrl,
+                new SafariTechPreviewCaps(customCaps).get());
         driver.setFileDetector(new LocalFileDetector());
         return driver;
     }
