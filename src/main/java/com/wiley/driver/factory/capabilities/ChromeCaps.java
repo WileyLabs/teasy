@@ -33,8 +33,8 @@ public class ChromeCaps extends TeasyCaps {
 
             // This is a workaround for ChromeOptions.merge() issue when passed arguments are not being assigned properly
             Map chromeCapability = (Map) caps.getCapability(ChromeOptions.CAPABILITY);
-            List argumentsList = (List) chromeCapability.get("args");
-            argumentsList.forEach(o -> caps.addArguments(o.toString()));
+            List arguments = (List) chromeCapability.get("args");
+            arguments.forEach(o -> caps.addArguments(o.toString()));
         }
         return caps;
     }
