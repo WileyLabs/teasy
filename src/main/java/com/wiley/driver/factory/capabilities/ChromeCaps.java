@@ -26,17 +26,18 @@ public class ChromeCaps extends TeasyCaps {
         this.platform = platform;
     }
 
+    @SuppressWarnings("unchecked") // Just in case getCapability return value type changes in future versions
     public ChromeOptions get() {
-        ChromeOptions caps = getChromeOptions();
+        ChromeOptions chromeOptions = getChromeOptions();
         if (!this.customCaps.asMap().isEmpty()) {
-            caps.merge(this.customCaps);
+            chromeOptions.merge(this.customCaps);
 
             // This is a workaround for ChromeOptions.merge() issue when passed arguments are not being assigned properly
-            Map chromeCapability = (Map) caps.getCapability(ChromeOptions.CAPABILITY);
-            List arguments = (List) chromeCapability.get("args");
-            arguments.forEach(o -> caps.addArguments(o.toString()));
+            Map<String, Object> chromeCapability = (Map<String, Object>) chromeOptions.getCapability(ChromeOptions.CAPABILITY);
+            List<String> arguments = (List<String>) chromeCapability.get("args");
+            arguments.forEach(chromeOptions::addArguments);
         }
-        return caps;
+        return chromeOptions;
     }
 
     private ChromeOptions getChromeOptions() {
