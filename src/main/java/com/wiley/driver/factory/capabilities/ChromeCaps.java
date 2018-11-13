@@ -7,6 +7,8 @@ import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Caps for Chrome browser on any platform (Windows, Linux, Mac)
@@ -24,12 +26,18 @@ public class ChromeCaps extends TeasyCaps {
         this.platform = platform;
     }
 
+    @SuppressWarnings("unchecked") // Just in case getCapability return value type changes in future versions
     public ChromeOptions get() {
-        ChromeOptions caps = getChromeOptions();
+        ChromeOptions chromeOptions = getChromeOptions();
         if (!this.customCaps.asMap().isEmpty()) {
-            caps.merge(this.customCaps);
+            chromeOptions.merge(this.customCaps);
+
+            // This is a workaround for ChromeOptions.merge() issue when passed arguments are not being assigned properly
+            Map<String, Object> chromeCapability = (Map<String, Object>) chromeOptions.getCapability(ChromeOptions.CAPABILITY);
+            List<String> arguments = (List<String>) chromeCapability.get("args");
+            arguments.forEach(chromeOptions::addArguments);
         }
-        return caps;
+        return chromeOptions;
     }
 
     private ChromeOptions getChromeOptions() {
