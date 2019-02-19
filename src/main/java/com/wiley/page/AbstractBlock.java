@@ -19,12 +19,21 @@ public abstract class AbstractBlock {
 
     private final TeasyElement mainElement;
 
-    public AbstractBlock(TeasyElement element) {
+    /**
+     * Abstract block constructor
+     * @param element - main element of the block which will be used as a boundary for element lookup inside of this block
+     * @param isNullElementAllowed - parameter to allow / restrict the ability to pass NullTeasyElement
+     */
+    public AbstractBlock(TeasyElement element, boolean isNullElementAllowed) {
         //in case not-found-element is passed it does not make sense to create new block
         mainElement = element;
-        if (element instanceof NullTeasyElement) {
+        if (!isNullElementAllowed && element instanceof NullTeasyElement) {
             throwException();
         }
+    }
+
+    public AbstractBlock(TeasyElement element) {
+        this(element, false);
     }
 
     /**
