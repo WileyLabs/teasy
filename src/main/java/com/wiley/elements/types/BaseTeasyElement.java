@@ -1,7 +1,10 @@
 package com.wiley.elements.types;
 
 import com.wiley.driver.frames.FramesTransparentWebDriver;
-import com.wiley.elements.*;
+import com.wiley.elements.SearchStrategy;
+import com.wiley.elements.TeasyElement;
+import com.wiley.elements.TeasyElementData;
+import com.wiley.elements.TeasyWindow;
 import com.wiley.elements.find.DomElementLookUp;
 import com.wiley.elements.find.DomElementsLookUp;
 import com.wiley.elements.find.VisibleElementLookUp;
@@ -11,7 +14,7 @@ import com.wiley.utils.Report;
 import com.wiley.utils.TestUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.interactions.internal.Coordinates;
+import org.openqa.selenium.interactions.Coordinates;
 import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.UnreachableBrowserException;

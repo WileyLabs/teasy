@@ -3,10 +3,7 @@ package com.wiley.driver.factory;
 import com.wiley.driver.factory.capabilities.*;
 import com.wiley.holders.DriverHolder;
 import com.wiley.holders.TestParamsHolder;
-import io.github.bonigarcia.wdm.ChromeDriverManager;
-import io.github.bonigarcia.wdm.EdgeDriverManager;
-import io.github.bonigarcia.wdm.FirefoxDriverManager;
-import io.github.bonigarcia.wdm.InternetExplorerDriverManager;
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.UnexpectedAlertBehaviour;
 import org.openqa.selenium.WebDriver;
@@ -135,7 +132,7 @@ public class StandaloneDriverFactory implements DriverFactory {
 
     private WebDriver gecko(DesiredCapabilities customCaps, Platform platform) {
         DriverHolder.setDriverName(GECKO);
-        FirefoxDriverManager.getInstance().setup();
+        WebDriverManager.firefoxdriver().setup();
         return new FirefoxDriver(
                 new GeckoCaps(customCaps, this.alertBehaviour, platform).get()
         );
@@ -143,7 +140,7 @@ public class StandaloneDriverFactory implements DriverFactory {
 
     private WebDriver chrome(DesiredCapabilities customCaps, Platform platform) {
         DriverHolder.setDriverName(CHROME);
-        ChromeDriverManager.getInstance().setup();
+        WebDriverManager.chromedriver().setup();
         ChromeDriverService service = ChromeDriverService.createDefaultService();
         ChromeDriver chromeDriver = new ChromeDriver(
                 service,
@@ -155,14 +152,14 @@ public class StandaloneDriverFactory implements DriverFactory {
 
     private WebDriver ie(DesiredCapabilities customCaps) {
         DriverHolder.setDriverName(IE);
-        InternetExplorerDriverManager.getInstance().version(STABLE_IE_DRIVER_VERSION).setup();
+        WebDriverManager.iedriver().version(STABLE_IE_DRIVER_VERSION).setup();
         return new InternetExplorerDriver(
                 new IECaps(customCaps, "", this.alertBehaviour).get());
     }
 
     private WebDriver edge(DesiredCapabilities customCaps) {
         DriverHolder.setDriverName(EDGE);
-        EdgeDriverManager.getInstance().setup();
+        WebDriverManager.edgedriver().setup();
         return new EdgeDriver(
                 new EdgeCaps(customCaps, this.alertBehaviour).get());
     }
