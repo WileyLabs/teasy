@@ -4,8 +4,8 @@ import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Locatable;
 import org.openqa.selenium.internal.HasIdentity;
-import org.openqa.selenium.internal.Locatable;
 import org.openqa.selenium.internal.WrapsElement;
 
 import java.lang.reflect.InvocationHandler;
