@@ -361,7 +361,7 @@ public abstract class BaseTeasyElement implements TeasyElement, org.openqa.selen
 
     @Override
     public Coordinates getCoordinates() {
-        return ((org.openqa.selenium.interactions.internal.Locatable) getWrappedWebElement()).getCoordinates();
+        return ((org.openqa.selenium.interactions.Locatable) getWrappedWebElement()).getCoordinates();
     }
 
     @Override
