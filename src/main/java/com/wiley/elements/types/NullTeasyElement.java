@@ -18,7 +18,7 @@ import static com.wiley.holders.DriverHolder.getDriver;
 /**
  * Represents element that is absent (not found)
  */
-public class NullTeasyElement implements TeasyElement, org.openqa.selenium.interactions.internal.Locatable {
+public class NullTeasyElement implements TeasyElement, org.openqa.selenium.interactions.Locatable {
 
     private TeasyElementData elementData;
     private Locatable locatable;
