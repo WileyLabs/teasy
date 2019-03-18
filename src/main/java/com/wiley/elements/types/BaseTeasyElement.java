@@ -30,7 +30,7 @@ import static com.wiley.utils.JsActions.executeScript;
 /**
  * General implementation with all basic logic of an element
  */
-public abstract class BaseTeasyElement implements TeasyElement, org.openqa.selenium.interactions.internal.Locatable {
+public abstract class BaseTeasyElement implements TeasyElement, org.openqa.selenium.interactions.Locatable {
 
     private WebElement wrappedElement;
     private Locatable locatable;
@@ -361,7 +361,7 @@ public abstract class BaseTeasyElement implements TeasyElement, org.openqa.selen
 
     @Override
     public Coordinates getCoordinates() {
-        return ((org.openqa.selenium.interactions.internal.Locatable) getWrappedWebElement()).getCoordinates();
+        return ((org.openqa.selenium.interactions.Locatable) getWrappedWebElement()).getCoordinates();
     }
 
     @Override
