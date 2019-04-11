@@ -48,11 +48,6 @@ public class NullTeasyElement implements TeasyElement, org.openqa.selenium.inter
         return new NullElementWaitFor(elementData, new TeasyFluentWait<>(getDriver(), strategy), strategy);
     }
 
-    // this will allow to get search context and to perform a lookup of the same element if needed
-    public TeasyElementData getElementData() {
-        return elementData;
-    }
-
     /*
       All other methods of TeasyElement should throw an exception because it's not possible to
       interact with element that does not exist
@@ -151,6 +146,11 @@ public class NullTeasyElement implements TeasyElement, org.openqa.selenium.inter
     @Override
     public Locatable getLocatable() {
         return locatable;
+    }
+
+    @Override
+    public TeasyElementData getElementData() {
+        return elementData;
     }
 
     @Override

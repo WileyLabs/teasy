@@ -55,6 +55,13 @@ public interface TeasyElement extends WebElement {
     Locatable getLocatable();
 
     /**
+     * Gets data used for element creation (e.g. search context, locator)
+     *
+     * @return - {@link TeasyElementData}
+     */
+    TeasyElementData getElementData();
+
+    /**
      * {@link #should(SearchStrategy)} with default {@link SearchStrategy}
      */
     Should should();

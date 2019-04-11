@@ -32,6 +32,7 @@ import static com.wiley.utils.JsActions.executeScript;
  */
 public abstract class BaseTeasyElement implements TeasyElement, org.openqa.selenium.interactions.Locatable {
 
+    private TeasyElementData elementData;
     private WebElement wrappedElement;
     private Locatable locatable;
     private int repeatLocateElementCounter;
@@ -41,6 +42,7 @@ public abstract class BaseTeasyElement implements TeasyElement, org.openqa.selen
     private static final int MAX_NUMBER_OF_REPEAT_LOCATE_ELEMENT = 20;
 
     BaseTeasyElement(TeasyElementData elementData) {
+        this.elementData = elementData;
         this.locatable = new LocatableFactory(elementData, getDriver()).get();
         this.repeatLocateElementCounter = 0;
         this.wrappedElement = getWrappedElement(elementData);
@@ -367,6 +369,11 @@ public abstract class BaseTeasyElement implements TeasyElement, org.openqa.selen
     @Override
     public Locatable getLocatable() {
         return locatable;
+    }
+
+    @Override
+    public TeasyElementData getElementData() {
+        return elementData;
     }
 
     @Override
