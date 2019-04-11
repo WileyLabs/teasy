@@ -149,6 +149,11 @@ public class NullTeasyElement implements TeasyElement, org.openqa.selenium.inter
     }
 
     @Override
+    public TeasyElementData getElementData() {
+        return elementData;
+    }
+
+    @Override
     public TeasyElement getParent() {
         throw noSuchElementException();
     }
