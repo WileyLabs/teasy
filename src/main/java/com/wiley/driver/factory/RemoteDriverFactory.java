@@ -6,12 +6,14 @@ import com.wiley.holders.TestParamsHolder;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
+import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.UnexpectedAlertBehaviour;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.LocalFileDetector;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.safari.SafariOptions;
 
 import java.net.URL;
 
@@ -70,6 +72,14 @@ public class RemoteDriverFactory implements DriverFactory {
             }
             case SAFARI_TECH_PREVIEW: {
                 return createRemoteDriver(new SafariTechPreviewCaps(customCaps), SAFARI_TECH_PREVIEW_DIVER_NAME);
+            }
+            case SAFARI:{
+                return createRemoteDriver(new TeasyCaps(customCaps) {
+                    @Override
+                    public MutableCapabilities get() {
+                        return new SafariOptions().merge(customCaps);
+                    }
+                }, SAFARI);
             }
             default: {
                 return throwException(browserName, MAC);
