@@ -74,12 +74,7 @@ public class RemoteDriverFactory implements DriverFactory {
                 return createRemoteDriver(new SafariTechPreviewCaps(customCaps), SAFARI_TECH_PREVIEW_DIVER_NAME);
             }
             case SAFARI:{
-                return createRemoteDriver(new TeasyCaps(customCaps) {
-                    @Override
-                    public MutableCapabilities get() {
-                        return new SafariOptions().merge(customCaps);
-                    }
-                }, SAFARI);
+                return createRemoteDriver(new MacSafariCaps(customCaps), SAFARI);
             }
             default: {
                 return throwException(browserName, MAC);
