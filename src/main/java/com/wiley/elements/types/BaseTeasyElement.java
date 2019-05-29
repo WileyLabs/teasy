@@ -283,7 +283,7 @@ public abstract class BaseTeasyElement implements TeasyElement, org.openqa.selen
     public String getText() {
         try {
             String text;
-            if (isInputTextField()) {
+            if (isInputField()) {
                 text = wrappedElement.getText().isEmpty() ? wrappedElement.getAttribute("value") : wrappedElement.getText();
             } else {
                 text = wrappedElement.getText();
@@ -295,10 +295,8 @@ public abstract class BaseTeasyElement implements TeasyElement, org.openqa.selen
         }
     }
 
-    private boolean isInputTextField() {
-        return wrappedElement.getTagName().equals("input")
-                && wrappedElement.getAttribute("type") != null
-                && wrappedElement.getAttribute("type").equals("text");
+    private boolean isInputField() {
+        return wrappedElement.getTagName().equals("input");
     }
 
     public WebElement findElement(By by) {
