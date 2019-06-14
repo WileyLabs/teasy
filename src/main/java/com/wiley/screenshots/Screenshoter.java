@@ -40,7 +40,7 @@ public class Screenshoter {
 
             printStrings(image, removeNL(testName, errorMessage));
 
-            final String pathName = getFilenameFor(testName);
+            final String pathName = URLDecoder.decode(getFilenameFor(testName), "UTF-8");
             final File screenShotWithProjectPath = new File(pathName);
             ImageIO.write(image, "png", screenShotWithProjectPath);
             attachScreenShotToAllure(errorMessage, testName, screenShotWithProjectPath);
