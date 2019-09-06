@@ -12,11 +12,13 @@ import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.SessionId;
 
 import java.net.InetAddress;
 import java.net.URL;
+import java.util.Collections;
 
 import static com.wiley.holders.DriverHolder.getDriver;
 
@@ -31,14 +33,14 @@ public class WebDriverFactory {
     private static final ThreadLocal<Integer> tryToCreateDriverCount = ThreadLocal.withInitial(() -> START_COUNT);
     private static final ThreadLocal<Integer> restartDriverAfterNumberOfTests = ThreadLocal.withInitial(() -> START_COUNT);
 
-    public static void initDriver() {
+    public static void initDriver(DesiredCapabilities extraCaps) {
         restartDriverAfterNumberOfTests.set(restartDriverAfterNumberOfTests.get() + 1);
         if (getDriver() != null && (isBrowserDead() || isNeedToRestartDriver())) {
             quitWebDriver();
         }
         if (getDriver() == null) {
             try {
-                FramesTransparentWebDriver driver = createDriver();
+                FramesTransparentWebDriver driver = createDriver(extraCaps);
 
                 addShutdownHook(driver);
 
@@ -50,10 +52,13 @@ public class WebDriverFactory {
             }
         }
     }
+    public static void initDriver(){
+        initDriver(new DesiredCapabilities());
+    }
 
-    private static FramesTransparentWebDriver createDriver() {
+    private static FramesTransparentWebDriver createDriver(DesiredCapabilities extraCaps) {
         TeasyDriver teasyDriver = new TeasyDriver();
-        return new FramesTransparentWebDriver(teasyDriver.init());
+        return new FramesTransparentWebDriver(teasyDriver.init(extraCaps));
     }
 
     private static void lastTryToCreateDriver(Throwable t) {
