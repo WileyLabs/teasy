@@ -18,7 +18,6 @@ import org.openqa.selenium.remote.SessionId;
 
 import java.net.InetAddress;
 import java.net.URL;
-import java.util.Collections;
 
 import static com.wiley.holders.DriverHolder.getDriver;
 
