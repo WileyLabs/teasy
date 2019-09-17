@@ -17,9 +17,9 @@ public class TeasyDriver {
         URL gridUrl = getGridHubUrl();
         boolean isHeadless = Configuration.headless;
         if (Configuration.runWithGrid) {
-            driverFactory = new RemoteDriverFactory(Configuration.browser, Configuration.platform, Configuration.customCaps.merge(extraCaps), isHeadless, gridUrl);
+            driverFactory = new RemoteDriverFactory(Configuration.browser, Configuration.platform, extraCaps.merge(Configuration.customCaps), isHeadless, gridUrl);
         } else {
-            driverFactory = new StandaloneDriverFactory(Configuration.browser, Configuration.platform, Configuration.customCaps.merge(extraCaps), isHeadless, gridUrl);
+            driverFactory = new StandaloneDriverFactory(Configuration.browser, Configuration.platform, extraCaps.merge(Configuration.customCaps), isHeadless, gridUrl);
         }
 
         return driverFactory.get();
