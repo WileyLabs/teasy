@@ -27,6 +27,7 @@ public class ChromeCaps extends TeasyCaps {
     }
 
     @SuppressWarnings("unchecked") // Just in case getCapability return value type changes in future versions
+    @Override
     public ChromeOptions get() {
         ChromeOptions chromeOptions = getChromeOptions();
         if (!this.customCaps.asMap().isEmpty()) {

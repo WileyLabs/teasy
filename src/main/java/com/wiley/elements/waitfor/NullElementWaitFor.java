@@ -30,42 +30,52 @@ public class NullElementWaitFor implements ElementWaitFor {
         this.strategy = strategy;
     }
 
+    @Override
     public void displayed() {
         wait.waitFor(new ElementDisplayed(getElement()));
     }
 
+    @Override
     public void absent() {
         doNothing();
     }
 
+    @Override
     public void text(String text) {
         wait.waitFor(new ElementHasText(getElement(), text));
     }
 
+    @Override
     public void attribute(String attributeName, String value) {
         wait.waitFor(new ElementAttributeValue(getElement(), attributeName, value));
     }
 
+    @Override
     public void attribute(String attributeName) {
         wait.waitFor(new ElementHasAttribute(getElement(), attributeName));
     }
 
+    @Override
     public void notContainsAttributeValue(String attributeName, String value) {
         doNothing();
     }
 
+    @Override
     public void containsAttributeValue(String attributeName, String value) {
         wait.waitFor(new ElementAttributeContain(getElement(), attributeName, value));
     }
 
+    @Override
     public void stale() {
         wait.waitFor(new ElementStale(getElement()));
     }
 
+    @Override
     public void clickable() {
         wait.waitFor(new ElementClickable(getElement()));
     }
 
+    @Override
     public void condition(Function<? super WebDriver, ?> condition) {
         wait.waitFor(condition);
     }

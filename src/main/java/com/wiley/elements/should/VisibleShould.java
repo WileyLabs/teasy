@@ -28,42 +28,52 @@ public class VisibleShould implements Should {
         this.fluentWait.pollingEvery(Duration.of(strategy.getPoolingEvery(), strategy.getUnit()));
     }
 
+    @Override
     public void beDisplayed() {
         waitFor(new ElementDisplayed(element));
     }
 
+    @Override
     public void beAbsent() {
         waitFor(new ElementAbsent(element));
     }
 
+    @Override
     public void haveText(String text) {
         waitFor(new ElementHasText(element, text));
     }
 
+    @Override
     public void haveAnyText() {
         waitFor(new ElementHasAnyText(element));
     }
 
+    @Override
     public void haveNoText() {
         waitFor(new ElementHasNoText(element));
     }
 
+    @Override
     public void containsText(String text) {
         waitFor(new ElementContainsText(element, text));
     }
 
+    @Override
     public void haveAttribute(String attributeName, String value) {
         waitFor(new ElementAttributeValue(element, attributeName, value));
     }
 
+    @Override
     public void haveAttribute(String attributeName) {
         waitFor(new ElementHasAttribute(element, attributeName));
     }
 
+    @Override
     public void notHaveAttribute(String attributeName) {
         waitFor(new ElementNotHaveAttribute(element, attributeName));
     }
 
+    @Override
     public void customCondition(Function<WebDriver, Boolean> condition) {
         waitFor(condition);
     }

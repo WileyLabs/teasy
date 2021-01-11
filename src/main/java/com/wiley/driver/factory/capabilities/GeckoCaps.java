@@ -21,6 +21,7 @@ public class GeckoCaps extends TeasyCaps {
         this.platform = platform;
     }
 
+    @Override
     public FirefoxOptions get() {
         FirefoxOptions caps = getGeckoOptions();
         if (!this.customCaps.asMap().isEmpty()) {

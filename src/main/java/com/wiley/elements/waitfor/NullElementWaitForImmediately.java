@@ -23,42 +23,52 @@ public class NullElementWaitForImmediately implements ElementWaitFor {
         this.element = element;
     }
 
+    @Override
     public void displayed() {
         throwException();
     }
 
+    @Override
     public void absent() {
         doNothing();
     }
 
+    @Override
     public void text(String text) {
         throwException();
     }
 
+    @Override
     public void attribute(String attributeName, String value) {
         throwException();
     }
 
+    @Override
     public void attribute(String attributeName) {
         throwException();
     }
 
+    @Override
     public void notContainsAttributeValue(String attributeName, String value) {
         throwException();
     }
 
+    @Override
     public void containsAttributeValue(String attributeName, String value) {
         throwException();
     }
 
+    @Override
     public void stale() {
         throwException();
     }
 
+    @Override
     public void clickable() {
         throwException();
     }
 
+    @Override
     public void condition(Function<? super WebDriver, ?> condition) {
         new TeasyFluentWait<>(DriverHolder.getDriver(), new SearchStrategy()).waitFor(condition);
     }

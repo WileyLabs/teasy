@@ -21,6 +21,7 @@ public class IECaps extends TeasyCaps {
         this.alertBehaviour = alertBehaviour;
     }
 
+    @Override
     public InternetExplorerOptions get() {
         InternetExplorerOptions caps = getIEOptions();
         if (!this.customCaps.asMap().isEmpty()) {

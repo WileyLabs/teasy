@@ -18,6 +18,7 @@ public class EdgeCaps extends TeasyCaps {
         this.alertBehaviour = alertBehaviour;
     }
 
+    @Override
     public EdgeOptions get() {
         EdgeOptions caps = getEdgeOptions();
         if (!this.customCaps.asMap().isEmpty()) {

@@ -26,42 +26,52 @@ public class NullShould implements Should {
         this.strategy = strategy;
     }
 
+    @Override
     public void beDisplayed() {
         fluentWait.waitFor(new ElementDisplayed(getElement()));
     }
 
+    @Override
     public void beAbsent() {
         doNothing();
     }
 
+    @Override
     public void haveText(String text) {
         fluentWait.waitFor(new ElementHasText(getElement(), text));
     }
 
+    @Override
     public void haveNoText() {
         fluentWait.waitFor(new ElementHasNoText(getElement()));
     }
 
+    @Override
     public void containsText(String text) {
         fluentWait.waitFor(new ElementContainsText(getElement(), text));
     }
 
+    @Override
     public void haveAnyText() {
         fluentWait.waitFor(new ElementDisplayed(getElement()));
     }
 
+    @Override
     public void haveAttribute(String attributeName, String value) {
         fluentWait.waitFor(new ElementAttributeValue(getElement(), attributeName, value));
     }
 
+    @Override
     public void haveAttribute(String attributeName) {
         fluentWait.waitFor(new ElementHasAttribute(getElement(), attributeName));
     }
 
+    @Override
     public void notHaveAttribute(String attributeName) {
         fluentWait.waitFor(new ElementNotHaveAttribute(getElement(), attributeName));
     }
 
+    @Override
     public void customCondition(Function<WebDriver, Boolean> condition) {
         fluentWait.waitFor(condition);
     }

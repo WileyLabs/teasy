@@ -13,6 +13,7 @@ public class AndroidChromeCaps extends TeasyCaps {
         super(customCaps);
     }
 
+    @Override
     public DesiredCapabilities get() {
         DesiredCapabilities caps = getAndroidChromeCaps();
         if (!this.customCaps.asMap().isEmpty()) {

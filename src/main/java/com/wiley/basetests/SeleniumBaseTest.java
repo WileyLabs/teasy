@@ -22,6 +22,7 @@ public class SeleniumBaseTest extends BaseTest {
         return PageProvider.get(page, url);
     }
 
+    @Override
     protected void setThrowable(ITestResult testResult, MethodType methodType) {
         final Throwable testResultThrowable = testResult.getThrowable();
 

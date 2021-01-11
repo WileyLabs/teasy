@@ -22,6 +22,7 @@ public class FireFoxCaps extends TeasyCaps {
         this.platform = platform;
     }
 
+    @Override
     public FirefoxOptions get() {
         FirefoxOptions firefoxOptions = getFirefoxOptions();
         if (!this.customCaps.asMap().isEmpty()) {

@@ -13,6 +13,7 @@ public class SafariTechPreviewCaps extends TeasyCaps {
         super(customCaps);
     }
 
+    @Override
     public MutableCapabilities get() {
         DesiredCapabilities safariCaps = DesiredCapabilities.safari();
         SafariOptions options = new SafariOptions();

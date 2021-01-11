@@ -12,6 +12,7 @@ public class IosNativeAppCaps extends TeasyCaps {
         super(customCaps);
     }
 
+    @Override
     public DesiredCapabilities get() {
         DesiredCapabilities caps = new DesiredCapabilities();
         if (!this.customCaps.asMap().isEmpty()) {

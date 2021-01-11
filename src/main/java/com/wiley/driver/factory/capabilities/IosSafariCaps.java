@@ -11,6 +11,7 @@ public class IosSafariCaps extends TeasyCaps {
         super(customCaps);
     }
 
+    @Override
     public DesiredCapabilities get() {
         DesiredCapabilities caps = getIOSSafariCaps();
         if (!this.customCaps.asMap().isEmpty()) {

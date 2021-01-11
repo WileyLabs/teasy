@@ -93,9 +93,7 @@ public abstract class BaseTeasyElement implements TeasyElement, org.openqa.selen
 
     @Override
     public TeasyElementList elements(By by, SearchStrategy strategy) {
-        return new VisibleElementsLookUp(getDriver(),
-                getAgainLocateStrategy(),
-                this).find(by);
+        return new VisibleElementsLookUp(getDriver(), strategy, this).find(by);
     }
 
     @Override
@@ -299,11 +297,13 @@ public abstract class BaseTeasyElement implements TeasyElement, org.openqa.selen
         return wrappedElement.getTagName().equals("input");
     }
 
+    @Override
     public WebElement findElement(By by) {
         this.repeatLocateElementCounter = 0;
         return find(by);
     }
 
+    @Override
     public List<WebElement> findElements(By by) {
         this.repeatLocateElementCounter = 0;
         return finds(by);

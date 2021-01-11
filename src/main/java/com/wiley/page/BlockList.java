@@ -45,4 +45,9 @@ public class BlockList<T extends AbstractBlock> extends ArrayList<T> {
             throw new RuntimeException("Error occurred during a call to the block constructor.", e);
         }
     }
+
+    @Override
+    public Object clone() {
+        return super.clone();
+    }
 }

@@ -9,6 +9,7 @@ import org.testng.ITestResult;
  */
 public class WebServiceBaseTest extends BaseTest {
 
+    @Override
     protected void setThrowable(ITestResult testResult, MethodType methodType) {
         final Throwable testResultThrowable = testResult.getThrowable();
 

@@ -18,6 +18,7 @@ public class MobileBaseTest extends BaseTest {
         return PageProvider.get(page);
     }
 
+    @Override
     protected void setThrowable(ITestResult testResult, MethodType methodType) {
         final Throwable testResultThrowable = testResult.getThrowable();
 

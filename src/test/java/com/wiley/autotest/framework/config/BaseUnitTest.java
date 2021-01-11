@@ -19,6 +19,7 @@ public class BaseUnitTest extends SeleniumBaseTest {
         return get(page, "file://" + getClass().getResource("/html/framework/").getPath() + fileName);
     }
 
+    @Override
     protected void setThrowable(ITestResult testResult, MethodType methodType) {
         final Throwable testResultThrowable = testResult.getThrowable();
 

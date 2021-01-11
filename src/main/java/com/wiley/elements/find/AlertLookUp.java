@@ -17,6 +17,7 @@ public class AlertLookUp implements LookUp<Alert> {
         this.fluentWait = new TeasyFluentWait<>(driver, strategy);
     }
 
+    @Override
     public Alert find() {
         return fluentWait.waitFor(ExpectedConditions.alertIsPresent());
     }

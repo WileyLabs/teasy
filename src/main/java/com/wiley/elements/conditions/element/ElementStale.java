@@ -20,6 +20,7 @@ public class ElementStale implements ExpectedCondition<Boolean> {
         return el.isStale();
     }
 
+    @Override
     public String toString() {
         return String.format("Element '%s' is not stale!", el.toString());
     }

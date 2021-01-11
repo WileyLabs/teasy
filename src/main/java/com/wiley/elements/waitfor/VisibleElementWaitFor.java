@@ -28,42 +28,52 @@ public class VisibleElementWaitFor implements ElementWaitFor {
         this.wait.pollingEvery(Duration.of(strategy.getPoolingEvery(), strategy.getUnit()));
     }
 
+    @Override
     public void displayed() {
         wait.waitFor(new ElementDisplayed(element));
     }
 
+    @Override
     public void absent() {
         wait.waitFor(new ElementAbsent(element));
     }
 
+    @Override
     public void text(String text) {
         wait.waitFor(new ElementHasText(element, text));
     }
 
+    @Override
     public void attribute(String attributeName, String value) {
         wait.waitFor(new ElementAttributeValue(element, attributeName, value));
     }
 
+    @Override
     public void attribute(String attributeName) {
         wait.waitFor(new ElementHasAttribute(element, attributeName));
     }
 
+    @Override
     public void notContainsAttributeValue(String attributeName, String value) {
         wait.waitFor(new ElementAttributeNotContain(element, attributeName, value));
     }
 
+    @Override
     public void containsAttributeValue(String attributeName, String value) {
         wait.waitFor(new ElementAttributeContain(element, attributeName, value));
     }
 
+    @Override
     public void stale() {
         wait.waitFor(new ElementStale(element));
     }
 
+    @Override
     public void clickable() {
         wait.waitFor(new ElementClickable(element));
     }
 
+    @Override
     public void condition(Function<? super WebDriver, ?> condition) {
         wait.waitFor(condition);
     }
